@@ -111,10 +111,10 @@ async def bulk_apply(
 ):
     """Apply confirmed matches to local model records."""
     applied = 0
-    for item in body.items:
-        model = db.query(Model).filter(Model.id == item.model_id).first()
-        if not model:
-            continue
+    item_map = {item.model_id: item for item in body.items}
+    models = db.query(Model).filter(Model.id.in_(item_map.keys())).all()
+    for model in models:
+        item = item_map[model.id]
 
         if item.thumbnail_url and not model.thumbnail_path:
             model.thumbnail_url = item.thumbnail_url

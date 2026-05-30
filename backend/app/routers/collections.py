@@ -11,14 +11,17 @@ router = APIRouter(prefix="/collections", tags=["collections"])
 
 @router.get("", response_model=list[CollectionRead])
 def list_collections(db: Session = Depends(get_db)):
-    collections = db.query(Collection).order_by(Collection.name).all()
+    rows = (
+        db.query(Collection, func.count(CollectionModel.id).label("cnt"))
+        .outerjoin(CollectionModel, CollectionModel.collection_id == Collection.id)
+        .group_by(Collection.id)
+        .order_by(Collection.name)
+        .all()
+    )
     result = []
-    for c in collections:
-        count = db.query(func.count(CollectionModel.id)).filter(
-            CollectionModel.collection_id == c.id
-        ).scalar()
-        cr = CollectionRead.model_validate(c)
-        cr.model_count = count
+    for collection, cnt in rows:
+        cr = CollectionRead.model_validate(collection)
+        cr.model_count = cnt
         result.append(cr)
     return result
 
