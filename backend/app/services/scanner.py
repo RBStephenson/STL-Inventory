@@ -23,6 +23,7 @@ needs_review=True is set when confidence is low.
 """
 import logging
 import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
 from sqlalchemy.orm import Session
@@ -40,6 +41,7 @@ STL_EXTENSIONS = {".stl", ".3mf", ".obj"}
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 
 _scan_lock = threading.Lock()
+_state_lock = threading.Lock()
 _scan_state: dict = {"running": False, "message": "idle", "models_found": 0, "files_found": 0, "cancelled": False}
 _cancel_requested = False
 
@@ -108,32 +110,46 @@ def _scan_root(root: ScanRoot, db: Session):
         _scan_state["message"] = f"path not found: {root.path}"
         return
 
-    # Shared memoization dict for this entire root scan — avoids redundant
-    # recursive rglob calls when the same subtree is visited multiple times.
-    stl_cache: dict[str, bool] = {}
+    creator_dirs = sorted(d for d in root_path.iterdir() if d.is_dir())
 
-    for creator_dir in sorted(root_path.iterdir()):
-        if _cancel_requested:
-            break
-        if not creator_dir.is_dir():
-            continue
-
-        _scan_state["message"] = f"scanning {creator_dir.name}"
-
+    # Pre-create all Creator rows in the main session before going parallel so
+    # worker threads never race to INSERT the same creator name.
+    creator_info: dict[str, tuple[int, dict]] = {}
+    for creator_dir in creator_dirs:
         creator_meta = orynt3d_parser.parse_creator_config(str(creator_dir)) or {}
         creator_name = creator_meta.get("creator_name") or creator_dir.name
         creator = _get_or_create_creator(creator_name, db)
+        creator_info[str(creator_dir)] = (creator.id, creator_meta)
+    db.commit()
 
-        _walk_for_models(
-            folder=creator_dir,
-            creator=creator,
-            inherited=creator_meta,
-            db=db,
-            creator_boundary=creator_dir,
-            character=None,
-            stl_cache=stl_cache,
-            last_scanned=root.last_scanned,
-        )
+    def _scan_one(creator_dir: Path):
+        if _cancel_requested:
+            return
+        creator_id, creator_meta = creator_info[str(creator_dir)]
+        thread_db = SessionLocal()
+        try:
+            creator = thread_db.get(Creator, creator_id)
+            with _state_lock:
+                _scan_state["message"] = f"scanning {creator_dir.name}"
+            _walk_for_models(
+                folder=creator_dir,
+                creator=creator,
+                inherited=creator_meta,
+                db=thread_db,
+                creator_boundary=creator_dir,
+                character=None,
+                stl_cache={},
+                last_scanned=root.last_scanned,
+            )
+        except Exception:
+            logger.exception(f"Error scanning creator: {creator_dir.name}")
+        finally:
+            thread_db.close()
+
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        futures = [executor.submit(_scan_one, d) for d in creator_dirs]
+        for future in as_completed(futures):
+            future.result()  # propagate any unexpected exception to the outer handler
 
 
 def _walk_for_models(
@@ -291,7 +307,8 @@ def _index_model(
     sync_model_tags(model, db)
     db.commit()
 
-    _scan_state["models_found"] += 1
+    with _state_lock:
+        _scan_state["models_found"] += 1
 
 
 # ---------------------------------------------------------------------------
@@ -379,7 +396,8 @@ def _index_stl_files(model: Model, folder: Path, db: Session):
             size_bytes=stl.stat().st_size,
         ))
         existing.add(path_str)  # prevent duplicates within the same session
-        _scan_state["files_found"] += 1
+        with _state_lock:
+            _scan_state["files_found"] += 1
 
 
 def _get_or_create_creator(name: str, db: Session) -> Creator:
