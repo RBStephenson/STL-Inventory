@@ -1,0 +1,75 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            artifact: stl-inventory.exe
+            label: windows
+          - os: macos-latest
+            artifact: stl-inventory
+            label: macos
+          - os: ubuntu-latest
+            artifact: stl-inventory
+            label: linux
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ---- Build React frontend ----
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend deps
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+
+      # ---- Build Python executable ----
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install backend deps + PyInstaller
+        working-directory: backend
+        run: pip install -r requirements.txt pyinstaller
+
+      - name: Build executable
+        run: pyinstaller packaging/stl-inventory.spec --distpath dist-standalone
+
+      # ---- Rename artifact with platform label ----
+      - name: Rename artifact (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          mv dist-standalone/stl-inventory.exe dist-standalone/stl-inventory-${{ matrix.label }}.exe
+
+      - name: Rename artifact (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          mv dist-standalone/stl-inventory dist-standalone/stl-inventory-${{ matrix.label }}
+
+      # ---- Upload to GitHub Release ----
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist-standalone/stl-inventory-${{ matrix.label }}*
+          generate_release_notes: true

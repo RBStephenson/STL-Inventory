@@ -6,6 +6,7 @@ import Creators from "./pages/Creators";
 import Collections from "./pages/Collections";
 import Triage from "./pages/Triage";
 import VariantGroup from "./pages/VariantGroup";
+import Settings from "./pages/Settings";
 import BackToTop from "./components/BackToTop";
 
 export default function App() {
@@ -20,6 +21,7 @@ export default function App() {
           <Route path="/creators" element={<Creators />} />
           <Route path="/collections" element={<Collections />} />
           <Route path="/triage" element={<Triage />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </main>
       <BackToTop />

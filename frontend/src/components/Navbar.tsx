@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Box, FolderOpen, Users, LayoutGrid, EyeOff, Eye, AlertTriangle } from "lucide-react";
+import { Box, FolderOpen, Users, LayoutGrid, EyeOff, Eye, AlertTriangle, Settings } from "lucide-react";
 import { useNSFW } from "../context/NSFWContext";
 import { api } from "../api/client";
 
@@ -18,6 +18,7 @@ export default function Navbar() {
     { to: "/creators",    label: "Creators",    icon: Users,         badge: null },
     { to: "/collections", label: "Collections", icon: FolderOpen,    badge: null },
     { to: "/triage",      label: "Triage",      icon: AlertTriangle, badge: reviewCount },
+    { to: "/settings",   label: "Settings",    icon: Settings,      badge: null },
   ];
 
   return (

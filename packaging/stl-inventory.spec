@@ -1,0 +1,104 @@
+# -*- mode: python ; coding: utf-8 -*-
+#
+# PyInstaller spec for STL Inventory standalone build.
+#
+# Run from the PROJECT ROOT (not this directory):
+#   pyinstaller packaging/stl-inventory.spec
+#
+# The frontend must be built first:
+#   cd frontend && npm run build
+#
+# Output: dist/stl-inventory  (or dist/stl-inventory.exe on Windows)
+
+from pathlib import Path
+
+ROOT = Path(".").resolve()
+BACKEND = ROOT / "backend"
+FRONTEND_DIST = ROOT / "frontend" / "dist"
+
+block_cipher = None
+
+a = Analysis(
+    [str(ROOT / "packaging" / "standalone.py")],
+    pathex=[str(BACKEND)],
+    binaries=[],
+    datas=[
+        # Bundle the built React frontend
+        (str(FRONTEND_DIST), "dist"),
+        # Bundle the backend app package (needed for relative imports)
+        (str(BACKEND / "app"), "app"),
+    ],
+    hiddenimports=[
+        # uvicorn internals that PyInstaller misses
+        "uvicorn.logging",
+        "uvicorn.loops",
+        "uvicorn.loops.auto",
+        "uvicorn.loops.asyncio",
+        "uvicorn.protocols",
+        "uvicorn.protocols.http",
+        "uvicorn.protocols.http.auto",
+        "uvicorn.protocols.http.h11_impl",
+        "uvicorn.protocols.websockets",
+        "uvicorn.protocols.websockets.auto",
+        "uvicorn.lifespan",
+        "uvicorn.lifespan.on",
+        # FastAPI / Starlette
+        "starlette.staticfiles",
+        "starlette.routing",
+        "aiofiles",
+        "aiofiles.os",
+        "aiofiles.threadpool",
+        # SQLAlchemy dialects
+        "sqlalchemy.dialects.sqlite",
+        "sqlalchemy.dialects.sqlite.pysqlite",
+        # Pydantic
+        "pydantic",
+        "pydantic_settings",
+        "pydantic.deprecated.class_validators",
+        # Scraper / HTTP
+        "bs4",
+        "httpx",
+        "httpcore",
+        "h11",
+        # Other deps
+        "multipart",
+        "python_multipart",
+        "apscheduler",
+        "apscheduler.schedulers.background",
+        "watchdog",
+        "watchdog.observers",
+        "watchdog.observers.polling",
+    ],
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludes=["tkinter", "test", "unittest"],
+    win_no_prefer_redirects=False,
+    win_private_assemblies=False,
+    cipher=block_cipher,
+    noarchive=False,
+)
+
+pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+
+exe = EXE(
+    pyz,
+    a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    [],
+    name="stl-inventory",
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=False,           # UPX can trigger AV false-positives; keep off by default
+    upx_exclude=[],
+    runtime_tmpdir=None,
+    console=True,        # Console window so users can see errors on first run
+    disable_windowed_traceback=False,
+    argv_emulation=False,
+    target_arch=None,
+    codesign_identity=None,
+    entitlements_file=None,
+)

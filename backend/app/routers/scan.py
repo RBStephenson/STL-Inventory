@@ -46,6 +46,31 @@ def list_roots(db: Session = Depends(get_db)):
     return db.query(ScanRoot).all()
 
 
+@router.post("/roots")
+def add_root(body: dict, db: Session = Depends(get_db)):
+    path = (body.get("path") or "").strip()
+    if not path:
+        raise HTTPException(status_code=400, detail="Path is required")
+    existing = db.query(ScanRoot).filter(ScanRoot.path == path).first()
+    if existing:
+        raise HTTPException(status_code=409, detail="Root already exists")
+    root = ScanRoot(path=path, enabled=True)
+    db.add(root)
+    db.commit()
+    db.refresh(root)
+    return root
+
+
+@router.delete("/roots/{root_id}")
+def remove_root(root_id: int, db: Session = Depends(get_db)):
+    root = db.query(ScanRoot).filter(ScanRoot.id == root_id).first()
+    if not root:
+        raise HTTPException(status_code=404, detail="Root not found")
+    db.delete(root)
+    db.commit()
+    return {"ok": True}
+
+
 def _sync_roots_from_config(db: Session):
     """Ensure each path in STL_ROOTS env var exists as a ScanRoot row."""
     for path in settings.stl_root_list:

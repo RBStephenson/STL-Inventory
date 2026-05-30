@@ -66,6 +66,13 @@ export interface Creator {
   model_count: number;
 }
 
+export interface ScanRoot {
+  id: number;
+  path: string;
+  enabled: boolean;
+  last_scanned: string | null;
+}
+
 export interface ScanStatus {
   running: boolean;
   message: string;
@@ -128,6 +135,15 @@ export const api = {
     start: () => request<ScanStatus>("/scan/start", { method: "POST" }),
     cancel: () => request<{ ok: boolean }>("/scan/cancel", { method: "POST" }),
     status: () => request<ScanStatus>("/scan/status"),
+    roots: () => request<ScanRoot[]>("/scan/roots"),
+    addRoot: (path: string) =>
+      request<ScanRoot>("/scan/roots", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path }),
+      }),
+    removeRoot: (id: number) =>
+      request<{ ok: boolean }>(`/scan/roots/${id}`, { method: "DELETE" }),
   },
   collections: {
     list: () => request<Collection[]>("/collections"),
