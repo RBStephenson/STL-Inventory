@@ -114,12 +114,17 @@ def list_models(
 
 @router.get("/creators/list", response_model=list[CreatorRead])
 def list_creators(db: Session = Depends(get_db)):
-    creators = db.query(Creator).order_by(Creator.name).all()
+    rows = (
+        db.query(Creator, func.count(Model.id).label("cnt"))
+        .outerjoin(Model, Model.creator_id == Creator.id)
+        .group_by(Creator.id)
+        .order_by(Creator.name)
+        .all()
+    )
     result = []
-    for c in creators:
-        count = db.query(func.count(Model.id)).filter(Model.creator_id == c.id).scalar()
-        cr = CreatorRead.model_validate(c)
-        cr.model_count = count
+    for creator, cnt in rows:
+        cr = CreatorRead.model_validate(creator)
+        cr.model_count = cnt
         result.append(cr)
     return result
 
