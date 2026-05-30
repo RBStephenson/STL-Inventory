@@ -1,0 +1,94 @@
+from datetime import datetime
+from typing import Optional
+from pydantic import BaseModel
+
+
+class CreatorBase(BaseModel):
+    name: str
+    source_url: Optional[str] = None
+
+
+class CreatorRead(CreatorBase):
+    id: int
+    model_count: Optional[int] = 0
+
+    class Config:
+        from_attributes = True
+
+
+class STLFileRead(BaseModel):
+    id: int
+    path: str
+    filename: str
+    size_bytes: Optional[int] = None
+
+    class Config:
+        from_attributes = True
+
+
+class ModelBase(BaseModel):
+    name: str
+    folder_path: str
+
+
+class ModelRead(ModelBase):
+    id: int
+    title: Optional[str] = None
+    character: Optional[str] = None
+    description: Optional[str] = None
+    notes: Optional[str] = None
+    source_url: Optional[str] = None
+    source_site: Optional[str] = None
+    license: Optional[str] = None
+    tags: list = []
+    auto_tags: list = []
+    category: Optional[str] = None
+    custom_attributes: dict = {}
+    needs_review: bool = False
+    nsfw: bool = False
+    thumbnail_path: Optional[str] = None
+    thumbnail_url: Optional[str] = None
+    image_paths: list = []
+    rating: Optional[float] = None
+    download_count: Optional[int] = None
+    orynt3d_parsed: bool = False
+    creator_id: Optional[int] = None
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class ModelDetail(ModelRead):
+    stl_files: list[STLFileRead] = []
+    creator: Optional[CreatorRead] = None
+
+
+class ModelList(BaseModel):
+    total: int
+    page: int
+    page_size: int
+    items: list[ModelRead]
+
+
+class ScanStatus(BaseModel):
+    running: bool
+    message: str
+    models_found: Optional[int] = None
+    files_found: Optional[int] = None
+
+
+class CollectionBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+
+
+class CollectionRead(CollectionBase):
+    id: int
+    cover_image_path: Optional[str] = None
+    model_count: Optional[int] = 0
+    created_at: datetime
+
+    class Config:
+        from_attributes = True

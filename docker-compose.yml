@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/data
+      # Mount your external drives here — adjust paths for Windows/Mac
+      # Windows example: "D:/3D STLs:/mnt/drive1:ro"
+      # Mac example:    "/Volumes/MyDrive1:/mnt/drive1:ro"
+      - "${STL_DRIVE_1:-/mnt/drive1}:/mnt/drive1:ro"
+      - "${STL_DRIVE_2:-/mnt/drive2}:/mnt/drive2:ro"
+      - "${ORYNT3D_THUMBNAIL_CACHE:-/mnt/orynt3d_cache}:/mnt/orynt3d_cache:ro"
+    environment:
+      - DATABASE_URL=sqlite:////data/stl_inventory.db
+      - STL_ROOTS=/mnt/drive1,/mnt/drive2
+      - ORYNT3D_THUMBNAIL_CACHE=/mnt/orynt3d_cache
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://backend:8000
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # nginx reverse proxy so frontend can call /api without CORS issues
+  proxy:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+      - frontend
+    restart: unless-stopped

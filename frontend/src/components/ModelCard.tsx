@@ -1,0 +1,143 @@
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Package, Star, AlertCircle } from "lucide-react";
+import { Model, api } from "../api/client";
+import { useNSFW } from "../context/NSFWContext";
+
+interface Props {
+  model: Model;
+}
+
+const SITE_LABELS: Record<string, string> = {
+  thingiverse: "Thingiverse",
+  printables: "Printables",
+  myminifactory: "MyMiniFactory",
+  cults3d: "Cults3D",
+  thangs: "Thangs",
+  makerworld: "MakerWorld",
+  gumroad: "Gumroad",
+  patreon: "Patreon",
+  other: "Other",
+};
+
+const TAG_COLORS: Record<string, string> = {
+  "pre-supported": "bg-emerald-900 text-emerald-300",
+  "bust":          "bg-blue-900 text-blue-300",
+  "statue":        "bg-purple-900 text-purple-300",
+  "figure":        "bg-indigo-900 text-indigo-300",
+};
+
+export default function ModelCard({ model }: Props) {
+  const location = useLocation();
+  const { showNSFW } = useNSFW();
+  const [nsfw, setNsfw] = useState(model.nsfw);
+
+  const toggleNSFW = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const next = !nsfw;
+    setNsfw(next);
+    await api.models.setNSFW(model.id, next);
+  };
+  const thumbnail = model.thumbnail_path
+    ? api.fileUrl(model.thumbnail_path)
+    : model.thumbnail_url ?? null;
+
+  const displayName = model.title || model.name;
+  const allTags = [...(model.auto_tags ?? []), ...(model.tags ?? [])];
+  const uniqueTags = [...new Set(allTags)];
+
+  return (
+    <Link
+      to={`/models/${model.id}`}
+      state={{ from: location.pathname + location.search }}
+      className="group bg-gray-900 rounded-lg overflow-hidden border border-gray-800 hover:border-indigo-500 transition-colors flex flex-col"
+    >
+      <div className="aspect-square bg-gray-800 relative overflow-hidden">
+        {thumbnail ? (
+          <img
+            src={thumbnail}
+            alt={displayName}
+            className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ${
+              nsfw && !showNSFW ? "blur-xl" : ""
+            }`}
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-gray-600">
+            <Package size={48} />
+          </div>
+        )}
+
+        {/* NSFW overlay — always show badge in grid, blur depends on setting */}
+        {nsfw && !showNSFW && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="bg-black/60 text-red-400 text-xs font-bold px-2 py-1 rounded border border-red-800 tracking-widest">
+              NSFW
+            </span>
+          </div>
+        )}
+        {nsfw && showNSFW && (
+          <span className="absolute bottom-2 left-2 bg-red-950/80 text-red-400 text-xs font-bold px-1.5 py-0.5 rounded border border-red-800">
+            NSFW
+          </span>
+        )}
+
+        {/* NSFW quick toggle — visible on hover */}
+        <button
+          onClick={toggleNSFW}
+          title={nsfw ? "Mark as SFW" : "Mark as NSFW"}
+          className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/70 hover:bg-black/90 text-xs px-2 py-0.5 rounded border border-gray-600 text-gray-300 hover:text-white"
+        >
+          {nsfw ? "SFW" : "NSFW"}
+        </button>
+
+        {/* Badges */}
+        <div className="absolute top-2 left-2 flex flex-col gap-1">
+          {model.needs_review && (
+            <span className="flex items-center gap-1 bg-amber-500/90 text-amber-950 text-xs px-1.5 py-0.5 rounded font-medium">
+              <AlertCircle size={10} />
+              Review
+            </span>
+          )}
+        </div>
+        {model.source_site && (
+          <span className="absolute top-2 right-2 bg-black/70 text-xs px-1.5 py-0.5 rounded text-gray-300">
+            {SITE_LABELS[model.source_site] ?? model.source_site}
+          </span>
+        )}
+      </div>
+
+      <div className="p-3 flex flex-col gap-1.5 flex-1">
+        {model.character && (
+          <p className="text-xs text-indigo-400 truncate">{model.character}</p>
+        )}
+        <p className="text-sm font-medium truncate text-gray-100">{displayName}</p>
+
+        {uniqueTags.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {uniqueTags.slice(0, 4).map((tag) => (
+              <span
+                key={tag}
+                className={`text-xs px-1.5 py-0.5 rounded ${
+                  TAG_COLORS[tag] ?? "bg-gray-800 text-gray-400"
+                }`}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-auto flex items-center justify-between pt-1">
+          {model.rating != null && (
+            <span className="flex items-center gap-0.5 text-xs text-yellow-400">
+              <Star size={11} fill="currentColor" />
+              {model.rating.toFixed(1)}
+            </span>
+          )}
+        </div>
+      </div>
+    </Link>
+  );
+}

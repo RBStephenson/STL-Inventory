@@ -1,0 +1,120 @@
+from datetime import datetime
+from sqlalchemy import (
+    Column, Integer, String, Text, Float, DateTime, Boolean,
+    ForeignKey, BigInteger, JSON, UniqueConstraint
+)
+from sqlalchemy.orm import relationship
+from app.database import Base
+
+
+class ScanRoot(Base):
+    __tablename__ = "scan_roots"
+
+    id = Column(Integer, primary_key=True)
+    path = Column(String, unique=True, nullable=False)
+    enabled = Column(Boolean, default=True)
+    last_scanned = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class Creator(Base):
+    __tablename__ = "creators"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True, nullable=False)
+    source_url = Column(String, nullable=True)
+    models = relationship("Model", back_populates="creator")
+
+
+class Model(Base):
+    """One logical model (a folder under a creator). May contain many STL files."""
+    __tablename__ = "models"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    folder_path = Column(String, unique=True, nullable=False)
+    creator_id = Column(Integer, ForeignKey("creators.id"), nullable=True)
+
+    # Hierarchy
+    character = Column(String, nullable=True)     # inferred grouping above model level
+
+    # Metadata — populated from config.orynt3d or scraped
+    title = Column(String, nullable=True)
+    description = Column(Text, nullable=True)
+    notes = Column(Text, nullable=True)           # modelmeta.notes from orynt3d
+    source_url = Column(String, nullable=True)
+    source_site = Column(String, nullable=True)   # thingiverse|printables|gumroad|…
+    license = Column(String, nullable=True)
+    tags = Column(JSON, default=list)             # user-set tags
+    auto_tags = Column(JSON, default=list)        # scanner-detected: scale, type, modifiers
+    category = Column(String, nullable=True)
+    custom_attributes = Column(JSON, default=dict)  # orynt3d key/value attributes
+    print_settings = Column(JSON, default=dict)
+    external_id = Column(String, nullable=True)   # ID on the source site
+    orynt3d_collections = Column(JSON, default=list)  # modelmeta.collections
+
+    # Scraping
+    source_last_fetched = Column(DateTime, nullable=True)
+
+    # Content
+    nsfw = Column(Boolean, default=False)
+
+    # Review state
+    needs_review = Column(Boolean, default=False)  # scanner flagged low-confidence detection
+
+    # Images
+    thumbnail_path = Column(String, nullable=True)   # local path
+    thumbnail_url = Column(String, nullable=True)    # remote URL
+    image_paths = Column(JSON, default=list)          # additional local images
+
+    # Stats from source site
+    rating = Column(Float, nullable=True)
+    download_count = Column(Integer, nullable=True)
+    source_last_fetched = Column(DateTime, nullable=True)
+
+    # Housekeeping
+    orynt3d_parsed = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    creator = relationship("Creator", back_populates="models")
+    stl_files = relationship("STLFile", back_populates="model")
+    collection_links = relationship("CollectionModel", back_populates="model")
+
+
+class STLFile(Base):
+    __tablename__ = "stl_files"
+
+    id = Column(Integer, primary_key=True)
+    model_id = Column(Integer, ForeignKey("models.id"), nullable=False)
+    path = Column(String, unique=True, nullable=False)
+    filename = Column(String, nullable=False)
+    size_bytes = Column(BigInteger, nullable=True)
+    file_hash = Column(String, nullable=True, index=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    model = relationship("Model", back_populates="stl_files")
+
+
+class Collection(Base):
+    __tablename__ = "collections"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True, nullable=False)
+    description = Column(Text, nullable=True)
+    cover_image_path = Column(String, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    model_links = relationship("CollectionModel", back_populates="collection")
+
+
+class CollectionModel(Base):
+    __tablename__ = "collection_models"
+    __table_args__ = (UniqueConstraint("collection_id", "model_id"),)
+
+    id = Column(Integer, primary_key=True)
+    collection_id = Column(Integer, ForeignKey("collections.id"), nullable=False)
+    model_id = Column(Integer, ForeignKey("models.id"), nullable=False)
+
+    collection = relationship("Collection", back_populates="model_links")
+    model = relationship("Model", back_populates="collection_links")

@@ -1,0 +1,78 @@
+"""Serve local image files and STL files from the mounted drives."""
+from pathlib import Path
+from fastapi import APIRouter, HTTPException
+from fastapi.responses import FileResponse
+from app.config import settings
+
+router = APIRouter(prefix="/files", tags=["files"])
+
+ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+ALLOWED_STL_EXTENSIONS = {".stl", ".3mf", ".obj"}
+
+# Directories the file server is allowed to read from
+def _allowed_roots() -> list[Path]:
+    roots = [Path(r) for r in settings.stl_root_list]
+    if settings.orynt3d_thumbnail_cache:
+        roots.append(Path(settings.orynt3d_thumbnail_cache))
+    return roots
+
+
+def _is_safe_path(p: Path) -> bool:
+    resolved = p.resolve()
+    return any(
+        resolved.is_relative_to(root.resolve())
+        for root in _allowed_roots()
+    )
+
+
+@router.get("/image")
+def serve_image(path: str):
+    p = Path(path)
+    if p.suffix.lower() not in ALLOWED_IMAGE_EXTENSIONS:
+        raise HTTPException(status_code=400, detail="Not an image file")
+    if not _is_safe_path(p):
+        raise HTTPException(status_code=403, detail="Path not allowed")
+    if not p.exists():
+        raise HTTPException(status_code=404, detail="File not found")
+    return FileResponse(p)
+
+
+@router.get("/stl")
+def serve_stl(path: str):
+    p = Path(path)
+    if p.suffix.lower() not in ALLOWED_STL_EXTENSIONS:
+        raise HTTPException(status_code=400, detail="Not an STL/3MF/OBJ file")
+    if not p.exists():
+        raise HTTPException(status_code=404, detail="File not found")
+    return FileResponse(p, media_type="application/octet-stream")
+
+
+@router.get("/model-images/{model_id}")
+def list_model_images(model_id: int, db=None):
+    """List all images found in a model's folder tree (for the image picker)."""
+    from app.database import get_db
+    from app.models import Model as ModelDB
+    from sqlalchemy.orm import Session
+    from fastapi import Depends
+
+    # Inline dependency — cleaner to just import and call directly
+    from app.database import SessionLocal
+    db = SessionLocal()
+    try:
+        model = db.query(ModelDB).filter(ModelDB.id == model_id).first()
+        if not model:
+            raise HTTPException(status_code=404, detail="Model not found")
+        folder = Path(model.folder_path)
+        if not folder.exists():
+            return []
+        images = []
+        for img in sorted(folder.rglob("*")):
+            if img.is_file() and img.suffix.lower() in ALLOWED_IMAGE_EXTENSIONS:
+                images.append({
+                    "path": str(img),
+                    "filename": img.name,
+                    "url": f"/api/files/image?path={img}",
+                })
+        return images
+    finally:
+        db.close()

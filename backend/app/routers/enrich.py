@@ -1,0 +1,136 @@
+"""
+Bulk enrichment endpoints — storefront scrape + fuzzy match + batch apply.
+"""
+from datetime import datetime
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+from typing import Optional
+
+from app.database import get_db
+from app.models import Model, Creator
+from app.services.scrapers.storefront import scrape_storefront, StorefrontProduct
+from app.services.matcher import match_products_to_models, MatchCandidate
+
+router = APIRouter(prefix="/enrich", tags=["enrich"])
+
+
+# ---------------------------------------------------------------------------
+# Schemas
+# ---------------------------------------------------------------------------
+
+class StorefrontProduct_Out(BaseModel):
+    title: str
+    source_url: str
+    source_site: str
+    external_id: Optional[str] = None
+    thumbnail_url: Optional[str] = None
+
+
+class MatchResult(BaseModel):
+    local_model_id: int
+    local_name: str
+    local_folder: str
+    score: float
+    confidence: str   # high | medium | low
+    product: StorefrontProduct_Out
+
+
+class ApplyItem(BaseModel):
+    model_id: int
+    source_url: str
+    source_site: str
+    external_id: Optional[str] = None
+    thumbnail_url: Optional[str] = None
+    title: Optional[str] = None
+
+
+class BulkApplyRequest(BaseModel):
+    items: list[ApplyItem]
+
+
+# ---------------------------------------------------------------------------
+# Endpoints
+# ---------------------------------------------------------------------------
+
+@router.get("/storefront/preview", response_model=list[StorefrontProduct_Out])
+async def preview_storefront(url: str = Query(...)):
+    """Scrape a creator storefront and return the product list."""
+    products = await scrape_storefront(url)
+    if not products:
+        raise HTTPException(
+            status_code=422,
+            detail="Could not find any products at that URL. Check the URL and try again.",
+        )
+    return [StorefrontProduct_Out(**p.__dict__) for p in products]
+
+
+@router.get("/storefront/match", response_model=list[MatchResult])
+async def match_storefront(
+    url: str = Query(...),
+    creator_id: int = Query(...),
+    min_score: float = Query(0.20, ge=0.0, le=1.0),
+    db: Session = Depends(get_db),
+):
+    """
+    Scrape a storefront and fuzzy-match against local models for a creator.
+    Returns ranked match candidates for user review.
+    """
+    products = await scrape_storefront(url)
+    if not products:
+        raise HTTPException(status_code=422, detail="No products found at that URL.")
+
+    models = db.query(Model).filter(Model.creator_id == creator_id).all()
+    if not models:
+        raise HTTPException(status_code=404, detail="No local models found for this creator.")
+
+    model_dicts = [
+        {"id": m.id, "name": m.name, "title": m.title, "folder_path": m.folder_path}
+        for m in models
+    ]
+
+    candidates = match_products_to_models(products, model_dicts, min_score=min_score)
+
+    return [
+        MatchResult(
+            local_model_id=c.local_model_id,
+            local_name=c.local_name,
+            local_folder=c.local_folder,
+            score=c.score,
+            confidence=c.confidence,
+            product=StorefrontProduct_Out(**c.product.__dict__),
+        )
+        for c in candidates
+    ]
+
+
+@router.post("/storefront/apply", response_model=dict)
+async def bulk_apply(
+    body: BulkApplyRequest,
+    db: Session = Depends(get_db),
+):
+    """Apply confirmed matches to local model records."""
+    applied = 0
+    for item in body.items:
+        model = db.query(Model).filter(Model.id == item.model_id).first()
+        if not model:
+            continue
+
+        if item.thumbnail_url and not model.thumbnail_path:
+            model.thumbnail_url = item.thumbnail_url
+        if item.source_url:
+            model.source_url = item.source_url
+        if item.source_site:
+            model.source_site = item.source_site
+        if item.external_id:
+            model.external_id = item.external_id
+        if item.title and not model.title:
+            model.title = item.title
+
+        model.source_last_fetched = datetime.utcnow()
+        model.needs_review = False
+        model.updated_at = datetime.utcnow()
+        applied += 1
+
+    db.commit()
+    return {"ok": True, "applied": applied}
