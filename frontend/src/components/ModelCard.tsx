@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Package, Star, AlertCircle } from "lucide-react";
+import { Package, Star, AlertCircle, Check } from "lucide-react";
 import { Model, api } from "../api/client";
 import { useNSFW } from "../context/NSFWContext";
 
 interface Props {
   model: Model;
+  selected?: boolean;
+  onSelect?: (id: number) => void;
 }
 
 const SITE_LABELS: Record<string, string> = {
@@ -27,7 +29,7 @@ const TAG_COLORS: Record<string, string> = {
   "figure":        "bg-indigo-900 text-indigo-300",
 };
 
-export default function ModelCard({ model }: Props) {
+export default function ModelCard({ model, selected = false, onSelect }: Props) {
   const location = useLocation();
   const { showNSFW } = useNSFW();
   const [nsfw, setNsfw] = useState(model.nsfw);
@@ -39,6 +41,13 @@ export default function ModelCard({ model }: Props) {
     setNsfw(next);
     await api.models.setNSFW(model.id, next);
   };
+
+  const handleSelect = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onSelect?.(model.id);
+  };
+
   const thumbnail = model.thumbnail_path
     ? api.fileUrl(model.thumbnail_path)
     : model.thumbnail_url ?? null;
@@ -47,11 +56,20 @@ export default function ModelCard({ model }: Props) {
   const allTags = [...(model.auto_tags ?? []), ...(model.tags ?? [])];
   const uniqueTags = [...new Set(allTags)];
 
+  const handleCardClick = () => {
+    sessionStorage.setItem("library_scroll", String(window.scrollY));
+  };
+
   return (
     <Link
       to={`/models/${model.id}`}
       state={{ from: location.pathname + location.search }}
-      className="group bg-gray-900 rounded-lg overflow-hidden border border-gray-800 hover:border-indigo-500 transition-colors flex flex-col"
+      onClick={handleCardClick}
+      className={`group bg-gray-900 rounded-lg overflow-hidden border transition-colors flex flex-col ${
+        selected
+          ? "border-indigo-500 ring-1 ring-indigo-500/50"
+          : "border-gray-800 hover:border-indigo-500"
+      }`}
     >
       <div className="aspect-square bg-gray-800 relative overflow-hidden">
         {thumbnail ? (
@@ -69,7 +87,7 @@ export default function ModelCard({ model }: Props) {
           </div>
         )}
 
-        {/* NSFW overlay — always show badge in grid, blur depends on setting */}
+        {/* NSFW overlay */}
         {nsfw && !showNSFW && (
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="bg-black/60 text-red-400 text-xs font-bold px-2 py-1 rounded border border-red-800 tracking-widest">
@@ -83,7 +101,7 @@ export default function ModelCard({ model }: Props) {
           </span>
         )}
 
-        {/* NSFW quick toggle — visible on hover */}
+        {/* NSFW quick toggle */}
         <button
           onClick={toggleNSFW}
           title={nsfw ? "Mark as SFW" : "Mark as NSFW"}
@@ -92,8 +110,22 @@ export default function ModelCard({ model }: Props) {
           {nsfw ? "SFW" : "NSFW"}
         </button>
 
-        {/* Badges */}
-        <div className="absolute top-2 left-2 flex flex-col gap-1">
+        {/* Selection checkbox — hover-visible, always visible when selected */}
+        {onSelect && (
+          <div
+            onClick={handleSelect}
+            className={`absolute top-2 left-2 z-10 w-5 h-5 rounded border-2 flex items-center justify-center cursor-pointer transition-all ${
+              selected
+                ? "bg-indigo-500 border-indigo-400 opacity-100"
+                : "bg-black/60 border-gray-400 opacity-0 group-hover:opacity-100"
+            }`}
+          >
+            {selected && <Check size={11} className="text-white" strokeWidth={3} />}
+          </div>
+        )}
+
+        {/* Badges — offset right of checkbox when selectable */}
+        <div className={`absolute top-2 flex flex-col gap-1 ${onSelect ? "left-9" : "left-2"}`}>
           {model.needs_review && (
             <span className="flex items-center gap-1 bg-amber-500/90 text-amber-950 text-xs px-1.5 py-0.5 rounded font-medium">
               <AlertCircle size={10} />
@@ -101,6 +133,7 @@ export default function ModelCard({ model }: Props) {
             </span>
           )}
         </div>
+
         {model.source_site && (
           <span className="absolute top-2 right-2 bg-black/70 text-xs px-1.5 py-0.5 rounded text-gray-300">
             {SITE_LABELS[model.source_site] ?? model.source_site}

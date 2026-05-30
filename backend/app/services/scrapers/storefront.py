@@ -130,84 +130,85 @@ async def _scrape_mmf(url: str) -> list[StorefrontProduct]:
 # ---------------------------------------------------------------------------
 # Gumroad
 # ---------------------------------------------------------------------------
+
+# Gumroad is a client-side React app — no product HTML in the initial page.
+# However, GET /creator with Accept: application/json returns a list of
+# permalink slugs. We then fetch each product page concurrently to extract
+# title + og:image from server-rendered meta tags.
+_GUMROAD_MAX_PRODUCTS = 200  # cap to keep response time reasonable
+
 async def _scrape_gumroad(url: str) -> list[StorefrontProduct]:
     """
     Scrape a Gumroad creator store.
-    Works for both https://creator.gumroad.com and https://gumroad.com/creator
+    Works for https://creator.gumroad.com or https://gumroad.com/creator.
     """
-    products: list[StorefrontProduct] = []
+    # Normalise: we always want the subdomain form for the JSON API
+    base_url = url.rstrip("/")
 
-    async with httpx.AsyncClient(timeout=20, headers=_HEADERS, follow_redirects=True) as client:
+    json_headers = {**_HEADERS, "Accept": "application/json"}
+    async with httpx.AsyncClient(timeout=20, headers=json_headers, follow_redirects=True) as client:
         try:
-            r = await client.get(url)
+            r = await client.get(base_url)
             r.raise_for_status()
-            html = r.text
-            final_url = str(r.url)
+            data = r.json()
         except Exception as e:
-            logger.error(f"Gumroad storefront failed: {e}")
+            logger.error(f"Gumroad profile fetch failed: {e}")
             return []
 
-    soup = BeautifulSoup(html, "html.parser")
+    slugs: list[str] = data.get("links", [])
+    if not slugs:
+        logger.warning("Gumroad: no permalink slugs found in profile response")
+        return []
 
-    # Try JSON embedded in page (Gumroad often embeds product data as JSON)
-    for script in soup.find_all("script", type="application/json"):
-        try:
-            data = json.loads(script.string or "")
-            # Gumroad embeds products under various keys
-            items = (
-                data.get("products")
-                or data.get("items")
-                or (data.get("creator", {}) or {}).get("products", [])
-            )
-            if items and isinstance(items, list):
-                for item in items:
-                    name = item.get("name") or item.get("title")
-                    permalink = item.get("permalink") or item.get("id")
-                    if not name or not permalink:
-                        continue
-                    product_url = f"https://gumroad.com/l/{permalink}"
-                    thumb = (
-                        item.get("preview_url")
-                        or item.get("thumbnail_url")
-                        or item.get("cover_url")
-                    )
-                    products.append(StorefrontProduct(
-                        title=name,
-                        source_url=product_url,
-                        source_site="gumroad",
-                        external_id=permalink,
-                        thumbnail_url=thumb,
-                        description=item.get("description"),
-                    ))
-                if products:
-                    return products
-        except Exception:
-            pass
+    # Derive the store base so product URLs stay on the creator's subdomain
+    # (some creators have custom domains — use the final URL from the profile)
+    slugs = slugs[:_GUMROAD_MAX_PRODUCTS]
+    logger.info(f"Gumroad: fetching {len(slugs)} product pages (of {len(data.get('links', []))} total)")
 
-    # Fallback: scrape HTML cards
-    for card in soup.select("[data-permalink], .product-card, [class*='product']"):
-        permalink = card.get("data-permalink")
-        link = card.select_one("a[href*='/l/']")
-        href = link.get("href") if link else None
-        if not permalink and not href:
-            continue
-        product_url = (
-            f"https://gumroad.com/l/{permalink}"
-            if permalink
-            else (href if href.startswith("http") else f"https://gumroad.com{href}")
-        )
-        title_el = card.select_one("h3, h2, .name, [class*='name']")
-        img_el = card.select_one("img[src], img[data-src]")
-        thumb = (img_el.get("src") or img_el.get("data-src")) if img_el else None
-        ext_id = re.search(r"/l/([\w-]+)", product_url)
-        products.append(StorefrontProduct(
-            title=title_el.get_text(strip=True) if title_el else product_url,
+    semaphore = asyncio.Semaphore(20)
+
+    async def fetch_product(client: httpx.AsyncClient, slug: str) -> StorefrontProduct | None:
+        product_url = f"{base_url}/l/{slug}"
+        async with semaphore:
+            try:
+                r = await client.get(product_url)
+                r.raise_for_status()
+            except Exception:
+                return None
+
+        soup = BeautifulSoup(r.text, "html.parser")
+
+        # Title: prefer og:title, fall back to <title> (strips "| Gumroad" suffix)
+        og_title = soup.find("meta", property="og:title")
+        title = (og_title.get("content") if og_title else None) or ""
+        if not title:
+            t = soup.find("title")
+            title = t.get_text(strip=True) if t else ""
+        # Strip common Gumroad suffixes
+        for suffix in [" | Gumroad", " - Gumroad", " by "]:
+            if suffix in title:
+                title = title.split(suffix)[0].strip()
+        if not title:
+            return None
+
+        # Thumbnail from og:image
+        og_image = soup.find("meta", property="og:image")
+        thumb = og_image.get("content") if og_image else None
+
+        return StorefrontProduct(
+            title=title,
             source_url=product_url,
             source_site="gumroad",
-            external_id=ext_id.group(1) if ext_id else None,
+            external_id=slug,
             thumbnail_url=thumb,
-        ))
+        )
 
+    async with httpx.AsyncClient(timeout=15, headers=_HEADERS, follow_redirects=True) as client:
+        tasks = [fetch_product(client, slug) for slug in slugs]
+        results = await asyncio.gather(*tasks)
+
+    products = [p for p in results if p is not None]
+    logger.info(f"Gumroad: scraped {len(products)} products successfully")
     return products
 
 
@@ -221,19 +222,20 @@ _CULTS_CREATION_RE = re.compile(
 async def _scrape_cults(url: str) -> list[StorefrontProduct]:
     """
     Scrape a Cults3D user creations page.
-    Cults paginates via ?page=N.
+    Accepts any Cults3D profile URL — /3d-models, /creations, or bare profile.
+    Paginates via ?page=N.
     """
-    # Normalise to /creations sub-page
+    # Strip any stale /creations suffix; the modern URL pattern is /3d-models
     base = url.rstrip("/")
-    if "/creations" not in base:
-        base = f"{base}/creations"
+    if base.endswith("/creations"):
+        base = base[: -len("/creations")]
 
     products: list[StorefrontProduct] = []
     page = 1
 
     async with httpx.AsyncClient(timeout=20, headers=_HEADERS, follow_redirects=True) as client:
         while True:
-            await asyncio.sleep(1)  # polite
+            await asyncio.sleep(0.5)  # polite
             try:
                 r = await client.get(base, params={"page": page})
                 r.raise_for_status()
@@ -242,11 +244,12 @@ async def _scrape_cults(url: str) -> list[StorefrontProduct]:
                 break
 
             soup = BeautifulSoup(r.text, "html.parser")
-            cards = soup.select("article.creation, [class*='creation-card'], [class*='crea']")
+            cards = soup.select("article.crea")
             if not cards:
                 break
 
             for card in cards:
+                # Link + title: the anchor has both href and title attribute
                 link = card.select_one(
                     "a[href*='/3d-model/'], a[href*='/3d-printing-file/'], a[href*='/3d-modelling/']"
                 )
@@ -254,19 +257,30 @@ async def _scrape_cults(url: str) -> list[StorefrontProduct]:
                     continue
                 href = link.get("href", "")
                 product_url = href if href.startswith("http") else f"https://cults3d.com{href}"
-                title_el = card.select_one("h3, h2, .title, [class*='name']")
-                img_el = card.select_one("img[src], img[data-src]")
-                thumb = (img_el.get("src") or img_el.get("data-src")) if img_el else None
+
+                # Title: try the drawer-title strong, then the link's title attribute
+                title_el = card.select_one("strong.drawer-title, .tbox-title, h3, h2")
+                title = (
+                    title_el.get_text(strip=True)
+                    if title_el
+                    else link.get("title") or href
+                )
+
+                # Thumbnail: lazy-loaded images use data-src
+                img_el = card.select_one("img[data-src], img[src]")
+                thumb = (img_el.get("data-src") or img_el.get("src")) if img_el else None
+
                 m = _CULTS_CREATION_RE.search(product_url)
                 products.append(StorefrontProduct(
-                    title=title_el.get_text(strip=True) if title_el else href,
+                    title=title,
                     source_url=product_url,
                     source_site="cults3d",
                     external_id=m.group(1) if m else None,
                     thumbnail_url=thumb,
                 ))
 
-            next_btn = soup.select_one("a[rel='next'], .pagination .next, [class*='next-page']")
+            # Next page: span.paginate.next > a
+            next_btn = soup.select_one("span.paginate.next a, a[rel='next']")
             if not next_btn:
                 break
             page += 1

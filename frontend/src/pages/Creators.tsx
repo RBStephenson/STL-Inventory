@@ -47,21 +47,23 @@ export default function Creators() {
         {filtered.map((c) => (
           <div
             key={c.id}
-            className={`group bg-gray-900 border rounded-lg p-4 flex flex-col gap-2 transition-colors ${
-              enriching?.id === c.id ? "border-indigo-500" : "border-gray-800 hover:border-gray-700"
+            className={`group bg-gray-900 border rounded-lg overflow-hidden flex flex-col transition-colors ${
+              enriching?.id === c.id ? "border-indigo-500" : "border-gray-800 hover:border-indigo-500"
             }`}
           >
             <Link
               to={`/?creator_id=${c.id}`}
-              className="font-medium text-gray-100 truncate hover:text-indigo-300 transition-colors"
-              title={c.name}
+              className="flex-1 p-4 flex flex-col gap-1 hover:bg-gray-800/50 transition-colors"
+              title={`Browse ${c.name}'s models`}
             >
-              {c.name}
+              <span className="font-medium text-gray-100 truncate group-hover:text-indigo-300 transition-colors">
+                {c.name}
+              </span>
+              <span className="text-xs text-gray-500">{c.model_count} models →</span>
             </Link>
-            <p className="text-xs text-gray-500">{c.model_count} models</p>
             <button
               onClick={() => setEnriching(enriching?.id === c.id ? null : c)}
-              className="flex items-center gap-1 text-xs text-gray-600 hover:text-indigo-400 transition-colors mt-auto pt-1 border-t border-gray-800"
+              className="flex items-center gap-1 text-xs text-gray-600 hover:text-indigo-400 transition-colors px-4 py-2 border-t border-gray-800 hover:bg-gray-800/30"
             >
               {enriching?.id === c.id
                 ? <><X size={11} /> Close</>

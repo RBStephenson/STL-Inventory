@@ -1,21 +1,36 @@
-import { useState, useEffect } from "react";
-import { RefreshCw } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { RefreshCw, Square } from "lucide-react";
 import { api, ScanStatus } from "../api/client";
 
-export default function ScanButton() {
+interface Props {
+  onScanComplete?: () => void;
+}
+
+export default function ScanButton({ onScanComplete }: Props) {
   const [status, setStatus] = useState<ScanStatus | null>(null);
+  const [cancelling, setCancelling] = useState(false);
+  const wasRunningRef = useRef(false);
 
   useEffect(() => {
     api.scan.status().then(setStatus).catch(() => {});
   }, []);
 
   useEffect(() => {
-    if (!status?.running) return;
+    if (status?.running) {
+      wasRunningRef.current = true;
+      setCancelling(false);
+    } else {
+      if (wasRunningRef.current) {
+        wasRunningRef.current = false;
+        onScanComplete?.();
+      }
+      return;
+    }
     const interval = setInterval(() => {
       api.scan.status().then(setStatus).catch(() => {});
     }, 2000);
     return () => clearInterval(interval);
-  }, [status?.running]);
+  }, [status?.running, onScanComplete]);
 
   const start = async () => {
     try {
@@ -26,21 +41,41 @@ export default function ScanButton() {
     }
   };
 
+  const cancel = async () => {
+    setCancelling(true);
+    try {
+      await api.scan.cancel();
+    } catch {
+      setCancelling(false);
+    }
+  };
+
   return (
     <div className="flex items-center gap-3">
       {status?.running && (
         <span className="text-xs text-gray-400 animate-pulse">
-          Scanning… {status.models_found ?? 0} models, {status.files_found ?? 0} files
+          {cancelling ? "Cancelling…" : `Scanning… ${status.models_found ?? 0} models, ${status.files_found ?? 0} files`}
         </span>
       )}
-      <button
-        onClick={start}
-        disabled={status?.running}
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-sm transition-colors"
-      >
-        <RefreshCw size={14} className={status?.running ? "animate-spin" : ""} />
-        {status?.running ? "Scanning" : "Scan Library"}
-      </button>
+      {status?.running ? (
+        <button
+          onClick={cancel}
+          disabled={cancelling}
+          title="Cancel scan"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-gray-700 hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed border border-gray-600 text-sm text-gray-200 transition-colors"
+        >
+          <Square size={13} fill="currentColor" />
+          {cancelling ? "Cancelling…" : "Cancel"}
+        </button>
+      ) : (
+        <button
+          onClick={start}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-indigo-600 hover:bg-indigo-500 text-sm transition-colors"
+        >
+          <RefreshCw size={14} />
+          Scan Library
+        </button>
+      )}
     </div>
   );
 }

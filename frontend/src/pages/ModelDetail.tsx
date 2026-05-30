@@ -272,36 +272,46 @@ export default function ModelDetail() {
           {tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
               {tags.map((tag) => (
-                <span key={tag} className="flex items-center gap-1 text-xs bg-gray-800 text-gray-400 px-2 py-1 rounded-full">
+                <Link
+                  key={tag}
+                  to={`/?tag=${encodeURIComponent(tag)}`}
+                  className="flex items-center gap-1 text-xs bg-gray-800 text-gray-400 hover:bg-indigo-950 hover:text-indigo-300 hover:border-indigo-700 border border-transparent px-2 py-1 rounded-full transition-colors"
+                >
                   <Tag size={10} />
                   {tag}
-                </span>
+                </Link>
               ))}
             </div>
           )}
 
-          {/* Auto-detected tags — click to promote to user tags */}
+          {/* Auto-detected tags — click to promote to user tags, shift-click to filter */}
           {(model.auto_tags ?? []).length > 0 && (
             <div className="flex flex-col gap-1.5">
-              <p className="text-xs text-gray-600">Auto-detected · click to add as tag</p>
+              <p className="text-xs text-gray-600">Auto-detected · click + to add as tag · click label to browse</p>
               <div className="flex flex-wrap gap-1.5">
                 {model.auto_tags.map((tag) => {
                   const already = tags.includes(tag);
                   return (
-                    <button
-                      key={tag}
-                      onClick={() => addTag(tag)}
-                      disabled={already}
-                      title={already ? "Already a tag" : "Add as tag"}
-                      className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border transition-colors ${
-                        already
-                          ? "bg-indigo-900/30 border-indigo-800 text-indigo-400 cursor-default"
-                          : "bg-gray-800/60 border-gray-700 text-gray-500 hover:border-indigo-500 hover:text-indigo-400 hover:bg-indigo-950/30"
-                      }`}
-                    >
-                      {already ? <Tag size={9} /> : <Plus size={9} />}
-                      {tag}
-                    </button>
+                    <div key={tag} className="flex items-center rounded-full border overflow-hidden border-gray-700">
+                      <button
+                        onClick={() => addTag(tag)}
+                        disabled={already}
+                        title={already ? "Already a tag" : "Add as user tag"}
+                        className={`flex items-center px-1.5 py-0.5 text-xs border-r border-gray-700 transition-colors ${
+                          already
+                            ? "bg-indigo-900/30 text-indigo-500 cursor-default"
+                            : "bg-gray-800/60 text-gray-500 hover:bg-indigo-950 hover:text-indigo-400"
+                        }`}
+                      >
+                        {already ? <Tag size={9} /> : <Plus size={9} />}
+                      </button>
+                      <Link
+                        to={`/?tag=${encodeURIComponent(tag)}`}
+                        className="flex items-center px-2 py-0.5 text-xs bg-gray-800/60 text-gray-500 hover:bg-indigo-950 hover:text-indigo-300 transition-colors"
+                      >
+                        {tag}
+                      </Link>
+                    </div>
                   );
                 })}
               </div>

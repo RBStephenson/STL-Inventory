@@ -77,6 +77,7 @@ class ScanStatus(BaseModel):
     message: str
     models_found: Optional[int] = None
     files_found: Optional[int] = None
+    cancelled: bool = False
 
 
 class CollectionBase(BaseModel):

@@ -26,6 +26,15 @@ def start_scan(db: Session = Depends(get_db)):
     return ScanStatus(running=True, message="scan started")
 
 
+@router.post("/cancel")
+def cancel_scan():
+    status = scanner.get_status()
+    if not status["running"]:
+        raise HTTPException(status_code=409, detail="No scan running")
+    scanner.request_cancel()
+    return {"ok": True}
+
+
 @router.get("/status", response_model=ScanStatus)
 def scan_status():
     s = scanner.get_status()

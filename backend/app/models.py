@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy import (
     Column, Integer, String, Text, Float, DateTime, Boolean,
-    ForeignKey, BigInteger, JSON, UniqueConstraint
+    ForeignKey, BigInteger, JSON, UniqueConstraint, Index
 )
 from sqlalchemy.orm import relationship
 from app.database import Base
@@ -70,7 +70,6 @@ class Model(Base):
     # Stats from source site
     rating = Column(Float, nullable=True)
     download_count = Column(Integer, nullable=True)
-    source_last_fetched = Column(DateTime, nullable=True)
 
     # Housekeeping
     orynt3d_parsed = Column(Boolean, default=False)
@@ -118,3 +117,22 @@ class CollectionModel(Base):
 
     collection = relationship("Collection", back_populates="model_links")
     model = relationship("Model", back_populates="collection_links")
+
+
+class ModelTag(Base):
+    """Denormalized tag index — one row per (model, tag) pair.
+
+    Derived from models.tags (user-set) and models.auto_tags (scanner-detected).
+    User tags take precedence: if a tag appears in both, is_auto=False.
+    Rebuilt by tag_sync.sync_model_tags() whenever tags change.
+    """
+    __tablename__ = "model_tags"
+    __table_args__ = (
+        UniqueConstraint("model_id", "tag", name="uq_model_tag"),
+        Index("ix_model_tags_tag", "tag"),
+    )
+
+    id = Column(Integer, primary_key=True)
+    model_id = Column(Integer, ForeignKey("models.id", ondelete="CASCADE"), nullable=False, index=True)
+    tag = Column(String, nullable=False)
+    is_auto = Column(Boolean, nullable=False, default=False)

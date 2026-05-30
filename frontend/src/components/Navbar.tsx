@@ -1,16 +1,24 @@
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Box, FolderOpen, Users, LayoutGrid, EyeOff, Eye } from "lucide-react";
+import { Box, FolderOpen, Users, LayoutGrid, EyeOff, Eye, AlertTriangle } from "lucide-react";
 import { useNSFW } from "../context/NSFWContext";
-
-const links = [
-  { to: "/",            label: "Library",     icon: LayoutGrid },
-  { to: "/creators",    label: "Creators",    icon: Users },
-  { to: "/collections", label: "Collections", icon: FolderOpen },
-];
+import { api } from "../api/client";
 
 export default function Navbar() {
   const { pathname } = useLocation();
   const { showNSFW, toggle } = useNSFW();
+  const [reviewCount, setReviewCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    api.models.stats().then(s => setReviewCount(s.needs_review)).catch(() => {});
+  }, []);
+
+  const links = [
+    { to: "/",            label: "Library",     icon: LayoutGrid,    badge: null },
+    { to: "/creators",    label: "Creators",    icon: Users,         badge: null },
+    { to: "/collections", label: "Collections", icon: FolderOpen,    badge: null },
+    { to: "/triage",      label: "Triage",      icon: AlertTriangle, badge: reviewCount },
+  ];
 
   return (
     <nav className="bg-gray-900 border-b border-gray-800 px-6 py-3 flex items-center gap-8">
@@ -20,7 +28,7 @@ export default function Navbar() {
       </Link>
 
       <div className="flex items-center gap-1 ml-4">
-        {links.map(({ to, label, icon: Icon }) => (
+        {links.map(({ to, label, icon: Icon, badge }) => (
           <Link
             key={to}
             to={to}
@@ -32,6 +40,15 @@ export default function Navbar() {
           >
             <Icon size={15} />
             {label}
+            {badge != null && badge > 0 && (
+              <span className={`ml-0.5 px-1.5 py-0.5 rounded-full text-xs font-medium leading-none ${
+                pathname === to
+                  ? "bg-white/20 text-white"
+                  : "bg-yellow-500/20 text-yellow-400"
+              }`}>
+                {badge.toLocaleString()}
+              </span>
+            )}
           </Link>
         ))}
       </div>

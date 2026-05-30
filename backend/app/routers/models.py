@@ -1,10 +1,12 @@
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import func
+from sqlalchemy import func, exists
 from sqlalchemy.orm import Session, joinedload
 
 from app.database import get_db
-from app.models import Model, Creator
+from app.models import Model, Creator, ModelTag
 from app.schemas import ModelList, ModelRead, ModelDetail, CreatorRead
+from app.services.tag_sync import sync_model_tags
 
 router = APIRouter(prefix="/models", tags=["models"])
 
@@ -20,6 +22,7 @@ def list_models(
     tag: str | None = None,
     has_thumbnail: bool | None = None,
     needs_review: bool | None = None,
+    nsfw: bool | None = None,
     db: Session = Depends(get_db),
 ):
     q = db.query(Model)
@@ -39,7 +42,12 @@ def list_models(
     if source_site:
         q = q.filter(Model.source_site == source_site)
     if tag:
-        q = q.filter(Model.tags.contains([tag]) | Model.auto_tags.contains([tag]))
+        tag_norm = tag.strip().lower()
+        q = q.filter(
+            exists().where(
+                (ModelTag.model_id == Model.id) & (ModelTag.tag == tag_norm)
+            )
+        )
     if has_thumbnail is True:
         q = q.filter(
             (Model.thumbnail_path != None) | (Model.thumbnail_url != None)
@@ -50,6 +58,8 @@ def list_models(
         )
     if needs_review is not None:
         q = q.filter(Model.needs_review == needs_review)
+    if nsfw is not None:
+        q = q.filter(Model.nsfw == nsfw)
 
     total = q.count()
     items = q.order_by(Model.character, Model.name).offset((page - 1) * page_size).limit(page_size).all()
@@ -82,19 +92,46 @@ def model_stats(db: Session = Depends(get_db)):
 @router.get("/tags/all")
 def list_tags(db: Session = Depends(get_db)):
     """Return all unique tags with usage counts, sorted by frequency."""
-    from sqlalchemy import text
-    # Pull tags from both user tags and auto_tags JSON columns
-    models = db.query(Model.tags, Model.auto_tags).all()
-    counts: dict[str, int] = {}
-    for user_tags, auto_tags in models:
-        for tag in (user_tags or []) + (auto_tags or []):
-            tag = tag.strip().lower()
-            if tag:
-                counts[tag] = counts.get(tag, 0) + 1
-    return [
-        {"tag": tag, "count": count}
-        for tag, count in sorted(counts.items(), key=lambda x: -x[1])
-    ]
+    rows = (
+        db.query(ModelTag.tag, func.count(ModelTag.id).label("count"))
+        .group_by(ModelTag.tag)
+        .order_by(func.count(ModelTag.id).desc())
+        .all()
+    )
+    return [{"tag": row.tag, "count": row.count} for row in rows]
+
+
+@router.post("/tags/rebuild")
+def rebuild_tags(db: Session = Depends(get_db)):
+    """Rebuild the model_tags index from the JSON tag columns on all models."""
+    from app.services.tag_sync import rebuild_all_tags
+    count = rebuild_all_tags(db)
+    return {"ok": True, "rows": count}
+
+
+@router.patch("/bulk")
+def bulk_tag_models(body: dict, db: Session = Depends(get_db)):
+    """Add or remove tags across multiple models in one request."""
+    ids = body.get("ids", [])
+    add_tags = [t.strip().lower() for t in body.get("add_tags", []) if t.strip()]
+    remove_set = {t.strip().lower() for t in body.get("remove_tags", []) if t.strip()}
+
+    if not ids:
+        raise HTTPException(status_code=400, detail="No model IDs provided")
+
+    models_to_update = db.query(Model).filter(Model.id.in_(ids)).all()
+    for model in models_to_update:
+        current = list(model.tags or [])
+        if add_tags:
+            current = list(dict.fromkeys(current + add_tags))
+        if remove_set:
+            current = [t for t in current if t not in remove_set]
+        model.tags = current
+        model.updated_at = datetime.utcnow()
+        sync_model_tags(model, db)
+
+    db.commit()
+    return {"ok": True, "updated": len(models_to_update)}
 
 
 @router.patch("/{model_id}")
@@ -107,17 +144,15 @@ def update_model(model_id: int, body: dict, db: Session = Depends(get_db)):
     allowed = {
         "title", "description", "notes", "source_url", "source_site",
         "license", "category", "tags", "custom_attributes", "nsfw",
+        "needs_review",
     }
     for key, value in body.items():
         if key in allowed:
-            # Normalise tags: lowercase, strip, deduplicate
             if key == "tags" and isinstance(value, list):
                 value = list(dict.fromkeys(t.strip().lower() for t in value if t.strip()))
             setattr(model, key, value)
 
-    # Resolve creator by name if provided
     if "creator_name" in body and body["creator_name"]:
-        from app.models import Creator
         creator = db.query(Creator).filter(Creator.name == body["creator_name"]).first()
         if not creator:
             creator = Creator(name=body["creator_name"])
@@ -125,8 +160,11 @@ def update_model(model_id: int, body: dict, db: Session = Depends(get_db)):
             db.flush()
         model.creator_id = creator.id
 
-    model.needs_review = False
-    model.updated_at = __import__("datetime").datetime.utcnow()
+    if "needs_review" not in body:
+        model.needs_review = False
+
+    model.updated_at = datetime.utcnow()
+    sync_model_tags(model, db)
     db.commit()
     return {"ok": True}
 

@@ -62,6 +62,7 @@ export interface ScanStatus {
   message: string;
   models_found: number | null;
   files_found: number | null;
+  cancelled: boolean;
 }
 
 export interface Collection {
@@ -99,9 +100,16 @@ export const api = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nsfw }),
       }),
+    bulkTag: (ids: number[], addTags: string[], removeTags: string[]) =>
+      request<{ ok: boolean; updated: number }>("/models/bulk", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids, add_tags: addTags, remove_tags: removeTags }),
+      }),
   },
   scan: {
     start: () => request<ScanStatus>("/scan/start", { method: "POST" }),
+    cancel: () => request<{ ok: boolean }>("/scan/cancel", { method: "POST" }),
     status: () => request<ScanStatus>("/scan/status"),
   },
   collections: {
