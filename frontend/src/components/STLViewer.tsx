@@ -1,54 +1,51 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { Canvas, useLoader, useThree } from "@react-three/fiber";
-import { OrbitControls, Center, Environment } from "@react-three/drei";
+import { OrbitControls, Environment } from "@react-three/drei";
 import { STLLoader } from "three/examples/jsm/loaders/STLLoader.js";
-import { Box3, Vector3, Mesh, MeshStandardMaterial, BufferGeometry } from "three";
+import { Box3, Vector3, Mesh, PerspectiveCamera } from "three";
 import { RotateCcw, Maximize2 } from "lucide-react";
 
 // ---------------------------------------------------------------------------
-// Inner mesh — loads the STL, auto-centers, auto-scales to fit
+// Inner mesh — loads the STL, auto-centers, auto-scales, fits camera
 // ---------------------------------------------------------------------------
 function STLMesh({ url }: { url: string }) {
   const geometry = useLoader(STLLoader, url);
   const meshRef = useRef<Mesh>(null);
-  const { camera, controls } = useThree() as any;
+  const { camera, invalidate } = useThree();
 
   useEffect(() => {
     if (!geometry || !meshRef.current) return;
 
     // Center geometry at origin
     geometry.computeBoundingBox();
-    const box = new Box3().setFromBufferAttribute(
-      geometry.attributes.position as any
-    );
+    const box = new Box3().setFromObject(meshRef.current);
     const center = new Vector3();
     box.getCenter(center);
     geometry.translate(-center.x, -center.y, -center.z);
 
-    // Scale so longest axis fits in a unit cube
+    // Scale so longest axis = 2 units
     const size = new Vector3();
     box.getSize(size);
     const maxDim = Math.max(size.x, size.y, size.z);
-    if (maxDim > 0) {
-      const scale = 2 / maxDim;
-      meshRef.current.scale.setScalar(scale);
-    }
+    if (maxDim > 0) meshRef.current.scale.setScalar(2 / maxDim);
 
-    // Reset camera
-    if (camera) {
-      camera.position.set(3, 2, 3);
-      camera.lookAt(0, 0, 0);
-    }
-    if (controls) controls.reset?.();
-  }, [geometry, camera, controls]);
+    // Fit camera to bounding sphere of the scaled mesh
+    meshRef.current.geometry.computeBoundingSphere();
+    const radius = (meshRef.current.geometry.boundingSphere?.radius ?? 1) *
+      (2 / maxDim);
+    const fov = (camera as PerspectiveCamera).fov ?? 45;
+    const dist = (radius / Math.sin((fov * Math.PI) / 360)) * 1.5;
+    camera.position.set(dist * 0.8, dist * 0.6, dist);
+    camera.lookAt(0, 0, 0);
+    (camera as PerspectiveCamera).updateProjectionMatrix?.();
+
+    // Trigger an immediate render without waiting for user input
+    invalidate();
+  }, [geometry]);
 
   return (
     <mesh ref={meshRef} geometry={geometry} castShadow receiveShadow>
-      <meshStandardMaterial
-        color="#a0a8c0"
-        roughness={0.4}
-        metalness={0.3}
-      />
+      <meshStandardMaterial color="#a0a8c0" roughness={0.4} metalness={0.3} />
     </mesh>
   );
 }
@@ -179,23 +176,18 @@ export default function STLViewer({ files, getUrl }: Props) {
             <Canvas
               key={key}
               shadows
-              camera={{ position: [3, 2, 3], fov: 45 }}
+              frameloop="demand"
+              camera={{ position: [4, 3, 4], fov: 45 }}
               gl={{ antialias: true }}
             >
               <color attach="background" args={["#111318"]} />
               <ambientLight intensity={0.5} />
-              <directionalLight
-                position={[5, 10, 5]}
-                intensity={1.2}
-                castShadow
-              />
+              <directionalLight position={[5, 10, 5]} intensity={1.2} castShadow />
               <directionalLight position={[-5, -5, -5]} intensity={0.3} />
 
               <LoaderErrorBoundary onError={setError}>
                 <Suspense fallback={null}>
-                  <Center>
-                    <STLMesh url={getUrl(selected.path)} />
-                  </Center>
+                  <STLMesh url={getUrl(selected.path)} />
                   <Environment preset="city" />
                 </Suspense>
               </LoaderErrorBoundary>
@@ -205,7 +197,7 @@ export default function STLViewer({ files, getUrl }: Props) {
                 enableDamping
                 dampingFactor={0.08}
                 minDistance={0.5}
-                maxDistance={20}
+                maxDistance={50}
               />
             </Canvas>
           )}
