@@ -3,8 +3,94 @@ Tests for the /files endpoints: image serving, STL serving, zip download.
 """
 import io
 import zipfile
+from pathlib import Path
 import pytest
 from tests.conftest import make_creator, make_model, make_stl_file
+
+
+# ---------------------------------------------------------------------------
+# Path-safety allowlist
+# ---------------------------------------------------------------------------
+
+class TestAllowedRoots:
+    @pytest.fixture(autouse=True)
+    def _isolate_env_roots(self, monkeypatch):
+        """The conftest sets STL_ROOTS=/tmp, and pytest's tmp_path lives under
+        /tmp — which would mask the scan_roots logic under test. Clear the
+        env-based roots so only the DB scan_roots decide the allowlist."""
+        import app.routers.files as files_module
+        monkeypatch.setattr(files_module.settings, "stl_roots", "")
+        monkeypatch.setattr(files_module.settings, "orynt3d_thumbnail_cache", "")
+        files_module._roots_cache = None
+        yield
+        files_module._roots_cache = None
+
+    def test_scan_roots_from_db_are_allowed(self, db, tmp_path):
+        """Roots added via the Settings UI (scan_roots table) must be served,
+        even when the STL_ROOTS env var doesn't include them (standalone mode)."""
+        import app.routers.files as files_module
+        from app.models import ScanRoot
+
+        db.add(ScanRoot(path=str(tmp_path), enabled=True))
+        db.commit()
+
+        f = tmp_path / "sub" / "model.stl"
+        f.parent.mkdir(parents=True)
+        f.write_bytes(b"solid\nendsolid\n")
+
+        files_module._roots_cache = None
+        assert files_module._is_safe_path(f) is True
+
+    def test_disabled_scan_roots_are_not_allowed(self, db, tmp_path):
+        import app.routers.files as files_module
+        from app.models import ScanRoot
+
+        db.add(ScanRoot(path=str(tmp_path), enabled=False))
+        db.commit()
+
+        f = tmp_path / "model.stl"
+        f.write_bytes(b"solid\nendsolid\n")
+
+        files_module._roots_cache = None
+        assert files_module._is_safe_path(f) is False
+
+    def test_no_roots_denies_everything(self, db, tmp_path):
+        import app.routers.files as files_module
+
+        f = tmp_path / "model.stl"
+        f.write_bytes(b"solid\nendsolid\n")
+
+        files_module._roots_cache = None
+        assert files_module._is_safe_path(f) is False
+
+
+# ---------------------------------------------------------------------------
+# /files/stl
+# ---------------------------------------------------------------------------
+
+class TestServeStl:
+    def test_rejects_non_stl_extension(self, client):
+        resp = client.get("/files/stl", params={"path": "/tmp/notes.txt"})
+        assert resp.status_code == 400
+
+    def test_rejects_path_outside_allowed_roots(self, client, monkeypatch):
+        """An STL outside the allowlist must be refused, not served."""
+        import app.routers.files as files_module
+        monkeypatch.setattr(files_module, "_is_safe_path", lambda p: False)
+
+        resp = client.get("/files/stl", params={"path": "/etc/secret.stl"})
+        assert resp.status_code == 403
+
+    def test_serves_allowed_stl(self, client, tmp_path, monkeypatch):
+        import app.routers.files as files_module
+        monkeypatch.setattr(files_module, "_is_safe_path", lambda p: True)
+
+        stl = tmp_path / "model.stl"
+        stl.write_bytes(b"solid\nendsolid\n")
+
+        resp = client.get("/files/stl", params={"path": str(stl)})
+        assert resp.status_code == 200
+        assert resp.content == b"solid\nendsolid\n"
 
 
 # ---------------------------------------------------------------------------

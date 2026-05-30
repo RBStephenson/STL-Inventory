@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useSearchParams, useNavigationType } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { Search, SlidersHorizontal, AlertCircle, Tag, X, Bookmark, BookmarkPlus } from "lucide-react";
 import { api, Model, Creator, ModelStats } from "../api/client";
 import ModelCard from "../components/ModelCard";
@@ -132,7 +132,6 @@ export default function Library() {
   const [presetName, setPresetName] = useState("");
   const presetInputRef = useRef<HTMLInputElement>(null);
 
-  const navType = useNavigationType();
   const scrollRestoredRef = useRef(false);
 
   const fetchModels = useCallback(async () => {
@@ -162,15 +161,13 @@ export default function Library() {
   // Restore scroll position when navigating back from a model detail page
   useEffect(() => {
     if (loading || scrollRestoredRef.current) return;
-    if (navType === "POP") {
-      const saved = sessionStorage.getItem("library_scroll");
-      if (saved) {
-        window.scrollTo({ top: Number(saved), behavior: "instant" });
-        sessionStorage.removeItem("library_scroll");
-        scrollRestoredRef.current = true;
-      }
+    const saved = sessionStorage.getItem("library_scroll");
+    if (saved) {
+      window.scrollTo({ top: Number(saved), behavior: "instant" });
+      sessionStorage.removeItem("library_scroll");
+      scrollRestoredRef.current = true;
     }
-  }, [loading, navType]);
+  }, [loading]);
 
   useEffect(() => {
     if (savingPreset) presetInputRef.current?.focus();

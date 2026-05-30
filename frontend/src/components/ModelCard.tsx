@@ -8,6 +8,7 @@ interface Props {
   model: Model;
   selected?: boolean;
   onSelect?: (id: number) => void;
+  backTo?: string;
 }
 
 const SITE_LABELS: Record<string, string> = {
@@ -29,7 +30,7 @@ const TAG_COLORS: Record<string, string> = {
   "figure":        "bg-indigo-900 text-indigo-300",
 };
 
-export default function ModelCard({ model, selected = false, onSelect }: Props) {
+export default function ModelCard({ model, selected = false, onSelect, backTo }: Props) {
   const location = useLocation();
   const { showNSFW } = useNSFW();
   const [nsfw, setNsfw] = useState(model.nsfw);
@@ -72,7 +73,7 @@ export default function ModelCard({ model, selected = false, onSelect }: Props) 
   return (
     <Link
       to={linkTo}
-      state={{ from: location.pathname + location.search }}
+      state={{ from: backTo ?? location.pathname + location.search }}
       onClick={handleCardClick}
       className={`group bg-gray-900 rounded-lg overflow-hidden border transition-colors flex flex-col ${
         selected

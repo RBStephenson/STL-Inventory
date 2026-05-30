@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Save, X, Loader2 } from "lucide-react";
-import { api, ModelDetail } from "../api/client";
+import { Save, X, Loader2, Download, CheckCircle, AlertCircle } from "lucide-react";
+import { api, ModelDetail, ScrapePreview } from "../api/client";
 import TagInput from "./TagInput";
 
 interface Props {
@@ -13,21 +13,25 @@ const SITES = ["myminifactory", "gumroad", "cults3d", "printables", "thingiverse
 
 export default function MetadataEditor({ model, onSaved, onCancel }: Props) {
   const [form, setForm] = useState({
-    title:        model.title        ?? "",
-    description:  model.description  ?? "",
-    notes:        model.notes        ?? "",
-    source_url:   model.source_url   ?? "",
-    source_site:  model.source_site  ?? "",
-    license:      model.license      ?? "",
-    category:     model.category     ?? "",
-    creator_name: model.creator?.name ?? "",
-    tags:         model.tags         ?? [],
-    nsfw:         model.nsfw         ?? false,
+    title:         model.title        ?? "",
+    description:   model.description  ?? "",
+    notes:         model.notes        ?? "",
+    source_url:    model.source_url   ?? "",
+    source_site:   model.source_site  ?? "",
+    license:       model.license      ?? "",
+    category:      model.category     ?? "",
+    creator_name:  model.creator?.name ?? "",
+    tags:          model.tags         ?? [],
+    nsfw:          model.nsfw         ?? false,
+    thumbnail_url: model.thumbnail_url ?? "",
   });
 
   const [tagSuggestions, setTagSuggestions] = useState<{ tag: string; count: number }[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fetching, setFetching] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [scraped, setScraped] = useState<ScrapePreview | null>(null);
 
   useEffect(() => {
     api.models.tags().then(setTagSuggestions).catch(() => {});
@@ -47,6 +51,38 @@ export default function MetadataEditor({ model, onSaved, onCancel }: Props) {
     } finally {
       setSaving(false);
     }
+  };
+
+  const fetchMetadata = async () => {
+    if (!form.source_url) return;
+    setFetching(true);
+    setFetchError(null);
+    setScraped(null);
+    try {
+      const preview = await api.scrape.fetchUrl(form.source_url);
+      setScraped(preview);
+    } catch (e: any) {
+      setFetchError(e.message.includes("400") ? "URL not recognised — only Gumroad, Cults3D and MyMiniFactory are supported." : "Could not fetch metadata from that URL.");
+    } finally {
+      setFetching(false);
+    }
+  };
+
+  const applyScraped = () => {
+    if (!scraped) return;
+    setForm((prev) => ({
+      ...prev,
+      title:         scraped.title         || prev.title,
+      description:   scraped.description   || prev.description,
+      source_url:    scraped.source_url    || prev.source_url,
+      source_site:   scraped.source_site   || prev.source_site,
+      license:       scraped.license       || prev.license,
+      category:      scraped.category      || prev.category,
+      creator_name:  scraped.creator_name  || prev.creator_name,
+      thumbnail_url: scraped.thumbnail_url || prev.thumbnail_url,
+      tags:          [...new Set([...prev.tags, ...scraped.tags])],
+    }));
+    setScraped(null);
   };
 
   const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
@@ -112,13 +148,51 @@ export default function MetadataEditor({ model, onSaved, onCancel }: Props) {
       </div>
 
       <Field label="Source URL">
-        <input
-          type="url"
-          value={form.source_url}
-          onChange={(e) => set("source_url", e.target.value)}
-          placeholder="https://…"
-          className={inputClass}
-        />
+        <div className="flex gap-2">
+          <input
+            type="url"
+            value={form.source_url}
+            onChange={(e) => { set("source_url", e.target.value); setScraped(null); setFetchError(null); }}
+            placeholder="https://…"
+            className={`${inputClass} flex-1`}
+          />
+          <button
+            type="button"
+            onClick={fetchMetadata}
+            disabled={fetching || !form.source_url}
+            title="Fetch metadata from this URL"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-indigo-700 hover:bg-indigo-600 disabled:opacity-40 text-sm text-white transition-colors shrink-0"
+          >
+            {fetching ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+            Fetch
+          </button>
+        </div>
+        {fetchError && (
+          <p className="flex items-center gap-1.5 text-xs text-red-400 mt-1">
+            <AlertCircle size={12} /> {fetchError}
+          </p>
+        )}
+        {scraped && (
+          <div className="mt-2 flex gap-3 p-3 bg-gray-800 border border-indigo-700 rounded-lg">
+            {scraped.thumbnail_url && (
+              <img src={scraped.thumbnail_url} alt="" className="w-16 h-16 object-cover rounded shrink-0" />
+            )}
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-100 truncate">{scraped.title}</p>
+              {scraped.creator_name && <p className="text-xs text-gray-400">by {scraped.creator_name}</p>}
+              {scraped.tags.length > 0 && (
+                <p className="text-xs text-gray-500 mt-0.5">Tags: {scraped.tags.join(", ")}</p>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={applyScraped}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded bg-indigo-600 hover:bg-indigo-500 text-xs text-white shrink-0 self-start transition-colors"
+            >
+              <CheckCircle size={12} /> Apply
+            </button>
+          </div>
+        )}
       </Field>
 
       <Field label="Category">

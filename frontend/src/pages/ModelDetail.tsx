@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
-import { ArrowLeft, ExternalLink, Package, Star, Download, Tag, FileBox, Globe, Images, Box, ImagePlus, Pencil, Plus, Wrench, FolderDown } from "lucide-react";
+import { ArrowLeft, ExternalLink, Package, Star, Download, Tag, FileBox, Globe, Images, Box, ImagePlus, Pencil, Plus, Wrench, FolderDown, Folder, Copy, Check } from "lucide-react";
 import { api, ModelDetail as ModelDetailType } from "../api/client";
 import FindOnWeb from "../components/FindOnWeb";
 import STLViewer from "../components/STLViewer";
@@ -37,6 +37,8 @@ export default function ModelDetail() {
   const [partTypes, setPartTypes] = useState<Record<number, string>>({});
   const [showKitBuilder, setShowKitBuilder] = useState(false);
   const [downloadingAll, setDownloadingAll] = useState(false);
+  const [copiedPath, setCopiedPath] = useState(false);
+  const [openFolderError, setOpenFolderError] = useState<string | null>(null);
 
   // sync local state from loaded model
   useEffect(() => {
@@ -58,6 +60,25 @@ export default function ModelDetail() {
       await api.downloadZip(model.stl_files.map((f) => f.id), `${name} ${date}`);
     } finally {
       setDownloadingAll(false);
+    }
+  };
+
+  const copyPath = () => {
+    const path = model?.native_folder_path || model?.folder_path || "";
+    navigator.clipboard.writeText(path).then(() => {
+      setCopiedPath(true);
+      setTimeout(() => setCopiedPath(false), 2000);
+    });
+  };
+
+  const openFolder = async () => {
+    if (!model) return;
+    setOpenFolderError(null);
+    try {
+      await api.files.openFolder(model.folder_path);
+    } catch {
+      setOpenFolderError("Cannot open folder — only available in standalone mode.");
+      setTimeout(() => setOpenFolderError(null), 4000);
     }
   };
 
@@ -416,7 +437,37 @@ export default function ModelDetail() {
             </div>
           </div>
 
-          <p className="text-xs text-gray-700 break-all mt-auto">{model.folder_path}</p>
+          {/* File location */}
+          <div className="mt-auto">
+            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5 mb-2">
+              <Folder size={14} />
+              Location
+            </h3>
+            <div className="bg-gray-900 border border-gray-800 rounded-lg px-3 py-2">
+              <p className="text-xs text-gray-400 break-all font-mono leading-relaxed">
+                {model.native_folder_path || model.folder_path}
+              </p>
+              <div className="flex gap-2 mt-2">
+                <button
+                  onClick={copyPath}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs text-gray-400 hover:text-gray-200 transition-colors"
+                >
+                  {copiedPath ? <Check size={11} className="text-green-400" /> : <Copy size={11} />}
+                  {copiedPath ? "Copied!" : "Copy path"}
+                </button>
+                <button
+                  onClick={openFolder}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs text-gray-400 hover:text-gray-200 transition-colors"
+                >
+                  <FolderDown size={11} />
+                  Open folder
+                </button>
+              </div>
+              {openFolderError && (
+                <p className="text-xs text-amber-400 mt-1.5">{openFolderError}</p>
+              )}
+            </div>
+          </div>
 
           </>)} {/* end display mode */}
         </div>

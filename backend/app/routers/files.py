@@ -1,22 +1,68 @@
 """Serve local image files and STL files from the mounted drives."""
 import io
+import os
+import time
+import logging
+import platform
+import subprocess
 import zipfile
 from pathlib import Path
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse, StreamingResponse
 from app.config import settings
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/files", tags=["files"])
 
 ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 ALLOWED_STL_EXTENSIONS = {".stl", ".3mf", ".obj"}
 
+# Cache the allowlist briefly — image serving is a hot path (a grid loads dozens
+# of thumbnails at once) and scan roots change rarely (only via the Settings UI).
+_roots_cache: tuple[float, list[Path]] | None = None
+_ROOTS_TTL = 5.0
+
+
 # Directories the file server is allowed to read from
 def _allowed_roots() -> list[Path]:
+    global _roots_cache
+    now = time.monotonic()
+    if _roots_cache is not None and now - _roots_cache[0] < _ROOTS_TTL:
+        return _roots_cache[1]
+
     roots = [Path(r) for r in settings.stl_root_list]
+
+    # Roots added through the Settings UI live in the scan_roots table, not the
+    # STL_ROOTS env var. Include them so file serving works in standalone mode
+    # (where STL_ROOTS is empty and drives are added entirely through the UI).
+    try:
+        from app.database import SessionLocal
+        from app.models import ScanRoot
+        db = SessionLocal()
+        try:
+            for (path,) in db.query(ScanRoot.path).filter(ScanRoot.enabled == True):
+                if path:
+                    roots.append(Path(path))
+        finally:
+            db.close()
+    except Exception:
+        logger.exception("Failed to load scan roots for the file-serving allowlist")
+
     if settings.orynt3d_thumbnail_cache:
         roots.append(Path(settings.orynt3d_thumbnail_cache))
-    return roots
+
+    # De-duplicate while preserving order.
+    seen: set[str] = set()
+    unique: list[Path] = []
+    for r in roots:
+        key = str(r)
+        if key not in seen:
+            seen.add(key)
+            unique.append(r)
+
+    _roots_cache = (now, unique)
+    return unique
 
 
 def _is_safe_path(p: Path) -> bool:
@@ -44,6 +90,8 @@ def serve_stl(path: str):
     p = Path(path)
     if p.suffix.lower() not in ALLOWED_STL_EXTENSIONS:
         raise HTTPException(status_code=400, detail="Not an STL/3MF/OBJ file")
+    if not _is_safe_path(p):
+        raise HTTPException(status_code=403, detail="Path not allowed")
     if not p.exists():
         raise HTTPException(status_code=404, detail="File not found")
     return FileResponse(p, media_type="application/octet-stream")
@@ -90,6 +138,35 @@ def download_zip(body: dict):
         media_type="application/zip",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )
+
+
+@router.get("/open-folder")
+def open_folder(path: str):
+    """
+    Open a folder in the native file manager.
+    Only works when the backend is running directly on the host (standalone mode).
+    In Docker mode the container has no GUI so this returns 501.
+    """
+    p = Path(path)
+    if not _is_safe_path(p):
+        raise HTTPException(status_code=403, detail="Path not allowed")
+    if not p.exists():
+        raise HTTPException(status_code=404, detail="Folder not found")
+
+    system = platform.system()
+    try:
+        if system == "Windows":
+            os.startfile(str(p))
+        elif system == "Darwin":
+            subprocess.Popen(["open", str(p)])
+        elif system == "Linux":
+            subprocess.Popen(["xdg-open", str(p)])
+        else:
+            raise HTTPException(status_code=501, detail="Unsupported OS")
+    except (AttributeError, FileNotFoundError, OSError) as e:
+        raise HTTPException(status_code=501, detail=f"Cannot open folder: {e}")
+
+    return {"ok": True}
 
 
 @router.get("/model-images/{model_id}")

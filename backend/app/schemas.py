@@ -34,6 +34,7 @@ class ModelBase(BaseModel):
 
 class ModelRead(ModelBase):
     id: int
+    native_folder_path: Optional[str] = None
     title: Optional[str] = None
     character: Optional[str] = None
     variant_count: int = 1

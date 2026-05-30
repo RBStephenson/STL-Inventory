@@ -14,6 +14,7 @@ export interface Model {
   character: string | null;
   variant_count?: number;
   folder_path: string;
+  native_folder_path: string | null;
   source_url: string | null;
   source_site: string | null;
   license: string | null;
@@ -90,6 +91,22 @@ export interface Collection {
   created_at: string;
 }
 
+export interface ScrapePreview {
+  title: string | null;
+  description: string | null;
+  source_url: string | null;
+  source_site: string | null;
+  external_id: string | null;
+  creator_name: string | null;
+  thumbnail_url: string | null;
+  image_urls: string[];
+  tags: string[];
+  category: string | null;
+  license: string | null;
+  like_count: number | null;
+  download_count: number | null;
+}
+
 export const api = {
   models: {
     list: (params: Record<string, string | number | boolean>) => {
@@ -127,6 +144,20 @@ export const api = {
     updateSTLFile: (fileId: number, body: Record<string, unknown>) =>
       request<{ ok: boolean }>(`/models/stl-files/${fileId}`, {
         method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      }),
+  },
+  files: {
+    openFolder: (path: string) =>
+      request<{ ok: boolean }>(`/files/open-folder?path=${encodeURIComponent(path)}`),
+  },
+  scrape: {
+    fetchUrl: (url: string) =>
+      request<ScrapePreview>(`/scrape/fetch?url=${encodeURIComponent(url)}`),
+    applyMetadata: (modelId: number, body: Partial<ScrapePreview>) =>
+      request<{ ok: boolean }>(`/scrape/apply/${modelId}`, {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       }),

@@ -347,21 +347,29 @@ def _find_thumbnail(model: Model, leaf: Path, boundary: Path):
 
 
 def _index_stl_files(model: Model, folder: Path, db: Session):
-    from sqlalchemy import text as _text
-    # Check the entire stl_files table for this folder's path prefix —
-    # a parent model's rglob may have already claimed files that belong to a
-    # sub-folder model, so we need a global path check, not just per-model.
-    folder_prefix = str(folder).replace("\\", "/")
-    existing = {
-        row[0] for row in db.execute(
-            _text("SELECT path FROM stl_files WHERE path LIKE :p"),
-            {"p": folder_prefix + "%"},
+    # Gather candidate STL files under this folder.
+    candidates = [
+        stl for stl in sorted(folder.rglob("*"))
+        if stl.is_file() and stl.suffix.lower() in STL_EXTENSIONS
+    ]
+    if not candidates:
+        return
+
+    # Find which of these are already indexed by exact path. A parent model's
+    # rglob may have already claimed files that belong to a sub-folder model,
+    # so we check the entire stl_files table, not just this model's rows.
+    # We match on exact paths (chunked to stay under SQLite's bind-variable
+    # limit) rather than a LIKE prefix — the stored paths use the OS separator
+    # and folder names routinely contain '_', a LIKE wildcard.
+    candidate_paths = [str(stl) for stl in candidates]
+    existing: set[str] = set()
+    for i in range(0, len(candidate_paths), 500):
+        chunk = candidate_paths[i:i + 500]
+        existing.update(
+            row[0] for row in db.query(STLFile.path).filter(STLFile.path.in_(chunk))
         )
-    }
-    for stl in sorted(folder.rglob("*")):
-        if not stl.is_file() or stl.suffix.lower() not in STL_EXTENSIONS:
-            continue
-        path_str = str(stl)
+
+    for stl, path_str in zip(candidates, candidate_paths):
         if path_str in existing:
             continue
         db.add(STLFile(

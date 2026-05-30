@@ -7,6 +7,7 @@ from app.database import get_db
 from app.models import Model, Creator, ModelTag
 from app.schemas import ModelList, ModelRead, ModelDetail, CreatorRead
 from app.services.tag_sync import sync_model_tags
+from app.config import settings
 
 router = APIRouter(prefix="/models", tags=["models"])
 
@@ -218,7 +219,7 @@ def update_model(model_id: int, body: dict, db: Session = Depends(get_db)):
     allowed = {
         "title", "description", "notes", "source_url", "source_site",
         "license", "category", "tags", "custom_attributes", "nsfw",
-        "needs_review",
+        "needs_review", "thumbnail_url",
     }
     for key, value in body.items():
         if key in allowed:
@@ -267,4 +268,6 @@ def get_model(model_id: int, db: Session = Depends(get_db)):
     )
     if not model:
         raise HTTPException(status_code=404, detail="Model not found")
-    return model
+    result = ModelDetail.model_validate(model)
+    result.native_folder_path = settings.to_native_path(model.folder_path)
+    return result
