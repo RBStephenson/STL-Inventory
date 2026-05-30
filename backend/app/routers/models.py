@@ -1,6 +1,6 @@
 from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import func, exists
+from sqlalchemy import func, exists, text as _sql
 from sqlalchemy.orm import Session, joinedload
 
 from app.database import get_db
@@ -23,6 +23,7 @@ def list_models(
     has_thumbnail: bool | None = None,
     needs_review: bool | None = None,
     nsfw: bool | None = None,
+    group_variants: bool = Query(True),
     db: Session = Depends(get_db),
 ):
     q = db.query(Model)
@@ -61,10 +62,53 @@ def list_models(
     if nsfw is not None:
         q = q.filter(Model.nsfw == nsfw)
 
+    # Variant grouping: collapse multi-variant characters to one representative card.
+    # The representative is the variant with a thumbnail (earliest ID), else the
+    # earliest ID overall. Models with no character, or a unique character, show as-is.
+    if group_variants:
+        non_reps = db.execute(_sql("""
+            SELECT m.id FROM models m
+            JOIN (
+                SELECT creator_id, character,
+                    COALESCE(
+                        MIN(CASE WHEN thumbnail_path IS NOT NULL OR thumbnail_url IS NOT NULL THEN id END),
+                        MIN(id)
+                    ) AS rep_id
+                FROM models
+                WHERE character IS NOT NULL
+                GROUP BY creator_id, character
+                HAVING COUNT(*) > 1
+            ) g ON m.creator_id = g.creator_id AND m.character = g.character
+            WHERE m.id != g.rep_id
+        """)).scalars().all()
+        if non_reps:
+            q = q.filter(~Model.id.in_(non_reps))
+
     total = q.count()
     items = q.order_by(Model.character, Model.name).offset((page - 1) * page_size).limit(page_size).all()
 
-    return ModelList(total=total, page=page, page_size=page_size, items=items)
+    # Build variant count map for annotating group representatives
+    vc_map: dict[tuple[int, str], int] = {}
+    if group_variants and items:
+        count_rows = db.execute(_sql("""
+            SELECT creator_id, character, COUNT(*) AS cnt
+            FROM models
+            WHERE character IS NOT NULL
+            GROUP BY creator_id, character
+            HAVING COUNT(*) > 1
+        """)).fetchall()
+        vc_map = {(r[0], r[1]): r[2] for r in count_rows}
+
+    item_reads = []
+    for m in items:
+        r = ModelRead.model_validate(m)
+        if group_variants and m.character and m.creator_id:
+            vc = vc_map.get((m.creator_id, m.character), 1)
+            if vc > 1:
+                r = r.model_copy(update={"variant_count": vc})
+        item_reads.append(r)
+
+    return ModelList(total=total, page=page, page_size=page_size, items=item_reads)
 
 
 @router.get("/creators/list", response_model=list[CreatorRead])
@@ -107,6 +151,36 @@ def rebuild_tags(db: Session = Depends(get_db)):
     from app.services.tag_sync import rebuild_all_tags
     count = rebuild_all_tags(db)
     return {"ok": True, "rows": count}
+
+
+@router.get("/variants", response_model=ModelList)
+def list_variants(
+    creator_id: int = Query(...),
+    character: str = Query(...),
+    db: Session = Depends(get_db),
+):
+    """Return all variant models for a (creator, character) group."""
+    items = (
+        db.query(Model)
+        .filter(Model.creator_id == creator_id, Model.character == character)
+        .order_by(Model.name)
+        .all()
+    )
+    return ModelList(total=len(items), page=1, page_size=max(len(items), 1), items=items)
+
+
+@router.patch("/stl-files/{file_id}")
+def update_stl_file(file_id: int, body: dict, db: Session = Depends(get_db)):
+    """Update metadata on a single STL file (e.g. part_type)."""
+    from app.models import STLFile
+    f = db.query(STLFile).filter(STLFile.id == file_id).first()
+    if not f:
+        raise HTTPException(status_code=404, detail="STL file not found")
+    if "part_type" in body:
+        pt = body["part_type"]
+        f.part_type = pt.strip().lower() if pt and pt.strip() else None
+    db.commit()
+    return {"ok": True}
 
 
 @router.patch("/bulk")

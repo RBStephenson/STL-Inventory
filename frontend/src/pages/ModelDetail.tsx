@@ -1,12 +1,22 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
-import { ArrowLeft, ExternalLink, Package, Star, Download, Tag, FileBox, Globe, Images, Box, ImagePlus, Pencil, Plus } from "lucide-react";
+import { ArrowLeft, ExternalLink, Package, Star, Download, Tag, FileBox, Globe, Images, Box, ImagePlus, Pencil, Plus, Wrench } from "lucide-react";
 import { api, ModelDetail as ModelDetailType } from "../api/client";
 import FindOnWeb from "../components/FindOnWeb";
 import STLViewer from "../components/STLViewer";
 import ImagePicker from "../components/ImagePicker";
 import MetadataEditor from "../components/MetadataEditor";
+import KitBuilder from "../components/KitBuilder";
 import { useNSFW } from "../context/NSFWContext";
+
+const PART_TYPE_SUGGESTIONS = [
+  "head", "torso", "body",
+  "right arm", "left arm", "arms",
+  "right leg", "left leg", "legs",
+  "hands", "feet", "base",
+  "weapon", "shield", "cloak", "cape",
+  "hair", "wings", "tail", "accessories",
+];
 
 type ViewMode = "images" | "3d";
 
@@ -24,14 +34,25 @@ export default function ModelDetail() {
   const [viewMode, setViewMode] = useState<ViewMode>("images");
   const [nsfw, setNsfw] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
+  const [partTypes, setPartTypes] = useState<Record<number, string>>({});
+  const [showKitBuilder, setShowKitBuilder] = useState(false);
 
   // sync local state from loaded model
   useEffect(() => {
     if (model) {
       setNsfw(model.nsfw);
       setTags(model.tags ?? []);
+      const pts: Record<number, string> = {};
+      model.stl_files.forEach((f) => { if (f.part_type) pts[f.id] = f.part_type; });
+      setPartTypes(pts);
     }
   }, [model]);
+
+  const savePartType = async (fileId: number, value: string) => {
+    const pt = value.trim().toLowerCase() || "";
+    setPartTypes((prev) => ({ ...prev, [fileId]: pt }));
+    await api.models.updateSTLFile(fileId, { part_type: pt || null });
+  };
 
   const addTag = async (tag: string) => {
     if (tags.includes(tag)) return;
@@ -320,26 +341,55 @@ export default function ModelDetail() {
 
           {/* STL Files list */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-              <FileBox size={14} />
-              Files ({model.stl_files.length})
-            </h3>
-            <div className="flex flex-col gap-1 max-h-48 overflow-y-auto">
-              {model.stl_files.map((f) => (
-                <a
-                  key={f.id}
-                  href={api.stlUrl(f.path)}
-                  download={f.filename}
-                  className="flex items-center justify-between text-xs bg-gray-900 border border-gray-800 hover:border-gray-600 px-3 py-2 rounded transition-colors"
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                <FileBox size={14} />
+                Files ({model.stl_files.length})
+              </h3>
+              {model.stl_files.length > 0 && (
+                <button
+                  onClick={() => setShowKitBuilder(true)}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-gray-800 hover:bg-indigo-950 border border-gray-700 hover:border-indigo-600 text-xs text-gray-400 hover:text-indigo-300 transition-colors"
                 >
-                  <span className="text-gray-300 truncate mr-2">{f.filename}</span>
-                  {f.size_bytes && (
-                    <span className="text-gray-600 shrink-0">
-                      {(f.size_bytes / 1024 / 1024).toFixed(1)} MB
-                    </span>
-                  )}
-                </a>
-              ))}
+                  <Wrench size={12} />
+                  Kit Builder
+                </button>
+              )}
+            </div>
+            <datalist id="part-type-list">
+              {PART_TYPE_SUGGESTIONS.map((s) => <option key={s} value={s} />)}
+            </datalist>
+            <div className="flex flex-col gap-1 max-h-64 overflow-y-auto">
+              {model.stl_files.map((f) => {
+                const pt = partTypes[f.id] ?? "";
+                return (
+                  <div
+                    key={f.id}
+                    className="flex items-center gap-2 text-xs bg-gray-900 border border-gray-800 px-3 py-1.5 rounded"
+                  >
+                    <span className="text-gray-300 truncate flex-1 min-w-0">{f.filename}</span>
+                    <input
+                      list="part-type-list"
+                      value={pt}
+                      placeholder="Label…"
+                      onChange={(e) => setPartTypes((prev) => ({ ...prev, [f.id]: e.target.value }))}
+                      onBlur={(e) => savePartType(f.id, e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
+                      className="w-28 shrink-0 bg-gray-800 border border-gray-700 focus:border-indigo-500 rounded px-2 py-0.5 text-xs text-gray-300 placeholder-gray-600 focus:outline-none"
+                    />
+                    {f.size_bytes && (
+                      <a
+                        href={api.stlUrl(f.path)}
+                        download={f.filename}
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-gray-600 hover:text-gray-400 shrink-0 transition-colors"
+                      >
+                        {(f.size_bytes / 1024 / 1024).toFixed(1)} MB
+                      </a>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -364,6 +414,14 @@ export default function ModelDetail() {
           modelName={model.title || model.name}
           onApplied={() => { setShowFindOnWeb(false); load(); }}
           onClose={() => setShowFindOnWeb(false)}
+        />
+      )}
+
+      {showKitBuilder && (
+        <KitBuilder
+          modelName={model.title || model.name}
+          files={model.stl_files.map((f) => ({ ...f, part_type: partTypes[f.id] || f.part_type }))}
+          onClose={() => setShowKitBuilder(false)}
         />
       )}
     </div>

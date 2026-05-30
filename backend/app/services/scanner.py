@@ -27,6 +27,8 @@ from datetime import datetime
 from pathlib import Path
 from sqlalchemy.orm import Session
 
+from sqlalchemy import text as _sqltext
+
 from app.database import SessionLocal
 from app.models import Creator, Model, STLFile, ScanRoot
 from app.services import orynt3d_parser, name_parser
@@ -61,6 +63,24 @@ def scan_all_roots(db: Session | None = None):
         _db = db or SessionLocal()
         own_db = db is None
         try:
+            # Clear needs_review for any model that already has indexed STL files —
+            # those are confirmed real products that were over-eagerly flagged.
+            # Orynt3D-parsed models also get cleared since they have explicit metadata.
+            result = _db.execute(_sqltext(
+                """
+                UPDATE models SET needs_review = 0
+                WHERE needs_review = 1
+                  AND (
+                    orynt3d_parsed = 1
+                    OR id IN (SELECT DISTINCT model_id FROM stl_files)
+                  )
+                """
+            ))
+            cleared = result.rowcount
+            _db.commit()
+            if cleared:
+                logger.info(f"Pre-scan: cleared needs_review on {cleared} previously-indexed models")
+
             roots = _db.query(ScanRoot).filter(ScanRoot.enabled == True).all()
             for root in roots:
                 if _cancel_requested:
@@ -211,7 +231,8 @@ def _index_model(
         and folder.stat().st_mtime < last_scanned.timestamp()
     )
 
-    if model is None:
+    is_new = model is None
+    if is_new:
         model = Model(
             name=folder.name,
             folder_path=folder_path,
@@ -227,11 +248,15 @@ def _index_model(
     # Auto-detected signals
     if auto_signals:
         model.auto_tags = auto_signals.auto_tags
-        # Only flag needs_review if the leaf detection itself was ambiguous
-        # (low confidence AND no orynt3d config). Missing scale tags alone
-        # are not a problem — many models genuinely don't state a scale.
-        if not model_meta and auto_signals.confidence < 0.25:
-            model.needs_review = True
+        # Only flag needs_review for brand-new models that look genuinely
+        # ambiguous: no orynt3d config AND no name/type signals AND no
+        # direct STL files in this folder (only found recursively).
+        # Existing models are cleared at scan start if they have STL files,
+        # so we avoid re-flagging the same false positives on every rescan.
+        if is_new and not model_meta and auto_signals.confidence < 0.25:
+            has_direct_stls = _has_stls(folder, recurse=False)
+            if not has_direct_stls:
+                model.needs_review = True
 
     # orynt3d metadata
     if model_meta:

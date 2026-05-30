@@ -52,6 +52,40 @@ function TriToggle({ label, value, onChange }: {
   );
 }
 
+function PaginationBar({ page, totalPages, onPage }: { page: number; totalPages: number; onPage: (p: number) => void }) {
+  const [draft, setDraft] = useState(String(page));
+
+  useEffect(() => { setDraft(String(page)); }, [page]);
+
+  const btnCls = "px-3 py-1.5 rounded bg-gray-900 border border-gray-700 text-sm disabled:opacity-40 hover:border-gray-500 transition-colors";
+
+  function commit(raw: string) {
+    const n = parseInt(raw, 10);
+    if (!isNaN(n)) onPage(Math.min(totalPages, Math.max(1, n)));
+  }
+
+  return (
+    <div className="flex items-center justify-center gap-2 mt-8">
+      <button onClick={() => onPage(1)} disabled={page === 1} className={btnCls}>« First</button>
+      <button onClick={() => onPage(page - 1)} disabled={page === 1} className={btnCls}>Prev</button>
+      <div className="flex items-center gap-1.5 text-sm text-gray-400">
+        <input
+          type="text"
+          inputMode="numeric"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={() => commit(draft)}
+          onKeyDown={(e) => { if (e.key === "Enter") { commit(draft); (e.target as HTMLInputElement).blur(); } }}
+          className="w-12 text-center rounded bg-gray-900 border border-gray-600 py-1 text-sm text-white focus:outline-none focus:border-indigo-500"
+        />
+        <span>/ {totalPages}</span>
+      </div>
+      <button onClick={() => onPage(page + 1)} disabled={page === totalPages} className={btnCls}>Next</button>
+      <button onClick={() => onPage(totalPages)} disabled={page === totalPages} className={btnCls}>Last »</button>
+    </div>
+  );
+}
+
 export default function Library() {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -104,7 +138,7 @@ export default function Library() {
   const fetchModels = useCallback(async () => {
     setLoading(true);
     try {
-      const params: Record<string, string | number | boolean> = { page, page_size: PAGE_SIZE };
+      const params: Record<string, string | number | boolean> = { page, page_size: PAGE_SIZE, group_variants: true };
       if (search)      params.q             = search;
       if (creatorId)   params.creator_id    = creatorId;
       if (site)        params.source_site   = site;
@@ -451,23 +485,7 @@ export default function Library() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-8">
-          <button
-            onClick={() => setPage(Math.max(1, page - 1))}
-            disabled={page === 1}
-            className="px-3 py-1.5 rounded bg-gray-900 border border-gray-700 text-sm disabled:opacity-40 hover:border-gray-500 transition-colors"
-          >
-            Prev
-          </button>
-          <span className="text-sm text-gray-500">{page} / {totalPages}</span>
-          <button
-            onClick={() => setPage(Math.min(totalPages, page + 1))}
-            disabled={page === totalPages}
-            className="px-3 py-1.5 rounded bg-gray-900 border border-gray-700 text-sm disabled:opacity-40 hover:border-gray-500 transition-colors"
-          >
-            Next
-          </button>
-        </div>
+        <PaginationBar page={page} totalPages={totalPages} onPage={setPage} />
       )}
     </div>
   );

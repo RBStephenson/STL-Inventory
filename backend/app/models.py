@@ -90,6 +90,7 @@ class STLFile(Base):
     filename = Column(String, nullable=False)
     size_bytes = Column(BigInteger, nullable=True)
     file_hash = Column(String, nullable=True, index=True)
+    part_type = Column(String, nullable=True)   # user-assigned part category (head, arm, base…)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     model = relationship("Model", back_populates="stl_files")

@@ -10,6 +10,20 @@ app = FastAPI(title="STL Inventory", version="0.1.0")
 
 
 @app.on_event("startup")
+def _migrate_schema():
+    """Add columns that didn't exist in earlier schema versions."""
+    import logging
+    from sqlalchemy import text
+    logger = logging.getLogger(__name__)
+    with engine.connect() as conn:
+        cols = {r[1] for r in conn.execute(text("PRAGMA table_info(stl_files)"))}
+        if "part_type" not in cols:
+            conn.execute(text("ALTER TABLE stl_files ADD COLUMN part_type TEXT"))
+            conn.commit()
+            logger.info("Migrated: added stl_files.part_type")
+
+
+@app.on_event("startup")
 def _seed_tag_index():
     """Populate model_tags from JSON columns if the table is empty (one-time migration)."""
     import logging

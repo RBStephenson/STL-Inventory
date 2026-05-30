@@ -12,6 +12,7 @@ export interface Model {
   title: string | null;
   description: string | null;
   character: string | null;
+  variant_count?: number;
   folder_path: string;
   source_url: string | null;
   source_site: string | null;
@@ -38,8 +39,16 @@ export interface ModelStats {
   no_thumbnail: number;
 }
 
+export interface STLFile {
+  id: number;
+  path: string;
+  filename: string;
+  size_bytes: number | null;
+  part_type: string | null;
+}
+
 export interface ModelDetail extends Model {
-  stl_files: { id: number; path: string; filename: string; size_bytes: number | null }[];
+  stl_files: STLFile[];
   creator: { id: number; name: string; source_url: string | null } | null;
 }
 
@@ -105,6 +114,14 @@ export const api = {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ids, add_tags: addTags, remove_tags: removeTags }),
+      }),
+    variants: (creatorId: number, character: string) =>
+      request<ModelList>(`/models/variants?creator_id=${creatorId}&character=${encodeURIComponent(character)}`),
+    updateSTLFile: (fileId: number, body: Record<string, unknown>) =>
+      request<{ ok: boolean }>(`/models/stl-files/${fileId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
       }),
   },
   scan: {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Package, Star, AlertCircle, Check } from "lucide-react";
+import { Package, Star, AlertCircle, Check, Layers } from "lucide-react";
 import { Model, api } from "../api/client";
 import { useNSFW } from "../context/NSFWContext";
 
@@ -34,6 +34,9 @@ export default function ModelCard({ model, selected = false, onSelect }: Props) 
   const { showNSFW } = useNSFW();
   const [nsfw, setNsfw] = useState(model.nsfw);
 
+  const variantCount = model.variant_count ?? 1;
+  const isGroup = variantCount > 1;
+
   const toggleNSFW = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -52,7 +55,9 @@ export default function ModelCard({ model, selected = false, onSelect }: Props) 
     ? api.fileUrl(model.thumbnail_path)
     : model.thumbnail_url ?? null;
 
-  const displayName = model.title || model.name;
+  const displayName = isGroup && model.character
+    ? model.character
+    : (model.title || model.name);
   const allTags = [...(model.auto_tags ?? []), ...(model.tags ?? [])];
   const uniqueTags = [...new Set(allTags)];
 
@@ -60,9 +65,13 @@ export default function ModelCard({ model, selected = false, onSelect }: Props) 
     sessionStorage.setItem("library_scroll", String(window.scrollY));
   };
 
+  const linkTo = isGroup && model.creator_id && model.character
+    ? `/groups/${model.creator_id}/${encodeURIComponent(model.character)}`
+    : `/models/${model.id}`;
+
   return (
     <Link
-      to={`/models/${model.id}`}
+      to={linkTo}
       state={{ from: location.pathname + location.search }}
       onClick={handleCardClick}
       className={`group bg-gray-900 rounded-lg overflow-hidden border transition-colors flex flex-col ${
@@ -132,6 +141,12 @@ export default function ModelCard({ model, selected = false, onSelect }: Props) 
               Review
             </span>
           )}
+          {isGroup && (
+            <span className="flex items-center gap-1 bg-indigo-600/90 text-white text-xs px-1.5 py-0.5 rounded font-medium">
+              <Layers size={10} />
+              {variantCount} variants
+            </span>
+          )}
         </div>
 
         {model.source_site && (
@@ -142,7 +157,7 @@ export default function ModelCard({ model, selected = false, onSelect }: Props) 
       </div>
 
       <div className="p-3 flex flex-col gap-1.5 flex-1">
-        {model.character && (
+        {model.character && !isGroup && (
           <p className="text-xs text-indigo-400 truncate">{model.character}</p>
         )}
         <p className="text-sm font-medium truncate text-gray-100">{displayName}</p>

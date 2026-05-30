@@ -21,6 +21,7 @@ class STLFileRead(BaseModel):
     path: str
     filename: str
     size_bytes: Optional[int] = None
+    part_type: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -35,6 +36,7 @@ class ModelRead(ModelBase):
     id: int
     title: Optional[str] = None
     character: Optional[str] = None
+    variant_count: int = 1
     description: Optional[str] = None
     notes: Optional[str] = None
     source_url: Optional[str] = None

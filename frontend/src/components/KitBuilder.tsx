@@ -1,0 +1,153 @@
+import { useState, useMemo } from "react";
+import { X, Copy, Check, Wrench } from "lucide-react";
+import { STLFile } from "../api/client";
+
+interface Props {
+  modelName: string;
+  files: STLFile[];
+  onClose: () => void;
+}
+
+function cleanName(filename: string): string {
+  return filename.replace(/\.(stl|3mf|obj)$/i, "").replace(/[_-]+/g, " ").trim();
+}
+
+export default function KitBuilder({ modelName, files, onClose }: Props) {
+  // selection: partType → fileId (one per group)
+  const [selection, setSelection] = useState<Record<string, number>>({});
+  const [copied, setCopied] = useState(false);
+
+  // Group files by part_type; null → "Uncategorized"
+  const groups = useMemo(() => {
+    const map = new Map<string, STLFile[]>();
+    for (const f of files) {
+      const key = f.part_type ?? "__none__";
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(f);
+    }
+    // Sort: categorized groups first (alphabetical), then Uncategorized
+    const sorted = new Map<string, STLFile[]>();
+    [...map.keys()]
+      .filter((k) => k !== "__none__")
+      .sort()
+      .forEach((k) => sorted.set(k, map.get(k)!));
+    if (map.has("__none__")) sorted.set("__none__", map.get("__none__")!);
+    return sorted;
+  }, [files]);
+
+  const toggle = (partType: string, fileId: number) => {
+    setSelection((prev) =>
+      prev[partType] === fileId
+        ? Object.fromEntries(Object.entries(prev).filter(([k]) => k !== partType))
+        : { ...prev, [partType]: fileId }
+    );
+  };
+
+  const selectedFiles = useMemo(() => {
+    const idSet = new Set(Object.values(selection));
+    return files.filter((f) => idSet.has(f.id));
+  }, [selection, files]);
+
+  const copyToClipboard = async () => {
+    const text = selectedFiles.map((f) => f.filename).join("\n");
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const categorizedCount = [...groups.keys()].filter((k) => k !== "__none__").length;
+
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col bg-gray-950/95 backdrop-blur-sm">
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800 shrink-0">
+        <div className="flex items-center gap-2">
+          <Wrench size={18} className="text-indigo-400" />
+          <h2 className="text-lg font-semibold text-white">Kit Builder</h2>
+          <span className="text-gray-500 text-sm">— {modelName}</span>
+        </div>
+        <button onClick={onClose} className="text-gray-500 hover:text-white transition-colors">
+          <X size={20} />
+        </button>
+      </div>
+
+      {/* Groups */}
+      <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
+        {[...groups.entries()].map(([key, groupFiles]) => {
+          const label = key === "__none__" ? "Uncategorized" : key.replace(/\b\w/g, (c) => c.toUpperCase());
+          return (
+            <div key={key}>
+              <div className="flex items-center gap-2 mb-2">
+                <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wider">{label}</h3>
+                <span className="text-xs text-gray-600">{groupFiles.length} file{groupFiles.length !== 1 ? "s" : ""}</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {groupFiles.map((f) => {
+                  const isSelected = selection[key] === f.id;
+                  return (
+                    <button
+                      key={f.id}
+                      onClick={() => toggle(key, f.id)}
+                      title={f.filename}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-sm transition-all ${
+                        isSelected
+                          ? "bg-indigo-600 border-indigo-500 text-white"
+                          : "bg-gray-900 border-gray-700 text-gray-400 hover:border-gray-500 hover:text-gray-200"
+                      }`}
+                    >
+                      {isSelected && <Check size={12} strokeWidth={3} />}
+                      {cleanName(f.filename)}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+
+        {files.length === 0 && (
+          <p className="text-gray-600 text-sm py-8 text-center">No STL files found for this model.</p>
+        )}
+      </div>
+
+      {/* Build summary — sticky footer */}
+      <div className="shrink-0 border-t border-gray-800 bg-gray-900 px-6 py-4">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <p className="text-xs text-gray-500 mb-1">
+              {selectedFiles.length} selected
+              {categorizedCount > 0 && ` · ${categorizedCount} part type${categorizedCount !== 1 ? "s" : ""}`}
+            </p>
+            {selectedFiles.length > 0 ? (
+              <p className="text-sm text-gray-300 truncate">
+                {selectedFiles.map((f) => f.filename).join(" · ")}
+              </p>
+            ) : (
+              <p className="text-sm text-gray-600 italic">
+                Click parts above to build your selection
+              </p>
+            )}
+          </div>
+          <div className="flex gap-2 shrink-0">
+            {selectedFiles.length > 0 && (
+              <button
+                onClick={() => setSelection({})}
+                className="px-3 py-1.5 rounded bg-gray-800 border border-gray-700 text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                Clear
+              </button>
+            )}
+            <button
+              onClick={copyToClipboard}
+              disabled={selectedFiles.length === 0}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm transition-colors"
+            >
+              {copied ? <Check size={14} /> : <Copy size={14} />}
+              {copied ? "Copied!" : "Copy list"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

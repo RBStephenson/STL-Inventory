@@ -32,22 +32,56 @@ Local web app for cataloguing, browsing, and managing a large STL file library (
 
 ## Features
 
-- **Library** — grid view with search, filter by creator, site, tag, NSFW flag, thumbnail presence, and review status; filter presets saved in localStorage; all filter state in the URL
-- **Triage queue** (`/triage`) — keyboard-driven review of flagged models; `→`/Space = dismiss, `S` = skip, `←` = back
-- **Model detail** — view/edit tags, metadata, and STL preview; image picker for thumbnail selection
-- **Bulk tag editor** — checkbox-select multiple models in the grid, then add or remove tags via floating bar
-- **Storefront enrichment** — paste a Gumroad, Cults3D, or MMF creator URL; fuzzy-matches scraped listings against local models and bulk-applies metadata
-- **Incremental scan** — skips unchanged folders (mtime check), caches STL file walks, supports cancel; Library auto-refreshes on completion
-- **Tag index** — normalized `model_tags` table keeps tag filtering fast regardless of library size
+### Library
+- Grid view with search, filter by creator, site, tag, NSFW flag, thumbnail presence, and review status
+- Filter presets saved in localStorage; all filter state lives in the URL
+- **Variant grouping** — folders that share a parent character (e.g. `Full_cutted`, `No_cuts`, `Semi_cutted` under `Akuma/`) are collapsed into a single group card with a variant count badge; click to open the group and select individual variants
+- Pagination with jump-to-page input and First / Last buttons
+
+### Triage Queue (`/triage`)
+- Keyboard-driven review of flagged models
+- `→` / Space = dismiss, `S` = skip, `←` = back
+- Navbar shows live needs_review count badge
+
+### Model Detail
+- View and edit tags, metadata, source URL, NSFW flag
+- Image picker for choosing the thumbnail from the model's folder
+- STL preview (3D viewer)
+- **Part labeling** — tag each STL file with a part category (head, right arm, base, weapon, etc.) using a free-text input with common suggestions
+
+### Kit Builder
+- Launched from any model's detail page
+- Groups all STL files in the model by their part label
+- Click to select one file per part group to assemble a character build
+- Sticky build summary with a **Copy list** button (copies selected filenames to clipboard)
+- Uncategorized files shown at the bottom
+
+### Bulk Tag Editor
+- Checkbox-select multiple models in the Library grid
+- Floating bar to add or remove tags across the selection at once
+
+### Storefront Enrichment
+- Paste a Gumroad, Cults3D, or MyMiniFactory creator URL
+- Fuzzy-matches scraped listings against local models and bulk-applies metadata (source URL, thumbnail, external ID)
+
+### Scan
+- Incremental — skips unchanged folders (mtime check), caches STL file walks
+- Cancel button; Library auto-refreshes on completion
+- On each rescan, `needs_review` is cleared for any model that already has indexed STL files (reduces false-positive review queue)
+- Tag index kept in sync via normalized `model_tags` table for fast filtering
 
 ## Development
 
-After any Python/backend change, rebuild the backend image:
+Both frontend and backend are baked into their images — rebuild after any code change:
 ```
 docker compose build backend && docker compose up -d backend
+docker compose build frontend && docker compose up -d frontend
 ```
 
-Frontend changes are bind-mounted and hot-reload automatically during development.
+Or rebuild both at once:
+```
+docker compose build && docker compose up -d
+```
 
 ## Ports
 
