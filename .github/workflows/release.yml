@@ -57,6 +57,20 @@ jobs:
           git push origin "$newtag"
           echo "tag=$newtag" >> "$GITHUB_OUTPUT"
 
+      # Create the release as a DRAFT up front. The parallel build jobs upload
+      # their platform binaries to this draft; a published release is immutable,
+      # so we must not publish until every asset is attached (see publish job).
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${{ steps.compute.outputs.tag }}"
+          if ! gh release view "$tag" >/dev/null 2>&1; then
+            gh release create "$tag" --draft --generate-notes --title "$tag"
+          else
+            echo "Release $tag already exists — leaving as-is."
+          fi
+
   release:
     needs: version
     uses: ./.github/workflows/build.yml
@@ -66,3 +80,14 @@ jobs:
       release: true
       tag: ${{ needs.version.outputs.tag }}
       ref: ${{ needs.version.outputs.tag }}
+
+  publish:
+    needs: [version, release]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Publish the draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release edit "${{ needs.version.outputs.tag }}" --draft=false
