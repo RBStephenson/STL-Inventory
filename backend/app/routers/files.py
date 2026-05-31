@@ -171,13 +171,7 @@ def open_folder(path: str):
 
 @router.get("/model-images/{model_id}")
 def list_model_images(model_id: int):
-    """List all images in a model's folder tree and sibling dirs up to the scan root.
-
-    Walks upward from the model folder to the scan root boundary, recursing into
-    each parent's subdirectories — but skipping subdirectories that are themselves
-    indexed as model folders so we don't redundantly re-collect other models' images.
-    This handles images stored in sibling render/preview folders at the character level.
-    """
+    """List all images found within a model's own folder tree (for the image picker)."""
     from app.database import SessionLocal
     from app.models import Model as ModelDB
 
@@ -190,63 +184,14 @@ def list_model_images(model_id: int):
         if not folder.exists():
             return []
 
-        roots = {str(r) for r in _allowed_roots()}
-
-        # Find the search boundary — the highest ancestor before the scan root.
-        boundary = folder
-        current = folder.parent
-        while current != current.parent:
-            if str(current) in roots:
-                break
-            boundary = current
-            current = current.parent
-        # boundary is now the topmost dir we'll search (e.g. creator dir)
-
-        # Only load model folder paths within the search scope — not all 12,500.
-        # Use a prefix filter on the boundary path to limit the query.
-        boundary_prefix = str(boundary)
-        model_folders = {
-            p
-            for (p,) in db.query(ModelDB.folder_path).filter(
-                ModelDB.folder_path.like(f"{boundary_prefix}%")
-            ).all()
-            if p
-        }
-        # Always include the current model's own folder so we recurse into it.
-        model_folders.discard(str(folder))
-
-        seen: set[str] = set()
-        images: list[dict] = []
-
-        def _collect_dir(search_path: Path):
-            """Recursively collect images, skipping subdirs that are model folders."""
-            try:
-                entries = search_path.iterdir()
-            except PermissionError:
-                return
-            for entry in entries:
-                if entry.is_dir():
-                    if str(entry) not in model_folders:
-                        _collect_dir(entry)
-                elif entry.is_file() and entry.suffix.lower() in ALLOWED_IMAGE_EXTENSIONS:
-                    key = str(entry)
-                    if key not in seen:
-                        seen.add(key)
-                        images.append({
-                            "path": key,
-                            "filename": entry.name,
-                            "url": f"/api/files/image?path={entry}",
-                        })
-
-        # Walk upward from the model folder to the scan root, collecting images
-        # at each level (including siblings of the model folder).
-        current = folder
-        while current != current.parent:
-            if str(current) in roots:
-                break
-            _collect_dir(current)
-            current = current.parent
-
+        images = []
+        for img in folder.rglob("*"):
+            if img.is_file() and img.suffix.lower() in ALLOWED_IMAGE_EXTENSIONS:
+                images.append({
+                    "path": str(img),
+                    "filename": img.name,
+                    "url": f"/api/files/image?path={img}",
+                })
         return images
     finally:
         db.close()
