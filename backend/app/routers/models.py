@@ -1,4 +1,3 @@
-from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func, exists, text as _sql
 from sqlalchemy.orm import Session, joinedload
@@ -8,6 +7,7 @@ from app.models import Model, Creator, ModelTag
 from app.schemas import ModelList, ModelRead, ModelDetail, CreatorRead
 from app.services.tag_sync import sync_model_tags
 from app.config import settings
+from app.utils import utcnow
 
 router = APIRouter(prefix="/models", tags=["models"])
 
@@ -232,7 +232,7 @@ def bulk_tag_models(body: dict, db: Session = Depends(get_db)):
         if remove_set:
             current = [t for t in current if t not in remove_set]
         model.tags = current
-        model.updated_at = datetime.utcnow()
+        model.updated_at = utcnow()
         sync_model_tags(model, db)
 
     db.commit()
@@ -268,7 +268,7 @@ def update_model(model_id: int, body: dict, db: Session = Depends(get_db)):
     if "needs_review" not in body:
         model.needs_review = False
 
-    model.updated_at = datetime.utcnow()
+    model.updated_at = utcnow()
     sync_model_tags(model, db)
     db.commit()
     return {"ok": True}
@@ -307,7 +307,7 @@ def set_queue(model_id: int, body: dict, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Model not found")
     in_queue = bool(body.get("in_queue"))
     model.in_queue = in_queue
-    model.queued_at = datetime.utcnow() if in_queue else None
+    model.queued_at = utcnow() if in_queue else None
     db.commit()
     return {"ok": True, "in_queue": model.in_queue}
 
@@ -319,7 +319,7 @@ def set_printed(model_id: int, body: dict, db: Session = Depends(get_db)):
     if not model:
         raise HTTPException(status_code=404, detail="Model not found")
     if bool(body.get("printed")):
-        model.printed_at = datetime.utcnow()
+        model.printed_at = utcnow()
         # Marking printed removes it from the active queue.
         model.in_queue = False
         model.queued_at = None

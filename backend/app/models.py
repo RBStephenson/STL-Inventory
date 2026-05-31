@@ -1,10 +1,10 @@
-from datetime import datetime
 from sqlalchemy import (
     Column, Integer, String, Text, Float, DateTime, Boolean,
     ForeignKey, BigInteger, JSON, UniqueConstraint, Index
 )
 from sqlalchemy.orm import relationship
 from app.database import Base
+from app.utils import utcnow
 
 
 class ScanRoot(Base):
@@ -14,7 +14,7 @@ class ScanRoot(Base):
     path = Column(String, unique=True, nullable=False)
     enabled = Column(Boolean, default=True)
     last_scanned = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utcnow)
 
 
 class Creator(Base):
@@ -79,8 +79,8 @@ class Model(Base):
 
     # Housekeeping
     orynt3d_parsed = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=utcnow)
+    updated_at = Column(DateTime, default=utcnow, onupdate=utcnow)
 
     creator = relationship("Creator", back_populates="models")
     stl_files = relationship("STLFile", back_populates="model")
@@ -97,7 +97,7 @@ class STLFile(Base):
     size_bytes = Column(BigInteger, nullable=True)
     file_hash = Column(String, nullable=True, index=True)
     part_type = Column(String, nullable=True)   # user-assigned part category (head, arm, base…)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utcnow)
 
     model = relationship("Model", back_populates="stl_files")
 
@@ -109,7 +109,7 @@ class Collection(Base):
     name = Column(String, unique=True, nullable=False)
     description = Column(Text, nullable=True)
     cover_image_path = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utcnow)
 
     model_links = relationship("CollectionModel", back_populates="collection")
 

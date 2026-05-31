@@ -1,13 +1,13 @@
 """
 Bulk enrichment endpoints — storefront scrape + fuzzy match + batch apply.
 """
-from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import Optional
 
 from app.database import get_db
+from app.utils import utcnow
 from app.models import Model, Creator
 from app.services.scrapers.storefront import scrape_storefront, StorefrontProduct
 from app.services.matcher import match_products_to_models, MatchCandidate
@@ -127,9 +127,9 @@ async def bulk_apply(
         if item.title and not model.title:
             model.title = item.title
 
-        model.source_last_fetched = datetime.utcnow()
+        model.source_last_fetched = utcnow()
         model.needs_review = False
-        model.updated_at = datetime.utcnow()
+        model.updated_at = utcnow()
         applied += 1
 
     db.commit()

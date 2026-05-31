@@ -34,6 +34,7 @@ from app.database import SessionLocal
 from app.models import Creator, Model, STLFile, ScanRoot
 from app.services import orynt3d_parser, name_parser
 from app.services.tag_sync import sync_model_tags
+from app.utils import utcnow
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +91,7 @@ def scan_all_roots(db: Session | None = None):
                     _scan_state["cancelled"] = True
                     break
                 _scan_root(root, _db)
-                root.last_scanned = datetime.utcnow()
+                root.last_scanned = utcnow()
                 _db.commit()
         finally:
             if own_db:
@@ -304,7 +305,7 @@ def _index_model(
 
         _index_stl_files(model, folder, db)
 
-    model.updated_at = datetime.utcnow()
+    model.updated_at = utcnow()
     sync_model_tags(model, db)
     db.commit()
 
