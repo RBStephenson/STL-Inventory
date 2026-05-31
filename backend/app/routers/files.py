@@ -171,7 +171,14 @@ def open_folder(path: str):
 
 @router.get("/model-images/{model_id}")
 def list_model_images(model_id: int):
-    """List all images found in a model's folder tree and parent dirs up to the scan root."""
+    """List images for the image picker.
+
+    Searches everything within the character/product boundary — the folder
+    directly under the creator dir (e.g. 'Absolute Joker/'). Skips
+    subdirectories that are themselves indexed model folders so sibling
+    variants don't bleed in. Handles models nested at any depth inside
+    the character folder.
+    """
     from app.database import SessionLocal
     from app.models import Model as ModelDB
 
@@ -184,48 +191,55 @@ def list_model_images(model_id: int):
         if not folder.exists():
             return []
 
-        # Determine how far up to search — stop at the scan root boundary so we
-        # don't surface images from sibling models in the same creator folder.
-        # The creator dir is folder.parent if it's directly under a root, but
-        # models can be nested deeper, so walk up until the parent IS a root.
-        roots = {str(r.resolve()) for r in _allowed_roots()}
+        # Find the character boundary: walk up until the parent is the creator
+        # dir (whose own parent is a scan root). That gives us e.g. 'Absolute
+        # Joker/' regardless of how deep the model sits inside it.
+        roots = {str(r) for r in _allowed_roots()}
         boundary = folder
         current = folder.parent
         while current != current.parent:
-            if str(current.resolve()) in roots:
+            if str(current) in roots:
+                # current IS a scan root — model is directly under creator, no
+                # character grouping; boundary stays as the model folder itself.
+                break
+            if str(current.parent) in roots:
+                # current.parent is the scan root → current is the creator dir
+                # → boundary is the folder just inside the creator dir.
+                boundary = current if boundary == folder else boundary
                 break
             boundary = current
             current = current.parent
 
+        # Load all other model folder paths under the boundary so we can skip
+        # them during traversal (avoids mixing in sibling variant images).
+        boundary_prefix = str(boundary)
+        other_model_folders = {
+            p for (p,) in db.query(ModelDB.folder_path)
+            .filter(ModelDB.folder_path.like(f"{boundary_prefix}%"),
+                    ModelDB.id != model.id)
+            .all() if p
+        }
+
         seen: set[str] = set()
         images: list[dict] = []
 
-        def _collect(search_path: Path, recurse: bool):
-            iterator = search_path.rglob("*") if recurse else search_path.iterdir()
-            for img in sorted(iterator):
-                key = str(img.resolve())
-                if key in seen:
-                    continue
-                if img.is_file() and img.suffix.lower() in ALLOWED_IMAGE_EXTENSIONS:
-                    seen.add(key)
-                    images.append({
-                        "path": str(img),
-                        "filename": img.name,
-                        "url": f"/api/files/image?path={img}",
-                    })
+        def _collect(path: Path):
+            try:
+                entries = path.iterdir()
+            except PermissionError:
+                return
+            for entry in entries:
+                if entry.is_dir():
+                    if str(entry) not in other_model_folders:
+                        _collect(entry)
+                elif entry.is_file() and entry.suffix.lower() in ALLOWED_IMAGE_EXTENSIONS:
+                    key = str(entry)
+                    if key not in seen:
+                        seen.add(key)
+                        images.append({"path": key, "filename": entry.name,
+                                       "url": f"/api/files/image?path={entry}"})
 
-        # First collect everything inside the model folder (recurse into sub-dirs)
-        _collect(folder, recurse=True)
-
-        # Then walk upward, collecting only direct image files at each level
-        # (avoids pulling in every image from every sibling model)
-        current = folder.parent
-        while current != current.parent:
-            if str(current.resolve()) in roots:
-                break
-            _collect(current, recurse=False)
-            current = current.parent
-
+        _collect(boundary)
         return images
     finally:
         db.close()
