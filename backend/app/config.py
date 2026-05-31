@@ -16,9 +16,6 @@ class Settings(BaseSettings):
     # MMF switched to OAuth-only — scraping is used instead
     mmf_api_key: str = ""
 
-    # Orynt3D thumbnail cache — mounted into the container from the host
-    orynt3d_thumbnail_cache: str = ""
-
     @property
     def stl_root_list(self) -> list[str]:
         return [r.strip() for r in self.stl_roots.split(",") if r.strip()]

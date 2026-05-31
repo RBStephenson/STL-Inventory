@@ -58,7 +58,6 @@ class ModelRead(ModelBase):
     image_paths: list = []
     rating: Optional[float] = None
     download_count: Optional[int] = None
-    orynt3d_parsed: bool = False
     creator_id: Optional[int] = None
     created_at: datetime
     updated_at: datetime

@@ -20,7 +20,6 @@ class TestAllowedRoots:
         env-based roots so only the DB scan_roots decide the allowlist."""
         import app.routers.files as files_module
         monkeypatch.setattr(files_module.settings, "stl_roots", "")
-        monkeypatch.setattr(files_module.settings, "orynt3d_thumbnail_cache", "")
         files_module._roots_cache = None
         yield
         files_module._roots_cache = None

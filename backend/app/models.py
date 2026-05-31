@@ -38,20 +38,19 @@ class Model(Base):
     # Hierarchy
     character = Column(String, nullable=True)     # inferred grouping above model level
 
-    # Metadata — populated from config.orynt3d or scraped
+    # Metadata — user-edited or scraped
     title = Column(String, nullable=True)
     description = Column(Text, nullable=True)
-    notes = Column(Text, nullable=True)           # modelmeta.notes from orynt3d
+    notes = Column(Text, nullable=True)
     source_url = Column(String, nullable=True)
     source_site = Column(String, nullable=True)   # thingiverse|printables|gumroad|…
     license = Column(String, nullable=True)
     tags = Column(JSON, default=list)             # user-set tags
     auto_tags = Column(JSON, default=list)        # scanner-detected: scale, type, modifiers
     category = Column(String, nullable=True)
-    custom_attributes = Column(JSON, default=dict)  # orynt3d key/value attributes
+    custom_attributes = Column(JSON, default=dict)  # arbitrary key/value attributes
     print_settings = Column(JSON, default=dict)
     external_id = Column(String, nullable=True)   # ID on the source site
-    orynt3d_collections = Column(JSON, default=list)  # modelmeta.collections
 
     # Scraping
     source_last_fetched = Column(DateTime, nullable=True)
@@ -78,7 +77,6 @@ class Model(Base):
     download_count = Column(Integer, nullable=True)
 
     # Housekeeping
-    orynt3d_parsed = Column(Boolean, default=False)
     created_at = Column(DateTime, default=utcnow)
     updated_at = Column(DateTime, default=utcnow, onupdate=utcnow)
 

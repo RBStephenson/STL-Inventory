@@ -33,7 +33,6 @@ export interface Model {
   image_paths: string[];
   rating: number | null;
   download_count: number | null;
-  orynt3d_parsed: boolean;
   creator_id: number | null;
   created_at: string;
   updated_at: string;
