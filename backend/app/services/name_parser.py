@@ -35,12 +35,18 @@ class NameSignals:
 # ---------------------------------------------------------------------------
 # Scale patterns
 # ---------------------------------------------------------------------------
-_SCALE_RATIO = re.compile(r"\b1[-/:\s_](\d{1,2})\b", re.I)
+_SCALE_RATIO = re.compile(r"(?<!\d)1[-/:\s_](\d{1,2})(?!\d)", re.I)
 
 _SCALE_MM = re.compile(
-    r"\b(14|18|28|30|32|35|40|54|70|75|90|120|180|200|300|350)\s*mm\b",
+    r"(?<!\d)(14|18|28|30|32|35|40|54|70|75|90|120|180|200|300|350)\s*mm\b",
     re.I,
 )
+
+# Scales that imply a collectible statue (not a miniature)
+_STATUE_SCALES = {"1:4", "1:5", "1:6", "1:8", "1:9", "1:10", "1:12"}
+
+# Normalise "1_12scale" / "1:6Scale" → "1_12 scale" before ratio regex runs
+_SCALE_GLUED = re.compile(r"((?<!\d)1[-/:\s_]\d{1,2})(scale)\b", re.I)
 
 # ---------------------------------------------------------------------------
 # Type keywords
@@ -200,6 +206,10 @@ def _parse_text(text: str) -> NameSignals:
     sig = NameSignals()
     lower = text.lower().strip()
 
+    # Normalise "1_12scale" / "1:6scale" → "1_12 scale" so the ratio regex
+    # can match when the scale number runs directly into the word "scale".
+    text = _SCALE_GLUED.sub(r"\1 \2", text)
+
     for m in _SCALE_RATIO.finditer(text):
         tag = f"1:{m.group(1)}"
         if tag not in sig.scales:
@@ -209,6 +219,10 @@ def _parse_text(text: str) -> NameSignals:
         tag = f"{m.group(1)}mm"
         if tag not in sig.scales:
             sig.scales.append(tag)
+
+    # Infer "statue" type from collector-scale ratios when no type is explicit
+    if any(s in _STATUE_SCALES for s in sig.scales) and "statue" not in sig.types:
+        sig.types.append("statue")
 
     for pattern, tag in _TYPES:
         if pattern.search(text) and tag not in sig.types:
