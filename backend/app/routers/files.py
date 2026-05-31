@@ -171,7 +171,13 @@ def open_folder(path: str):
 
 @router.get("/model-images/{model_id}")
 def list_model_images(model_id: int):
-    """List all images found within a model's own folder tree (for the image picker)."""
+    """List images for the image picker.
+
+    Searches the model's own folder tree, then also looks one level up into the
+    parent (character/product) folder — recursing into any subdirs there that
+    aren't themselves indexed model folders. This covers the common layout where
+    images sit alongside variant subfolders rather than inside any one variant.
+    """
     from app.database import SessionLocal
     from app.models import Model as ModelDB
 
@@ -184,14 +190,39 @@ def list_model_images(model_id: int):
         if not folder.exists():
             return []
 
-        images = []
+        seen: set[str] = set()
+        images: list[dict] = []
+
+        def _add(img: Path):
+            key = str(img)
+            if key not in seen:
+                seen.add(key)
+                images.append({"path": key, "filename": img.name,
+                                "url": f"/api/files/image?path={img}"})
+
+        # 1. Everything inside the model folder
         for img in folder.rglob("*"):
             if img.is_file() and img.suffix.lower() in ALLOWED_IMAGE_EXTENSIONS:
-                images.append({
-                    "path": str(img),
-                    "filename": img.name,
-                    "url": f"/api/files/image?path={img}",
-                })
+                _add(img)
+
+        # 2. One level up: direct files + non-model subdirs in the parent folder.
+        #    Fetch sibling model paths so we know what to skip.
+        parent = folder.parent
+        if parent != folder and parent.exists():
+            sibling_model_folders = {
+                p for (p,) in db.query(ModelDB.folder_path)
+                .filter(ModelDB.folder_path.like(f"{str(parent)}%"),
+                        ModelDB.id != model.id)
+                .all() if p
+            }
+            for entry in parent.iterdir():
+                if entry.is_file() and entry.suffix.lower() in ALLOWED_IMAGE_EXTENSIONS:
+                    _add(entry)
+                elif entry.is_dir() and str(entry) not in sibling_model_folders:
+                    for img in entry.rglob("*"):
+                        if img.is_file() and img.suffix.lower() in ALLOWED_IMAGE_EXTENSIONS:
+                            _add(img)
+
         return images
     finally:
         db.close()
