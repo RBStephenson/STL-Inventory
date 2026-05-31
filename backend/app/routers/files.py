@@ -171,7 +171,13 @@ def open_folder(path: str):
 
 @router.get("/model-images/{model_id}")
 def list_model_images(model_id: int):
-    """List all images found in a model's folder tree and parent dirs up to the scan root."""
+    """List all images in a model's folder tree and sibling dirs up to the scan root.
+
+    Walks upward from the model folder to the scan root boundary, recursing into
+    each parent's subdirectories — but skipping subdirectories that are themselves
+    indexed as model folders so we don't redundantly re-collect other models' images.
+    This handles images stored in sibling render/preview folders at the character level.
+    """
     from app.database import SessionLocal
     from app.models import Model as ModelDB
 
@@ -184,46 +190,48 @@ def list_model_images(model_id: int):
         if not folder.exists():
             return []
 
-        # Determine how far up to search — stop at the scan root boundary so we
-        # don't surface images from sibling models in the same creator folder.
-        # The creator dir is folder.parent if it's directly under a root, but
-        # models can be nested deeper, so walk up until the parent IS a root.
         roots = {str(r.resolve()) for r in _allowed_roots()}
-        boundary = folder
-        current = folder.parent
-        while current != current.parent:
-            if str(current.resolve()) in roots:
-                break
-            boundary = current
-            current = current.parent
+
+        # Build a set of all indexed model folder paths so we can skip them when
+        # recursing into siblings (avoids re-surfacing other models' images).
+        model_folders = {
+            str(Path(p).resolve())
+            for (p,) in db.query(ModelDB.folder_path).all()
+            if p
+        }
+        # Always include the current model's folder so we DO recurse into it.
+        model_folders.discard(str(folder.resolve()))
 
         seen: set[str] = set()
         images: list[dict] = []
 
-        def _collect(search_path: Path, recurse: bool):
-            iterator = search_path.rglob("*") if recurse else search_path.iterdir()
-            for img in sorted(iterator):
-                key = str(img.resolve())
-                if key in seen:
-                    continue
-                if img.is_file() and img.suffix.lower() in ALLOWED_IMAGE_EXTENSIONS:
-                    seen.add(key)
-                    images.append({
-                        "path": str(img),
-                        "filename": img.name,
-                        "url": f"/api/files/image?path={img}",
-                    })
+        def _collect_dir(search_path: Path):
+            """Recursively collect images, skipping subdirs that are model folders."""
+            try:
+                entries = sorted(search_path.iterdir())
+            except PermissionError:
+                return
+            for entry in entries:
+                if entry.is_dir():
+                    if str(entry.resolve()) not in model_folders:
+                        _collect_dir(entry)
+                elif entry.is_file() and entry.suffix.lower() in ALLOWED_IMAGE_EXTENSIONS:
+                    key = str(entry.resolve())
+                    if key not in seen:
+                        seen.add(key)
+                        images.append({
+                            "path": str(entry),
+                            "filename": entry.name,
+                            "url": f"/api/files/image?path={entry}",
+                        })
 
-        # First collect everything inside the model folder (recurse into sub-dirs)
-        _collect(folder, recurse=True)
-
-        # Then walk upward, collecting only direct image files at each level
-        # (avoids pulling in every image from every sibling model)
-        current = folder.parent
+        # Walk upward from the model folder to the scan root, collecting images
+        # at each level (including siblings of the model folder).
+        current = folder
         while current != current.parent:
             if str(current.resolve()) in roots:
                 break
-            _collect(current, recurse=False)
+            _collect_dir(current)
             current = current.parent
 
         return images
