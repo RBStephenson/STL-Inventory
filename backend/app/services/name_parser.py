@@ -187,15 +187,60 @@ def children_look_like_parts(child_names: list[str]) -> bool:
     return parts_count / len(child_names) >= 0.6
 
 
-def extract_character_name(folder_name: str) -> str:
-    """Strip scale/type/modifier tokens from a folder name to infer character."""
-    name = folder_name
-    name = _SCALE_RATIO.sub("", name)
+def _strip_signal_tokens(folder_name: str) -> str:
+    """Remove scale/type/modifier tokens, returning what's left (may be empty)."""
+    name = _SCALE_RATIO.sub("", folder_name)
     name = _SCALE_MM.sub("", name)
     for pattern, _ in _TYPES + _MODIFIERS:
         name = pattern.sub("", name)
-    name = re.sub(r"[-_\s]+", " ", name).strip(" -_")
-    return name or folder_name
+    return re.sub(r"[-_\s]+", " ", name).strip(" -_")
+
+
+def extract_character_name(folder_name: str) -> str:
+    """Strip scale/type/modifier tokens from a folder name to infer character."""
+    return _strip_signal_tokens(folder_name) or folder_name
+
+
+# Folder names that describe structure or a variant (support status, container,
+# render folder) rather than a character/product. These must never be used as the
+# variant-grouping "character" — otherwise every creator's "Presupport" / "75mm" /
+# "Unsupported" folder collapses into one giant cross-character bucket.
+_STRUCTURAL_EXACT: set[str] = {
+    "stl", "stls", "lychee", "chitubox", "files", "print", "print files",
+    "presupport", "presupports", "presupported", "pre-supported", "pre supported",
+    "supported", "unsupported", "no_supported", "no supported", "no_support",
+    "nosupport", "nosupports", "supports", "support",
+    "renders", "render", "images", "image", "photos", "photo",
+    "preview", "previews", "gallery", "turntable",
+    "split", "merged", "solid", "hollow",
+}
+
+
+def is_structural_folder(name: str) -> bool:
+    """True if `name` is a structural/variant descriptor, not a character name.
+
+    Catches support-status (presupport/supported/unsupported…), container folders
+    (stl/lychee), render folders (renders/images), and folders made up *only* of
+    scale/type tokens (e.g. "75mm", "Bust", "1-10 Scale Split").
+    """
+    low = name.lower().strip()
+    if low in _STRUCTURAL_EXACT or low in _PARTS_EXACT:
+        return True
+    cleaned = re.sub(r"[\s_\-]+", "", _strip_signal_tokens(name)).lower()
+    if cleaned in {"", "scale", "scalesplit", "split", "miniature", "mini"}:
+        return True
+    # Every word is itself structural/scale (e.g. "Render Images",
+    # "Colored Turntable", "Supported Solid", "75mm Bust").
+    _EXTRA = {"colored", "color", "turntable", "scale"}
+    tokens = [t for t in re.split(r"[\s_\-]+", low) if t]
+    return bool(tokens) and all(
+        t in _STRUCTURAL_EXACT
+        or t in _PARTS_EXACT
+        or t in _EXTRA
+        or re.fullmatch(r"\d+mm", t)            # any mm scale, incl. unlisted sizes
+        or not _strip_signal_tokens(t)
+        for t in tokens
+    )
 
 
 # ---------------------------------------------------------------------------

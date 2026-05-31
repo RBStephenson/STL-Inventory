@@ -28,10 +28,10 @@ from datetime import datetime
 from pathlib import Path
 from sqlalchemy.orm import Session
 
-from sqlalchemy import text as _sqltext
+from sqlalchemy import text as _sqltext, func
 
 from app.database import SessionLocal
-from app.models import Creator, Model, STLFile, ScanRoot
+from app.models import Creator, Model, STLFile, ScanRoot, ModelTag, CollectionModel
 from app.services import orynt3d_parser, name_parser
 from app.services.tag_sync import sync_model_tags
 from app.utils import utcnow
@@ -98,6 +98,9 @@ def scan_all_roots(db: Session | None = None):
                 _scan_root(root, _db)
                 root.last_scanned = utcnow()
                 _db.commit()
+
+            if not _cancel_requested:
+                _prune_phantoms(_db)
         finally:
             if own_db:
                 _db.close()
@@ -107,6 +110,39 @@ def scan_all_roots(db: Session | None = None):
     finally:
         _scan_state["running"] = False
         _scan_lock.release()
+
+
+def _prune_phantoms(db: Session):
+    """Delete models that have no STL files — render/preview/empty folders that
+    earlier scanner versions wrongly indexed.
+
+    After a completed full scan, every STL-containing folder has been indexed, so a
+    model with zero STL rows genuinely has no printable files. (Incremental skips
+    keep prior STL rows, so unchanged real models are never empty.) Set-based for
+    speed — no per-model disk walk. As a safety net against a botched indexing run,
+    skip pruning if an implausibly large share of models look empty.
+    """
+    total = db.query(func.count(Model.id)).scalar() or 0
+    ids = [
+        row[0] for row in
+        db.query(Model.id).filter(~Model.id.in_(db.query(STLFile.model_id).distinct()))
+    ]
+    if not ids:
+        return
+    if total and len(ids) > total * 0.5:
+        logger.warning(
+            f"Phantom prune skipped: {len(ids)}/{total} models have no STLs — "
+            "that looks like an indexing failure, not phantoms."
+        )
+        return
+
+    for i in range(0, len(ids), 500):
+        chunk = ids[i:i + 500]
+        db.query(ModelTag).filter(ModelTag.model_id.in_(chunk)).delete(synchronize_session=False)
+        db.query(CollectionModel).filter(CollectionModel.model_id.in_(chunk)).delete(synchronize_session=False)
+        db.query(Model).filter(Model.id.in_(chunk)).delete(synchronize_session=False)
+    db.commit()
+    logger.info(f"Post-scan: pruned {len(ids)} phantom models (no STL files)")
 
 
 def _creator_dirs_for(creator: Creator, db: Session) -> list[tuple[Path, dict]]:
@@ -278,6 +314,8 @@ def _walk_for_models(
 
     child_dirs = [d for d in sorted(folder.iterdir()) if d.is_dir()]
     has_direct_stls = _has_stls(folder, recurse=False)
+    any_child_stls = _any_child_has_stls_cached(child_dirs, stl_cache)
+    has_any_stls = has_direct_stls or any_child_stls
 
     # Collect file names for signal detection
     try:
@@ -286,21 +324,21 @@ def _walk_for_models(
         filenames = []
 
     # --- Step 2: name-based product detection (folder + files + parents) ---
+    # Require the subtree to actually contain STLs. A folder whose *name* (or whose
+    # image filenames, e.g. "Auron_bust_75mm.png") trips a scale/type signal but
+    # holds no printable files — render/preview folders — must never be a model.
     signals = name_parser.parse_folder(
         str(folder),
         filenames=filenames,
         parent_names=parent_names,
     )
-    if not is_creator_root and signals.is_product:
+    if not is_creator_root and signals.is_product and has_any_stls:
         _index_model(folder, creator, model_meta, inherited, db, creator_boundary, character,
                      stl_cache, auto_signals=signals, last_scanned=last_scanned)
         return
 
-    # Compute once — used in both step 3 and step 4 checks below.
-    any_child_stls = _any_child_has_stls_cached(child_dirs, stl_cache)
-
     # --- Step 3: has STLs + children look like parts ---
-    if not is_creator_root and (has_direct_stls or any_child_stls):
+    if not is_creator_root and has_any_stls:
         child_names = [d.name for d in child_dirs]
         if has_direct_stls and name_parser.children_look_like_parts(child_names):
             _index_model(folder, creator, model_meta, inherited, db, creator_boundary, character,
@@ -313,10 +351,14 @@ def _walk_for_models(
                          stl_cache, auto_signals=signals, last_scanned=last_scanned)
             return
 
-    # Not a leaf — recurse, carrying this folder name as character context
-    # and adding it to parent_names for child signal detection.
+    # Not a leaf — recurse. Carry the deepest *meaningful* folder as the variant
+    # grouping "character": skip parts and structural folders (Presupport, STL,
+    # 75mm, Bust, Unsupported…) so a character's variants all group under its real
+    # name instead of scattering across structural buckets.
     next_character = character
-    if folder != creator_boundary and not signals.is_parts:
+    if (folder != creator_boundary
+            and not signals.is_parts
+            and not name_parser.is_structural_folder(folder.name)):
         next_character = folder.name
 
     next_parents = (parent_names or []) + [folder.name]
@@ -367,9 +409,10 @@ def _index_model(
             db.add(model)
             db.flush()
 
-        # Character grouping
-        if character:
-            model.character = character
+        # Character grouping — always reflect the current walk (including None),
+        # so a model whose path is all-structural clears any stale character that
+        # an earlier scanner version assigned from a structural folder name.
+        model.character = character
 
         # Auto-detected signals
         if auto_signals:
