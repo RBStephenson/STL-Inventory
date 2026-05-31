@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
@@ -7,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Model, Creator
 from app.services import scrapers
+from app.utils import utcnow
 
 router = APIRouter(prefix="/scrape", tags=["scrape"])
 
@@ -135,9 +135,9 @@ async def apply_metadata(
             db.flush()
         model.creator_id = creator.id
 
-    model.source_last_fetched = datetime.utcnow()
+    model.source_last_fetched = utcnow()
     model.needs_review = False  # user reviewed it, clear the flag
-    model.updated_at = datetime.utcnow()
+    model.updated_at = utcnow()
     db.commit()
 
     return {"ok": True, "model_id": model_id}

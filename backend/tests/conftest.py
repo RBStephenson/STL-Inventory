@@ -11,7 +11,7 @@ os.environ["DATABASE_URL"] = "sqlite:///:memory:"
 os.environ["STL_ROOTS"] = "/tmp"
 
 import pytest
-from datetime import datetime
+from app.utils import utcnow
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
@@ -97,8 +97,8 @@ def make_model(
         needs_review=needs_review,
         tags=tags or [],
         auto_tags=[],
-        created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow(),
+        created_at=utcnow(),
+        updated_at=utcnow(),
     )
     db.add(m)
     db.flush()
