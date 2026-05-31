@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Check, ImageOff, Loader2, Link2 } from "lucide-react";
+import { X, Check, ImageOff, Loader2, Link2, Trash2 } from "lucide-react";
 
 interface ImageEntry {
   path: string;
@@ -29,12 +29,14 @@ export default function ImagePicker({ modelId, currentPath, onApplied, onClose }
       .catch(() => setLoading(false));
   }, [modelId]);
 
-  const apply = async () => {
+  const apply = async (clear = false) => {
     setSaving(true);
     try {
-      const body = tab === "url"
-        ? { thumbnail_url: urlInput.trim(), thumbnail_path: null }
-        : { thumbnail_path: selected, thumbnail_url: null };
+      const body = clear
+        ? { thumbnail_path: null, thumbnail_url: null }
+        : tab === "url"
+          ? { thumbnail_url: urlInput.trim(), thumbnail_path: null }
+          : { thumbnail_path: selected, thumbnail_url: null };
 
       await fetch(`/api/models/${modelId}/thumbnail`, {
         method: "PATCH",
@@ -143,18 +145,29 @@ export default function ImagePicker({ modelId, currentPath, onApplied, onClose }
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-2 px-5 py-4 border-t border-gray-800">
-          <button onClick={onClose} className="px-4 py-2 rounded bg-gray-800 hover:bg-gray-700 text-sm text-gray-300">
-            Cancel
-          </button>
+        <div className="flex items-center justify-between px-5 py-4 border-t border-gray-800">
           <button
-            onClick={apply}
-            disabled={saving || (tab === "local" ? !selected : !urlInput.trim())}
-            className="px-4 py-2 rounded bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-sm flex items-center gap-1.5 transition-colors"
+            onClick={() => apply(true)}
+            disabled={saving || (!currentPath && !urlInput)}
+            title="Remove the current thumbnail"
+            className="flex items-center gap-1.5 px-3 py-2 rounded bg-gray-800 hover:bg-red-900/50 hover:text-red-400 disabled:opacity-30 text-sm text-gray-500 transition-colors"
           >
-            {saving ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
-            Set as Thumbnail
+            <Trash2 size={13} />
+            Clear
           </button>
+          <div className="flex items-center gap-2">
+            <button onClick={onClose} className="px-4 py-2 rounded bg-gray-800 hover:bg-gray-700 text-sm text-gray-300">
+              Cancel
+            </button>
+            <button
+              onClick={() => apply(false)}
+              disabled={saving || (tab === "local" ? !selected : !urlInput.trim())}
+              className="px-4 py-2 rounded bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-sm flex items-center gap-1.5 transition-colors"
+            >
+              {saving ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
+              Set as Thumbnail
+            </button>
+          </div>
         </div>
       </div>
     </div>
