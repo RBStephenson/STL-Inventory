@@ -4,7 +4,6 @@ File system scanner.
 Folder structure on disk (variable depth):
   <root>/
     <Creator>/
-      config.orynt3d             ← creator-level config (optional)
       <Character>/               ← user-created grouping folder
         Images/                  ← shared images (may be here or anywhere)
         <Product Variant>/       ← extracted from a ZIP ← Model
@@ -12,11 +11,11 @@ Folder structure on disk (variable depth):
           Base/
         <Another Variant -Pre Supported>/   ← separate Model
 
+A folder is only ever a model if its subtree contains STL files.
 Leaf detection priority:
-  1. config.orynt3d with modelMode == 2 (explicit Orynt3D leaf)
-  2. Folder name contains scale/type/modifier signals (product boundary)
-  3. Folder contains STLs and all child dirs look like parts sub-folders
-  4. Folder contains STLs and has no children with STLs (deepest fallback)
+  1. Folder name contains scale/type/modifier signals (product boundary)
+  2. Folder contains STLs and all child dirs look like parts sub-folders
+  3. Folder contains STLs and has no children with STLs (deepest fallback)
 
 Auto-tags are generated from detected scale, type, and modifier tokens.
 needs_review=True is set when confidence is low.
@@ -32,7 +31,7 @@ from sqlalchemy import text as _sqltext, func
 
 from app.database import SessionLocal
 from app.models import Creator, Model, STLFile, ScanRoot, ModelTag, CollectionModel
-from app.services import orynt3d_parser, name_parser
+from app.services import name_parser
 from app.services.tag_sync import sync_model_tags
 from app.utils import utcnow
 
@@ -73,15 +72,11 @@ def scan_all_roots(db: Session | None = None):
         try:
             # Clear needs_review for any model that already has indexed STL files —
             # those are confirmed real products that were over-eagerly flagged.
-            # Orynt3D-parsed models also get cleared since they have explicit metadata.
             result = _db.execute(_sqltext(
                 """
                 UPDATE models SET needs_review = 0
                 WHERE needs_review = 1
-                  AND (
-                    orynt3d_parsed = 1
-                    OR id IN (SELECT DISTINCT model_id FROM stl_files)
-                  )
+                  AND id IN (SELECT DISTINCT model_id FROM stl_files)
                 """
             ))
             cleared = result.rowcount
@@ -145,7 +140,7 @@ def _prune_phantoms(db: Session):
     logger.info(f"Post-scan: pruned {len(ids)} phantom models (no STL files)")
 
 
-def _creator_dirs_for(creator: Creator, db: Session) -> list[tuple[Path, dict]]:
+def _creator_dirs_for(creator: Creator, db: Session) -> list[Path]:
     """Resolve the on-disk top-level folder(s) for a creator from its indexed
     models — the path segment that sits directly under a scan root. A creator
     normally maps to one folder, but we handle several defensively."""
@@ -164,12 +159,7 @@ def _creator_dirs_for(creator: Creator, db: Session) -> list[tuple[Path, dict]]:
                 boundaries.add(root / rel.parts[0])
             break
 
-    result: list[tuple[Path, dict]] = []
-    for d in sorted(boundaries):
-        if d.exists():
-            meta = orynt3d_parser.parse_creator_config(str(d)) or {}
-            result.append((d, meta))
-    return result
+    return [d for d in sorted(boundaries) if d.exists()]
 
 
 def scan_creator(creator_id: int):
@@ -194,7 +184,7 @@ def scan_creator(creator_id: int):
                 """
                 UPDATE models SET needs_review = 0
                 WHERE needs_review = 1 AND creator_id = :cid
-                  AND (orynt3d_parsed = 1 OR id IN (SELECT DISTINCT model_id FROM stl_files))
+                  AND id IN (SELECT DISTINCT model_id FROM stl_files)
                 """
             ), {"cid": creator_id})
             db.commit()
@@ -204,7 +194,7 @@ def scan_creator(creator_id: int):
                 _scan_state["message"] = "no folders found for creator"
                 return
 
-            for creator_dir, meta in dirs:
+            for creator_dir in dirs:
                 if _cancel_requested:
                     _scan_state["message"] = "cancelled"
                     _scan_state["cancelled"] = True
@@ -214,7 +204,6 @@ def scan_creator(creator_id: int):
                 _walk_for_models(
                     folder=creator_dir,
                     creator=creator,
-                    inherited=meta,
                     db=db,
                     creator_boundary=creator_dir,
                     character=None,
@@ -246,18 +235,16 @@ def _scan_root(root: ScanRoot, db: Session):
 
     # Pre-create all Creator rows in the main session before going parallel so
     # worker threads never race to INSERT the same creator name.
-    creator_info: dict[str, tuple[int, dict]] = {}
+    creator_ids: dict[str, int] = {}
     for creator_dir in creator_dirs:
-        creator_meta = orynt3d_parser.parse_creator_config(str(creator_dir)) or {}
-        creator_name = creator_meta.get("creator_name") or creator_dir.name
-        creator = _get_or_create_creator(creator_name, db)
-        creator_info[str(creator_dir)] = (creator.id, creator_meta)
+        creator = _get_or_create_creator(creator_dir.name, db)
+        creator_ids[str(creator_dir)] = creator.id
     db.commit()
 
     def _scan_one(creator_dir: Path):
         if _cancel_requested:
             return
-        creator_id, creator_meta = creator_info[str(creator_dir)]
+        creator_id = creator_ids[str(creator_dir)]
         thread_db = SessionLocal()
         try:
             creator = thread_db.get(Creator, creator_id)
@@ -266,7 +253,6 @@ def _scan_root(root: ScanRoot, db: Session):
             _walk_for_models(
                 folder=creator_dir,
                 creator=creator,
-                inherited=creator_meta,
                 db=thread_db,
                 creator_boundary=creator_dir,
                 character=None,
@@ -287,7 +273,6 @@ def _scan_root(root: ScanRoot, db: Session):
 def _walk_for_models(
     folder: Path,
     creator: Creator,
-    inherited: dict,
     db: Session,
     creator_boundary: Path,
     character: str | None,
@@ -304,14 +289,6 @@ def _walk_for_models(
     # creator into a single model. Always recurse past it into the character folders.
     is_creator_root = folder == creator_boundary
 
-    model_meta = orynt3d_parser.parse_model_config(str(folder))
-
-    # --- Step 1: explicit Orynt3D leaf ---
-    if not is_creator_root and model_meta and model_meta.get("is_leaf"):
-        _index_model(folder, creator, model_meta, inherited, db, creator_boundary, character,
-                     stl_cache, last_scanned=last_scanned)
-        return
-
     child_dirs = [d for d in sorted(folder.iterdir()) if d.is_dir()]
     has_direct_stls = _has_stls(folder, recurse=False)
     any_child_stls = _any_child_has_stls_cached(child_dirs, stl_cache)
@@ -323,7 +300,7 @@ def _walk_for_models(
     except Exception:
         filenames = []
 
-    # --- Step 2: name-based product detection (folder + files + parents) ---
+    # --- Step 1: name-based product detection (folder + files + parents) ---
     # Require the subtree to actually contain STLs. A folder whose *name* (or whose
     # image filenames, e.g. "Auron_bust_75mm.png") trips a scale/type signal but
     # holds no printable files — render/preview folders — must never be a model.
@@ -333,21 +310,21 @@ def _walk_for_models(
         parent_names=parent_names,
     )
     if not is_creator_root and signals.is_product and has_any_stls:
-        _index_model(folder, creator, model_meta, inherited, db, creator_boundary, character,
+        _index_model(folder, creator, db, creator_boundary, character,
                      stl_cache, auto_signals=signals, last_scanned=last_scanned)
         return
 
-    # --- Step 3: has STLs + children look like parts ---
+    # --- Step 2: has STLs + children look like parts ---
     if not is_creator_root and has_any_stls:
         child_names = [d.name for d in child_dirs]
         if has_direct_stls and name_parser.children_look_like_parts(child_names):
-            _index_model(folder, creator, model_meta, inherited, db, creator_boundary, character,
+            _index_model(folder, creator, db, creator_boundary, character,
                          stl_cache, auto_signals=signals, last_scanned=last_scanned)
             return
 
-        # --- Step 4: deepest fallback — STLs here, nothing below ---
+        # --- Step 3: deepest fallback — STLs here, nothing below ---
         if has_direct_stls and not any_child_stls:
-            _index_model(folder, creator, model_meta, inherited, db, creator_boundary, character,
+            _index_model(folder, creator, db, creator_boundary, character,
                          stl_cache, auto_signals=signals, last_scanned=last_scanned)
             return
 
@@ -364,7 +341,7 @@ def _walk_for_models(
     next_parents = (parent_names or []) + [folder.name]
 
     for child in sorted(child_dirs):
-        _walk_for_models(child, creator, inherited, db, creator_boundary,
+        _walk_for_models(child, creator, db, creator_boundary,
                          character=next_character, parent_names=next_parents,
                          stl_cache=stl_cache, last_scanned=last_scanned)
 
@@ -372,8 +349,6 @@ def _walk_for_models(
 def _index_model(
     folder: Path,
     creator: Creator,
-    model_meta: dict | None,
-    inherited: dict,
     db: Session,
     creator_boundary: Path | None,
     character: str | None,
@@ -391,8 +366,8 @@ def _index_model(
         model = db.query(Model).filter(Model.folder_path == folder_path).first()
 
         # Skip expensive file indexing when the folder hasn't changed since the
-        # last scan. Metadata updates (tags, orynt3d) still run so manual edits
-        # and parser improvements are picked up.
+        # last scan. Metadata/tag updates still run so manual edits and parser
+        # improvements are picked up.
         folder_unchanged = (
             model is not None
             and last_scanned is not None
@@ -418,36 +393,14 @@ def _index_model(
         if auto_signals:
             model.auto_tags = auto_signals.auto_tags
             # Only flag needs_review for brand-new models that look genuinely
-            # ambiguous: no orynt3d config AND no name/type signals AND no
-            # direct STL files in this folder (only found recursively).
-            # Existing models are cleared at scan start if they have STL files,
-            # so we avoid re-flagging the same false positives on every rescan.
-            if is_new and not model_meta and auto_signals.confidence < 0.25:
+            # ambiguous: no name/type signals AND no direct STL files in this
+            # folder (only found recursively). Existing models are cleared at
+            # scan start if they have STL files, so we avoid re-flagging the
+            # same false positives on every rescan.
+            if is_new and auto_signals.confidence < 0.25:
                 has_direct_stls = _has_stls(folder, recurse=False)
                 if not has_direct_stls:
                     model.needs_review = True
-
-        # orynt3d metadata
-        if model_meta:
-            if model_meta.get("name"):
-                model.title = model_meta["name"]
-            model.notes = model_meta.get("notes") or model.notes
-            model.tags = model_meta.get("tags") or model.tags or []
-            model.orynt3d_parsed = True
-            model.source_site = (
-                model_meta.get("source_site")
-                or inherited.get("source_site")
-                or model.source_site
-            )
-            model.source_url = model_meta.get("source_url") or model.source_url
-            attrs = model_meta.get("attributes") or {}
-            if attrs:
-                model.custom_attributes = attrs
-            model.orynt3d_collections = model_meta.get("collections") or model.orynt3d_collections or []
-            if model_meta.get("cover_path"):
-                model.thumbnail_path = model_meta["cover_path"]
-        elif inherited:
-            model.source_site = inherited.get("source_site") or model.source_site
 
         if not folder_unchanged:
             # Thumbnail: walk upward if not already set

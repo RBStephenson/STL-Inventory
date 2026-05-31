@@ -49,9 +49,6 @@ def _allowed_roots() -> list[Path]:
     except Exception:
         logger.exception("Failed to load scan roots for the file-serving allowlist")
 
-    if settings.orynt3d_thumbnail_cache:
-        roots.append(Path(settings.orynt3d_thumbnail_cache))
-
     # De-duplicate while preserving order.
     seen: set[str] = set()
     unique: list[Path] = []

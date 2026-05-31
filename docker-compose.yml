@@ -14,11 +14,9 @@ services:
       # Mac example:    "/Volumes/MyDrive1:/mnt/drive1:ro"
       - "${STL_DRIVE_1:-/mnt/drive1}:/mnt/drive1:ro"
       - "${STL_DRIVE_2:-/mnt/drive2}:/mnt/drive2:ro"
-      - "${ORYNT3D_THUMBNAIL_CACHE:-/mnt/orynt3d_cache}:/mnt/orynt3d_cache:ro"
     environment:
       - DATABASE_URL=sqlite:////data/stl_inventory.db
       - STL_ROOTS=/mnt/drive1,/mnt/drive2
-      - ORYNT3D_THUMBNAIL_CACHE=/mnt/orynt3d_cache
       - STL_DRIVE_1=${STL_DRIVE_1:-}
       - STL_DRIVE_2=${STL_DRIVE_2:-}
     restart: unless-stopped

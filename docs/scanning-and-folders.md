@@ -10,7 +10,6 @@ laid out unusually or aren't being detected the way you'd expect.
 - [needs_review](#needs_review)
 - [Full scan vs. per-creator rescan](#full-scan-vs-per-creator-rescan)
 - [Incremental scanning](#incremental-scanning)
-- [Orynt3D support](#orynt3d-support)
 
 ---
 
@@ -21,7 +20,6 @@ The scanner is built around this general shape, but it's flexible about depth:
 ```
 <scan root>/
   <Creator>/                         ← top-level folder = a creator
-    config.orynt3d                   ← optional creator metadata
     <Character or Product>/          ← a grouping folder (optional)
       Images/  Renders/  …           ← preview images (any common name)
       <Variant>/                     ← e.g. "Bust", "1:6 Pre-supported"  ← a MODEL
@@ -34,24 +32,25 @@ Key ideas:
 - **The top-level folder under a scan root is always a creator** — never a model
   itself, even if its name contains a word like "Figures" or "Miniatures."
 - A **model** is a folder containing the actual printable parts for one product
-  or variant.
+  or variant. A folder is only ever indexed as a model if its subtree contains
+  3D files (`.stl` / `.3mf` / `.obj`) — render/preview-only folders are skipped.
 - Folders below a model (e.g. `head/`, `base/`, `Supported/STL/`) are treated as
   **parts of that model**, not separate models.
 
 ## How a "model" is detected
 
-For each folder, the scanner decides "is this a model?" in priority order:
+For each folder (that contains 3D files somewhere in its subtree), the scanner
+decides "is this a model?" in priority order:
 
-1. **Orynt3D config** — if the folder has a `config.orynt3d` marking it as a
-   model, that's authoritative.
-2. **Name signals** — the folder name contains scale/type/modifier hints
+1. **Name signals** — the folder name contains scale/type/modifier hints
    (e.g. `1:6`, `Bust`, `Pre-supported`), marking a product boundary.
-3. **Parts pattern** — the folder has STLs and its sub-folders look like parts
+2. **Parts pattern** — the folder has STLs and its sub-folders look like parts
    (`head`, `base`, `supported`…).
-4. **Deepest fallback** — the folder has STLs and nothing below it has STLs.
+3. **Deepest fallback** — the folder has STLs and nothing below it has STLs.
 
-If none match, the scanner recurses deeper, carrying the folder name along as
-**character** context (which powers [variant grouping](features.md#variant-grouping)).
+If none match, the scanner recurses deeper, carrying the deepest **meaningful**
+(non-structural) folder name along as **character** context, which powers
+[variant grouping](features.md#variant-grouping).
 
 ## Thumbnails
 
@@ -83,12 +82,11 @@ them — so as detection improves, your tags improve too.
 
 ## needs_review
 
-When the scanner finds a folder it isn't confident about — no Orynt3D config, no
-name signals, and no STL files directly inside it — it flags the model
+When the scanner finds a folder it isn't confident about — no name signals and no
+STL files directly inside it (only found recursively) — it flags the model
 `needs_review` so you can confirm or fix it in the
-[Triage queue](features.md#triage-queue). Models that clearly have STL files or
-Orynt3D metadata are never flagged, and the flag is cleared automatically once a
-model is confirmed.
+[Triage queue](features.md#triage-queue). Models that clearly have STL files are
+never flagged, and the flag is cleared automatically once a model is confirmed.
 
 ## Full scan vs. per-creator rescan
 
@@ -110,10 +108,3 @@ rules) are picked up even on unchanged folders.
 
 A **per-creator rescan** always does a full reindex of that creator, so it's the
 reliable way to force everything for one creator to be re-read.
-
-## Orynt3D support
-
-If you organize your library with **Orynt3D**, the scanner reads its
-`config.orynt3d` files. Creator-level configs supply the creator name and source
-info; model-level configs supply titles, notes, tags, collections, source links,
-and cover images. Orynt3D-provided metadata takes precedence over guessed values.

@@ -57,10 +57,11 @@ Your library database is stored in your user data folder and survives app update
 <drive root>/
   <Creator Name>/
     <Model Name>/
-      config.orynt3d      ← parsed automatically if present
-      *.stl / *.3mf
+      *.stl / *.3mf / *.obj
       *.jpg / *.png       ← first image used as thumbnail
 ```
+
+A folder is only indexed as a model if it contains 3D files.
 
 ## Features
 
