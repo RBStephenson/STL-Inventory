@@ -224,3 +224,25 @@ class TestExtractCharacterName:
     def test_plain_name_unchanged(self):
         result = extract_character_name("Akuma")
         assert result == "Akuma"
+
+
+# ---------------------------------------------------------------------------
+# is_structural_folder — variant-grouping character must skip structural folders
+# ---------------------------------------------------------------------------
+
+class TestIsStructuralFolder:
+    @pytest.mark.parametrize("name", [
+        "STL", "Lychee", "Presupport", "Presupports", "Supported", "Unsupported",
+        "no_supported", "Supports", "Renders", "Render Images", "Colored Turntable",
+        "75mm", "178mm", "Bust", "1-10 Scale", "1-10 Scale Split", "Supported Solid",
+        "32mm Supported", "parts", "base",
+    ])
+    def test_structural_names(self, name):
+        assert name_parser.is_structural_folder(name) is True
+
+    @pytest.mark.parametrize("name", [
+        "Auron - Final Fantasy X", "Alita", "Barbatos - Gundam", "Goblin Warband",
+        "Chibi Kirara - Inuyasha", "Spider Noir",
+    ])
+    def test_character_names(self, name):
+        assert name_parser.is_structural_folder(name) is False
