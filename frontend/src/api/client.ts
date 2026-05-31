@@ -11,6 +11,7 @@ export interface Model {
   name: string;
   title: string | null;
   description: string | null;
+  notes: string | null;
   character: string | null;
   variant_count?: number;
   folder_path: string;

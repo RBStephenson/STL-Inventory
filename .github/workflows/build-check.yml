@@ -1,0 +1,16 @@
+name: Build Check
+
+# Verifies the standalone executables still build on all three platforms.
+# Runs on PRs to main so packaging breakage is caught before it reaches a release.
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-check:
+    permissions:
+      contents: read   # artifacts only, no Release publishing
+    uses: ./.github/workflows/build.yml
+    with:
+      release: false
