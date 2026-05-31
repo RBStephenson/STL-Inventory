@@ -170,15 +170,11 @@ def open_folder(path: str):
 
 
 @router.get("/model-images/{model_id}")
-def list_model_images(model_id: int, db=None):
-    """List all images found in a model's folder tree (for the image picker)."""
-    from app.database import get_db
-    from app.models import Model as ModelDB
-    from sqlalchemy.orm import Session
-    from fastapi import Depends
-
-    # Inline dependency — cleaner to just import and call directly
+def list_model_images(model_id: int):
+    """List all images found in a model's folder tree and parent dirs up to the scan root."""
     from app.database import SessionLocal
+    from app.models import Model as ModelDB
+
     db = SessionLocal()
     try:
         model = db.query(ModelDB).filter(ModelDB.id == model_id).first()
@@ -187,14 +183,49 @@ def list_model_images(model_id: int, db=None):
         folder = Path(model.folder_path)
         if not folder.exists():
             return []
-        images = []
-        for img in sorted(folder.rglob("*")):
-            if img.is_file() and img.suffix.lower() in ALLOWED_IMAGE_EXTENSIONS:
-                images.append({
-                    "path": str(img),
-                    "filename": img.name,
-                    "url": f"/api/files/image?path={img}",
-                })
+
+        # Determine how far up to search — stop at the scan root boundary so we
+        # don't surface images from sibling models in the same creator folder.
+        # The creator dir is folder.parent if it's directly under a root, but
+        # models can be nested deeper, so walk up until the parent IS a root.
+        roots = {str(r.resolve()) for r in _allowed_roots()}
+        boundary = folder
+        current = folder.parent
+        while current != current.parent:
+            if str(current.resolve()) in roots:
+                break
+            boundary = current
+            current = current.parent
+
+        seen: set[str] = set()
+        images: list[dict] = []
+
+        def _collect(search_path: Path, recurse: bool):
+            iterator = search_path.rglob("*") if recurse else search_path.iterdir()
+            for img in sorted(iterator):
+                key = str(img.resolve())
+                if key in seen:
+                    continue
+                if img.is_file() and img.suffix.lower() in ALLOWED_IMAGE_EXTENSIONS:
+                    seen.add(key)
+                    images.append({
+                        "path": str(img),
+                        "filename": img.name,
+                        "url": f"/api/files/image?path={img}",
+                    })
+
+        # First collect everything inside the model folder (recurse into sub-dirs)
+        _collect(folder, recurse=True)
+
+        # Then walk upward, collecting only direct image files at each level
+        # (avoids pulling in every image from every sibling model)
+        current = folder.parent
+        while current != current.parent:
+            if str(current.resolve()) in roots:
+                break
+            _collect(current, recurse=False)
+            current = current.parent
+
         return images
     finally:
         db.close()
