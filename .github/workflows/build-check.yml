@@ -9,6 +9,8 @@ on:
 
 jobs:
   build-check:
+    permissions:
+      contents: read   # artifacts only, no Release publishing
     uses: ./.github/workflows/build.yml
     with:
       release: false

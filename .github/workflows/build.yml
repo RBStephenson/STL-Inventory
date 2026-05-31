@@ -32,8 +32,9 @@ jobs:
             label: linux
 
     runs-on: ${{ matrix.os }}
-    permissions:
-      contents: write   # needed for the Release upload step
+    # Permissions are granted by the caller (release.yml grants contents:write
+    # for the Release upload; build-check.yml grants only read). A reusable
+    # workflow cannot request more than its caller passes in.
 
     steps:
       - name: Checkout
