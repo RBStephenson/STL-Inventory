@@ -128,6 +128,14 @@ Or rebuild both at once:
 docker compose build && docker compose up -d
 ```
 
+For backend development, the `docker-compose.dev.yml` overlay bind-mounts the
+source and runs uvicorn with `--reload`, so Python edits take effect without a
+rebuild:
+```
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+```
+(The base image runs without `--reload` — it's a dev-only flag.)
+
 ## Releasing
 
 Standalone executables (Windows/macOS/Linux) are built by GitHub Actions.

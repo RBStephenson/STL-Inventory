@@ -1,0 +1,15 @@
+# Local development overlay. Opt-in — the base docker-compose.yml runs uvicorn
+# without --reload (production default, see backend/Dockerfile).
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+#
+# Bind-mounts the backend source and re-enables uvicorn's auto-reload so code
+# edits take effect without a rebuild. (--reload alone does nothing in the base
+# image because the source is COPY'd in at build time and never changes.)
+services:
+  backend:
+    volumes:
+      - ./backend/app:/app/app
+    command:
+      ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
