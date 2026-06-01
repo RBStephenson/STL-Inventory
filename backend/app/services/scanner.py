@@ -200,6 +200,16 @@ def scan_creator(creator_id: int):
                 _scan_state["message"] = "no folders found for creator"
                 return
 
+            # Clear all STL rows for this creator's models before re-walking.
+            # _index_stl_files is additive-only, so without this, stale rows from
+            # a previous scan keep phantom models above the zero-STL threshold and
+            # _prune_phantoms never removes them.
+            model_ids = [row[0] for row in db.query(Model.id).filter(Model.creator_id == creator_id)]
+            for i in range(0, len(model_ids), 500):
+                chunk = model_ids[i:i + 500]
+                db.query(STLFile).filter(STLFile.model_id.in_(chunk)).delete(synchronize_session=False)
+            db.commit()
+
             for creator_dir in dirs:
                 if _cancel_requested:
                     _scan_state["message"] = "cancelled"

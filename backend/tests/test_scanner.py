@@ -203,3 +203,30 @@ class TestPrunePhantoms:
 
         names = {m.name for m in db.query(Model).all()}
         assert names == {"c1-real", "c2-phantom"}
+
+    def test_prune_removes_model_whose_stl_rows_were_cleared(self, db, tmp_path):
+        """Simulates the stale-row case: a phantom model had STL rows from a
+        previous scan. After scan_creator clears those rows and re-walks (finding
+        no STLs), the model must have zero rows and _prune_phantoms must delete it."""
+        creator = make_creator(db, "LA Figures")
+        phantom = Model(name="phantom-with-stale-rows", folder_path="/x/phantom", creator_id=creator.id)
+        real = Model(name="real", folder_path="/x/real", creator_id=creator.id)
+        db.add_all([phantom, real])
+        db.flush()
+        # Phantom has a stale STL row; real has a live one
+        db.add(STLFile(model_id=phantom.id, path="/x/phantom/old.stl", filename="old.stl"))
+        db.add(STLFile(model_id=real.id, path="/x/real/a.stl", filename="a.stl"))
+        db.commit()
+
+        # Simulate what scan_creator does: clear all STL rows, then re-walk
+        # (re-walk only re-adds real's file, not phantom's)
+        from app.models import STLFile as SF
+        db.query(SF).filter(SF.model_id.in_([phantom.id, real.id])).delete(synchronize_session=False)
+        db.commit()
+        db.add(STLFile(model_id=real.id, path="/x/real/a.stl", filename="a.stl"))
+        db.commit()
+
+        scanner._prune_phantoms(db, creator_id=creator.id)
+
+        names = {m.name for m in db.query(Model).all()}
+        assert names == {"real"}
