@@ -10,6 +10,7 @@ from app.schemas import (
     STLFileUpdate, BulkTagUpdate,
 )
 from app.services.tag_sync import sync_model_tags
+from app.services import scanner
 from app.config import settings
 from app.utils import utcnow
 
@@ -333,6 +334,21 @@ def set_printed(model_id: int, body: PrintedUpdate, db: Session = Depends(get_db
         model.printed_at = None
     db.commit()
     return {"ok": True, "printed_at": model.printed_at}
+
+
+@router.post("/{model_id}/split")
+def split_pack(model_id: int, db: Session = Depends(get_db)):
+    """Split a model whose folder is actually a multi-product pack into one model
+    per child folder (opt-in; persisted so it survives rescans). The original
+    model is replaced by its children, so the caller should navigate away."""
+    if not db.query(Model.id).filter(Model.id == model_id).first():
+        raise HTTPException(status_code=404, detail="Model not found")
+    result = scanner.split_pack(model_id)
+    if not result["ok"]:
+        # A running scan is a conflict; everything else is a bad request.
+        code = 409 if "scan is already running" in result["message"] else 400
+        raise HTTPException(status_code=code, detail=result["message"])
+    return result
 
 
 @router.get("/{model_id}", response_model=ModelDetail)

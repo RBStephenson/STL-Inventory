@@ -17,6 +17,20 @@ class ScanRoot(Base):
     created_at = Column(DateTime, default=utcnow)
 
 
+class PackOverride(Base):
+    """A folder the user has explicitly marked as a multi-product *pack*.
+
+    The scanner treats it as a boundary — never a model itself — and indexes each
+    child folder as its own model (grouped under the child's name). Persisted so an
+    opt-in split survives future rescans. Used because pack-vs-variant can't be told
+    apart reliably by folder name alone."""
+    __tablename__ = "pack_overrides"
+
+    id = Column(Integer, primary_key=True)
+    path = Column(String, unique=True, nullable=False)
+    created_at = Column(DateTime, default=utcnow)
+
+
 class Creator(Base):
     __tablename__ = "creators"
 
