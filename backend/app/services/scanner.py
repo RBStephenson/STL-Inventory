@@ -30,7 +30,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text as _sqltext, func
 
 from app.database import SessionLocal
-from app.models import Creator, Model, STLFile, ScanRoot, ModelTag, CollectionModel
+from app.models import Creator, Model, STLFile, ScanRoot, ModelTag, CollectionModel, PackOverride
 from app.services import name_parser
 from app.services.tag_sync import sync_model_tags
 from app.utils import utcnow
@@ -49,10 +49,20 @@ _state_lock = threading.Lock()
 _db_lock = threading.Lock()
 _scan_state: dict = {"running": False, "message": "idle", "models_found": 0, "files_found": 0, "cancelled": False}
 _cancel_requested = False
+# Folders the user has explicitly split into per-child models (see PackOverride).
+# Loaded from the DB at the start of every scan; the walk treats these as
+# boundaries. Module-level because only one scan runs at a time (held by _scan_lock)
+# and threading it through every recursive call would be noisy.
+_pack_overrides: set[str] = set()
 
 
 def get_status() -> dict:
     return dict(_scan_state)
+
+
+def _load_pack_overrides(db: Session) -> None:
+    global _pack_overrides
+    _pack_overrides = {row[0] for row in db.query(PackOverride.path)}
 
 
 def request_cancel():
@@ -70,6 +80,8 @@ def scan_all_roots(db: Session | None = None):
         _db = db or SessionLocal()
         own_db = db is None
         try:
+            _load_pack_overrides(_db)
+
             # Clear needs_review for any model that already has indexed STL files —
             # those are confirmed real products that were over-eagerly flagged.
             result = _db.execute(_sqltext(
@@ -185,6 +197,8 @@ def scan_creator(creator_id: int):
                 _scan_state["message"] = "creator not found"
                 return
 
+            _load_pack_overrides(db)
+
             # Clear stale needs_review on this creator's already-indexed models.
             db.execute(_sqltext(
                 """
@@ -236,6 +250,78 @@ def scan_creator(creator_id: int):
         _scan_state["message"] = f"error: {e}"
     finally:
         _scan_state["running"] = False
+        _scan_lock.release()
+
+
+def split_pack(model_id: int) -> dict:
+    """Opt-in: split a model whose folder is actually a multi-product pack into one
+    model per child folder. Records a durable PackOverride so the split survives
+    rescans, then deletes the collapsed model and re-walks the folder as a boundary.
+
+    Returns {"ok": bool, "created": int, "message": str}. Runs synchronously and
+    holds the scan lock so it can't race a running scan."""
+    if not _scan_lock.acquire(blocking=False):
+        return {"ok": False, "created": 0, "message": "a scan is already running"}
+    try:
+        db = SessionLocal()
+        try:
+            model = db.get(Model, model_id)
+            if not model:
+                return {"ok": False, "created": 0, "message": "model not found"}
+            creator = db.get(Creator, model.creator_id) if model.creator_id else None
+            if not creator:
+                return {"ok": False, "created": 0, "message": "model has no creator"}
+            creator_id = creator.id
+
+            pack = Path(model.folder_path)
+            if not pack.is_dir():
+                return {"ok": False, "created": 0, "message": "folder not found on disk"}
+
+            child_dirs = [d for d in pack.iterdir() if d.is_dir()]
+            if not any(_has_stls(d, recurse=True) for d in child_dirs):
+                return {"ok": False, "created": 0,
+                        "message": "no child folders with STLs to split into"}
+
+            # Record the durable override (idempotent) and refresh the in-memory set.
+            if not db.query(PackOverride).filter(PackOverride.path == str(pack)).first():
+                db.add(PackOverride(path=str(pack)))
+                db.commit()
+            _load_pack_overrides(db)
+
+            # Drop the collapsed model (and its dependents) so the re-walk starts clean.
+            db.query(ModelTag).filter(ModelTag.model_id == model_id).delete(synchronize_session=False)
+            db.query(CollectionModel).filter(CollectionModel.model_id == model_id).delete(synchronize_session=False)
+            db.query(STLFile).filter(STLFile.model_id == model_id).delete(synchronize_session=False)
+            db.query(Model).filter(Model.id == model_id).delete(synchronize_session=False)
+            db.commit()
+            # Expunge just the deleted model so the re-walk's inserts (SQLite may
+            # reuse the freed id) don't collide with it in the identity map. The
+            # creator object stays attached for the walk below.
+            db.expunge(model)
+
+            # Re-walk the pack as a boundary: it's never a model, each child is.
+            before = db.query(func.count(Model.id)).filter(Model.creator_id == creator_id).scalar() or 0
+            _walk_for_models(
+                folder=pack,
+                creator=creator,
+                db=db,
+                creator_boundary=pack,
+                character=None,
+                stl_cache={},
+                last_scanned=None,
+            )
+            db.commit()
+            after = db.query(func.count(Model.id)).filter(Model.creator_id == creator_id).scalar() or 0
+            created = max(0, after - before)
+            logger.info(f"Split pack '{pack.name}' into {created} models")
+            return {"ok": True, "created": created,
+                    "message": f"split into {created} models"}
+        finally:
+            db.close()
+    except Exception as e:
+        logger.exception(f"Split pack failed: {e}")
+        return {"ok": False, "created": 0, "message": f"error: {e}"}
+    finally:
         _scan_lock.release()
 
 
@@ -306,7 +392,11 @@ def _walk_for_models(
     # type keyword (e.g. "Tanuki Figures" -> "figure", "LA Figures", "X Miniatures")
     # which would otherwise trip product detection and short-circuit the whole
     # creator into a single model. Always recurse past it into the character folders.
-    is_creator_root = folder == creator_boundary
+    #
+    # A folder the user has explicitly split (a pack override) is treated the same
+    # way: never a model itself, always recursed past, so each child becomes its own
+    # model. This is what makes an opt-in split durable across rescans.
+    is_creator_root = folder == creator_boundary or str(folder) in _pack_overrides
 
     child_dirs = [d for d in sorted(folder.iterdir()) if d.is_dir()]
     has_direct_stls = _has_stls(folder, recurse=False)
@@ -352,7 +442,7 @@ def _walk_for_models(
     # 75mm, Bust, Unsupported…) so a character's variants all group under its real
     # name instead of scattering across structural buckets.
     next_character = character
-    if (folder != creator_boundary
+    if (not is_creator_root
             and not signals.is_parts
             and not name_parser.is_structural_folder(folder.name)):
         next_character = folder.name

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import { useParams, Link, useLocation } from "react-router-dom";
-import { ArrowLeft, ExternalLink, Package, Star, Download, Tag, FileBox, Globe, Images, Box, ImagePlus, Pencil, Plus, Wrench, FolderDown, Folder, Copy, Check, Printer, Layers } from "lucide-react";
+import { useParams, Link, useLocation, useNavigate } from "react-router-dom";
+import { ArrowLeft, ExternalLink, Package, Star, Download, Tag, FileBox, Globe, Images, Box, ImagePlus, Pencil, Plus, Wrench, FolderDown, Folder, Copy, Check, Printer, Layers, Split } from "lucide-react";
 import { api, Model, ModelDetail as ModelDetailType } from "../api/client";
 import FindOnWeb from "../components/FindOnWeb";
 import STLViewer from "../components/STLViewer";
@@ -24,6 +24,7 @@ type ViewMode = "images" | "3d";
 export default function ModelDetail() {
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
+  const navigate = useNavigate();
   const backTo = (location.state as any)?.from ?? "/";
   const { showNSFW } = useNSFW();
   const { toast } = useToast();
@@ -45,6 +46,7 @@ export default function ModelDetail() {
   const [downloadingAll, setDownloadingAll] = useState(false);
   const [copiedPath, setCopiedPath] = useState(false);
   const [openFolderError, setOpenFolderError] = useState<string | null>(null);
+  const [splitting, setSplitting] = useState(false);
 
   // sync local state from loaded model
   useEffect(() => {
@@ -88,6 +90,26 @@ export default function ModelDetail() {
     } catch {
       setOpenFolderError("Cannot open folder — only available in standalone mode.");
       setTimeout(() => setOpenFolderError(null), 4000);
+    }
+  };
+
+  const splitPack = async () => {
+    if (!model || splitting) return;
+    const ok = window.confirm(
+      `Split "${model.title || model.name}" into one model per sub-folder?\n\n` +
+      "Use this when a folder is actually a pack of separate models (e.g. a " +
+      "multi-character set). This replaces the current model and is remembered " +
+      "across rescans."
+    );
+    if (!ok) return;
+    setSplitting(true);
+    try {
+      const res = await api.models.splitPack(model.id);
+      toast(`Split into ${res.created} models.`, "success");
+      navigate(backTo);   // this model no longer exists
+    } catch (e: any) {
+      toast(e?.message || "Couldn't split this model — try again.", "error");
+      setSplitting(false);
     }
   };
 
@@ -365,6 +387,15 @@ export default function ModelDetail() {
               >
                 <Globe size={14} />
                 Find on Web
+              </button>
+              <button
+                onClick={splitPack}
+                disabled={splitting}
+                title="If this folder is actually a pack of separate models, split it into one model per sub-folder"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-indigo-500 text-sm text-gray-300 transition-colors disabled:opacity-40"
+              >
+                <Split size={14} />
+                {splitting ? "Splitting…" : "Split pack"}
               </button>
             </div>
           </div>

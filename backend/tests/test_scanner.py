@@ -136,24 +136,84 @@ class TestVariantGrouping:
         assert len(models) == 1
         assert models[0].character is None
 
-    def test_character_pack_splits_into_per_character_models(self, db, tmp_path):
-        """A pack folder whose children are character names (e.g. 'Sinister Six'
-        -> Electro, Sandman, Spiderman) must split per character — not collapse
-        into one model — even when a stray loose STL sits in the pack root."""
+    def test_pack_collapses_by_default(self, db, tmp_path):
+        """By default a pack folder with a stray STL collapses into one model —
+        splitting it into per-character models is an explicit, opt-in action
+        (see TestSplitPack), not automatic."""
         creator_dir = tmp_path / "Creator"
         pack = creator_dir / "Sinister Six"
-        _stl(pack, "head_new_hair.stl")          # stray loose part in the pack root
+        _stl(pack, "head_new_hair.stl")          # stray loose part keeps it a single leaf
+        for char in ("Electro", "Sandman", "Spiderman"):
+            _stl(pack / char / "supported")
+        creator = make_creator(db, "Creator")
+
+        _walk(db, creator, creator_dir)
+
+        names = {Path(m.folder_path).name for m in _models(db, creator)}
+        assert "Sinister Six" in names
+
+
+# ---------------------------------------------------------------------------
+# Opt-in pack split (PackOverride)
+# ---------------------------------------------------------------------------
+
+class TestSplitPack:
+    def test_pack_override_forces_split(self, db, tmp_path, monkeypatch):
+        """A folder registered as a pack override is treated as a boundary on a
+        normal walk — each child becomes its own model under its own name. This is
+        the durable path that keeps an opt-in split applied across rescans."""
+        creator_dir = tmp_path / "Creator"
+        pack = creator_dir / "Sinister Six"
+        _stl(pack, "stray.stl")                  # stray loose part is ignored
         for char in ("Electro", "Sandman", "Spiderman"):
             _stl(pack / char / "supported")
             _stl(pack / char / "unsupported")
         creator = make_creator(db, "Creator")
 
+        monkeypatch.setattr(scanner, "_pack_overrides", {str(pack)})
         _walk(db, creator, creator_dir)
 
         models = _models(db, creator)
         assert {m.character for m in models} == {"Electro", "Sandman", "Spiderman"}
-        # The pack folder itself must not be indexed as a model.
         assert "Sinister Six" not in {Path(m.folder_path).name for m in models}
+
+    def test_split_pack_replaces_model_and_records_override(self, db, tmp_path, monkeypatch):
+        """split_pack() deletes the collapsed model, indexes each child, and
+        persists a PackOverride so a later rescan stays split."""
+        from sqlalchemy.orm import sessionmaker
+        from app.models import PackOverride
+        # split_pack opens its own SessionLocal(); use one factory on the test
+        # engine for setup, the call, and assertions (fresh sessions each time).
+        Session = sessionmaker(bind=db.get_bind())
+        monkeypatch.setattr(scanner, "SessionLocal", Session)
+
+        creator_dir = tmp_path / "Creator"
+        pack = creator_dir / "Sinister Six"
+        for char in ("Electro", "Sandman", "Spiderman"):
+            _stl(pack / char / "supported")
+
+        setup = Session()
+        creator = Creator(name="Creator")
+        setup.add(creator); setup.flush()
+        creator_id = creator.id
+        collapsed = Model(name="Sinister Six", folder_path=str(pack), creator_id=creator_id)
+        setup.add(collapsed); setup.flush()
+        collapsed_id = collapsed.id
+        setup.add(STLFile(model_id=collapsed_id, path=str(pack / "x.stl"), filename="x.stl"))
+        setup.commit(); setup.close()
+
+        result = scanner.split_pack(collapsed_id)
+
+        assert result["ok"] is True
+        assert result["created"] == 3
+        check = Session()
+        # The pack folder itself is no longer a model (the original was replaced;
+        # SQLite may reuse the freed id, so assert by folder_path, not id).
+        assert check.query(Model).filter(Model.folder_path == str(pack)).first() is None
+        chars = {m.character for m in check.query(Model).filter(Model.creator_id == creator_id)}
+        assert chars == {"Electro", "Sandman", "Spiderman"}
+        assert check.query(PackOverride).filter(PackOverride.path == str(pack)).count() == 1
+        check.close()
 
 
 # ---------------------------------------------------------------------------

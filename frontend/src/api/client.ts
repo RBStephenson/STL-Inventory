@@ -178,6 +178,10 @@ export const api = {
       }),
     variants: (creatorId: number, character: string) =>
       request<ModelList>(`/models/variants?creator_id=${creatorId}&character=${encodeURIComponent(character)}`),
+    splitPack: (id: number) =>
+      request<{ ok: boolean; created: number; message: string }>(`/models/${id}/split`, {
+        method: "POST",
+      }),
     updateSTLFile: (fileId: number, body: Record<string, unknown>) =>
       request<{ ok: boolean }>(`/models/stl-files/${fileId}`, {
         method: "PATCH",
