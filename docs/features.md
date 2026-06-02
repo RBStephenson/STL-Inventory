@@ -30,7 +30,8 @@ filtered view.
   the quick chips in the header (e.g. "*N* favorites", "*N* queued").
 - **Saved presets:** once you've dialed in a set of filters, save it as a named
   preset (stored in your browser) and re-apply it with one click.
-- **Pagination:** Prev / page number / Next, with a jump-to-page box.
+- **Pagination:** Prev / page number / Next, with a jump-to-page box — shown at
+  both the top and bottom of the grid so you can page without scrolling.
 
 Each card shows the thumbnail, name, tags, and small action icons (favorite ★
 and print-queue 🖨) that appear on hover.
