@@ -111,8 +111,8 @@ save a snapshot of the catalog (see below).
 
 Open **Settings → Data Management**:
 
-- **Download Backup** saves your whole catalog — tags, favorites, collections,
-  and print queue — as a single timestamped `.db` file. Do this before any risky
+- **Download Backup** saves your whole catalog — tags, favorites, and print
+  queue — as a single timestamped `.db` file. Do this before any risky
   change, or just periodically.
 - **Restore from Backup…** loads one of those files back in (after validating
   it), replacing your current catalog. This is also how you move your library to
