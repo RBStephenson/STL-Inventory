@@ -52,7 +52,7 @@ function TriToggle({ label, value, onChange }: {
   );
 }
 
-function PaginationBar({ page, totalPages, onPage }: { page: number; totalPages: number; onPage: (p: number) => void }) {
+function PaginationBar({ page, totalPages, onPage, className = "mt-8" }: { page: number; totalPages: number; onPage: (p: number) => void; className?: string }) {
   const [draft, setDraft] = useState(String(page));
 
   useEffect(() => { setDraft(String(page)); }, [page]);
@@ -65,7 +65,7 @@ function PaginationBar({ page, totalPages, onPage }: { page: number; totalPages:
   }
 
   return (
-    <div className="flex items-center justify-center gap-2 mt-8">
+    <div className={`flex items-center justify-center gap-2 ${className}`}>
       <button onClick={() => onPage(page - 1)} disabled={page === 1} className={btnCls}>Prev</button>
       <div className="flex items-center gap-1.5 text-sm text-gray-400">
         <input
@@ -509,6 +509,11 @@ export default function Library() {
         </div>
       )}
 
+      {/* Pagination (top) */}
+      {totalPages > 1 && (
+        <PaginationBar page={page} totalPages={totalPages} onPage={setPage} className="mb-6" />
+      )}
+
       {/* Grid */}
       {loading ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
@@ -545,7 +550,7 @@ export default function Library() {
         />
       )}
 
-      {/* Pagination */}
+      {/* Pagination (bottom) */}
       {totalPages > 1 && (
         <PaginationBar page={page} totalPages={totalPages} onPage={setPage} />
       )}
