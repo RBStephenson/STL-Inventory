@@ -147,6 +147,8 @@ def open_folder(path: str):
         raise HTTPException(status_code=403, detail="Path not allowed")
     if not p.exists():
         raise HTTPException(status_code=404, detail="Folder not found")
+    if not p.is_dir():
+        raise HTTPException(status_code=400, detail="Path is not a directory")
 
     system = platform.system()
     try:
