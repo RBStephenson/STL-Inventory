@@ -161,7 +161,7 @@ It's also home to **Data Management** (see below).
 
 At the bottom of **Settings**, under **Data Management**, you can manage the
 library database itself. This only ever touches the *index* — your metadata,
-tags, favorites, collections, and print queue. **Your STL files on disk are
+tags, favorites, and print queue. **Your STL files on disk are
 never modified.**
 
 - **Download Backup** — saves a consistent snapshot of your whole library as a

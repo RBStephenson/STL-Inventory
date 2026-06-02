@@ -124,7 +124,7 @@ A folder is only indexed as a model if it contains 3D files.
 ### Data Management
 - **Settings → Data Management** to back up, restore, or reset the catalog
 - **Download Backup** saves a consistent snapshot (`.db`) of your index — tags,
-  favorites, collections, and queue
+  favorites, and print queue
 - **Restore** swaps in a validated backup (also how you migrate to a new
   machine); **Reset** wipes the index to empty
 - Backups only cover the index — your STL files on disk are never touched
