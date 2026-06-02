@@ -45,8 +45,6 @@ Your library database is stored in your user data folder and survives app update
 
 ### Docker (for advanced users)
 
-## Quick Start
-
 1. Copy `.env.example` to `.env` and set your drive paths:
    ```
    STL_DRIVE_1=D:/3D STLs
