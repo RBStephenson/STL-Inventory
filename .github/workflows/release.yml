@@ -61,7 +61,6 @@ jobs:
             newtag="v${major}.${minor}.${patch}"
             echo "Latest tag: ${latest} -> new tag: ${newtag}"
           fi
-          echo "Latest tag: ${latest} -> new tag: ${newtag}"
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git tag -a "$newtag" -m "Release $newtag"
