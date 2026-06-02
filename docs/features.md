@@ -26,8 +26,10 @@ filtered view.
 
 - **Search** by name, title, description, or character.
 - **Filters:** creator, source site, tag, NSFW, has-image, needs-review,
-  favorites, and in-queue. Open the **Filters** panel for the full set, or use
-  the quick chips in the header (e.g. "*N* favorites", "*N* queued").
+  favorites, in-queue, and printed. Open the **Filters** panel for the full set,
+  or use the quick chips in the header (e.g. "*N* favorites", "*N* queued",
+  "*N* printed") — so you can see both what you want to print and what you've
+  already printed.
 - **Saved presets:** once you've dialed in a set of filters, save it as a named
   preset (stored in your browser) and re-apply it with one click.
 - **Pagination:** Prev / page number / Next, with a jump-to-page box — shown at
@@ -90,7 +92,8 @@ combination of these.
   your own print order; **favorites always float to the top**.
 - **✓ Printed** — mark a model as printed. This records the date and removes it
   from the active queue. The Queue page keeps a **Recently Printed** section so
-  you can see what you've finished.
+  you can see what you've finished, and the Library has a **printed** header chip
+  to filter down to everything you've printed.
 
 You can toggle favorite/queue right from a card (hover icons) or from the
 buttons in a model's header. *(Printed* is set from the model header.)

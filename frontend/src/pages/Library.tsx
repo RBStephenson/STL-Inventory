@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { Search, SlidersHorizontal, AlertCircle, Tag, X, Bookmark, BookmarkPlus, Star, Printer, FolderPlus, ArrowRight } from "lucide-react";
+import { Search, SlidersHorizontal, AlertCircle, Tag, X, Bookmark, BookmarkPlus, Star, Printer, Check, FolderPlus, ArrowRight } from "lucide-react";
 import { api, Model, Creator, ModelStats } from "../api/client";
 import ModelCard from "../components/ModelCard";
 import ScanButton from "../components/ScanButton";
@@ -98,6 +98,7 @@ export default function Library() {
   const thumbParam   = searchParams.get("has_thumbnail") ?? ""; // "" | "1" | "0"
   const favParam     = searchParams.get("is_favorite") === "1";
   const queueParam   = searchParams.get("in_queue") === "1";
+  const printedParam = searchParams.get("printed") === "1";
 
   const setParam = (key: string, value: string) => {
     setSearchParams((prev) => {
@@ -142,9 +143,9 @@ export default function Library() {
     setLoading(true);
     try {
       // Variant grouping collapses non-representative variants. When filtering by
-      // favorites/queue (which apply to individual variants), disable grouping so a
-      // favorited/queued non-representative variant isn't hidden behind its group.
-      const groupVariants = !favParam && !queueParam;
+      // favorites/queue/printed (which apply to individual variants), disable grouping
+      // so a flagged non-representative variant isn't hidden behind its group.
+      const groupVariants = !favParam && !queueParam && !printedParam;
       const params: Record<string, string | number | boolean> = { page, page_size: PAGE_SIZE, group_variants: groupVariants };
       if (search)      params.q             = search;
       if (creatorId)   params.creator_id    = creatorId;
@@ -155,6 +156,7 @@ export default function Library() {
       if (thumbParam)  params.has_thumbnail = thumbParam === "1";
       if (favParam)    params.is_favorite   = true;
       if (queueParam)  params.in_queue      = true;
+      if (printedParam) params.printed      = true;
       const data = await api.models.list(params);
       if (fetchId !== fetchIdRef.current) return; // stale response — a newer fetch is in flight
       setModels(data.items);
@@ -162,7 +164,7 @@ export default function Library() {
     } finally {
       if (fetchId === fetchIdRef.current) setLoading(false);
     }
-  }, [page, search, creatorId, site, activeTag, needsReview, nsfwParam, thumbParam, favParam, queueParam]);
+  }, [page, search, creatorId, site, activeTag, needsReview, nsfwParam, thumbParam, favParam, queueParam, printedParam]);
 
   useEffect(() => { fetchModels(); }, [fetchModels]);
   useEffect(() => { api.scan.roots().then((r) => setScanRootCount(r.length)).catch(() => setScanRootCount(null)); }, []);
@@ -187,7 +189,7 @@ export default function Library() {
   }, [savingPreset]);
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
-  const hasFilters = !!(creatorId || site || activeTag || needsReview || nsfwParam || thumbParam || favParam || queueParam);
+  const hasFilters = !!(creatorId || site || activeTag || needsReview || nsfwParam || thumbParam || favParam || queueParam || printedParam);
 
   const visibleTags = allTags.filter(({ tag }) =>
     !tagSearch || tag.includes(tagSearch.toLowerCase())
@@ -306,6 +308,19 @@ export default function Library() {
               >
                 <Printer size={11} />
                 {stats.queued} queued
+              </button>
+            )}
+            {stats && stats.printed > 0 && (
+              <button
+                onClick={() => setParam("printed", printedParam ? "" : "1")}
+                className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded transition-colors ${
+                  printedParam
+                    ? "bg-emerald-500 text-emerald-950 font-medium"
+                    : "bg-emerald-950/50 text-emerald-400 hover:bg-emerald-900/50"
+                }`}
+              >
+                <Check size={11} />
+                {stats.printed} printed
               </button>
             )}
           </div>
