@@ -3,7 +3,7 @@ Tests for name_parser — pure functions, no DB or network needed.
 """
 import pytest
 from app.services import name_parser
-from app.services.name_parser import parse, parse_folder, children_look_like_parts, extract_character_name
+from app.services.name_parser import parse, parse_folder, children_look_like_parts, extract_character_name, character_key
 
 
 # ---------------------------------------------------------------------------
@@ -224,6 +224,39 @@ class TestExtractCharacterName:
     def test_plain_name_unchanged(self):
         result = extract_character_name("Akuma")
         assert result == "Akuma"
+
+
+# ---------------------------------------------------------------------------
+# character_key — normalised product identity for variant grouping
+# ---------------------------------------------------------------------------
+
+class TestCharacterKey:
+    def test_support_variants_collapse_to_same_key(self):
+        # Loot-style: same product, different support/format → one product identity
+        assert character_key("AleCask_32mm_UnSupported") == character_key("AleCask_32mm_Supported_Solid")
+        assert character_key("AleCask_32mm_UnSupported") == "AleCask"
+
+    def test_supported_unsupported_pair(self):
+        # DakkaDakka-style: support status stripped, product name preserved
+        assert character_key("Crimson Wings APC supported") == "Crimson Wings APC"
+        assert character_key("Crimson Wings APC unsupported") == "Crimson Wings APC"
+
+    @pytest.mark.parametrize("name", [
+        "Unsupported", "Supported_Solid", "75mm Unsupported", "Presupported", "Solid",
+    ])
+    def test_pure_variant_descriptor_is_empty(self, name):
+        assert character_key(name) == ""
+
+    def test_pure_variant_modifiers_empty(self):
+        # CA3D-style leaf names that are only scale/cut descriptors → no identity
+        assert character_key("1,12 pre supports") == ""
+        assert character_key("1,12 uncut") == ""
+
+    def test_distinct_products_keep_distinct_keys(self):
+        assert character_key("AleCask_32mm_UnSupported") != character_key("Barrel_32mm_UnSupported")
+
+    def test_plain_name_unchanged(self):
+        assert character_key("Catwoman") == "Catwoman"
 
 
 # ---------------------------------------------------------------------------

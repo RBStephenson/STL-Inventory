@@ -124,6 +124,43 @@ class TestVariantGrouping:
         chars = {m.character for m in _models(db, creator)}
         assert chars == {"Goblin"}          # not "Unsupported"/"Supported"
 
+    def test_support_variant_subfolders_group_across_parents(self, db, tmp_path):
+        """DakkaDakka-style: a product whose 'supported' copy is one level shallower
+        than its (double-nested) 'unsupported' copy must still group as one character."""
+        creator_dir = tmp_path / "Creator"
+        apc = creator_dir / "Crimson Wings" / "APC"
+        _stl(apc / "Crimson Wings APC supported")
+        # unsupported copy is double-nested, as the creator zipped it
+        _stl(apc / "Crimson Wings APC unsupported" / "Crimson Wings APC unsupported")
+        creator = make_creator(db, "Creator")
+
+        _walk(db, creator, creator_dir)
+
+        models = _models(db, creator)
+        assert len(models) == 2
+        assert len({m.character for m in models}) == 1     # one shared character → grouped
+
+    def test_distinct_products_under_support_folder_stay_separate(self, db, tmp_path):
+        """Loot-style: a Supported/Unsupported folder holding many *distinct* items
+        must yield one character per item (grouping its support variants), not one
+        giant bucket per support folder."""
+        creator_dir = tmp_path / "Creator"
+        pack = creator_dir / "Tavern Pack"
+        for support in ("Environment_32mm_Supported_Solid", "Environment_32mm_UnSupported"):
+            for item in ("AleCask", "Barrel", "Bench"):
+                _stl(pack / support / f"{item}_32mm_{support.split('_')[-1]}")
+        creator = make_creator(db, "Creator")
+
+        _walk(db, creator, creator_dir)
+
+        models = _models(db, creator)
+        chars = {m.character for m in models}
+        assert chars == {"AleCask", "Barrel", "Bench"}     # one character per item
+        # each item has both support variants grouped under it
+        from collections import Counter
+        counts = Counter(m.character for m in models)
+        assert all(c == 2 for c in counts.values())
+
     def test_model_directly_under_creator_has_no_character(self, db, tmp_path):
         """A standalone product directly under the creator needs no grouping."""
         creator_dir = tmp_path / "Creator"
