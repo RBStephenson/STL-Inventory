@@ -478,21 +478,55 @@ def _walk_for_models(
                          stl_cache, auto_signals=signals, last_scanned=last_scanned)
             return
 
-    # Not a leaf — recurse. Carry the deepest *meaningful* folder as the variant
-    # grouping "character": skip parts and structural folders (Presupport, STL,
-    # 75mm, Bust, Unsupported…) so a character's variants all group under its real
-    # name instead of scattering across structural buckets.
-    next_character = character
+    # Not a leaf — recurse. Decide the variant-grouping "character" for each child by
+    # analysing the sibling folder names together, so support/scale/format variants
+    # (Supported/Unsupported/Solid/75mm…) collapse onto one product while genuinely
+    # distinct products stay separate. See name_parser.character_key.
+    next_parents = (parent_names or []) + [folder.name]
+
+    # Normalised product keys for the "real" child folders (skip parts/structural
+    # buckets, which never carry product identity).
+    keys: dict[str, str] = {}
+    for c in child_dirs:
+        if name_parser.parse(c.name).is_parts or name_parser.is_structural_folder(c.name):
+            continue
+        keys[c.name] = name_parser.character_key(c.name)
+    nonempty = [k for k in keys.values() if k]
+    distinct = set(nonempty)
+
+    # This folder's own identity for the "parent" strategy. Use the *raw* folder name
+    # (not the normalised key) so a real character keeps its readable label, e.g.
+    # "Auron - Final Fantasy X". Structural/parts folders carry the inherited value.
+    own_character = character
     if (not is_creator_root
             and not signals.is_parts
             and not name_parser.is_structural_folder(folder.name)):
-        next_character = folder.name
+        own_character = folder.name
 
-    next_parents = (parent_names or []) + [folder.name]
+    #   distinct keys > 1        → children are separate products: keep each key
+    #   one shared non-empty key → children are support/format variants of that
+    #                              named product (use the shared normalised name)
+    #   otherwise (mostly empty) → children are variant descriptors of THIS folder
+    if len(distinct) > 1:
+        strategy, common_key = "leaf", None
+    elif len(distinct) == 1 and len(nonempty) == len(keys) and keys:
+        strategy, common_key = "common", distinct.pop()
+    else:
+        strategy, common_key = "parent", None
 
     for child in sorted(child_dirs):
+        if is_creator_root:
+            # The creator root never imposes a character; a standalone product sitting
+            # directly under it needs no variant grouping.
+            child_character = None
+        elif strategy == "common":
+            child_character = common_key
+        elif strategy == "leaf":
+            child_character = keys.get(child.name) or own_character
+        else:  # parent
+            child_character = own_character
         _walk_for_models(child, creator, db, creator_boundary,
-                         character=next_character, parent_names=next_parents,
+                         character=child_character, parent_names=next_parents,
                          stl_cache=stl_cache, last_scanned=last_scanned)
 
 

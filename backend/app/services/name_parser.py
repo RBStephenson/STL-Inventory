@@ -216,6 +216,48 @@ _STRUCTURAL_EXACT: set[str] = {
 }
 
 
+# Support-status / print-format tokens that mark a *variant* of a product rather
+# than a distinct product. _strip_signal_tokens already removes scale/type/modifier
+# tokens (incl. "pre-supported"/"supported"), but not these, so character_key folds
+# them in too. Word boundaries keep "unsupported" from matching inside other words.
+_SUPPORT_FORMAT = re.compile(
+    r"\b("
+    r"un[\s_-]?supported|presupport(?:ed)?|unsupported|supports?|presup|pre|"
+    r"no[\s_-]?supports?|nosupports?|"
+    r"solid|hollow|"
+    r"without|uncut|no[\s_-]?cuts?|cuts?|"
+    r"ready[\s_-]?to[\s_-]?slice|readytoslice|"
+    r"lychee|chitubox|merged|split"
+    r")\b",
+    re.I,
+)
+
+# Comma-style scale notation ("1,12", "1,4") used by some creators in place of "1:12".
+_SCALE_COMMA = re.compile(r"(?<!\d)1\s*,\s*\d{1,2}(?!\d)")
+
+
+def character_key(name: str) -> str:
+    """Normalise a folder name to its product identity for variant grouping.
+
+    Strips scale/type/modifier tokens (via _strip_signal_tokens) plus support-status
+    and print-format tokens, so that e.g. "AleCask_32mm_UnSupported" and
+    "AleCask_32mm_Supported_Solid" both reduce to "AleCask", and
+    "Crimson Wings APC supported" / "…unsupported" both reduce to "Crimson Wings APC".
+    Returns "" when nothing product-identifying remains (a pure variant descriptor).
+    """
+    # Normalise underscores/dashes to spaces FIRST so the \b-anchored token regexes
+    # fire — names like "AleCask_32mm_UnSupported" glue tokens together with "_",
+    # which is a regex word char and would otherwise defeat every boundary.
+    spaced = re.sub(r"[_\-]+", " ", name)
+    spaced = _SCALE_COMMA.sub(" ", spaced)
+    base = _strip_signal_tokens(spaced)
+    base = _SUPPORT_FORMAT.sub(" ", base)
+    base = _SCALE_MM.sub(" ", base)
+    # Treat brackets/parens as separators so "Captain Carl Jenkins (supported)"
+    # reduces cleanly to "Captain Carl Jenkins" once the token inside is stripped.
+    return re.sub(r"[\s()\[\]]+", " ", base).strip(" -_()[]")
+
+
 def is_structural_folder(name: str) -> bool:
     """True if `name` is a structural/variant descriptor, not a character name.
 
