@@ -22,6 +22,7 @@ needs_review=True is set when confidence is low.
 """
 import logging
 import threading
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
@@ -493,34 +494,53 @@ def _walk_for_models(
         keys[c.name] = name_parser.character_key(c.name)
     nonempty = [k for k in keys.values() if k]
     distinct = set(nonempty)
+    counts = Counter(nonempty)
 
-    # This folder's own identity for the "parent" strategy. Use the *raw* folder name
-    # (not the normalised key) so a real character keeps its readable label, e.g.
-    # "Auron - Final Fantasy X". Structural/parts folders carry the inherited value.
+    # This folder's own identity. Use the *raw* folder name (not the normalised key)
+    # so a real character keeps its readable label, e.g. "Auron - Final Fantasy X".
+    # The creator root and structural/parts folders carry no identity of their own —
+    # at the creator root own_character stays None so its children decide for
+    # themselves (a standalone product groups only with key-sharing siblings).
     own_character = character
     if (not is_creator_root
             and not signals.is_parts
             and not name_parser.is_structural_folder(folder.name)):
         own_character = folder.name
 
-    #   distinct keys > 1        → children are separate products: keep each key
-    #   one shared non-empty key → children are support/format variants of that
-    #                              named product (use the shared normalised name)
-    #   otherwise (mostly empty) → children are variant descriptors of THIS folder
-    if len(distinct) > 1:
-        strategy, common_key = "leaf", None
-    elif len(distinct) == 1 and len(nonempty) == len(keys) and keys:
-        strategy, common_key = "common", distinct.pop()
-    else:
+    #   strict-majority shared key → children are support/format/scale variants of one
+    #                                product (label it by THIS folder's name); a few
+    #                                odd-named or typo'd leaves fold in with the majority
+    #   multiple keys, none dominant → separate products: keep each child's own key
+    #   no product keys at all       → variant descriptors of THIS folder
+    if not nonempty:
         strategy, common_key = "parent", None
+    else:
+        top_key, top_n = counts.most_common(1)[0]
+        # > half of the real children share one key (and at least two do), OR a single
+        # real child carries the only identity → one product. Strict majority (not ≥)
+        # keeps an even 2-vs-2 split of two distinct products from collapsing.
+        if (top_n >= 2 and top_n * 2 > len(keys)) or (len(distinct) == 1 and len(keys) == 1):
+            strategy, common_key = "common", top_key
+        else:
+            strategy, common_key = "leaf", None
+
+    # For a "common" group, label by the shared key (which carries whatever context
+    # the leaf names hold, e.g. a faction prefix "Crimson Wings APC") — UNLESS the key
+    # is merely this folder's own cleaned name plus a trailing junk token such as a
+    # creator tag ("Ada Wong" vs "Ada Wong CA3D"), in which case the cleaned folder
+    # name is the better label. Require the folder's key to be a *strictly shorter*
+    # prefix of the shared key: equal-length means there is no junk to drop, and the
+    # raw folder name may still hold a support word ("…unsupported"). Computed once.
+    common_label = common_key
+    if strategy == "common" and own_character:
+        own_key = name_parser.character_key(own_character)
+        if (own_key and len(own_key) < len(common_key)
+                and common_key.lower().startswith(own_key.lower())):
+            common_label = own_key
 
     for child in sorted(child_dirs):
-        if is_creator_root:
-            # The creator root never imposes a character; a standalone product sitting
-            # directly under it needs no variant grouping.
-            child_character = None
-        elif strategy == "common":
-            child_character = common_key
+        if strategy == "common":
+            child_character = common_label
         elif strategy == "leaf":
             child_character = keys.get(child.name) or own_character
         else:  # parent

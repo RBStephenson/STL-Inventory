@@ -161,8 +161,68 @@ class TestVariantGrouping:
         counts = Counter(m.character for m in models)
         assert all(c == 2 for c in counts.values())
 
-    def test_model_directly_under_creator_has_no_character(self, db, tmp_path):
-        """A standalone product directly under the creator needs no grouping."""
+    def test_ca3d_scale_variants_group_under_one_character(self, db, tmp_path):
+        """CA3D-style: a character folder whose variant leaves carry the scale, the
+        word 'scale', a creator tag, and a stray bust must collapse to ONE character,
+        labelled by the clean character-folder name (not 'scale Ada Wong CA3D')."""
+        creator_dir = tmp_path / "CA 3D Studios"
+        char = creator_dir / "Ada Wong"
+        _stl(char / "1-6 Ada Wong CA3D")
+        _stl(char / "1-6 Ada Wong CA3D - Pre Supported")
+        _stl(char / "1-9 scale Ada Wong CA3D")
+        _stl(char / "1-9 scale Uncut Ada Wong CA3D")
+        _stl(char / "STL Ada Wong Bust")
+        creator = make_creator(db, "CA 3D Studios")
+
+        _walk(db, creator, creator_dir)
+
+        chars = {m.character for m in _models(db, creator)}
+        assert chars == {"Ada Wong"}
+
+    def test_flat_supported_unsupported_pair_groups(self, db, tmp_path):
+        """DM Stash / Stepanov-style flat layout: variant folders sit DIRECTLY under
+        the creator (no character folder). A Supported/Unsupported (or _STL/_NSFW_STL)
+        pair sharing a normalised name must still group into one character."""
+        creator_dir = tmp_path / "Creator"
+        _stl(creator_dir / "Achtum of the Meadow - Supported")
+        _stl(creator_dir / "Achtum of the Meadow - Unsupported")
+        _stl(creator_dir / "Ahsoka_STL")
+        _stl(creator_dir / "Ahsoka_NSFW_STL")
+        _stl(creator_dir / "Angela Hardvin - Supported")   # a genuine singleton
+        creator = make_creator(db, "Creator")
+
+        _walk(db, creator, creator_dir)
+
+        from collections import Counter
+        counts = Counter(m.character for m in _models(db, creator))
+        # the two pairs collapse to one character each (2 models apiece)…
+        assert counts.get("Achtum of the Meadow") == 2
+        assert counts.get("Ahsoka") == 2
+        # …and the singleton stays on its own
+        assert counts.get("Angela Hardvin") == 1
+
+    def test_faction_units_stay_separate_under_collection_folder(self, db, tmp_path):
+        """Wargaming-style: a depth-1 folder is a faction of DISTINCT units, not a
+        single character. Units must NOT collapse into one faction card even though
+        each has support variants; faction context in the leaf name is preserved."""
+        creator_dir = tmp_path / "One Page Rules"
+        faction = creator_dir / "Human Defense Force"
+        for unit in ("HDF - APC", "HDF - Bikers", "HDF - Commander"):
+            _stl(faction / unit / f"{unit} supported")
+            _stl(faction / unit / f"{unit} unsupported")
+        creator = make_creator(db, "One Page Rules")
+
+        _walk(db, creator, creator_dir)
+
+        from collections import Counter
+        counts = Counter(m.character for m in _models(db, creator))
+        assert len(counts) == 3                       # one character per unit, not 1 faction
+        assert all(c == 2 for c in counts.values())   # each unit groups its 2 support variants
+        assert "Human Defense Force" not in counts    # the faction is not the character
+
+    def test_model_directly_under_creator_singleton(self, db, tmp_path):
+        """A lone product directly under the creator forms a single-member group
+        (its own normalised name) — harmless, and renders as an individual card."""
         creator_dir = tmp_path / "Creator"
         _stl(creator_dir / "Solo Dragon")
         creator = make_creator(db, "Creator")
@@ -171,7 +231,8 @@ class TestVariantGrouping:
 
         models = _models(db, creator)
         assert len(models) == 1
-        assert models[0].character is None
+        # No grouping partner → either None or its own unique key; never merged.
+        assert models[0].character in (None, "Solo Dragon")
 
     def test_pack_collapses_by_default(self, db, tmp_path):
         """By default a pack folder with a stray STL collapses into one model —

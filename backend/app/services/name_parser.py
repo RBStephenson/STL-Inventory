@@ -235,15 +235,38 @@ _SUPPORT_FORMAT = re.compile(
 # Comma-style scale notation ("1,12", "1,4") used by some creators in place of "1:12".
 _SCALE_COMMA = re.compile(r"(?<!\d)1\s*,\s*\d{1,2}(?!\d)")
 
+# Any "<number>mm" size, not just the miniature whitelist in _SCALE_MM. Used only by
+# the grouping-key path: an unusual size like 160mm/240mm (e.g. two bust sizes of the
+# same character) is still just a variant, so it must not split the product identity.
+_SCALE_MM_ANY = re.compile(r"(?<!\d)\d{1,4}\s*mm\b", re.I)
+
+# Tokens that survive _strip_signal_tokens/_SUPPORT_FORMAT yet never distinguish one
+# product from another: the leftover word "scale" (after "1-9" is stripped from
+# "1-9 scale"), container/format words, part/extra markers, NSFW flags, render/version
+# noise, and bare numbers. Stripped from the grouping key so e.g. "1-9 scale Ada Wong
+# CA3D" and "1-6 Ada Wong CA3D" both reduce to "Ada Wong CA3D". A bare \d+ token folds
+# in stray sizes like "15"/"20"; the \b before it keeps the digit in "2B" (a real
+# character) intact, since there is no word boundary between "2" and "B".
+_VARIANT_JUNK = re.compile(
+    r"\b("
+    r"scale|stls?|lychee|chitubox|files?|renders?|images?|previews?|photos?|"
+    r"extras?|merge[d]?|version|without|cuts?|nsfw|sfw|"
+    r"\d+"
+    r")\b",
+    re.I,
+)
+
 
 def character_key(name: str) -> str:
     """Normalise a folder name to its product identity for variant grouping.
 
-    Strips scale/type/modifier tokens (via _strip_signal_tokens) plus support-status
-    and print-format tokens, so that e.g. "AleCask_32mm_UnSupported" and
-    "AleCask_32mm_Supported_Solid" both reduce to "AleCask", and
-    "Crimson Wings APC supported" / "…unsupported" both reduce to "Crimson Wings APC".
-    Returns "" when nothing product-identifying remains (a pure variant descriptor).
+    Strips scale/type/modifier tokens (via _strip_signal_tokens) plus support-status,
+    print-format, and non-identifying "junk" tokens, so that e.g.
+    "AleCask_32mm_UnSupported" and "AleCask_32mm_Supported_Solid" both reduce to
+    "AleCask", "Crimson Wings APC supported" / "…unsupported" both reduce to
+    "Crimson Wings APC", and "1-9 scale Ada Wong CA3D" / "1-6 Ada Wong CA3D" both
+    reduce to "Ada Wong CA3D". Returns "" when nothing product-identifying remains
+    (a pure variant descriptor such as "75mm Unsupported" or "15").
     """
     # Normalise underscores/dashes to spaces FIRST so the \b-anchored token regexes
     # fire — names like "AleCask_32mm_UnSupported" glue tokens together with "_",
@@ -253,6 +276,8 @@ def character_key(name: str) -> str:
     base = _strip_signal_tokens(spaced)
     base = _SUPPORT_FORMAT.sub(" ", base)
     base = _SCALE_MM.sub(" ", base)
+    base = _SCALE_MM_ANY.sub(" ", base)
+    base = _VARIANT_JUNK.sub(" ", base)
     # Treat brackets/parens as separators so "Captain Carl Jenkins (supported)"
     # reduces cleanly to "Captain Carl Jenkins" once the token inside is stripped.
     return re.sub(r"[\s()\[\]]+", " ", base).strip(" -_()[]")

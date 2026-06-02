@@ -258,6 +258,29 @@ class TestCharacterKey:
     def test_plain_name_unchanged(self):
         assert character_key("Catwoman") == "Catwoman"
 
+    def test_scale_word_does_not_split_variants(self):
+        # CA3D-style: the word "scale" survives after "1-9" is stripped from
+        # "1-9 scale ...". It must not produce a different key from "1-6 ...".
+        assert character_key("1-6 Ada Wong CA3D") == character_key("1-9 scale Ada Wong CA3D")
+        assert character_key("1-6 Ada Wong CA3D") == "Ada Wong CA3D"
+        assert character_key("1_12 scale Afro Samurai CA3D") == "Afro Samurai CA3D"
+
+    def test_unlisted_mm_size_is_stripped(self):
+        # Two bust sizes of one character are variants, not distinct products.
+        assert character_key("Chucky_Bust_160mm") == character_key("Chucky_Bust_240mm") == "Chucky"
+
+    def test_container_and_flag_words_stripped(self):
+        assert character_key("STL Ada Wong Bust") == "Ada Wong"
+        assert character_key("Ahsoka_STL") == character_key("Ahsoka_NSFW_STL") == "Ahsoka"
+
+    @pytest.mark.parametrize("name", ["15", "20", "300", "1-6 scale", "scale"])
+    def test_bare_number_or_scale_word_is_empty(self, name):
+        assert character_key(name) == ""
+
+    def test_digit_in_character_name_preserved(self):
+        # "2B" (NieR: Automata) must survive — there is no word boundary in "2B".
+        assert character_key("2B") == "2B"
+
 
 # ---------------------------------------------------------------------------
 # is_structural_folder — variant-grouping character must skip structural folders
