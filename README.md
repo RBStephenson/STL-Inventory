@@ -11,7 +11,7 @@
 ![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 
-Local web app for cataloguing, browsing, and managing a large STL file library (12,500+ models).
+Local web app for cataloguing, browsing, and managing an STL file library.
 
 📖 **User documentation:** see the **[docs/](docs/README.md)** folder —
 [Getting Started](docs/getting-started.md) ·
