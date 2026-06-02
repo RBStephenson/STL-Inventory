@@ -142,7 +142,7 @@ export default function Triage() {
         <h1 className="text-xl font-bold text-gray-100">Review Queue</h1>
         <div className="flex items-center gap-3">
           <button
-            onClick={loadBatch}
+            onClick={() => loadBatch()}
             title="Refresh queue"
             className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-gray-800 border border-gray-700 text-sm text-gray-300 hover:bg-gray-700 transition-colors"
           >
