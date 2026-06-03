@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, lazy, Suspense } from "react";
 import { useParams, Link, useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft, ExternalLink, Package, Star, Download, Tag, FileBox, Globe, Images, Box, ImagePlus, Pencil, Plus, Wrench, FolderDown, Folder, Copy, Check, Printer, Layers, Split, FolderOpen } from "lucide-react";
 import { api, Model, ModelDetail as ModelDetailType, Collection } from "../api/client";
 import FindOnWeb from "../components/FindOnWeb";
-import STLViewer from "../components/STLViewer";
+const STLViewer = lazy(() => import("../components/STLViewer"));
 import ImagePicker from "../components/ImagePicker";
 import MetadataEditor from "../components/MetadataEditor";
 import KitBuilder from "../components/KitBuilder";
@@ -442,12 +442,14 @@ export default function ModelDetail() {
             </>
           )}
 
-          {/* 3D view */}
+          {/* 3D view — loaded lazily so three.js is not in the initial bundle */}
           {viewMode === "3d" && (
-            <STLViewer
-              files={model.stl_files}
-              getUrl={api.stlUrl}
-            />
+            <Suspense fallback={<div className="flex items-center justify-center h-64 text-gray-400">Loading viewer…</div>}>
+              <STLViewer
+                files={model.stl_files}
+                getUrl={api.stlUrl}
+              />
+            </Suspense>
           )}
         </div>
 
