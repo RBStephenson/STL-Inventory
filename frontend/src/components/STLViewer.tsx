@@ -178,7 +178,17 @@ export default function STLViewer({ files, getUrl }: Props) {
               shadows
               frameloop="demand"
               camera={{ position: [4, 3, 4], fov: 45 }}
-              gl={{ antialias: true }}
+              gl={{ antialias: true, powerPreference: "low-power" }}
+              onCreated={({ gl }) => {
+                // Let the browser recover a lost context instead of leaving a
+                // dead canvas. Without preventDefault the context can't be
+                // restored, and rapid navigation between model pages exhausts
+                // the browser's WebGL context limit ("THREE.WebGLRenderer:
+                // Context Lost").
+                gl.domElement.addEventListener("webglcontextlost", (e) =>
+                  e.preventDefault()
+                );
+              }}
             >
               <color attach="background" args={["#111318"]} />
               <ambientLight intensity={0.5} />
