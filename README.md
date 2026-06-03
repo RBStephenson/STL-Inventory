@@ -14,6 +14,9 @@
 Local web app for cataloguing, browsing, and managing an STL file library.
 
 📖 **User documentation:** see the **[docs/](docs/README.md)** folder —
+🗺️ **What's coming next:** [ROADMAP.md](ROADMAP.md)
+
+
 [Getting Started](docs/getting-started.md) ·
 [Feature Guide](docs/features.md) ·
 [Scanning & Folder Structure](docs/scanning-and-folders.md) ·
