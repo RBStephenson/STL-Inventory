@@ -392,18 +392,39 @@ export default function ModelDetail() {
 
     api.models.list(params).then(async (data) => {
       if (navId !== navFetchIdRef.current) return;
-      const idx = data.items.findIndex((m) => m.id === currentId);
+
+      // Library uses group_variants=true by default, so its page numbers reflect
+      // grouped cards. With group_variants=false the same model may land on a
+      // later page (variant expansion inserts hidden siblings before it). Search
+      // forward up to 2 pages to find the model.
+      let pageData = data;
+      let idx = pageData.items.findIndex((m) => m.id === currentId);
+      let effectivePage = originPage;
+
+      if (idx === -1) {
+        const totalPages = Math.ceil(pageData.total / pageData.page_size);
+        for (let offset = 1; offset <= 2 && idx === -1; offset++) {
+          const tryPage = originPage + offset;
+          if (tryPage > totalPages) break;
+          if (navId !== navFetchIdRef.current) return;
+          pageData = await api.models.list({ ...params, page: tryPage });
+          idx = pageData.items.findIndex((m) => m.id === currentId);
+          if (idx !== -1) effectivePage = tryPage;
+        }
+      }
+
       if (idx === -1) {
         setPrevId(null);
         setNextId(null);
         return;
       }
-      const totalPages = Math.ceil(data.total / data.page_size);
 
-      if (idx < data.items.length - 1) {
-        setNextId(data.items[idx + 1].id);
-      } else if (originPage < totalPages) {
-        const nextPage = await api.models.list({ ...params, page: originPage + 1 });
+      const totalPages = Math.ceil(pageData.total / pageData.page_size);
+
+      if (idx < pageData.items.length - 1) {
+        setNextId(pageData.items[idx + 1].id);
+      } else if (effectivePage < totalPages) {
+        const nextPage = await api.models.list({ ...params, page: effectivePage + 1 });
         if (navId !== navFetchIdRef.current) return;
         setNextId(nextPage.items[0]?.id ?? null);
       } else {
@@ -411,9 +432,9 @@ export default function ModelDetail() {
       }
 
       if (idx > 0) {
-        setPrevId(data.items[idx - 1].id);
-      } else if (originPage > 1) {
-        const prevPage = await api.models.list({ ...params, page: originPage - 1 });
+        setPrevId(pageData.items[idx - 1].id);
+      } else if (effectivePage > 1) {
+        const prevPage = await api.models.list({ ...params, page: effectivePage - 1 });
         if (navId !== navFetchIdRef.current) return;
         const prevItems = prevPage.items;
         setPrevId(prevItems[prevItems.length - 1]?.id ?? null);
