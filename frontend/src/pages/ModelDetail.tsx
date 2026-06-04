@@ -368,6 +368,12 @@ export default function ModelDetail() {
 
   useEffect(() => { load(); }, [load]);
 
+  // Show the loading state when switching to a different model so the previous
+  // model's data (collections, tags, etc.) never bleeds into the new view while
+  // the fetch is in flight. Keyed on id only, so in-place refreshes that call
+  // load() directly (after edits) don't flash a full loading screen.
+  useEffect(() => { setLoading(true); }, [id]);
+
   // Fetch sibling variants for the variant switcher. Keyed on the (creator,
   // character) group so navigating between siblings doesn't refetch needlessly.
   useEffect(() => {
