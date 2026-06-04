@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef, lazy, Suspense } from "react";
 import { useParams, Link, useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, ExternalLink, Package, Star, Download, Tag, FileBox, Globe, Images, Box, ImagePlus, Pencil, Plus, Wrench, FolderDown, Folder, Copy, Check, Printer, Layers, Split, FolderOpen } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, ExternalLink, Package, Star, Download, Tag, FileBox, Globe, Images, Box, ImagePlus, Pencil, Plus, Wrench, FolderDown, Folder, Copy, Check, Printer, Layers, Split, FolderOpen } from "lucide-react";
 import { api, Model, ModelDetail as ModelDetailType, Collection } from "../api/client";
 import FindOnWeb from "../components/FindOnWeb";
 const STLViewer = lazy(() => import("../components/STLViewer"));
@@ -155,11 +155,41 @@ const PART_TYPE_SUGGESTIONS = [
 
 type ViewMode = "images" | "3d";
 
+function parseBackToParams(backTo: string): Record<string, string | number | boolean> | null {
+  if (!backTo || backTo.startsWith("/models/")) return null;
+  try {
+    const search = backTo.includes("?") ? backTo.slice(backTo.indexOf("?") + 1) : "";
+    const sp = new URLSearchParams(search);
+    const params: Record<string, string | number | boolean> = {};
+    for (const key of ["q", "creator_id", "source_site", "tag"]) {
+      const val = sp.get(key);
+      if (val) params[key] = val;
+    }
+    for (const key of ["needs_review", "is_favorite", "in_queue", "printed", "excluded"]) {
+      if (sp.get(key) === "1") params[key] = true;
+    }
+    // nsfw and has_thumbnail are tri-state: "1"=true, "0"=false, absent=no filter
+    for (const key of ["nsfw", "has_thumbnail"]) {
+      const val = sp.get(key);
+      if (val === "1") params[key] = true;
+      else if (val === "0") params[key] = false;
+    }
+    const page = parseInt(sp.get("page") ?? "1", 10);
+    params.page = isNaN(page) || page < 1 ? 1 : page;
+    params.page_size = 48;
+    params.group_variants = false;
+    return params;
+  } catch {
+    return null;
+  }
+}
+
 export default function ModelDetail() {
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const navigate = useNavigate();
   const backTo = (location.state as any)?.from ?? "/";
+  const hasNavOrigin = (location.state as any)?.from != null;
   const { showNSFW } = useNSFW();
   const { toast } = useToast();
   const [model, setModel] = useState<ModelDetailType | null>(null);
@@ -181,6 +211,10 @@ export default function ModelDetail() {
   const [copiedPath, setCopiedPath] = useState(false);
   const [openFolderError, setOpenFolderError] = useState<string | null>(null);
   const [splitting, setSplitting] = useState(false);
+  // undefined = loading, null = boundary/unavailable, number = navigable ID
+  const [prevId, setPrevId] = useState<number | null | undefined>(undefined);
+  const [nextId, setNextId] = useState<number | null | undefined>(undefined);
+  const navFetchIdRef = useRef(0);
 
   // sync local state from loaded model
   useEffect(() => {
@@ -338,6 +372,61 @@ export default function ModelDetail() {
     }
   }, [model?.creator_id, model?.character]);
 
+  useEffect(() => {
+    if (!hasNavOrigin) {
+      setPrevId(undefined);
+      setNextId(undefined);
+      return;
+    }
+    const params = parseBackToParams(backTo);
+    if (!params || !id) {
+      setPrevId(null);
+      setNextId(null);
+      return;
+    }
+    const currentId = Number(id);
+    const navId = ++navFetchIdRef.current;
+    setPrevId(undefined);
+    setNextId(undefined);
+    const originPage = (params.page as number) ?? 1;
+
+    api.models.list(params).then(async (data) => {
+      if (navId !== navFetchIdRef.current) return;
+      const idx = data.items.findIndex((m) => m.id === currentId);
+      if (idx === -1) {
+        setPrevId(null);
+        setNextId(null);
+        return;
+      }
+      const totalPages = Math.ceil(data.total / data.page_size);
+
+      if (idx < data.items.length - 1) {
+        setNextId(data.items[idx + 1].id);
+      } else if (originPage < totalPages) {
+        const nextPage = await api.models.list({ ...params, page: originPage + 1 });
+        if (navId !== navFetchIdRef.current) return;
+        setNextId(nextPage.items[0]?.id ?? null);
+      } else {
+        setNextId(null);
+      }
+
+      if (idx > 0) {
+        setPrevId(data.items[idx - 1].id);
+      } else if (originPage > 1) {
+        const prevPage = await api.models.list({ ...params, page: originPage - 1 });
+        if (navId !== navFetchIdRef.current) return;
+        const prevItems = prevPage.items;
+        setPrevId(prevItems[prevItems.length - 1]?.id ?? null);
+      } else {
+        setPrevId(null);
+      }
+    }).catch(() => {
+      if (navId !== navFetchIdRef.current) return;
+      setPrevId(null);
+      setNextId(null);
+    });
+  }, [id, backTo, hasNavOrigin]);
+
   if (loading) return <div className="p-8 text-gray-500 animate-pulse">Loading…</div>;
   if (!model) return <div className="p-8 text-gray-500">Model not found.</div>;
 
@@ -352,9 +441,55 @@ export default function ModelDetail() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <Link to={backTo} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 mb-6 w-fit">
-        <ArrowLeft size={14} /> Back to Library
-      </Link>
+      <div className="flex items-center justify-between mb-6">
+        <Link to={backTo} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 w-fit">
+          <ArrowLeft size={14} /> Back to Library
+        </Link>
+
+        {hasNavOrigin && (
+          <div className="flex items-center gap-1">
+            {prevId !== undefined ? (
+              prevId !== null ? (
+                <Link
+                  to={`/models/${prevId}`}
+                  state={{ from: backTo }}
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm text-gray-400 hover:text-gray-100 hover:bg-gray-800 transition-colors"
+                >
+                  <ChevronLeft size={15} /> Prev
+                </Link>
+              ) : (
+                <span className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm text-gray-700 cursor-default select-none">
+                  <ChevronLeft size={15} /> Prev
+                </span>
+              )
+            ) : (
+              <span className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm text-gray-700 animate-pulse select-none">
+                <ChevronLeft size={15} /> Prev
+              </span>
+            )}
+
+            {nextId !== undefined ? (
+              nextId !== null ? (
+                <Link
+                  to={`/models/${nextId}`}
+                  state={{ from: backTo }}
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm text-gray-400 hover:text-gray-100 hover:bg-gray-800 transition-colors"
+                >
+                  Next <ChevronRight size={15} />
+                </Link>
+              ) : (
+                <span className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm text-gray-700 cursor-default select-none">
+                  Next <ChevronRight size={15} />
+                </span>
+              )
+            ) : (
+              <span className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm text-gray-700 animate-pulse select-none">
+                Next <ChevronRight size={15} />
+              </span>
+            )}
+          </div>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
