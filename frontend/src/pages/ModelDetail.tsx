@@ -230,6 +230,15 @@ export default function ModelDetail() {
     }
   }, [model]);
 
+  // Reset UI-only state when navigating to a different model
+  useEffect(() => {
+    setEditing(false);
+    setShowFindOnWeb(false);
+    setShowImagePicker(false);
+    setShowKitBuilder(false);
+    setOpenFolderError(null);
+  }, [id]);
+
   const downloadAllFiles = async () => {
     if (!model || downloadingAll) return;
     setDownloadingAll(true);
@@ -863,7 +872,7 @@ export default function ModelDetail() {
           )}
 
           {/* Collections */}
-          <CollectionsSection modelId={model.id} initialIds={model.collection_ids} />
+          <CollectionsSection key={model.id} modelId={model.id} initialIds={model.collection_ids} />
 
           {/* STL Files list */}
           <div>
