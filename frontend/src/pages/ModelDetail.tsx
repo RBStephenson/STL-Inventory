@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, lazy, Suspense } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef, lazy, Suspense } from "react";
 import { useParams, Link, useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft, ChevronLeft, ChevronRight, ExternalLink, Package, Star, Download, Tag, FileBox, Globe, Images, Box, ImagePlus, Pencil, Plus, Wrench, FolderDown, Folder, Copy, Check, Printer, Layers, Split, FolderOpen } from "lucide-react";
 import { api, Model, ModelDetail as ModelDetailType, Collection } from "../api/client";
@@ -155,41 +155,65 @@ const PART_TYPE_SUGGESTIONS = [
 
 type ViewMode = "images" | "3d";
 
-function parseBackToParams(backTo: string): Record<string, string | number | boolean> | null {
-  if (!backTo || backTo.startsWith("/models/")) return null;
-  try {
-    const search = backTo.includes("?") ? backTo.slice(backTo.indexOf("?") + 1) : "";
-    const sp = new URLSearchParams(search);
-    const params: Record<string, string | number | boolean> = {};
-    for (const key of ["q", "creator_id", "source_site", "tag"]) {
-      const val = sp.get(key);
-      if (val) params[key] = val;
-    }
-    for (const key of ["needs_review", "is_favorite", "in_queue", "printed", "excluded"]) {
-      if (sp.get(key) === "1") params[key] = true;
-    }
-    // nsfw and has_thumbnail are tri-state: "1"=true, "0"=false, absent=no filter
-    for (const key of ["nsfw", "has_thumbnail"]) {
-      const val = sp.get(key);
-      if (val === "1") params[key] = true;
-      else if (val === "0") params[key] = false;
-    }
-    const page = parseInt(sp.get("page") ?? "1", 10);
-    params.page = isNaN(page) || page < 1 ? 1 : page;
-    params.page_size = 48;
-    params.group_variants = false;
-    return params;
-  } catch {
-    return null;
+type NavTarget = { id: number; from: string };
+
+// Parse a model-detail origin URL into the params Library used to produce that
+// grid, so Prev/Next walks the exact same list/pagination. Returns null unless
+// the origin is the Library grid itself (path "/") — models reached from inside
+// a variant group (/groups/…), a collection, or a deep link have no Library
+// position to page through, so Prev/Next is hidden there.
+function parseLibraryOrigin(from: string | undefined):
+  { params: Record<string, string | number | boolean>; page: number } | null {
+  if (!from) return null;
+  const [path, search = ""] = from.split("?");
+  if (path !== "/") return null;
+  const sp = new URLSearchParams(search);
+  const params: Record<string, string | number | boolean> = {};
+  for (const key of ["q", "creator_id", "source_site", "tag"]) {
+    const val = sp.get(key);
+    if (val) params[key] = val;
   }
+  if (sp.get("needs_review") === "1") params.needs_review = true;
+  // nsfw and has_thumbnail are tri-state: "1"=true, "0"=false, absent=no filter
+  for (const key of ["nsfw", "has_thumbnail"]) {
+    const val = sp.get(key);
+    if (val === "1") params[key] = true;
+    else if (val === "0") params[key] = false;
+  }
+  const fav = sp.get("is_favorite") === "1";
+  const queue = sp.get("in_queue") === "1";
+  const printed = sp.get("printed") === "1";
+  const excluded = sp.get("excluded") === "1";
+  if (fav) params.is_favorite = true;
+  if (queue) params.in_queue = true;
+  if (printed) params.printed = true;
+  if (excluded) params.excluded = true;
+  // Mirror Library.tsx's groupVariants so our pagination matches the grid's.
+  params.group_variants = !fav && !queue && !printed && !excluded;
+  params.page_size = 48;
+  const p = parseInt(sp.get("page") ?? "1", 10);
+  const page = isNaN(p) || p < 1 ? 1 : p;
+  params.page = page;
+  return { params, page };
+}
+
+// Rebuild the Library URL pointing at a specific page (mirrors Library's
+// setPage: the page param is dropped for page 1).
+function libraryUrlForPage(from: string, page: number): string {
+  const [path, search = ""] = from.split("?");
+  const sp = new URLSearchParams(search);
+  if (page > 1) sp.set("page", String(page)); else sp.delete("page");
+  const qs = sp.toString();
+  return qs ? `${path}?${qs}` : path;
 }
 
 export default function ModelDetail() {
   const { id } = useParams<{ id: string }>();
   const location = useLocation();
   const navigate = useNavigate();
-  const backTo = (location.state as any)?.from ?? "/";
-  const hasNavOrigin = (location.state as any)?.from != null;
+  const rawFrom = (location.state as any)?.from as string | undefined;
+  const backTo = rawFrom ?? "/";
+  const navOrigin = useMemo(() => parseLibraryOrigin(rawFrom), [rawFrom]); // null ⇒ hide Prev/Next
   const { showNSFW } = useNSFW();
   const { toast } = useToast();
   const [model, setModel] = useState<ModelDetailType | null>(null);
@@ -211,9 +235,9 @@ export default function ModelDetail() {
   const [copiedPath, setCopiedPath] = useState(false);
   const [openFolderError, setOpenFolderError] = useState<string | null>(null);
   const [splitting, setSplitting] = useState(false);
-  // undefined = loading, null = boundary/unavailable, number = navigable ID
-  const [prevId, setPrevId] = useState<number | null | undefined>(undefined);
-  const [nextId, setNextId] = useState<number | null | undefined>(undefined);
+  // undefined = loading, null = boundary/unavailable, NavTarget = navigable
+  const [prevNav, setPrevNav] = useState<NavTarget | null | undefined>(undefined);
+  const [nextNav, setNextNav] = useState<NavTarget | null | undefined>(undefined);
   const navFetchIdRef = useRef(0);
 
   // sync local state from loaded model
@@ -388,80 +412,66 @@ export default function ModelDetail() {
   }, [model?.creator_id, model?.character]);
 
   useEffect(() => {
-    if (!hasNavOrigin) {
-      setPrevId(undefined);
-      setNextId(undefined);
+    if (!navOrigin || !id) {
+      setPrevNav(null);
+      setNextNav(null);
       return;
     }
-    const params = parseBackToParams(backTo);
-    if (!params || !id) {
-      setPrevId(null);
-      setNextId(null);
-      return;
-    }
+    const { params, page: originPage } = navOrigin;
     const currentId = Number(id);
     const navId = ++navFetchIdRef.current;
-    setPrevId(undefined);
-    setNextId(undefined);
-    const originPage = (params.page as number) ?? 1;
+    setPrevNav(undefined);
+    setNextNav(undefined);
 
     api.models.list(params).then(async (data) => {
       if (navId !== navFetchIdRef.current) return;
 
-      // Library uses group_variants=true by default, so its page numbers reflect
-      // grouped cards. With group_variants=false the same model may land on a
-      // later page (variant expansion inserts hidden siblings before it). Search
-      // forward up to 2 pages to find the model.
-      let pageData = data;
-      let idx = pageData.items.findIndex((m) => m.id === currentId);
-      let effectivePage = originPage;
-
-      if (idx === -1) {
-        const totalPages = Math.ceil(pageData.total / pageData.page_size);
-        for (let offset = 1; offset <= 2 && idx === -1; offset++) {
-          const tryPage = originPage + offset;
-          if (tryPage > totalPages) break;
-          if (navId !== navFetchIdRef.current) return;
-          pageData = await api.models.list({ ...params, page: tryPage });
-          idx = pageData.items.findIndex((m) => m.id === currentId);
-          if (idx !== -1) effectivePage = tryPage;
-        }
+      // The current model is present by its own id (group cards link to
+      // /groups/…, so a model reached from the grid is never a hidden variant).
+      // Fallback: a non-representative sibling reached via the variant switcher
+      // isn't in a grouped list itself — match its group's representative by
+      // (creator, character) so Prev/Next still pages around the group.
+      let idx = data.items.findIndex((m) => m.id === currentId);
+      if (idx === -1 && model?.character && model.creator_id != null) {
+        idx = data.items.findIndex(
+          (m) => m.creator_id === model.creator_id && m.character === model.character
+        );
       }
-
       if (idx === -1) {
-        setPrevId(null);
-        setNextId(null);
+        setPrevNav(null);
+        setNextNav(null);
         return;
       }
 
-      const totalPages = Math.ceil(pageData.total / pageData.page_size);
+      const totalPages = Math.ceil(data.total / data.page_size);
 
-      if (idx < pageData.items.length - 1) {
-        setNextId(pageData.items[idx + 1].id);
-      } else if (effectivePage < totalPages) {
-        const nextPage = await api.models.list({ ...params, page: effectivePage + 1 });
+      if (idx < data.items.length - 1) {
+        setNextNav({ id: data.items[idx + 1].id, from: libraryUrlForPage(backTo, originPage) });
+      } else if (originPage < totalPages) {
+        const nextPage = await api.models.list({ ...params, page: originPage + 1 });
         if (navId !== navFetchIdRef.current) return;
-        setNextId(nextPage.items[0]?.id ?? null);
+        const first = nextPage.items[0];
+        setNextNav(first ? { id: first.id, from: libraryUrlForPage(backTo, originPage + 1) } : null);
       } else {
-        setNextId(null);
+        setNextNav(null);
       }
 
       if (idx > 0) {
-        setPrevId(pageData.items[idx - 1].id);
-      } else if (effectivePage > 1) {
-        const prevPage = await api.models.list({ ...params, page: effectivePage - 1 });
+        setPrevNav({ id: data.items[idx - 1].id, from: libraryUrlForPage(backTo, originPage) });
+      } else if (originPage > 1) {
+        const prevPage = await api.models.list({ ...params, page: originPage - 1 });
         if (navId !== navFetchIdRef.current) return;
-        const prevItems = prevPage.items;
-        setPrevId(prevItems[prevItems.length - 1]?.id ?? null);
+        const last = prevPage.items[prevPage.items.length - 1];
+        setPrevNav(last ? { id: last.id, from: libraryUrlForPage(backTo, originPage - 1) } : null);
       } else {
-        setPrevId(null);
+        setPrevNav(null);
       }
     }).catch(() => {
       if (navId !== navFetchIdRef.current) return;
-      setPrevId(null);
-      setNextId(null);
+      setPrevNav(null);
+      setNextNav(null);
     });
-  }, [id, backTo, hasNavOrigin]);
+  }, [id, backTo, navOrigin, model?.creator_id, model?.character]);
 
   if (loading) return <div className="p-8 text-gray-500 animate-pulse">Loading…</div>;
   if (!model) return <div className="p-8 text-gray-500">Model not found.</div>;
@@ -482,13 +492,13 @@ export default function ModelDetail() {
           <ArrowLeft size={14} /> Back to Library
         </Link>
 
-        {hasNavOrigin && (
+        {navOrigin && (
           <div className="flex items-center gap-1">
-            {prevId !== undefined ? (
-              prevId !== null ? (
+            {prevNav !== undefined ? (
+              prevNav !== null ? (
                 <Link
-                  to={`/models/${prevId}`}
-                  state={{ from: backTo }}
+                  to={`/models/${prevNav.id}`}
+                  state={{ from: prevNav.from }}
                   className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm text-gray-400 hover:text-gray-100 hover:bg-gray-800 transition-colors"
                 >
                   <ChevronLeft size={15} /> Prev
@@ -504,11 +514,11 @@ export default function ModelDetail() {
               </span>
             )}
 
-            {nextId !== undefined ? (
-              nextId !== null ? (
+            {nextNav !== undefined ? (
+              nextNav !== null ? (
                 <Link
-                  to={`/models/${nextId}`}
-                  state={{ from: backTo }}
+                  to={`/models/${nextNav.id}`}
+                  state={{ from: nextNav.from }}
                   className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm text-gray-400 hover:text-gray-100 hover:bg-gray-800 transition-colors"
                 >
                   Next <ChevronRight size={15} />
