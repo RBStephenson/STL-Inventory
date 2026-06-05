@@ -273,10 +273,13 @@ def character_key(name: str, creator_name: str | None = None) -> str:
     reduce to "Ada Wong CA3D". Returns "" when nothing product-identifying remains
     (a pure variant descriptor such as "75mm Unsupported" or "15").
 
-    When creator_name is supplied, trailing tokens that are the creator's own name or
-    any concatenation of consecutive creator-name words (e.g. "CA 3D Studios" → also
-    strips "CA3D") are removed, collapsing e.g. "Ada Wong CA3D" + "Ada Wong" for that
-    creator. The strip is guarded: if nothing would remain, the key is left unchanged.
+    When creator_name is supplied, a trailing creator-name *tag* is removed so e.g.
+    "Ada Wong CA3D" collapses with "Ada Wong" for that creator. Only forms unlikely to
+    coincide with a real character word are stripped — a glued abbreviation of 2+
+    consecutive creator words ("CA 3D Studios" → "CA3D") or the full creator name. An
+    individual word of a multi-word creator ("Dragon" from "Dragon Studios") is left
+    alone, so "Red Dragon" keeps its identity. The strip is guarded: if nothing would
+    remain, the key is left unchanged.
     """
     # Normalise underscores/dashes to spaces FIRST so the \b-anchored token regexes
     # fire — names like "AleCask_32mm_UnSupported" glue tokens together with "_",
@@ -300,19 +303,31 @@ def character_key(name: str, creator_name: str | None = None) -> str:
 
 @lru_cache(maxsize=256)
 def _creator_suffix_pattern(creator_name: str) -> re.Pattern | None:
-    """Compile a regex matching creator name tokens (and consecutive concatenations)
-    as a trailing suffix.  "CA 3D Studios" generates tokens ["ca", "3d", "studios"]
-    plus all consecutive joins: "ca3d", "3dstudios", "ca3dstudios".
-    Cached per creator name so repeated calls during a scan are free.
+    """Compile a regex matching a trailing creator-name tag.
+
+    Two forms are stripped, both unlikely to collide with a real character word:
+      * a glued concatenation of 2+ consecutive creator words — the abbreviation
+        case ("CA 3D Studios" → "CA3D", "3DStudios", "CA3DStudios"); and
+      * the creator's full name spelled out ("CA 3D Studios").
+    A lone word is stripped ONLY when it is the creator's *entire* name (e.g.
+    "Ghamak"). Individual words of a multi-word name ("Dragon" from "Dragon
+    Studios") are deliberately NOT stripped, so a character whose name ends in such
+    a word ("Red Dragon") keeps its identity. Cached per creator name.
     """
     tokens = [t for t in re.split(r"[\s\-_]+", creator_name.lower()) if t]
     if not tokens:
         return None
-    aliases: set[str] = set(tokens)
-    for length in range(2, len(tokens) + 1):
-        for i in range(len(tokens) - length + 1):
-            aliases.add("".join(tokens[i : i + length]))
-    # Longest first so the alternation prefers "ca3dstudios" over "ca3d" over "ca".
+    aliases: set[str] = set()
+    if len(tokens) == 1:
+        aliases.add(tokens[0])
+    else:
+        # Glued concatenations of 2+ consecutive words (abbreviation-style tags).
+        for length in range(2, len(tokens) + 1):
+            for i in range(len(tokens) - length + 1):
+                aliases.add("".join(tokens[i : i + length]))
+        # The full name spelled out with spaces.
+        aliases.add(" ".join(tokens))
+    # Longest first so the alternation prefers the most specific match.
     alts = "|".join(re.escape(a) for a in sorted(aliases, key=len, reverse=True))
     # Require at least one leading space so we never strip the whole key when it
     # is nothing but a creator tag (guard handled in _strip_creator_suffix).

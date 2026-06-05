@@ -291,9 +291,13 @@ class TestCharacterKey:
 
     # --- creator_name suffix stripping ---
 
-    def test_creator_full_name_token_stripped_as_suffix(self):
-        # Individual creator-name words stripped from the end.
-        assert character_key("Ada Wong Studios", "Some Studios") == "Ada Wong"
+    def test_creator_full_name_stripped_as_suffix(self):
+        # The creator's full name spelled out at the end is stripped.
+        assert character_key("Ada Wong CA 3D Studios", "CA 3D Studios") == "Ada Wong"
+
+    def test_single_token_creator_stripped_as_suffix(self):
+        # A one-word creator name is its own full name, so it strips as a suffix.
+        assert character_key("Barbarian Ghamak", "Ghamak") == "Barbarian"
 
     def test_creator_concatenated_abbreviation_stripped(self):
         # "CA 3D Studios" → consecutive joins include "CA3D".
@@ -312,9 +316,20 @@ class TestCharacterKey:
         assert character_key("CA3D", "CA 3D Studios") == "CA3D"
 
     def test_creator_tag_not_stripped_from_middle(self):
-        # Creator token in the middle of a name is left alone; only trailing tokens
+        # Creator tag in the middle of a name is left alone; only trailing tags
         # are stripped to avoid clobbering real character names.
         assert character_key("CA3D Dragon", "CA 3D Studios") == "CA3D Dragon"
+
+    @pytest.mark.parametrize("folder,creator,expected", [
+        # A lone word of a multi-word creator name must NOT be stripped, even when
+        # it ends the folder name — it is almost always part of the character.
+        ("Red Dragon", "Dragon Studios", "Red Dragon"),
+        ("Big Boss", "Big Boss Studios", "Big Boss"),
+        ("Stone Titan", "Titan Forge", "Stone Titan"),
+        ("Iron Giant", "Giant Miniatures", "Iron Giant"),
+    ])
+    def test_partial_creator_word_not_stripped(self, folder, creator, expected):
+        assert character_key(folder, creator) == expected
 
     def test_no_creator_name_unchanged(self):
         # Without a creator_name, existing behaviour is preserved.
