@@ -293,12 +293,11 @@ export default function Settings() {
             Browse…
           </button>
           <button
-            onClick={() => addRoot()}
-            disabled={!newPath.trim()}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm transition-colors"
+            onClick={() => newPath.trim() ? addRoot() : setPicking(true)}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm transition-colors"
           >
             <Plus size={15} />
-            Add
+            Add Folder
           </button>
         </div>
         <p className="text-xs text-gray-600 mt-2">
