@@ -21,6 +21,7 @@ Auto-tags are generated from detected scale, type, and modifier tokens.
 needs_review=True is set when confidence is low.
 """
 import logging
+import os
 import threading
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -164,14 +165,34 @@ def _prune_stale_models(db: Session, scan_start: datetime, root_paths: list[str]
     either the folder was restructured, or the scanner logic evolved and it's no
     longer a leaf. Safety cap: skip if >50% of models under the scanned roots
     would be pruned (suggests an indexing failure rather than legitimate pruning).
+
+    Root membership is matched on the normalised path with a separator boundary
+    (not a SQL LIKE prefix): folder paths and root names routinely contain '_' and
+    other LIKE metacharacters, and an unanchored prefix would also match sibling
+    roots ('D:/STL' vs 'D:/STLBackup'). os.path.normcase handles per-platform
+    separator + case folding (case-insensitive on Windows).
+
+    User-EXCLUDED models are never pruned: the walk returns before bumping their
+    updated_at (so it always predates scan_start), and deleting them would let a
+    later scan resurrect the folder as a brand-new, non-excluded model.
     """
-    from sqlalchemy import or_
     if not root_paths:
         return
-    root_filters = [Model.folder_path.like(p.rstrip("/\\") + "%") for p in root_paths]
-    base_q = db.query(Model.id).filter(or_(*root_filters))
-    total = base_q.count()
-    stale_ids = [row[0] for row in base_q.filter(Model.updated_at < scan_start)]
+    roots_norm = [os.path.normcase(os.path.normpath(p)) for p in root_paths]
+
+    def _under_root(folder_path: str | None) -> bool:
+        if not folder_path:
+            return False
+        n = os.path.normcase(os.path.normpath(folder_path))
+        return any(n == r or n.startswith(r + os.sep) for r in roots_norm)
+
+    rows = db.query(Model.id, Model.folder_path, Model.updated_at, Model.excluded).all()
+    under = [r for r in rows if _under_root(r.folder_path)]
+    total = len(under)
+    stale_ids = [
+        r.id for r in under
+        if not r.excluded and r.updated_at is not None and r.updated_at < scan_start
+    ]
     if not stale_ids:
         return
     if total and len(stale_ids) > total * 0.5:

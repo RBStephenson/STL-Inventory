@@ -587,6 +587,91 @@ class TestPruneStaleModels:
         assert "fresh2" in names
         assert "in_b" in names          # outside scanned root → preserved
 
+    def test_excluded_models_are_never_pruned(self, db, tmp_path):
+        """A user-excluded model keeps an old updated_at (the walk returns before
+        bumping it), so it must be exempt from the stale prune — otherwise a later
+        scan would resurrect the folder as a brand-new, non-excluded model."""
+        from datetime import timedelta
+        from app.utils import utcnow
+
+        root = str(tmp_path)
+        creator = make_creator(db, "Creator")
+        old_ts = utcnow() - timedelta(hours=1)
+        scan_start = utcnow() - timedelta(minutes=30)
+
+        excluded = Model(name="excluded", folder_path=str(tmp_path / "excluded"),
+                         creator_id=creator.id, updated_at=old_ts, excluded=True)
+        fresh = Model(name="fresh", folder_path=str(tmp_path / "fresh"),
+                      creator_id=creator.id, updated_at=utcnow())
+        db.add_all([excluded, fresh])
+        db.commit()
+
+        scanner._prune_stale_models(db, scan_start, [root])
+
+        names = {m.name for m in db.query(Model).all()}
+        assert "excluded" in names      # exempt despite stale updated_at
+        assert "fresh" in names
+
+    def test_sibling_root_sharing_name_prefix_not_matched(self, db, tmp_path):
+        """A scan root must only match its true descendants, not a sibling whose
+        name merely shares a string prefix ('STL' vs 'STLBackup')."""
+        from datetime import timedelta
+        from app.utils import utcnow
+
+        scanned = tmp_path / "STL"
+        sibling = tmp_path / "STLBackup"      # NOT a scan root, never walked
+        creator = make_creator(db, "Creator")
+        old_ts = utcnow() - timedelta(hours=1)
+        scan_start = utcnow() - timedelta(minutes=30)
+
+        # 1 stale + 2 fresh under the scanned root (below the 50% cap)
+        stale = Model(name="stale", folder_path=str(scanned / "s"),
+                      creator_id=creator.id, updated_at=old_ts)
+        f1 = Model(name="f1", folder_path=str(scanned / "f1"),
+                   creator_id=creator.id, updated_at=utcnow())
+        f2 = Model(name="f2", folder_path=str(scanned / "f2"),
+                   creator_id=creator.id, updated_at=utcnow())
+        in_sibling = Model(name="in_sibling", folder_path=str(sibling / "m"),
+                           creator_id=creator.id, updated_at=old_ts)
+        db.add_all([stale, f1, f2, in_sibling])
+        db.commit()
+
+        scanner._prune_stale_models(db, scan_start, [str(scanned)])
+
+        names = {m.name for m in db.query(Model).all()}
+        assert "stale" not in names         # true descendant, not visited → pruned
+        assert "in_sibling" in names        # prefix-sharing sibling → never matched
+
+    def test_wildcard_chars_in_root_path_match_literally(self, db, tmp_path):
+        """Root/folder names routinely contain '_', a SQL LIKE wildcard. Matching
+        must be literal so an unrelated path doesn't get pulled into the prune."""
+        from datetime import timedelta
+        from app.utils import utcnow
+
+        root = tmp_path / "3D_STLs"            # '_' would be a LIKE wildcard
+        creator = make_creator(db, "Creator")
+        old_ts = utcnow() - timedelta(hours=1)
+        scan_start = utcnow() - timedelta(minutes=30)
+
+        # Under the real root: 1 stale + 2 fresh (below cap)
+        stale = Model(name="stale", folder_path=str(root / "s"),
+                      creator_id=creator.id, updated_at=old_ts)
+        f1 = Model(name="f1", folder_path=str(root / "f1"),
+                   creator_id=creator.id, updated_at=utcnow())
+        f2 = Model(name="f2", folder_path=str(root / "f2"),
+                   creator_id=creator.id, updated_at=utcnow())
+        # A path that a LIKE '3D_STLs%' pattern would wrongly match ('_' = any char)
+        decoy = Model(name="decoy", folder_path=str(tmp_path / "3DXSTLs" / "m"),
+                      creator_id=creator.id, updated_at=old_ts)
+        db.add_all([stale, f1, f2, decoy])
+        db.commit()
+
+        scanner._prune_stale_models(db, scan_start, [str(root)])
+
+        names = {m.name for m in db.query(Model).all()}
+        assert "stale" not in names         # genuine descendant → pruned
+        assert "decoy" in names             # only matched by a '_' wildcard → preserved
+
 
 # ---------------------------------------------------------------------------
 # Per-creator bootstrap (#50)
