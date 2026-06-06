@@ -30,7 +30,7 @@ const SECTIONS: Section[] = [
     body: (
       <>
         <p>
-          STL Inventory catalogues the 3D-model files already on your drives. It never
+          STL Library catalogues the 3D-model files already on your drives. It never
           downloads or moves anything — it reads your folders, builds a searchable index,
           and lets you browse, tag, preview, and plan prints.
         </p>
@@ -517,7 +517,7 @@ export default function Help() {
         <header className="mb-10">
           <h1 className="text-3xl font-bold text-white mb-2">Help &amp; Guide</h1>
           <p className="text-gray-500">
-            How every part of STL Inventory works. Jump to a topic on the left, or scroll through.
+            How every part of STL Library works. Jump to a topic on the left, or scroll through.
           </p>
         </header>
 

@@ -271,7 +271,7 @@ never modified.**
   way to recover your tags, favorites, and queue if something goes wrong.
 - **Restore from Backup…** — pick a previously downloaded `.db` file to replace
   your current library with it. The file is validated first (it must be a real
-  STL Inventory backup), and an older backup's schema is brought up to date
+  STL Library backup), and an older backup's schema is brought up to date
   automatically.
 - **Delete All Data** — wipes the entire index back to empty. You'd then run a
   full scan to rebuild it.
