@@ -6,6 +6,7 @@ Supported:
   MyMiniFactory  https://www.myminifactory.com/users/{username}
   Gumroad        https://{creator}.gumroad.com  or  gumroad.com/{creator}
   Cults3D        https://cults3d.com/en/users/{username}/creations
+  Loot Studios   https://app.lootstudios.com/bundle/{slug}/  (single bundle)
 """
 import re
 import json
@@ -49,6 +50,8 @@ async def scrape_storefront(url: str) -> list[StorefrontProduct]:
         return await _scrape_gumroad(url)
     if site == "cults3d":
         return await _scrape_cults(url)
+    if site == "loot-studios":
+        return await _scrape_loot_studios(url)
     return []
 
 
@@ -301,3 +304,35 @@ async def _scrape_cults(url: str) -> list[StorefrontProduct]:
             page += 1
 
     return products
+
+
+# ---------------------------------------------------------------------------
+# Loot Studios
+# ---------------------------------------------------------------------------
+
+async def _scrape_loot_studios(url: str) -> list[StorefrontProduct]:
+    """
+    Loot Studios bundle store listing is JS-rendered — full store scraping is
+    not supported.  If given a specific bundle URL, fetch that single product.
+    """
+    from app.services.scrapers import loot_studios as ls
+
+    if ls.extract_id(url) is None:
+        logger.warning(
+            "Loot Studios: store listing is JS-rendered and cannot be scraped. "
+            "Paste an individual bundle URL (app.lootstudios.com/bundle/slug/) instead."
+        )
+        return []
+
+    model = await ls.fetch(url)
+    if not model:
+        return []
+
+    return [StorefrontProduct(
+        title=model.title or "",
+        source_url=model.source_url or url,
+        source_site="loot-studios",
+        external_id=model.external_id,
+        thumbnail_url=model.thumbnail_url,
+        tags=model.tags,
+    )]
