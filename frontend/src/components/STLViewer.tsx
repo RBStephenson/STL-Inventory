@@ -222,6 +222,12 @@ export default function STLViewer({ files, getUrl, modelId, onThumbnailCaptured 
                 makeDefault
                 enableDamping
                 dampingFactor={0.08}
+                // Clamp dolly: the mesh is normalized to ~2 units and Bounds frames
+                // it at ~3-4 units, so these bracket the fitted view. Without them
+                // the user can zoom through the model (origin) or out to a vanishing
+                // dot — Bounds only sets maxDistance via clip(), which we don't use.
+                minDistance={0.5}
+                maxDistance={50}
               />
             </Canvas>
           )}
