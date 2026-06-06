@@ -337,20 +337,11 @@ export default function Library() {
       return;
     }
 
-    // Target already has a character → join that group silently. Otherwise both
-    // are ungrouped, so ask the user what to name the new group.
-    if (target.character) {
-      try {
-        await api.models.setGroupOverride(dragged.id, target.character);
-        toast(`Added to "${target.character}".`, "success");
-        fetchModels();
-      } catch (err: any) {
-        toast(err?.message || "Couldn't group these models — try again.", "error");
-      }
-    } else {
-      setMergeName(target.title || target.name);
-      setPendingMerge({ draggedId: dragged.id, targetId: target.id });
-    }
+    // Always prompt so the user can confirm or rename the group.
+    // Pre-fill with the target's existing character name if it has one,
+    // otherwise seed from the target's display name.
+    setMergeName(target.character || target.title || target.name);
+    setPendingMerge({ draggedId: dragged.id, targetId: target.id });
   };
 
   const confirmMerge = async () => {
