@@ -203,7 +203,12 @@ export default function STLViewer({ files, getUrl, modelId, onThumbnailCaptured 
             <Canvas
               key={key}
               shadows
-              frameloop="demand"
+              // TrackballControls update()s every frame and only invalidates on its
+              // 'change' event — its wheel handler dispatches start/end, not change,
+              // so under frameloop="demand" a scroll never schedules a render and
+              // zoom silently stalls. "always" lets the controls run as designed
+              // (reliable zoom + smooth damping) for this single mounted viewer.
+              frameloop="always"
               camera={{ position: [4, 3, 4], fov: 45 }}
               gl={{ antialias: true, powerPreference: "low-power", preserveDrawingBuffer: true }}
               onCreated={({ gl }) => {
