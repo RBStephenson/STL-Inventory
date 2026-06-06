@@ -289,6 +289,11 @@ class TestCharacterKey:
         # "2B" (NieR: Automata) must survive — there is no word boundary in "2B".
         assert character_key("2B") == "2B"
 
+    def test_leading_number_dot_prefix_stripped_cleanly(self):
+        # "1." ordering prefix: the digit is removed by _VARIANT_JUNK and the
+        # orphaned period must not survive as a leading character.
+        assert character_key("1.JSC Batgirl Regular") == "JSC Batgirl Regular"
+
     # --- creator_name suffix stripping ---
 
     def test_creator_full_name_stripped_as_suffix(self):

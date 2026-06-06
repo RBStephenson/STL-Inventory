@@ -291,9 +291,11 @@ def character_key(name: str, creator_name: str | None = None) -> str:
     base = _SCALE_MM.sub(" ", base)
     base = _SCALE_MM_ANY.sub(" ", base)
     base = _VARIANT_JUNK.sub(" ", base)
-    # Treat brackets/parens as separators so "Captain Carl Jenkins (supported)"
+    # Treat brackets/parens/periods as separators so "Captain Carl Jenkins (supported)"
     # reduces cleanly to "Captain Carl Jenkins" once the token inside is stripped.
-    key = re.sub(r"[\s()\[\]]+", " ", base).strip(" -_()[]")
+    # Periods are included so a leading number+dot prefix like "1.JSC …" doesn't leave
+    # an orphaned "." after the digit is removed by _VARIANT_JUNK.
+    key = re.sub(r"[\s()\[\].]+", " ", base).strip(" -_()[]")
 
     if creator_name and key:
         key = _strip_creator_suffix(key, creator_name)
