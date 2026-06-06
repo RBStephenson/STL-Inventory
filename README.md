@@ -85,6 +85,7 @@ A folder is only indexed as a model if it contains 3D files.
 - Grid view with search, filter by creator, site, tag, NSFW flag, thumbnail presence, and review status
 - Filter presets saved in localStorage; all filter state lives in the URL
 - **Variant grouping** — folders that share a parent character (e.g. `Full_cutted`, `No_cuts`, `Semi_cutted` under `Akuma/`) are collapsed into a single group card with a variant count badge; click to open the group and select individual variants
+- **Fix grouping** — drag a card onto another from the same creator to group them, or use **Set group** on a model / **Move to group** in a group view; overrides persist across rescans
 - Pagination with jump-to-page input (Prev / page / Next)
 
 ### Triage Queue (`/triage`)
@@ -115,6 +116,11 @@ A folder is only indexed as a model if it contains 3D files.
 - Checkbox-select multiple models in the Library grid
 - Floating bar to add or remove tags across the selection at once
 
+### Collections
+- Group models into named sets independent of tags/creators (projects, wishlists, etc.)
+- Create / rename / delete from the Collections page; add a model from its detail panel, or bulk-add from the Library selection bar
+- Stored in the database and included in every backup
+
 ### Storefront Enrichment
 - Paste a Gumroad, Cults3D, or MyMiniFactory creator URL
 - Fuzzy-matches scraped listings against local models and bulk-applies metadata (source URL, thumbnail, external ID)
@@ -125,6 +131,9 @@ A folder is only indexed as a model if it contains 3D files.
 - Cancel button; Library auto-refreshes on completion
 - On each rescan, `needs_review` is cleared for any model that already has indexed STL files (reduces false-positive review queue)
 - Tag index kept in sync via normalized `model_tags` table for fast filtering
+
+### In-app Help
+- A built-in **Help & Guide** page plus contextual "?" deep-links on each screen, mirroring the docs in [docs/](docs/README.md)
 
 ### Data Management
 - **Settings → Data Management** to back up, restore, or reset the catalog

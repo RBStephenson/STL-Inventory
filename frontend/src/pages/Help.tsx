@@ -83,13 +83,38 @@ const SECTIONS: Section[] = [
     title: "Variant grouping",
     icon: Layers,
     body: (
-      <p>
-        When several folders share the same character — for example a <em>Bust</em>, a{" "}
-        <em>Full size</em>, and a <em>Pre-supported</em> version of one figure — the
-        Library collapses them into a single <strong>group card</strong> with a
-        "<em>N</em> variants" badge. Click it to open the group and see each variant
-        individually. This keeps the grid tidy when a creator ships many cuts of one model.
-      </p>
+      <>
+        <p>
+          When several folders share the same character — for example a <em>Bust</em>, a{" "}
+          <em>Full size</em>, and a <em>Pre-supported</em> version of one figure — the
+          Library collapses them into a single <strong>group card</strong> with a
+          "<em>N</em> variants" badge. Click it to open the group and see each variant
+          individually. This keeps the grid tidy when a creator ships many cuts of one model.
+        </p>
+        <p>
+          The scanner infers groups from folder names and is usually right, but you can
+          fix any mis-grouping — corrections are saved and survive future rescans:
+        </p>
+        <ul>
+          <li>
+            <strong>Drag-to-group (Library):</strong> hover a card, grab the grip in its
+            bottom-left corner, and drop it onto another card from the <em>same creator</em>.
+            A prompt (pre-filled with the target's name) asks what to call the group.
+          </li>
+          <li>
+            <strong>From a group card:</strong> open it and use <strong>Move to group</strong>{" "}
+            (with name suggestions) or <strong>× Remove</strong> under any variant.
+          </li>
+          <li>
+            <strong>From a model:</strong> the <strong>Set group</strong> button in the model
+            header assigns or changes the group; leave it blank to ungroup.
+          </li>
+        </ul>
+        <p className="text-gray-500">
+          A group override applies immediately (no rescan needed) and takes precedence over
+          the scanner's guess until you clear it.
+        </p>
+      </>
     ),
   },
   {
@@ -122,7 +147,7 @@ const SECTIONS: Section[] = [
       <>
         <p>On any model with STL files, switch to <strong>3D View</strong> to inspect the mesh:</p>
         <ul>
-          <li>Drag to rotate, scroll to zoom, right-drag to pan.</li>
+          <li>Drag to rotate freely in any direction, scroll to zoom, right-drag to pan.</li>
           <li>The camera auto-fits the model on load, so it's framed every time.</li>
           <li>If a model has several STLs, use the file buttons to switch which one you're viewing.</li>
           <li>A size warning appears for very large files — they can be slow to load in a browser.</li>
@@ -383,7 +408,7 @@ const SECTIONS: Section[] = [
     body: (
       <>
         <p className="font-medium text-gray-200">I added models but they don't show up</p>
-        <p>Run a <strong>Rescan</strong> on that creator from the Creators page. If the creator is brand new, run a full <strong>Scan Library</strong> instead — per-creator rescan only works for creators already indexed.</p>
+        <p>Run a <strong>Rescan</strong> on that creator from the Creators page. If the creator isn't listed yet (never scanned), run a full <strong>Scan Library</strong> first to discover it — after that, a per-creator Rescan works even for a creator that currently shows 0 models.</p>
         <p className="font-medium text-gray-200 mt-4">A whole creator is missing or shows one model</p>
         <p>Make sure the creator's folder is directly under one of your scan roots (see <a href="#scanning">folder layout</a>), then run a full scan.</p>
         <p className="font-medium text-gray-200 mt-4">Scale or type tags are wrong/missing</p>
