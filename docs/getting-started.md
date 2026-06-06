@@ -16,9 +16,9 @@ and download the file for your operating system:
 
 | OS | File |
 |----|------|
-| Windows | `stl-inventory-windows.exe` |
-| macOS | `stl-inventory-macos` |
-| Linux | `stl-inventory-linux` |
+| Windows | `stl-library-windows.exe` |
+| macOS | `stl-library-macos` |
+| Linux | `stl-library-linux` |
 
 ### 2. Run it
 

@@ -27,9 +27,9 @@ Local web app for cataloguing, browsing, and managing an STL file library.
 ### Standalone (recommended for most users — no Docker needed)
 
 1. Go to the [Releases page](https://github.com/RBStephenson/STL-Inventory/releases) and download the file for your OS:
-   - **Windows**: `stl-inventory-windows.exe`
-   - **macOS**: `stl-inventory-macos`
-   - **Linux**: `stl-inventory-linux`
+   - **Windows**: `stl-library-windows.exe`
+   - **macOS**: `stl-library-macos`
+   - **Linux**: `stl-library-linux`
 
 2. Run the file. Your browser will open automatically to `http://localhost:8484`.
 
