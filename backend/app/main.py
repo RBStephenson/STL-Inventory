@@ -5,6 +5,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, engine, SessionLocal
 from app.routers import models, scan, files, collections, scrape, enrich, database
+# Registers the paint_*/guide_* tables on Base before create_all below.
+from app.painting import models as painting_models  # noqa: F401
+from app.painting.routers import router as painting_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -84,6 +87,7 @@ app.include_router(collections.router)
 app.include_router(scrape.router)
 app.include_router(enrich.router)
 app.include_router(database.router)
+app.include_router(painting_router)
 
 
 @app.get("/health")

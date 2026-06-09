@@ -1,0 +1,7 @@
+# Canonical paint-line metadata: code patterns + display names per line.
+# Placeholder in M0 — populated in M1 alongside the PaintRack CSV import.
+# Shape (per line):
+#   - brand: Monument Hobbies
+#     name: Pro Acryl Standard
+#     code_pattern: '^\d{3}$'
+lines: []
