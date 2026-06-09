@@ -1,0 +1,9 @@
+"""Painting module routers, aggregated under /painting (nginx maps /api/)."""
+from fastapi import APIRouter
+
+from app.painting.routers import guides, health, paints
+
+router = APIRouter(prefix="/painting", tags=["painting"])
+router.include_router(health.router)
+router.include_router(guides.router)
+router.include_router(paints.router)
