@@ -31,13 +31,7 @@ def _configured_roots(db: Session) -> list[Path]:
 
 
 def _is_under_configured_root(p: Path, roots: list[Path]) -> bool:
-    try:
-        for root in roots:
-            p.relative_to(root)
-            return True
-    except ValueError:
-        pass
-    return False
+    return any(p.is_relative_to(root) for root in roots)
 
 
 @router.get("/browse")
