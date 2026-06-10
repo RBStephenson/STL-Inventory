@@ -5,6 +5,7 @@ DEFAULTS = {
     "show_nsfw": False,
     "library_page_size": 48,
     "filter_presets": [],
+    "recent_days": 7,
 }
 
 
@@ -99,3 +100,15 @@ def test_filter_preset_shape_enforced(client):
     # Unknown field inside a preset
     bad = [{"name": "X", "qs": "q=x", "color": "red"}]
     assert client.patch("/settings", json={"filter_presets": bad}).status_code == 422
+
+
+def test_recent_days_round_trips(client):
+    r = client.patch("/settings", json={"recent_days": 14})
+    assert r.status_code == 200
+    assert client.get("/settings").json()["recent_days"] == 14
+
+
+def test_recent_days_bounds_rejected(client):
+    assert client.patch("/settings", json={"recent_days": 0}).status_code == 422
+    assert client.patch("/settings", json={"recent_days": 91}).status_code == 422
+    assert client.get("/settings").json()["recent_days"] == 7

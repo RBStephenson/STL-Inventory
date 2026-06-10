@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Settings from "./Settings";
@@ -17,12 +17,14 @@ vi.mock("../api/client", () => ({
         show_nsfw: false,
         library_page_size: 48,
         filter_presets: [],
+        recent_days: 7,
       }),
       update: vi.fn().mockResolvedValue({
         painting_guides_enabled: true,
         show_nsfw: false,
         library_page_size: 48,
         filter_presets: [],
+        recent_days: 7,
       }),
     },
   },

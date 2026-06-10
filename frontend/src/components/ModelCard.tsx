@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Package, Star, AlertCircle, Check, Layers, Printer, EyeOff, RotateCcw } from "lucide-react";
+import { Package, Star, AlertCircle, Check, Layers, Printer, EyeOff, RotateCcw, Sparkles } from "lucide-react";
 import { Model, api } from "../api/client";
 import { useNSFW } from "../context/NSFWContext";
+import { useAppSettings } from "../context/AppSettingsContext";
 import { useToast } from "../context/ToastContext";
+import { isRecentlyAdded } from "../utils/recentlyAdded";
 
 interface Props {
   model: Model;
@@ -43,8 +45,10 @@ const TAG_COLORS: Record<string, string> = {
 export default function ModelCard({ model, selected = false, onSelect, backTo, onMutate, excludedView = false, onRemoved }: Props) {
   const location = useLocation();
   const { showNSFW } = useNSFW();
+  const { settings } = useAppSettings();
   const { toast } = useToast();
   const [nsfw, setNsfw] = useState(model.nsfw);
+  const isNew = isRecentlyAdded(model.created_at, settings.recent_days);
 
   const [favorite, setFavorite] = useState(model.is_favorite);
   const [queued, setQueued] = useState(model.in_queue);
@@ -198,6 +202,12 @@ export default function ModelCard({ model, selected = false, onSelect, backTo, o
 
         {/* Badges — offset right of checkbox when selectable */}
         <div className={`absolute top-2 flex flex-col gap-1 ${onSelect ? "left-9" : "left-2"}`}>
+          {isNew && (
+            <span className="flex items-center gap-1 bg-indigo-500/90 text-white text-xs px-1.5 py-0.5 rounded font-medium">
+              <Sparkles size={10} />
+              New
+            </span>
+          )}
           {model.needs_review && (
             <span className="flex items-center gap-1 bg-amber-500/90 text-amber-950 text-xs px-1.5 py-0.5 rounded font-medium">
               <AlertCircle size={10} />

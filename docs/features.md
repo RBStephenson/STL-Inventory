@@ -32,6 +32,10 @@ filtered view.
   or use the quick chips in the header (e.g. "*N* favorites", "*N* queued",
   "*N* printed") — so you can see both what you want to print and what you've
   already printed.
+- **Recently added:** a quick chip in the header filters to models added in the
+  last *N* days, newest first, and cards inside that window carry a **New**
+  badge. The window (3 / 7 / 14 / 30 days) is configurable under
+  **Settings → Preferences**.
 - **Saved presets:** once you've dialed in a set of filters, save it as a named
   preset and re-apply it with one click. Presets are stored server-side, so they
   follow you across browsers and devices.

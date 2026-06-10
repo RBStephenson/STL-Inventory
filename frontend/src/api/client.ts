@@ -101,6 +101,7 @@ export interface AppSettings {
   show_nsfw: boolean;
   library_page_size: number;
   filter_presets: FilterPreset[];
+  recent_days: number;
 }
 
 export interface DirEntry {

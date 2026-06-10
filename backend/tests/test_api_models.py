@@ -652,3 +652,54 @@ class TestExcludeFilters:
         commit_all(db)
         resp = client.get(f"/models/{first.id}/neighbors?exclude_tag=statue")
         assert resp.json()["next_id"] == last.id
+
+
+# ---------------------------------------------------------------------------
+# Recently added (#170)
+# ---------------------------------------------------------------------------
+
+class TestRecentlyAdded:
+    def _seed(self, db, ages_days):
+        """Create one model per age (in days), named m0, m1, ... Returns the models."""
+        from datetime import timedelta
+        from app.utils import utcnow
+
+        creator = make_creator(db)
+        models = []
+        for i, age in enumerate(ages_days):
+            m = make_model(db, creator, name=f"m{i}")
+            m.created_at = utcnow() - timedelta(days=age)
+            models.append(m)
+        commit_all(db)
+        return models
+
+    def test_added_within_days_excludes_older_models(self, client, db):
+        self._seed(db, ages_days=[0, 3, 30])
+
+        resp = client.get("/models?added_within_days=7")
+        assert resp.status_code == 200
+        names = {i["name"] for i in resp.json()["items"]}
+        assert names == {"m0", "m1"}
+
+    def test_sort_added_returns_newest_first(self, client, db):
+        self._seed(db, ages_days=[5, 0, 2])
+
+        resp = client.get("/models?sort=added")
+        assert resp.status_code == 200
+        names = [i["name"] for i in resp.json()["items"]]
+        assert names == ["m1", "m2", "m0"]
+
+    def test_added_within_days_bounds_rejected(self, client, db):
+        assert client.get("/models?added_within_days=0").status_code == 422
+        assert client.get("/models?added_within_days=366").status_code == 422
+
+    def test_neighbors_respect_added_window(self, client, db):
+        models = self._seed(db, ages_days=[0, 30, 1])
+
+        # Within a 7-day window only m0 and m2 exist; sorted by added,
+        # m0 (today) precedes m2 (yesterday) — m1 must be skipped entirely.
+        resp = client.get(f"/models/{models[0].id}/neighbors?added_within_days=7&sort=added")
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["prev_id"] is None
+        assert body["next_id"] == models[2].id

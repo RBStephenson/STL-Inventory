@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { Search, SlidersHorizontal, AlertCircle, Tag, X, Bookmark, BookmarkPlus, Star, Printer, Check, FolderPlus, ArrowRight, EyeOff, Package, GripVertical, Layers } from "lucide-react";
+import { Search, SlidersHorizontal, AlertCircle, Tag, X, Bookmark, BookmarkPlus, Star, Printer, Check, FolderPlus, ArrowRight, EyeOff, Package, GripVertical, Layers, Sparkles } from "lucide-react";
 import {
   DndContext, DragOverlay, PointerSensor, useSensor, useSensors,
   useDraggable, useDroppable, pointerWithin,
@@ -146,6 +146,7 @@ export default function Library() {
   const queueParam   = searchParams.get("in_queue") === "1";
   const printedParam = searchParams.get("printed") === "1";
   const excludedParam = searchParams.get("excluded") === "1";
+  const addedDays    = searchParams.get("added_days") ?? ""; // "Recently added" window (#170)
 
   // Update one or more filter params in a single history entry and reset to
   // page 1. Multi-key form serves the mutually exclusive pairs
@@ -217,6 +218,7 @@ export default function Library() {
       if (queueParam)  params.in_queue      = true;
       if (printedParam) params.printed      = true;
       if (excludedParam) params.excluded    = true;
+      if (addedDays)   { params.added_within_days = addedDays; params.sort = "added"; }
       const data = await api.models.list(params);
       if (fetchId !== fetchIdRef.current) return; // stale response — a newer fetch is in flight
       setModels(data.items);
@@ -224,7 +226,7 @@ export default function Library() {
     } finally {
       if (fetchId === fetchIdRef.current) setLoading(false);
     }
-  }, [page, pageSize, search, creatorId, excludeCreatorId, site, activeTag, excludeTag, needsReview, nsfwParam, thumbParam, favParam, queueParam, printedParam, excludedParam]);
+  }, [page, pageSize, search, creatorId, excludeCreatorId, site, activeTag, excludeTag, needsReview, nsfwParam, thumbParam, favParam, queueParam, printedParam, excludedParam, addedDays]);
 
   useEffect(() => { fetchModels(); }, [fetchModels]);
   useEffect(() => { api.scan.roots().then((r) => setScanRootCount(r.length)).catch(() => setScanRootCount(null)); }, []);
@@ -250,7 +252,7 @@ export default function Library() {
   }, [savingPreset]);
 
   const totalPages = Math.ceil(total / pageSize);
-  const hasFilters = !!(creatorId || excludeCreatorId || site || activeTag || excludeTag || needsReview || nsfwParam || thumbParam || favParam || queueParam || printedParam);
+  const hasFilters = !!(creatorId || excludeCreatorId || site || activeTag || excludeTag || needsReview || nsfwParam || thumbParam || favParam || queueParam || printedParam || addedDays);
 
   const visibleTags = allTags.filter(({ tag }) =>
     !tagSearch || tag.includes(tagSearch.toLowerCase())
@@ -453,6 +455,18 @@ export default function Library() {
                 {stats.printed} printed
               </button>
             )}
+            <button
+              onClick={() => setParam("added_days", addedDays ? "" : String(settings.recent_days))}
+              title={`Models added in the last ${settings.recent_days} days, newest first`}
+              className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded transition-colors ${
+                addedDays
+                  ? "bg-indigo-500 text-indigo-950 font-medium"
+                  : "bg-indigo-950/50 text-indigo-400 hover:bg-indigo-900/50"
+              }`}
+            >
+              <Sparkles size={11} />
+              recently added
+            </button>
             {stats && (stats.excluded > 0 || excludedParam) && (
               <button
                 onClick={() => setParam("excluded", excludedParam ? "" : "1")}
