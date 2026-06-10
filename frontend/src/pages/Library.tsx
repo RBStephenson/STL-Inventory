@@ -12,6 +12,7 @@ import ScanButton from "../components/ScanButton";
 import BulkTagBar from "../components/BulkTagBar";
 import HelpLink from "../components/HelpLink";
 import { useToast } from "../context/ToastContext";
+import { nextTagParams } from "../utils/tagFilter";
 
 const SITES = ["thingiverse", "printables", "myminifactory", "cults3d", "gumroad", "thangs", "makerworld", "other"];
 const PAGE_SIZE = 48;
@@ -144,8 +145,10 @@ export default function Library() {
   const page         = Number(searchParams.get("page") ?? 1);
   const search       = searchParams.get("q") ?? "";
   const creatorId    = searchParams.get("creator_id") ?? "";
+  const excludeCreatorId = searchParams.get("exclude_creator_id") ?? "";
   const site         = searchParams.get("source_site") ?? "";
   const activeTag    = searchParams.get("tag") ?? "";
+  const excludeTag   = searchParams.get("exclude_tag") ?? "";
   const needsReview  = searchParams.get("needs_review") === "1";
   const nsfwParam    = searchParams.get("nsfw") ?? "";        // "" | "1" | "0"
   const thumbParam   = searchParams.get("has_thumbnail") ?? ""; // "" | "1" | "0"
@@ -154,14 +157,21 @@ export default function Library() {
   const printedParam = searchParams.get("printed") === "1";
   const excludedParam = searchParams.get("excluded") === "1";
 
-  const setParam = (key: string, value: string) => {
+  // Update one or more filter params in a single history entry and reset to
+  // page 1. Multi-key form serves the mutually exclusive pairs
+  // (creator_id/exclude_creator_id, tag/exclude_tag). Page itself goes
+  // through setPage, never through here.
+  const setParams = (updates: Record<string, string>) => {
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev);
-      if (value) next.set(key, value); else next.delete(key);
-      if (key !== "page") next.delete("page");
+      for (const [key, value] of Object.entries(updates)) {
+        if (value) next.set(key, value); else next.delete(key);
+      }
+      next.delete("page");
       return next;
     });
   };
+  const setParam = (key: string, value: string) => setParams({ [key]: value });
   const setPage = (p: number) => {
     window.scrollTo({ top: 0, behavior: "smooth" });
     setSearchParams((prev) => {
@@ -179,7 +189,7 @@ export default function Library() {
   const [tagSearch, setTagSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [showFilters, setShowFilters] = useState(
-    !!(creatorId || site || activeTag || nsfwParam || thumbParam)
+    !!(creatorId || excludeCreatorId || site || activeTag || excludeTag || nsfwParam || thumbParam)
   );
   const [selection, setSelection] = useState<Set<number>>(new Set());
   const [presets, setPresets] = useState<Preset[]>(loadPresets);
@@ -204,8 +214,10 @@ export default function Library() {
       const params: Record<string, string | number | boolean> = { page, page_size: PAGE_SIZE, group_variants: groupVariants };
       if (search)      params.q             = search;
       if (creatorId)   params.creator_id    = creatorId;
+      if (excludeCreatorId) params.exclude_creator_id = excludeCreatorId;
       if (site)        params.source_site   = site;
       if (activeTag)   params.tag           = activeTag;
+      if (excludeTag)  params.exclude_tag   = excludeTag;
       if (needsReview) params.needs_review  = true;
       if (nsfwParam)   params.nsfw          = nsfwParam === "1";
       if (thumbParam)  params.has_thumbnail = thumbParam === "1";
@@ -220,7 +232,7 @@ export default function Library() {
     } finally {
       if (fetchId === fetchIdRef.current) setLoading(false);
     }
-  }, [page, search, creatorId, site, activeTag, needsReview, nsfwParam, thumbParam, favParam, queueParam, printedParam, excludedParam]);
+  }, [page, search, creatorId, excludeCreatorId, site, activeTag, excludeTag, needsReview, nsfwParam, thumbParam, favParam, queueParam, printedParam, excludedParam]);
 
   useEffect(() => { fetchModels(); }, [fetchModels]);
   useEffect(() => { api.scan.roots().then((r) => setScanRootCount(r.length)).catch(() => setScanRootCount(null)); }, []);
@@ -246,7 +258,7 @@ export default function Library() {
   }, [savingPreset]);
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
-  const hasFilters = !!(creatorId || site || activeTag || needsReview || nsfwParam || thumbParam || favParam || queueParam || printedParam);
+  const hasFilters = !!(creatorId || excludeCreatorId || site || activeTag || excludeTag || needsReview || nsfwParam || thumbParam || favParam || queueParam || printedParam);
 
   const visibleTags = allTags.filter(({ tag }) =>
     !tagSearch || tag.includes(tagSearch.toLowerCase())
@@ -493,6 +505,15 @@ export default function Library() {
             </button>
           </div>
         )}
+        {excludeTag && (
+          <div className="flex items-center gap-1.5 px-3 py-2 rounded bg-rose-950 border border-rose-700 text-rose-300 text-sm">
+            <Tag size={13} />
+            <span>≠ {excludeTag}</span>
+            <button onClick={() => setParam("exclude_tag", "")} className="text-rose-500 hover:text-rose-200 transition-colors ml-0.5">
+              <X size={13} />
+            </button>
+          </div>
+        )}
         {nsfwParam && (
           <div className="flex items-center gap-1.5 px-3 py-2 rounded bg-red-950 border border-red-800 text-red-300 text-sm">
             <span>NSFW: {nsfwParam === "1" ? "Yes" : "No"}</span>
@@ -581,10 +602,23 @@ export default function Library() {
           <div className="flex flex-wrap gap-3 items-center">
             <select
               value={creatorId}
-              onChange={(e) => setParam("creator_id", e.target.value)}
+              onChange={(e) => setParams({ creator_id: e.target.value, exclude_creator_id: "" })}
               className="bg-gray-800 border border-gray-700 rounded px-2 py-1.5 text-sm text-gray-200 focus:outline-none focus:border-indigo-500"
             >
               <option value="">All Creators</option>
+              {creators.map((c) => (
+                <option key={c.id} value={c.id}>{c.name} ({c.model_count})</option>
+              ))}
+            </select>
+            <select
+              value={excludeCreatorId}
+              onChange={(e) => setParams({ exclude_creator_id: e.target.value, creator_id: "" })}
+              title="Hide all models from one creator"
+              className={`bg-gray-800 border rounded px-2 py-1.5 text-sm focus:outline-none focus:border-rose-500 ${
+                excludeCreatorId ? "border-rose-700 text-rose-300" : "border-gray-700 text-gray-200"
+              }`}
+            >
+              <option value="">Exclude creator…</option>
               {creators.map((c) => (
                 <option key={c.id} value={c.id}>{c.name} ({c.model_count})</option>
               ))}
@@ -641,19 +675,24 @@ export default function Library() {
               </div>
               <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto">
                 {visibleTags.map(({ tag, count }) => {
-                  const isActive = activeTag === tag;
+                  // Three-state cycle: off → include (indigo) → exclude (rose) → off
+                  const isInclude = activeTag === tag;
+                  const isExclude = excludeTag === tag;
                   return (
                     <button
                       key={tag}
-                      onClick={() => setParam("tag", isActive ? "" : tag)}
+                      onClick={() => setParams(nextTagParams(tag, activeTag, excludeTag))}
+                      title={isInclude ? "Click again to exclude this tag" : isExclude ? "Click to clear" : "Show only this tag"}
                       className={`flex items-center gap-1 px-2 py-0.5 rounded text-xs transition-colors ${
-                        isActive
+                        isInclude
                           ? "bg-indigo-600 border border-indigo-500 text-white"
+                          : isExclude
+                          ? "bg-rose-700 border border-rose-600 text-white"
                           : "bg-gray-800 border border-gray-700 text-gray-300 hover:border-indigo-500 hover:text-indigo-300"
                       }`}
                     >
-                      {tag}
-                      <span className={isActive ? "text-indigo-300" : "text-gray-500"}>{count}</span>
+                      {isExclude && "≠ "}{tag}
+                      <span className={isInclude ? "text-indigo-300" : isExclude ? "text-rose-300" : "text-gray-500"}>{count}</span>
                     </button>
                   );
                 })}

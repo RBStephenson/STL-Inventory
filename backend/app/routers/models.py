@@ -26,8 +26,10 @@ def _apply_filters(
     *,
     search: str = "",
     creator_id: int | None = None,
+    exclude_creator_id: int | None = None,
     source_site: str | None = None,
     tag: str | None = None,
+    exclude_tag: str | None = None,
     has_thumbnail: bool | None = None,
     needs_review: bool | None = None,
     nsfw: bool | None = None,
@@ -48,6 +50,9 @@ def _apply_filters(
         )
     if creator_id:
         q = q.filter(Model.creator_id == creator_id)
+    if exclude_creator_id:
+        # Keep NULL-creator models visible: SQL `!=` silently drops NULL rows.
+        q = q.filter((Model.creator_id != exclude_creator_id) | (Model.creator_id == None))
     if source_site:
         q = q.filter(Model.source_site == source_site)
     if tag:
@@ -55,6 +60,13 @@ def _apply_filters(
         q = q.filter(
             exists().where(
                 (ModelTag.model_id == Model.id) & (ModelTag.tag == tag_norm)
+            )
+        )
+    if exclude_tag:
+        excl_norm = exclude_tag.strip().lower()
+        q = q.filter(
+            ~exists().where(
+                (ModelTag.model_id == Model.id) & (ModelTag.tag == excl_norm)
             )
         )
     if has_thumbnail is True:
@@ -134,9 +146,11 @@ def list_models(
     page_size: int = Query(48, ge=1, le=200),
     search: str = Query("", alias="q"),
     creator_id: int | None = None,
+    exclude_creator_id: int | None = None,
     character: str | None = None,
     source_site: str | None = None,
     tag: str | None = None,
+    exclude_tag: str | None = None,
     has_thumbnail: bool | None = None,
     needs_review: bool | None = None,
     nsfw: bool | None = None,
@@ -150,8 +164,9 @@ def list_models(
 ):
     q = _apply_filters(
         db.query(Model),
-        search=search, creator_id=creator_id, source_site=source_site,
-        tag=tag, has_thumbnail=has_thumbnail, needs_review=needs_review,
+        search=search, creator_id=creator_id, exclude_creator_id=exclude_creator_id,
+        source_site=source_site, tag=tag, exclude_tag=exclude_tag,
+        has_thumbnail=has_thumbnail, needs_review=needs_review,
         nsfw=nsfw, is_favorite=is_favorite, in_queue=in_queue,
         printed=printed, excluded=excluded,
     )
@@ -584,8 +599,10 @@ def get_neighbors(
     model_id: int,
     search: str = Query("", alias="q"),
     creator_id: int | None = None,
+    exclude_creator_id: int | None = None,
     source_site: str | None = None,
     tag: str | None = None,
+    exclude_tag: str | None = None,
     has_thumbnail: bool | None = None,
     needs_review: bool | None = None,
     nsfw: bool | None = None,
@@ -604,8 +621,9 @@ def get_neighbors(
     """
     q = _apply_filters(
         db.query(Model),
-        search=search, creator_id=creator_id, source_site=source_site,
-        tag=tag, has_thumbnail=has_thumbnail, needs_review=needs_review,
+        search=search, creator_id=creator_id, exclude_creator_id=exclude_creator_id,
+        source_site=source_site, tag=tag, exclude_tag=exclude_tag,
+        has_thumbnail=has_thumbnail, needs_review=needs_review,
         nsfw=nsfw, is_favorite=is_favorite, in_queue=in_queue,
         printed=printed, excluded=excluded,
     )

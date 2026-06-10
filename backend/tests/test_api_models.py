@@ -555,3 +555,100 @@ class TestThumbnailUpload:
             files={"file": ("bad.txt", b"not an image", "text/plain")},
         )
         assert resp.status_code == 400
+
+
+# ---------------------------------------------------------------------------
+# Exclude filters (#204 / #205)
+# ---------------------------------------------------------------------------
+
+class TestExcludeFilters:
+    def _tagged_model(self, db, creator, name, tags):
+        m = make_model(db, creator, name=name, tags=tags)
+        sync_model_tags(m, db)
+        return m
+
+    def test_exclude_creator_hides_their_models(self, client, db):
+        creator_a = make_creator(db, "Creator A")
+        creator_b = make_creator(db, "Creator B")
+        make_model(db, creator_a, name="A Model")
+        make_model(db, creator_b, name="B Model")
+        commit_all(db)
+
+        resp = client.get(f"/models?exclude_creator_id={creator_a.id}")
+        data = resp.json()
+        assert data["total"] == 1
+        assert data["items"][0]["name"] == "B Model"
+
+    def test_exclude_creator_keeps_creatorless_models(self, client, db):
+        """SQL != drops NULL rows — models without a creator must stay visible."""
+        creator = make_creator(db, "Creator A")
+        make_model(db, creator, name="A Model")
+        orphan = make_model(db, creator, name="Orphan Model")
+        orphan.creator_id = None
+        commit_all(db)
+
+        resp = client.get(f"/models?exclude_creator_id={creator.id}")
+        data = resp.json()
+        assert data["total"] == 1
+        assert data["items"][0]["name"] == "Orphan Model"
+
+    def test_exclude_tag_hides_tagged_models(self, client, db):
+        creator = make_creator(db)
+        self._tagged_model(db, creator, "Statue Model", ["statue"])
+        self._tagged_model(db, creator, "Mini Model", ["miniature"])
+        make_model(db, creator, name="Untagged Model")
+        commit_all(db)
+
+        resp = client.get("/models?exclude_tag=statue")
+        data = resp.json()
+        assert data["total"] == 2
+        names = {m["name"] for m in data["items"]}
+        assert names == {"Mini Model", "Untagged Model"}
+
+    def test_exclude_tag_normalizes_case_and_whitespace(self, client, db):
+        creator = make_creator(db)
+        self._tagged_model(db, creator, "Statue Model", ["statue"])
+        make_model(db, creator, name="Other Model")
+        commit_all(db)
+
+        resp = client.get("/models?exclude_tag=%20Statue%20")
+        data = resp.json()
+        assert data["total"] == 1
+        assert data["items"][0]["name"] == "Other Model"
+
+    def test_include_and_exclude_combine(self, client, db):
+        """creator_id=A + exclude_tag narrows within the included creator."""
+        creator_a = make_creator(db, "Creator A")
+        creator_b = make_creator(db, "Creator B")
+        self._tagged_model(db, creator_a, "A Statue", ["statue"])
+        make_model(db, creator_a, name="A Plain")
+        make_model(db, creator_b, name="B Plain")
+        commit_all(db)
+
+        resp = client.get(f"/models?creator_id={creator_a.id}&exclude_tag=statue")
+        data = resp.json()
+        assert data["total"] == 1
+        assert data["items"][0]["name"] == "A Plain"
+
+    def test_neighbors_honor_exclude_filters(self, client, db):
+        """Prev/Next must skip models hidden by the exclude filters."""
+        creator_a = make_creator(db, "Creator A")
+        creator_b = make_creator(db, "Creator B")
+        # Names sort alphabetically: Alpha < Bravo < Charlie.
+        first = make_model(db, creator_a, name="Alpha")
+        middle = make_model(db, creator_b, name="Bravo")
+        last = make_model(db, creator_a, name="Charlie")
+        commit_all(db)
+
+        resp = client.get(
+            f"/models/{first.id}/neighbors?exclude_creator_id={creator_b.id}"
+        )
+        data = resp.json()
+        assert data["next_id"] == last.id
+
+        # Same skip via exclude_tag: tag the middle model and exclude that tag.
+        middle.tags = ["statue"]
+        sync_model_tags(middle, db)
+        commit_all(db)
+        resp = client.get(f"/models/{first.id}/neighbors?exclude_tag=statue")
+        assert resp.json()["next_id"] == last.id
