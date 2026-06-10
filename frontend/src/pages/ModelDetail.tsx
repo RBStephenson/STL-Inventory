@@ -166,7 +166,7 @@ function parseLibraryOrigin(from: string | undefined): Record<string, string | n
   if (path !== "/") return null;
   const sp = new URLSearchParams(search);
   const params: Record<string, string | number | boolean> = {};
-  for (const key of ["q", "creator_id", "source_site", "tag"]) {
+  for (const key of ["q", "creator_id", "exclude_creator_id", "source_site", "tag", "exclude_tag"]) {
     const val = sp.get(key);
     if (val) params[key] = val;
   }
