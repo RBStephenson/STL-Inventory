@@ -29,7 +29,7 @@ from datetime import datetime
 from pathlib import Path
 from sqlalchemy.orm import Session
 
-from sqlalchemy import text as _sqltext, func
+from sqlalchemy import text as _sqltext, func, or_
 
 from app.database import SessionLocal
 from app.models import Creator, Model, STLFile, ScanRoot, ModelTag, CollectionModel, PackOverride, GroupOverride
@@ -41,6 +41,18 @@ logger = logging.getLogger(__name__)
 
 STL_EXTENSIONS = {".stl", ".3mf", ".obj"}
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+# Slicer project/slice files — never index these, even if a future printable
+# extension overlaps (#206). NOTE: .3mf is deliberately NOT here — slicers save
+# projects as .3mf, but many designers also distribute printable geometry that
+# way; see the issue for a possible content-sniffing follow-up.
+SLICER_EXTENSIONS = {
+    ".lys",        # Lychee Slicer
+    ".chitubox",   # Chitubox
+    ".ctb",        # Chitubox / Halot
+    ".photon",     # Photon Workshop
+    ".pw0", ".pwx", ".pws",  # Photon Workshop variants
+    ".fhd",        # Formware
+}
 
 _scan_lock = threading.Lock()
 _state_lock = threading.Lock()
@@ -122,6 +134,9 @@ def scan_all_roots(db: Session | None = None):
             if not _cancel_requested:
                 _prune_stale_models(_db, scan_start, root_paths)
                 _prune_stale_paths(_db)
+                # Slicer rows must go before the phantom prune so a model whose
+                # only "STL" was a slicer project is removed in the same scan.
+                _prune_slicer_files(_db)
                 _prune_phantoms(_db)
                 _prune_empty_creators(_db)
         finally:
@@ -270,6 +285,22 @@ def _prune_phantoms(db: Session, creator_id: int | None = None):
 
     _cascade_delete_models(db, ids)
     logger.info(f"Post-scan: pruned {len(ids)} phantom models (no STL files)")
+
+
+def _prune_slicer_files(db: Session):
+    """Delete stl_files rows for slicer project files indexed by earlier scanner
+    versions (#206). The candidate filter in _index_stl_files keeps new ones out;
+    this cleans up what's already in the table.
+    """
+    patterns = [f"%{ext}" for ext in SLICER_EXTENSIONS]
+    rows = db.query(STLFile).filter(
+        or_(*[STLFile.filename.ilike(p) for p in patterns])
+    ).all()
+    if rows:
+        logger.info(f"Post-scan: pruned {len(rows)} slicer project file(s) from stl_files")
+        for row in rows:
+            db.delete(row)
+        db.commit()
 
 
 def _creator_dirs_by_name(name: str, db: Session) -> list[tuple[Path, list[str]]]:
@@ -849,7 +880,9 @@ def _index_stl_files(model: Model, folder: Path, db: Session):
     # Gather candidate STL files under this folder.
     candidates = [
         stl for stl in sorted(folder.rglob("*"))
-        if stl.is_file() and stl.suffix.lower() in STL_EXTENSIONS
+        if stl.is_file()
+        and stl.suffix.lower() in STL_EXTENSIONS
+        and stl.suffix.lower() not in SLICER_EXTENSIONS
     ]
     if not candidates:
         return

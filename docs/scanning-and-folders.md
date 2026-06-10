@@ -37,6 +37,9 @@ Key ideas:
 - A **model** is a folder containing the actual printable parts for one product
   or variant. A folder is only ever indexed as a model if its subtree contains
   3D files (`.stl` / `.3mf` / `.obj`) — render/preview-only folders are skipped.
+  Slicer project and slice files (`.lys`, `.chitubox`, `.ctb`, `.photon`,
+  `.pw0`/`.pwx`/`.pws`, `.fhd`) are never indexed, and any indexed by older
+  versions are cleaned up after the next full scan.
 - Folders below a model (e.g. `head/`, `base/`, `Supported/STL/`) are treated as
   **parts of that model**, not separate models.
 
