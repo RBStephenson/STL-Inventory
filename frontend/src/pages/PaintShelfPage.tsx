@@ -46,12 +46,13 @@ const EMPTY_FORM: PaintFormState = {
   paint_line_id: "", code: "", name: "", hex: "", finish: "matte", owned: true, notes: "",
 };
 
-function PaintForm({ brands, initial, onSubmit, onCancel, busy }: {
+function PaintForm({ brands, initial, onSubmit, onCancel, busy, error }: {
   brands: PaintBrand[];
   initial: PaintFormState;
   onSubmit: (form: PaintFormState) => void;
   onCancel: () => void;
   busy: boolean;
+  error?: string | null;
 }) {
   const [form, setForm] = useState<PaintFormState>(initial);
   const set = (patch: Partial<PaintFormState>) => setForm((f) => ({ ...f, ...patch }));
@@ -69,6 +70,11 @@ function PaintForm({ brands, initial, onSubmit, onCancel, busy }: {
 
   return (
     <form onSubmit={submit} className="bg-gray-900 border border-gray-800 rounded-lg p-4 mb-4 flex flex-wrap items-end gap-3">
+      {error && (
+        <p role="alert" className="w-full text-sm text-rose-400 bg-rose-950/30 border border-rose-900/50 rounded px-3 py-2 m-0">
+          {error}
+        </p>
+      )}
       <label className="flex flex-col gap-1 text-xs text-gray-500">
         Line
         <select
@@ -154,7 +160,12 @@ export default function PaintShelfPage() {
   const [total, setTotal] = useState(0);
   const [brands, setBrands] = useState<PaintBrand[]>([]);
   const [loading, setLoading] = useState(false);
-  const [formMode, setFormMode] = useState<"hidden" | "add" | number>("hidden"); // number = editing that paint id
+  const [formMode, setFormModeRaw] = useState<"hidden" | "add" | number>("hidden"); // number = editing that paint id
+  const [formError, setFormError] = useState<string | null>(null);
+  const setFormMode = (mode: "hidden" | "add" | number) => {
+    setFormError(null); // stale errors don't follow the form between paints
+    setFormModeRaw(mode);
+  };
   const [busy, setBusy] = useState(false);
   const fetchIdRef = useRef(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -233,6 +244,7 @@ export default function PaintShelfPage() {
       source: "manual",
     };
     setBusy(true);
+    setFormError(null);
     try {
       if (formMode === "add") {
         await api.painting.paints.create(body);
@@ -244,7 +256,8 @@ export default function PaintShelfPage() {
       setFormMode("hidden");
       fetchPaints();
     } catch (e: any) {
-      toast(e?.message || "Could not save the paint.", "error");
+      // Validation errors (e.g. code-pattern 422s) surface inline in the form.
+      setFormError(e?.message || "Could not save the paint.");
     } finally {
       setBusy(false);
     }
@@ -312,7 +325,7 @@ export default function PaintShelfPage() {
       </p>
 
       {formMode === "add" && (
-        <PaintForm brands={brands} initial={EMPTY_FORM} onSubmit={submitForm} onCancel={() => setFormMode("hidden")} busy={busy} />
+        <PaintForm brands={brands} initial={EMPTY_FORM} onSubmit={submitForm} onCancel={() => setFormMode("hidden")} busy={busy} error={formError} />
       )}
       {editingPaint && (
         <PaintForm
@@ -330,6 +343,7 @@ export default function PaintShelfPage() {
           onSubmit={submitForm}
           onCancel={() => setFormMode("hidden")}
           busy={busy}
+          error={formError}
         />
       )}
 
@@ -465,6 +479,25 @@ export default function PaintShelfPage() {
                 <span className="text-rose-400">{pendingImport.diff.summary.removed} missing from the file</span>.
                 Nothing is written until you confirm.
               </p>
+
+              {pendingImport.diff.warnings?.length > 0 && (
+                <details className="mb-3" open data-testid="import-warnings">
+                  <summary className="cursor-pointer text-sm font-medium text-amber-400">
+                    code warnings ({pendingImport.diff.warnings.length}) — these rows still import
+                  </summary>
+                  <ul className="mt-1.5 ml-4 text-xs text-amber-200/80 space-y-0.5 max-h-48 overflow-y-auto">
+                    {pendingImport.diff.warnings.slice(0, 200).map((w, i) => (
+                      <li key={i}>
+                        {w.brand} {w.code && <span className="font-mono">{w.code}</span>} — {w.name}:{" "}
+                        <span className="text-gray-500">{w.message}</span>
+                      </li>
+                    ))}
+                    {pendingImport.diff.warnings.length > 200 && (
+                      <li className="text-gray-600">…and {pendingImport.diff.warnings.length - 200} more</li>
+                    )}
+                  </ul>
+                </details>
+              )}
 
               {(["added", "changed", "removed"] as const).map((section) => {
                 const rows = pendingImport.diff[section];

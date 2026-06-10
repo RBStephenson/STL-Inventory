@@ -106,7 +106,8 @@ class TestImportPreview:
         r = _upload(client, "/painting/inventory/import", CSV_V1)
         assert r.status_code == 200
         body = r.json()
-        assert body["summary"] == {"rows": 12, "added": 12, "changed": 0, "removed": 0}
+        assert body["summary"] == {"rows": 12, "added": 12, "changed": 0,
+                                   "removed": 0, "warnings": 0}
         assert db.query(Paint).count() == 0  # preview never writes
 
     def test_preview_rejects_malformed_file(self, client):
@@ -126,7 +127,8 @@ class TestImportConfirm:
 
         # Re-importing the identical file is a no-op.
         r = _upload(client, "/painting/inventory/import", CSV_V1)
-        assert r.json()["summary"] == {"rows": 12, "added": 0, "changed": 0, "removed": 0}
+        assert r.json()["summary"] == {"rows": 12, "added": 0, "changed": 0,
+                                       "removed": 0, "warnings": 0}
 
     def test_imported_finish_and_matchable_derived(self, client, db):
         _import_all(client)
@@ -172,6 +174,45 @@ class TestImportConfirm:
         _upload(client, "/painting/inventory/import/confirm", v2, apply_removed="true")
         assert db.query(Paint).filter(Paint.name == "Rust").count() == 0
         assert db.query(Paint).filter(Paint.code == "MANUAL-1").count() == 1
+
+
+class TestImportCodeWarnings:
+    """#244: import flags non-conforming codes in the preview, never rejects."""
+
+    def _patterned_line(self, client):
+        brand = client.post("/painting/brands", json={"name": "Pro Acryl"}).json()
+        line = client.post("/painting/lines", json={
+            "brand_id": brand["id"], "name": "PRIME", "code_pattern": r"^MPAP-\d{3}$",
+        }).json()
+        return brand, line
+
+    def test_nonconforming_code_flagged_but_still_applied(self, client, db):
+        self._patterned_line(client)
+        csv = HEADER + "\nPro Acryl,OOPS-1,Bad Black,PRIME,120 ml,1\n"
+
+        preview = _upload(client, "/painting/inventory/import", csv).json()
+        assert preview["summary"]["added"] == 1
+        assert preview["summary"]["warnings"] == 1
+        warning = preview["warnings"][0]
+        assert warning["code"] == "OOPS-1"
+        assert "OOPS-1" in warning["message"] and r"^MPAP-\d{3}$" in warning["message"]
+
+        result = _import_all(client, csv)  # warning is informational only
+        assert result["applied"]["added"] == 1
+        assert db.query(Paint).filter(Paint.code == "OOPS-1").count() == 1
+
+    def test_conforming_code_not_flagged(self, client):
+        self._patterned_line(client)
+        csv = HEADER + "\nPro Acryl,MPAP-002,Black,PRIME,120 ml,1\n"
+        preview = _upload(client, "/painting/inventory/import", csv).json()
+        assert preview["summary"]["warnings"] == 0
+
+    def test_rows_for_new_lines_never_flagged(self, client):
+        # The line doesn't exist yet — the import will create it patternless,
+        # so there is nothing to validate against.
+        csv = HEADER + "\nBrand New,WHATEVER,Some Paint,Fresh Line,18 ml,1\n"
+        preview = _upload(client, "/painting/inventory/import", csv).json()
+        assert preview["summary"]["warnings"] == 0
 
 
 class TestExport:

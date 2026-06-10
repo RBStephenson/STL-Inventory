@@ -61,6 +61,67 @@ class TestBrandsAndLines:
         assert r.json()["code_pattern"] == r"^MPA-\d{3}$"
 
 
+class TestCodePatternValidation:
+    """#244: paint codes must satisfy the owning line's code_pattern regex."""
+
+    @pytest.fixture
+    def patterned_line(self, client):
+        # Distinct brand name — tests combining this with the plain `line`
+        # fixture would otherwise hit the duplicate-brand 409.
+        brand = mk_brand(client, name="Pro Acryl")
+        return mk_line(client, brand["id"], name="Pro Acryl Base",
+                       code_pattern=r"^MPA-\d{3}$")
+
+    def test_invalid_regex_rejected_on_line_create(self, client):
+        brand = mk_brand(client)
+        r = client.post("/painting/lines", json={
+            "brand_id": brand["id"], "name": "Bad", "code_pattern": "[unclosed",
+        })
+        assert r.status_code == 422
+        assert "[unclosed" in r.json()["detail"]
+
+    def test_invalid_regex_rejected_on_line_patch(self, client, line):
+        r = client.patch(f"/painting/lines/{line['id']}", json={"code_pattern": "(?P<"})
+        assert r.status_code == 422
+
+    def test_matching_code_accepted(self, client, patterned_line):
+        assert mk_paint(client, patterned_line["id"], code="MPA-002").status_code == 201
+
+    def test_nonconforming_code_rejected_with_detail(self, client, patterned_line):
+        r = mk_paint(client, patterned_line["id"], code="WP3001")
+        assert r.status_code == 422
+        detail = r.json()["detail"]
+        assert "WP3001" in detail and r"^MPA-\d{3}$" in detail
+
+    def test_line_without_pattern_accepts_anything(self, client, line):
+        assert mk_paint(client, line["id"], code="anything goes").status_code == 201
+
+    def test_patch_code_validated(self, client, patterned_line):
+        paint = mk_paint(client, patterned_line["id"], code="MPA-002").json()
+        r = client.patch(f"/painting/paints/{paint['id']}", json={"code": "nope"})
+        assert r.status_code == 422
+        r = client.patch(f"/painting/paints/{paint['id']}", json={"code": "MPA-003"})
+        assert r.status_code == 200
+
+    def test_moving_paint_to_patterned_line_validates_existing_code(
+        self, client, line, patterned_line
+    ):
+        paint = mk_paint(client, line["id"], code="WP3001").json()
+        r = client.patch(
+            f"/painting/paints/{paint['id']}",
+            json={"paint_line_id": patterned_line["id"]},
+        )
+        assert r.status_code == 422
+
+    def test_unrelated_patch_never_revalidates(self, client, line):
+        # A pattern added after the fact must not lock existing paints out of
+        # unrelated edits (e.g. toggling owned).
+        paint = mk_paint(client, line["id"], code="legacy code").json()
+        client.patch(f"/painting/lines/{line['id']}", json={"code_pattern": r"^\d{3}$"})
+        r = client.patch(f"/painting/paints/{paint['id']}", json={"owned": False})
+        assert r.status_code == 200
+
+
 class TestPaintCRUD:
     def test_create_and_get(self, client, line):
         created = mk_paint(client, line["id"])

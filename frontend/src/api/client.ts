@@ -171,11 +171,20 @@ export interface ImportDiffRow {
   changes?: Record<string, { from: string | number; to: string | number }>;
 }
 
+export interface ImportWarning {
+  brand: string;
+  code: string;
+  name: string;
+  paint_class: string;
+  message: string;
+}
+
 export interface ImportDiff {
   added: ImportDiffRow[];
   changed: ImportDiffRow[];
   removed: ImportDiffRow[];
-  summary: { rows: number; added: number; changed: number; removed: number };
+  warnings: ImportWarning[];
+  summary: { rows: number; added: number; changed: number; removed: number; warnings: number };
 }
 
 export interface DirEntry {

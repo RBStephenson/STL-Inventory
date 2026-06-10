@@ -25,6 +25,7 @@ from sqlalchemy.orm import Session
 
 from app.painting.models import Paint, PaintBrand, PaintLine
 from app.painting.schemas import derive_matchable
+from app.painting.services.validation import validate_code
 
 EXPECTED_HEADER = ["Brand", "SKU", "Paint Name", "Paint Class", "Size", "Count"]
 
@@ -147,11 +148,39 @@ def _row_dict(row: CsvRow) -> dict:
     }
 
 
+def _line_patterns(db: Session) -> dict[tuple[str, str], str]:
+    """(brand, line) → code_pattern for existing lines that declare one."""
+    rows = (
+        db.query(PaintLine, PaintBrand)
+        .join(PaintBrand, PaintLine.brand_id == PaintBrand.id)
+        .filter(PaintLine.code_pattern.isnot(None))
+        .all()
+    )
+    return {(b.name.lower(), l.name.lower()): l.code_pattern for l, b in rows}
+
+
 def compute_diff(db: Session, rows: list[CsvRow]) -> dict:
     """added: CSV rows with no matching paint; changed: key matches but
     name/size/count differ; removed: previously-imported paints absent from
-    the CSV. Manually added paints (source not PaintRack*) are never removed."""
+    the CSV. Manually added paints (source not PaintRack*) are never removed.
+
+    warnings (#244): rows whose existing line declares a code_pattern the SKU
+    doesn't match. Informational only — the import still applies; rows for
+    lines the import would create are never flagged (new lines carry no
+    pattern)."""
     existing = _db_paints_by_key(db)
+    patterns = _line_patterns(db)
+    warnings = []
+    for row in rows:
+        pattern = patterns.get((row.brand.lower(), row.paint_class.lower()))
+        if pattern is None:
+            continue
+        message = validate_code(row.code, pattern)
+        if message is not None:
+            warnings.append({
+                "brand": row.brand, "code": row.code, "name": row.name,
+                "paint_class": row.paint_class, "message": message,
+            })
     csv_keys = set()
     added, changed = [], []
 
@@ -178,7 +207,7 @@ def compute_diff(db: Session, rows: list[CsvRow]) -> dict:
         if key not in csv_keys
         and (paint.source or "").startswith(IMPORT_SOURCE_PREFIX)
     ]
-    return {"added": added, "changed": changed, "removed": removed}
+    return {"added": added, "changed": changed, "removed": removed, "warnings": warnings}
 
 
 # ---------------------------------------------------------------------------
