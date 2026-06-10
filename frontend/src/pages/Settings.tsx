@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef } from "react";
 import {
   HardDrive, Plus, Trash2, AlertCircle, CheckCircle, FolderSearch,
-  Database, Download, Upload, ShieldAlert,
+  Database, Download, Upload, ShieldAlert, Paintbrush,
 } from "lucide-react";
 import { api, ScanRoot } from "../api/client";
+import { useAppSettings } from "../context/AppSettingsContext";
 import FolderPicker from "../components/FolderPicker";
 import HelpLink from "../components/HelpLink";
 
@@ -54,6 +55,7 @@ export default function Settings() {
   const [success, setSuccess] = useState<string | null>(null);
   const [picking, setPicking] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { settings: appSettings, update: updateAppSettings } = useAppSettings();
 
   // Data management
   const [busy, setBusy] = useState<null | "backup" | "restore" | "reset">(null);
@@ -182,6 +184,16 @@ export default function Settings() {
       } finally {
         setBusy(null);
       }
+    }
+  };
+
+  const togglePaintingGuides = async () => {
+    const next = !appSettings.painting_guides_enabled;
+    try {
+      await updateAppSettings({ painting_guides_enabled: next });
+      flash(next ? "Painting Guides enabled" : "Painting Guides disabled", "ok");
+    } catch (e: any) {
+      flash(e?.message || "Could not update setting", "err");
     }
   };
 
@@ -382,6 +394,27 @@ export default function Settings() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* Painting Guides */}
+      <section className="mt-12 pt-8 border-t border-gray-800">
+        <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+          <Paintbrush size={14} /> Painting Guides
+        </h2>
+        <p className="text-xs text-gray-600 mb-4">
+          Author step-by-step painting guides for your models and track your paint inventory.
+          Enabling this adds <strong className="text-gray-500">Guides</strong> and{" "}
+          <strong className="text-gray-500">Paint Shelf</strong> to the navigation.
+        </p>
+        <label className="flex items-center gap-3 bg-gray-900 border border-gray-800 rounded-lg px-4 py-3 cursor-pointer select-none self-start">
+          <input
+            type="checkbox"
+            checked={appSettings.painting_guides_enabled}
+            onChange={togglePaintingGuides}
+            className="h-4 w-4 accent-indigo-500"
+          />
+          <span className="text-sm text-gray-200">Enable Painting Guides</span>
+        </label>
       </section>
 
       {/* Data management */}

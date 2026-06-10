@@ -2,12 +2,17 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import Settings from "./Settings";
+import { AppSettingsProvider } from "../context/AppSettingsContext";
 
 vi.mock("../api/client", () => ({
   api: {
     scan: {
       roots: vi.fn().mockResolvedValue([]),
       addRoot: vi.fn().mockResolvedValue({}),
+    },
+    settings: {
+      get: vi.fn().mockResolvedValue({ painting_guides_enabled: false }),
+      update: vi.fn().mockResolvedValue({ painting_guides_enabled: true }),
     },
   },
 }));
@@ -96,5 +101,56 @@ describe("Settings – backend error details surfaced (#216)", () => {
     await userEvent.click(await screen.findByRole("button", { name: /add folder/i }));
 
     expect(await screen.findByText("Could not add drive")).toBeInTheDocument();
+  });
+});
+
+describe("Settings – Painting Guides toggle (#180)", () => {
+  beforeEach(() => { vi.clearAllMocks(); });
+
+  it("renders unchecked by default and persists enabling via the API", async () => {
+    const { api } = await import("../api/client");
+    vi.mocked(api.settings.get).mockResolvedValue({ painting_guides_enabled: false });
+    vi.mocked(api.settings.update).mockResolvedValue({ painting_guides_enabled: true });
+
+    render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
+
+    const checkbox = await screen.findByRole("checkbox", { name: /enable painting guides/i });
+    expect(checkbox).not.toBeChecked();
+
+    await userEvent.click(checkbox);
+
+    expect(api.settings.update).toHaveBeenCalledWith({ painting_guides_enabled: true });
+    expect(await screen.findByText("Painting Guides enabled")).toBeInTheDocument();
+    expect(checkbox).toBeChecked();
+  });
+
+  it("reflects an already-enabled server setting and can disable it", async () => {
+    const { api } = await import("../api/client");
+    vi.mocked(api.settings.get).mockResolvedValue({ painting_guides_enabled: true });
+    vi.mocked(api.settings.update).mockResolvedValue({ painting_guides_enabled: false });
+
+    render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
+
+    const checkbox = await screen.findByRole("checkbox", { name: /enable painting guides/i });
+    await screen.findByRole("checkbox", { name: /enable painting guides/i, checked: true });
+
+    await userEvent.click(checkbox);
+
+    expect(api.settings.update).toHaveBeenCalledWith({ painting_guides_enabled: false });
+    expect(await screen.findByText("Painting Guides disabled")).toBeInTheDocument();
+  });
+
+  it("surfaces the backend error and stays unchecked when the update fails", async () => {
+    const { api } = await import("../api/client");
+    vi.mocked(api.settings.get).mockResolvedValue({ painting_guides_enabled: false });
+    vi.mocked(api.settings.update).mockRejectedValueOnce(new Error("DB locked"));
+
+    render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
+
+    const checkbox = await screen.findByRole("checkbox", { name: /enable painting guides/i });
+    await userEvent.click(checkbox);
+
+    expect(await screen.findByText("DB locked")).toBeInTheDocument();
+    expect(checkbox).not.toBeChecked();
   });
 });

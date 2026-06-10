@@ -177,3 +177,15 @@ class ModelTag(Base):
     model_id = Column(Integer, ForeignKey("models.id", ondelete="CASCADE"), nullable=False, index=True)
     tag = Column(String, nullable=False)
     is_auto = Column(Boolean, nullable=False, default=False)
+
+
+class AppSetting(Base):
+    """Server-persisted app-wide settings as key/value rows.
+
+    Known keys and their defaults live in schemas.AppSettingsRead;
+    rows exist only for values the user has explicitly set.
+    """
+    __tablename__ = "app_settings"
+
+    key = Column(String, primary_key=True)
+    value = Column(JSON, nullable=False)

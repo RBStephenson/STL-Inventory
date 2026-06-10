@@ -91,6 +91,10 @@ export interface ScanRoot {
   last_scanned: string | null;
 }
 
+export interface AppSettings {
+  painting_guides_enabled: boolean;
+}
+
 export interface DirEntry {
   name: string;
   path: string;
@@ -272,6 +276,15 @@ export const api = {
       }),
     removeRoot: (id: number) =>
       request<{ ok: boolean }>(`/scan/roots/${id}`, { method: "DELETE" }),
+  },
+  settings: {
+    get: () => request<AppSettings>("/settings"),
+    update: (patch: Partial<AppSettings>) =>
+      request<AppSettings>("/settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(patch),
+      }),
   },
   database: {
     backup: async () => {
