@@ -754,3 +754,75 @@ class TestResolveCreator:
         created = scanner.resolve_creator("Brand New", db)
         assert created.id is not None
         assert scanner.resolve_creator("brand new", db).id == created.id
+
+
+# ---------------------------------------------------------------------------
+# Slicer project file exclusion (#206)
+# ---------------------------------------------------------------------------
+
+class TestSlicerFileExclusion:
+    def test_walk_indexes_stl_but_not_slicer_files(self, db, tmp_path):
+        """A model folder holding printable geometry plus slicer projects must
+        index only the printable files."""
+        creator_dir = tmp_path / "Creator"
+        folder = creator_dir / "Dragon"
+        _stl(folder, "dragon.stl")
+        (folder / "dragon.lys").write_bytes(b"lychee project")
+        (folder / "dragon.chitubox").write_bytes(b"chitubox project")
+        (folder / "dragon.ctb").write_bytes(b"sliced output")
+        creator = make_creator(db, "Creator")
+
+        _walk(db, creator, creator_dir)
+
+        filenames = {f.filename for f in db.query(STLFile).all()}
+        assert filenames == {"dragon.stl"}
+
+    def test_prune_removes_indexed_slicer_rows_only(self, db):
+        """Rows indexed by older scanner versions are pruned; printable rows
+        and the owning model survive."""
+        creator = make_creator(db, "Creator")
+        m = Model(name="m", folder_path="/x/m", creator_id=creator.id)
+        db.add(m)
+        db.flush()
+        db.add(STLFile(model_id=m.id, path="/x/m/a.stl", filename="a.stl"))
+        db.add(STLFile(model_id=m.id, path="/x/m/a.chitubox", filename="a.chitubox"))
+        db.add(STLFile(model_id=m.id, path="/x/m/UPPER.LYS", filename="UPPER.LYS"))
+        db.add(STLFile(model_id=m.id, path="/x/m/b.pwx", filename="b.pwx"))
+        db.commit()
+
+        scanner._prune_slicer_files(db)
+
+        filenames = {f.filename for f in db.query(STLFile).all()}
+        assert filenames == {"a.stl"}
+        assert db.query(Model).count() == 1
+
+    def test_prune_noop_when_no_slicer_rows(self, db):
+        creator = make_creator(db, "Creator")
+        m = Model(name="m", folder_path="/x/m", creator_id=creator.id)
+        db.add(m)
+        db.flush()
+        db.add(STLFile(model_id=m.id, path="/x/m/a.stl", filename="a.stl"))
+        db.commit()
+
+        scanner._prune_slicer_files(db)
+
+        assert db.query(STLFile).count() == 1
+
+    def test_full_scan_order_lets_phantom_prune_remove_emptied_model(self, db):
+        """A model whose only file was a slicer project: after the slicer prune
+        it has zero STL rows, so the phantom prune (which runs after it in
+        scan_all_roots) deletes the model in the same pass."""
+        creator = make_creator(db, "Creator")
+        real = Model(name="real", folder_path="/x/real", creator_id=creator.id)
+        ghost = Model(name="ghost", folder_path="/x/ghost", creator_id=creator.id)
+        db.add_all([real, ghost])
+        db.flush()
+        db.add(STLFile(model_id=real.id, path="/x/real/a.stl", filename="a.stl"))
+        db.add(STLFile(model_id=ghost.id, path="/x/ghost/a.lys", filename="a.lys"))
+        db.commit()
+
+        scanner._prune_slicer_files(db)
+        scanner._prune_phantoms(db)
+
+        names = {m.name for m in db.query(Model).all()}
+        assert names == {"real"}
