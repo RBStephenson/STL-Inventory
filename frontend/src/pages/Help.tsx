@@ -63,6 +63,11 @@ const SECTIONS: Section[] = [
             panel for the full set, or use the quick chips in the header.
           </li>
           <li>
+            <strong>Recently added:</strong> the header chip filters to models added in
+            the last few days, newest first; those cards also carry a <strong>New</strong>{" "}
+            badge. Configure the window in Settings → Preferences.
+          </li>
+          <li>
             <strong>Saved presets:</strong> dial in a set of filters, then save it as a
             named preset and re-apply it with one click. Presets are stored server-side,
             so they follow you across browsers and devices.

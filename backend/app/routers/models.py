@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 from sqlalchemy import func, exists, text as _sql
 from sqlalchemy.dialects.sqlite import insert as _sqlite_insert
@@ -37,6 +39,7 @@ def _apply_filters(
     in_queue: bool | None = None,
     printed: bool | None = None,
     excluded: bool = False,
+    added_within_days: int | None = None,
 ):
     """Apply standard Library filters to a Model query. Does not handle sort, page, or character."""
     q = q.filter(Model.excluded == excluded)
@@ -85,6 +88,8 @@ def _apply_filters(
         q = q.filter(Model.printed_at != None)
     if printed is False:
         q = q.filter(Model.printed_at == None)
+    if added_within_days is not None:
+        q = q.filter(Model.created_at >= utcnow() - timedelta(days=added_within_days))
     return q
 
 
@@ -105,6 +110,9 @@ def _order_cols(sort: str) -> tuple:
         return (Model.queued_at.asc(),)
     elif sort == "printed_at":
         return (Model.printed_at.desc(),)
+    elif sort == "added":
+        # Newest first; id breaks ties within a scan batch (#170).
+        return (Model.created_at.desc(), Model.id.desc())
     else:
         return (Model.character, Model.name)
 
@@ -158,7 +166,8 @@ def list_models(
     in_queue: bool | None = None,
     printed: bool | None = None,
     excluded: bool = False,  # default: hide user-excluded models; pass true for the Excluded view
-    sort: str = Query("name"),  # "name" | "queued_at" | "printed_at"
+    added_within_days: int | None = Query(None, ge=1, le=365),  # "Recently added" window (#170)
+    sort: str = Query("name"),  # "name" | "queued_at" | "printed_at" | "added"
     group_variants: bool = Query(True),
     db: Session = Depends(get_db),
 ):
@@ -168,7 +177,7 @@ def list_models(
         source_site=source_site, tag=tag, exclude_tag=exclude_tag,
         has_thumbnail=has_thumbnail, needs_review=needs_review,
         nsfw=nsfw, is_favorite=is_favorite, in_queue=in_queue,
-        printed=printed, excluded=excluded,
+        printed=printed, excluded=excluded, added_within_days=added_within_days,
     )
     # character filter is list_models-only (not exposed via Library URL state)
     if character:
@@ -610,6 +619,7 @@ def get_neighbors(
     in_queue: bool | None = None,
     printed: bool | None = None,
     excluded: bool = False,
+    added_within_days: int | None = Query(None, ge=1, le=365),
     sort: str = Query("name"),
     group_variants: bool = Query(True),
     db: Session = Depends(get_db),
@@ -625,7 +635,7 @@ def get_neighbors(
         source_site=source_site, tag=tag, exclude_tag=exclude_tag,
         has_thumbnail=has_thumbnail, needs_review=needs_review,
         nsfw=nsfw, is_favorite=is_favorite, in_queue=in_queue,
-        printed=printed, excluded=excluded,
+        printed=printed, excluded=excluded, added_within_days=added_within_days,
     )
 
     target_id = model_id

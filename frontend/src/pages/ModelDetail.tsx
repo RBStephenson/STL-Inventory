@@ -185,6 +185,13 @@ function parseLibraryOrigin(from: string | undefined): Record<string, string | n
   if (queue) params.in_queue = true;
   if (printed) params.printed = true;
   if (excluded) params.excluded = true;
+  // "Recently added" view (#170): same window + newest-first order as the grid,
+  // so Prev/Next walks the list the user was looking at.
+  const addedDays = sp.get("added_days");
+  if (addedDays) {
+    params.added_within_days = addedDays;
+    params.sort = "added";
+  }
   params.group_variants = !fav && !queue && !printed && !excluded;
   return params;
 }

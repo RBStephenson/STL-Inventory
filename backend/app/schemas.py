@@ -207,6 +207,7 @@ class AppSettingsRead(BaseModel):
     show_nsfw: bool = False
     library_page_size: int = 48
     filter_presets: list[FilterPreset] = []
+    recent_days: int = 7  # "Recently added" window in days (#170)
 
 
 class AppSettingsUpdate(BaseModel):
@@ -217,5 +218,6 @@ class AppSettingsUpdate(BaseModel):
     show_nsfw: Optional[bool] = None
     library_page_size: Optional[int] = Field(None, ge=12, le=200)
     filter_presets: Optional[list[FilterPreset]] = None
+    recent_days: Optional[int] = Field(None, ge=1, le=90)
 
     model_config = {"extra": "forbid"}
