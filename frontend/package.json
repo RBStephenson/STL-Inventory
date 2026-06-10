@@ -16,7 +16,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "react-router-dom": "^7.16.0",
+    "react-router-dom": "^7.17.0",
     "three": "^0.184.0",
     "@react-three/fiber": "^9.6.1",
     "@react-three/drei": "^10.7.7",
