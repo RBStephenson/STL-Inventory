@@ -45,6 +45,43 @@ class TestBrowse:
         assert [e["name"] for e in nested["entries"]] == ["Model"]
 
 
+class TestBrowseRootRestriction:
+    """Once scan roots are configured, /scan/browse is limited to paths under them."""
+
+    def test_browse_allowed_under_every_configured_root(self, client, tmp_path, monkeypatch):
+        # Only DB-configured roots — clear the STL_ROOTS env fallback so the
+        # allowlist is exactly the two roots added below.
+        from app.config import settings
+        monkeypatch.setattr(settings, "stl_roots", "")
+
+        root_a = tmp_path / "RootA"
+        root_b = tmp_path / "RootB"
+        (root_a / "CreatorA").mkdir(parents=True)
+        (root_b / "CreatorB").mkdir(parents=True)
+        assert client.post("/scan/roots", json={"path": str(root_a)}).status_code == 200
+        assert client.post("/scan/roots", json={"path": str(root_b)}).status_code == 200
+
+        # Regression (#211): only the first configured root was checked, so any
+        # path under the second root was rejected with 403.
+        for root, child in ((root_a, "CreatorA"), (root_b, "CreatorB")):
+            resp = client.get("/scan/browse", params={"path": str(root)})
+            assert resp.status_code == 200, f"{root} should be browsable"
+            assert [e["name"] for e in resp.json()["entries"]] == [child]
+
+    def test_browse_outside_configured_roots_rejected(self, client, tmp_path, monkeypatch):
+        from app.config import settings
+        monkeypatch.setattr(settings, "stl_roots", "")
+
+        root = tmp_path / "Root"
+        outside = tmp_path / "Outside"
+        root.mkdir()
+        outside.mkdir()
+        assert client.post("/scan/roots", json={"path": str(root)}).status_code == 200
+
+        resp = client.get("/scan/browse", params={"path": str(outside)})
+        assert resp.status_code == 403
+
+
 class TestScanRoots:
     def test_add_root_defaults_to_creator_layout(self, client, tmp_path):
         resp = client.post("/scan/roots", json={"path": str(tmp_path)})
