@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Box, FolderOpen, Users, LayoutGrid, EyeOff, Eye, AlertTriangle, Settings, Printer, HelpCircle } from "lucide-react";
+import { Box, FolderOpen, Users, LayoutGrid, EyeOff, Eye, AlertTriangle, Settings, Printer, HelpCircle, Paintbrush, Palette } from "lucide-react";
 import { useNSFW } from "../context/NSFWContext";
+import { useAppSettings } from "../context/AppSettingsContext";
 import { api } from "../api/client";
 
 export default function Navbar() {
   const { pathname } = useLocation();
   const { showNSFW, toggle } = useNSFW();
+  const { settings: appSettings } = useAppSettings();
   const [reviewCount, setReviewCount] = useState<number | null>(null);
   const [queueCount, setQueueCount] = useState<number | null>(null);
 
@@ -23,6 +25,10 @@ export default function Navbar() {
     { to: "/collections", label: "Collections", icon: FolderOpen,    badge: null },
     { to: "/queue",       label: "Queue",       icon: Printer,       badge: queueCount },
     { to: "/triage",      label: "Triage",      icon: AlertTriangle, badge: reviewCount },
+    ...(appSettings.painting_guides_enabled ? [
+      { to: "/painting/guides", label: "Guides",      icon: Paintbrush, badge: null },
+      { to: "/painting/shelf",  label: "Paint Shelf", icon: Palette,    badge: null },
+    ] : []),
     { to: "/settings",   label: "Settings",    icon: Settings,      badge: null },
     { to: "/help",        label: "Help",        icon: HelpCircle,    badge: null },
   ];

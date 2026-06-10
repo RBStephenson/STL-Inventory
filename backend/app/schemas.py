@@ -190,3 +190,18 @@ class DownloadZipRequest(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class AppSettingsRead(BaseModel):
+    """Every known app setting with its default — the single source of truth
+    for the store's whitelist (routers/settings.py derives DEFAULTS from it)."""
+    painting_guides_enabled: bool = False
+
+
+class AppSettingsUpdate(BaseModel):
+    """Partial update for the app_settings store. extra="forbid" keeps the
+    whitelist tight: unknown keys are a 422, never silently stored. None
+    means "leave unchanged" — the router skips None values on write."""
+    painting_guides_enabled: Optional[bool] = None
+
+    model_config = {"extra": "forbid"}
