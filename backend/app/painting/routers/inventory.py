@@ -40,6 +40,7 @@ async def import_preview(file: UploadFile = File(...), db: Session = Depends(get
             "added": len(diff["added"]),
             "changed": len(diff["changed"]),
             "removed": len(diff["removed"]),
+            "warnings": len(diff["warnings"]),
         },
     }
 

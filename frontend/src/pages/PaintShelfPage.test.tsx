@@ -123,6 +123,29 @@ describe("PaintShelfPage", () => {
     });
   });
 
+  it("shows a code-pattern 422 inline and keeps the form open (#244)", async () => {
+    const { api } = await import("../api/client");
+    const detail = "Code 'XYZ' does not match the line's code pattern '^MPA-\\d{3}$'";
+    vi.mocked(api.painting.paints.create).mockRejectedValue(new Error(detail));
+    renderPage();
+    await screen.findByText("Coal Black");
+
+    await userEvent.click(screen.getByRole("button", { name: /add paint/i }));
+    await userEvent.selectOptions(screen.getByRole("combobox", { name: "Paint line" }), "10");
+    await userEvent.type(screen.getByPlaceholderText("002"), "XYZ");
+    await userEvent.type(screen.getByPlaceholderText("Coal Black"), "Bad Code Red");
+    await userEvent.click(screen.getByRole("button", { name: /save/i }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(detail);
+    // Form stays open with the typed values so the code can be corrected.
+    expect(screen.getByPlaceholderText("002")).toHaveValue("XYZ");
+
+    // The error clears when the form is reopened.
+    await userEvent.click(screen.getByRole("button", { name: /cancel/i }));
+    await userEvent.click(screen.getByRole("button", { name: /add paint/i }));
+    expect(screen.queryByRole("alert")).toBeNull();
+  });
+
   it("creates a paint through the add form", async () => {
     const { api } = await import("../api/client");
     vi.mocked(api.painting.paints.create).mockResolvedValue(PAINTS[0]);
@@ -160,7 +183,8 @@ describe("PaintShelfPage - PaintRack CSV import (#242)", () => {
       paint_id: 1, changes: { name: { from: "Coal Black", to: "Coal Black v2" } },
     }],
     removed: [{ brand: "Dirty Down", code: "", name: "Rust", paint_class: "", paint_id: 9 }],
-    summary: { rows: 2, added: 1, changed: 1, removed: 1 },
+    warnings: [],
+    summary: { rows: 2, added: 1, changed: 1, removed: 1, warnings: 0 },
   };
 
   async function pickFile() {
@@ -199,6 +223,28 @@ describe("PaintShelfPage - PaintRack CSV import (#242)", () => {
       );
     });
     expect(screen.queryByTestId("import-diff-modal")).toBeNull();
+  });
+
+  it("renders code warnings in the preview without blocking apply (#244)", async () => {
+    const { api } = await import("../api/client");
+    vi.mocked(api.painting.inventory.importPreview).mockResolvedValue({
+      ...DIFF,
+      warnings: [{
+        brand: "Pro Acryl", code: "OOPS-1", name: "Bad Black", paint_class: "PRIME",
+        message: "Code 'OOPS-1' does not match the line's code pattern '^MPAP-\\d{3}$'",
+      }],
+      summary: { ...DIFF.summary, warnings: 1 },
+    });
+    renderPage();
+    await screen.findByText("Coal Black");
+    const file = new File(["Brand,SKU,Paint Name,Paint Class,Size,Count\n"], "paintRack.csv", { type: "text/csv" });
+    await userEvent.upload(screen.getByTestId("csv-file-input"), file);
+
+    await screen.findByTestId("import-diff-modal");
+    const warnings = screen.getByTestId("import-warnings");
+    expect(warnings).toHaveTextContent("code warnings (1)");
+    expect(warnings).toHaveTextContent("OOPS-1");
+    expect(screen.getByRole("button", { name: /apply import/i })).toBeEnabled();
   });
 
   it("cancel closes the modal without applying", async () => {

@@ -1,8 +1,8 @@
 ﻿"""Paint Shelf (inventory) endpoints — brands, lines, and paints (M1, #240).
 
 `matchable` is always derived from `finish` server-side (spec §8.6); the
-create/update schemas don't expose it. Code-pattern validation against
-paint_line.code_pattern is #244 and slots into create/update here.
+create/update schemas don't expose it. Paint codes are validated against the
+owning line's `code_pattern` on create/update (#244, spec §6.2).
 """
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session, joinedload
@@ -15,6 +15,7 @@ from app.painting.schemas import (
     PaintCreate, PaintList, PaintRead, PaintUpdate,
     derive_matchable,
 )
+from app.painting.services.validation import validate_code, validate_pattern
 
 router = APIRouter()
 
@@ -68,6 +69,8 @@ def create_line(body: PaintLineCreate, db: Session = Depends(get_db)):
     )
     if dup:
         raise HTTPException(status_code=409, detail=f"Line '{dup.name}' already exists for this brand")
+    if (error := validate_pattern(body.code_pattern)) is not None:
+        raise HTTPException(status_code=422, detail=error)
     line = PaintLine(brand_id=body.brand_id, name=name, code_pattern=body.code_pattern)
     db.add(line)
     db.commit()
@@ -81,6 +84,8 @@ def update_line(line_id: int, body: PaintLineUpdate, db: Session = Depends(get_d
     updates = body.model_dump(exclude_unset=True)
     if "name" in updates and updates["name"] is None:
         updates.pop("name")  # name is non-nullable; null = leave unchanged
+    if (error := validate_pattern(updates.get("code_pattern"))) is not None:
+        raise HTTPException(status_code=422, detail=error)
     for key, value in updates.items():
         setattr(line, key, value)
     db.commit()
@@ -133,7 +138,9 @@ def get_paint(paint_id: int, db: Session = Depends(get_db)):
 
 @router.post("/paints", response_model=PaintRead, status_code=201)
 def create_paint(body: PaintCreate, db: Session = Depends(get_db)):
-    _get_or_404(db, PaintLine, body.paint_line_id, "Line")
+    line = _get_or_404(db, PaintLine, body.paint_line_id, "Line")
+    if (error := validate_code(body.code, line.code_pattern)) is not None:
+        raise HTTPException(status_code=422, detail=error)
     dup = (
         db.query(Paint)
         .filter(Paint.paint_line_id == body.paint_line_id, Paint.code == body.code)
@@ -159,8 +166,16 @@ def update_paint(paint_id: int, body: PaintUpdate, db: Session = Depends(get_db)
     for key in list(updates):
         if updates[key] is None and key not in _NULLABLE_PAINT_FIELDS:
             updates.pop(key)
-    if "paint_line_id" in updates:
-        _get_or_404(db, PaintLine, updates["paint_line_id"], "Line")
+    # Validate the effective code against the effective line whenever either
+    # changes; an unrelated PATCH never re-validates (no retroactive lockout
+    # when a pattern is added to a line with existing paints).
+    if "code" in updates or "paint_line_id" in updates:
+        line = _get_or_404(
+            db, PaintLine, updates.get("paint_line_id", paint.paint_line_id), "Line"
+        )
+        code = updates.get("code", paint.code)
+        if (error := validate_code(code, line.code_pattern)) is not None:
+            raise HTTPException(status_code=422, detail=error)
     for key, value in updates.items():
         setattr(paint, key, value)
     if "finish" in updates:
