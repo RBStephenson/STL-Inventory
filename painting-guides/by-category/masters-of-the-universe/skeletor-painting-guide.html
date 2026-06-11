@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skeletor — 1:6 Scale Painting Guide</title>
+  <link rel="stylesheet" href="../../assets/guide.css">
+  <link rel="stylesheet" href="../../assets/print.css" media="print">
+  <style>
+    :root {
+      --bg:       #111116;
+      --surface:  #1a1a22;
+      --surface2: #221e2e;
+      --surface3: #2a2636;
+      --border:      #2e2a3a;
+      --text:        #e8e8e8;
+      --text-muted:  #aaaaaa;
+      --text-dim:    #666666;
+      --accent: #8844cc;
+      --tag-airbrush: #2266aa;
+      --tag-brush:    #226622;
+      --tag-wash:     #884422;
+      --tag-finish:   #555555;
+      --tag-effects:  #882244;
+      --tag-filter:   #446688;
+      --tip-bg:      rgba(0, 160, 0, 0.08);
+      --tip-border:  #2a6a2a;
+      --warn-bg:     rgba(200, 50, 50, 0.08);
+      --warn-border: #882222;
+    }
+    .hero {
+      background: linear-gradient(135deg, #0a0812 0%, #1c1030 45%, #0a1210 70%, #0a080e 100%);
+      border-bottom: 2px solid var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+<nav class="guide-nav">
+  <a href="../../index.html">← All Guides</a>
+</nav>
+
+<div class="hero">
+  <div class="category">Masters of the Universe · ZEZ Studios</div>
+  <h1><span>Skeletor</span> — Lord of Destruction</h1>
+  <div class="subtitle">1:6 Scale · Bone skull · Blue-grey musculature · Green magical OSL · Dual-method transparent effects · Diorama base</div>
+  <div class="film-ref">
+    <em>"I am evil! Evil is my only law!"</em>
+  </div>
+  <div class="series-badge">
+    <a href="he-man-dark-warrior-painting-guide.html">He-Man</a>
+    <a href="trap-jaw-painting-guide.html">Trap Jaw</a>
+    <span class="active">Skeletor</span>
+  </div>
+  <div class="creator-credit">
+    Figure by <strong>ZEZ Studios</strong> · <a href="https://instagram.com/zez.studios" target="_blank">@zez.studios</a>
+  </div>
+
+  <div class="ref-thumb-wrap">
+    <img class="ref-thumb"
+         src="img/skeletor-reference.jpg"
+         alt="Skeletor — ZEZ Studios render reference"
+         onclick="openRefModal(this.src, this.alt)"
+         title="Click to view full reference image">
+    <div class="ref-thumb-label">Reference</div>
+  </div>
+</div>
+
+<div class="paint-bar">
+  <span class="paint-bar-label">Paint Lines Used</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#cc4444;"></span>Pro Acryl</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#884488;"></span>Pro Acryl Expert Acrylics</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#4488cc;"></span>Army Painter Speedpaint 2.0</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#44aacc;"></span>Vallejo Metal Color</span>
+</div>
+
+<div class="container">
+
+  <div class="char-brief">
+    <strong>Skeletor</strong> — Eternia's undying lord of destruction demands stark, theatrical contrast: ivory bone bleached by ancient power, blue-grey musculature pushed far brighter on the peaks than feels natural, deep purple shadow pooling in every fabric fold. The green magical energy isn't just a prop — it's the secondary light source for the entire scene, casting cool emerald OSL upward onto the lower figure and washing the diorama base in arcane glow. Paint this in the order it lights: establish dark values everywhere first, then build the green light source last so it unifies everything beneath it. Reference: ZEZ Studios render, classic MOTU canonical color palette rendered realistically.
+  </div>
+
+  <div class="tabs">
+    <div class="tab tab-btn active" onclick="showTab('skull-head', this)">Skull &amp; Head</div>
+    <div class="tab tab-btn" onclick="showTab('blue-body', this)">Blue-Grey Body</div>
+    <div class="tab tab-btn" onclick="showTab('cloak', this)">Purple Cloak</div>
+    <div class="tab tab-btn" onclick="showTab('armor', this)">Armor &amp; Hardware</div>
+    <div class="tab tab-btn" onclick="showTab('transparent-fx', this)">Transparent FX</div>
+    <div class="tab tab-btn" onclick="showTab('osl', this)">OSL</div>
+    <div class="tab tab-btn" onclick="showTab('base', this)">Base</div>
+    <div class="tab tab-btn" onclick="showTab('metals', this)">Metals</div>
+    <div class="tab tab-btn" onclick="showTab('airbrush-skills', this)">Airbrush Skills</div>
+    <div class="tab tab-btn" onclick="showTab('brush-skills', this)">Brush Skills</div>
+    <div class="tab tab-btn" onclick="showTab('thinning-ref', this)">Thinning Ref</div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: SKULL & HEAD
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content active" id="skull-head">
+
+    <div class="section-header">
+      <h2>Skull &amp; Head</h2>
+      <p>Aged bone skull, deep void eye sockets, red glowing eyes with OSL, ram-horn hood frame, and weathered ram skull ornament at the belt. This is the visual anchor of the whole piece — push the value range hard.</p>
+    </div>
+
+    <div class="phase-label">Value Structure — Bone</div>
+    <div class="value-map">
+      <div class="value-chip"><div class="chip-swatch" style="background:#1a1208;"></div><div class="chip-val">~8%</div><div class="chip-label">Deep Recess</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#3a2a14;"></div><div class="chip-val">~22%</div><div class="chip-label">Shadow</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#c8b87a;"></div><div class="chip-val">~42%</div><div class="chip-label">Bone Mid-Tone</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#ddd09a;"></div><div class="chip-val">~65%</div><div class="chip-label">Highlight</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#f0ead0;"></div><div class="chip-val">~88%</div><div class="chip-label">Specular Peak</div></div>
+    </div>
+
+    <div class="phase-label">Foundation</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 · Airbrush</span>
+      <h3>Black Prime</h3>
+      <p>P-002 Black Primer undiluted, 30+ PSI, 0.5mm nozzle, 20–25cm. Full coverage — no bare resin. This is the shadow foundation for all bone recesses and the eye socket void. Do not thin primer.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#111111"></div><div class="swatch-info"><div class="swatch-name">P-002 Black Primer</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~3% value — prime shadow base</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 2 · Airbrush</span>
+      <h3>Dual Zenithal — Grey then White</h3>
+      <p>Pass 1: P-005 Dark Neutral Grey from 45° above — broad warm coverage across all upper and mid surfaces. This becomes the bone shadow mid-tone. Pass 2: P-003 White directly from 90° above, tight cone — top of skull dome, brow ridge, cheekbones, nose bridge. Bone shouldn't read pure white anywhere — the grey prevents that naturally.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#404040"></div><div class="swatch-info"><div class="swatch-name">P-005 Dark Neutral Grey</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~25% value — zenithal mid-grey</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#f0f0f0"></div><div class="swatch-info"><div class="swatch-name">P-003 White Primer</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~95% value — top-plane zenithal</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> Photograph the zenithal in greyscale before adding color. The skull should already show clear light source direction — bright dome, shadow jaw underside, black sockets. If it looks flat, add another white pass from directly above.</div>
+    </div>
+
+    <div class="phase-label">Bone Color Build</div>
+
+    <div class="step">
+      <span class="step-number filter">Step 3 · Filter</span>
+      <h3>Warm Bone Glaze</h3>
+      <p>Thin Transparent Brown 052 at 1:5 with water and apply a light wash over all bone surfaces. This immediately warms the zenithal grey toward ivory and pools subtly in recesses. Don't overdo it — one pass is enough. Let fully dry before continuing.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#6a3a18"></div><div class="swatch-info"><div class="swatch-name">Transparent Brown 052</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">filter — warm shift, ~1:5 thinned</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 4 · Airbrush</span>
+      <h3>Ivory Bone Mid-Tone</h3>
+      <p>Ivory 023 + a small touch of Green Brown 020 (10:1) thinned 1:3, applied from above — mid-plane coverage. This is the true bone color. Leave the zenithal grey showing through in shadow transitions. Multiple thin passes. Should read ~42% value on lit surfaces with natural transition into the pre-shaded grey beneath.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#c8b87a"></div><div class="swatch-info"><div class="swatch-name">Ivory 023</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~42% value — bone mid-tone base</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#3a3820"></div><div class="swatch-info"><div class="swatch-name">Green Brown 020</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">tiny touch only — de-yellows the ivory toward aged bone</div></div></div>
+      </div>
+      <div class="ratio-box">Mix: 10:1 Ivory 023 + Green Brown 020 — thin 1:3 with water for airbrush</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 5 · Wash</span>
+      <h3>Recess Shading — Warm Brown Wash</h3>
+      <p>Brown Wash 201 targeted into all skull seams, dental gaps, orbital ridges, nasal cavity, zygomatic arches, and temple detail lines. Do not flood — flow capillary action, then leave it alone. A second targeted pass with Black Brown 040 thinned 1:4 into the very deepest recesses (deep inside the nasal cavity, base of teeth, deepest orbital corners).</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#5a3a1a"></div><div class="swatch-info"><div class="swatch-name">Brown Wash 201</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">warm shadow wash — seams and recesses</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#2a1c12"></div><div class="swatch-info"><div class="swatch-name">Black Brown 040</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~8% value — deepest recess accent</div></div></div>
+      </div>
+    </div>
+
+    <div class="phase-label">Highlight &amp; Specular</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 6 · Brush</span>
+      <h3>First Highlight — Bright Ivory</h3>
+      <p>Bright Ivory 022 thinned 1:2, applied to all raised bone planes — forehead dome, cheekbone peaks, brow ridge, nasal bones, mandible ridge, canine root protrusions, top of each tooth. This should read ~65% value. If it looks subtle at arm's length, push brighter. The contrast between the recess wash and this highlight is what gives bone its carved, structural quality.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#ddd09a"></div><div class="swatch-info"><div class="swatch-name">Bright Ivory 022</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~65% value — first bone highlight</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 7 · Brush</span>
+      <h3>Specular — Warm Near-White</h3>
+      <p>Bright Ivory 022 + Heavy Warm White S18 (1:1) on absolute apex surfaces only — top of dome, cheekbone peaks, center of forehead. Single thin strokes with a fine brush. Then a pure Heavy Warm White S18 dot on the very highest point of the skull dome. This reads ~88–90% value and catches the eye as the brightest point on the upper figure.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#ddd09a"></div><div class="swatch-info"><div class="swatch-name">Bright Ivory 022</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~65% — specular base layer</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#f0ead0"></div><div class="swatch-info"><div class="swatch-name">Heavy Warm White S18</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~88% value — apex specular</div></div></div>
+      </div>
+      <div class="ratio-box">Mix: 1:1 Bright Ivory 022 + Heavy Warm White S18 — thin 1:2 for working highlight. Use Heavy Warm White S18 undiluted for single specular dot only.</div>
+    </div>
+
+    <div class="phase-label">Eye Sockets &amp; Red Glow</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 8 · Brush</span>
+      <h3>Eye Socket Void</h3>
+      <p>Coal Black 002 carefully loaded into all eye socket depth. The socket interior should read near-absolute black — this void contrast is what makes the red eyes pop dramatically. Thin slightly at 1:1 and layer rather than flooding. Clean the socket edges with a damp brush if any black bleeds onto the brow ridge.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#1a1a1a"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~3% value — eye socket void</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number effects">Step 9 · Effects</span>
+      <h3>Red Eye Glow</h3>
+      <p>Build the glowing eyes from dark to light within the socket. Start with Burnt Red 008 in the outer ring of where the eye will sit. Then Bold Pyrrole Red 003 toward the center — this is the main eye color. Finally a tiny drop of Red Orange AMP 017 at the absolute center hot spot. All undiluted or very lightly thinned; small flat brush pressing into the socket interior. Work both eyes simultaneously so they match value and size.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#882020"></div><div class="swatch-info"><div class="swatch-name">Burnt Red 008</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">outer ring — cool deep red</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#cc2020"></div><div class="swatch-info"><div class="swatch-name">Bold Pyrrole Red 003</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">main eye iris — vivid red</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#dd4422"></div><div class="swatch-info"><div class="swatch-name">Red Orange AMP 017 (AMP)</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">center hot spot — warm orange-red</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> After the eyes are dry, apply a small amount of gloss varnish inside the socket only. This amplifies the wet, glowing look and differentiates the eye material from the matte bone surrounding it.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number filter">Step 10 · Filter</span>
+      <h3>Red OSL onto Surrounding Bone</h3>
+      <p>Thin Burnt Red 008 at 1:8 with water. With a fine flat brush, feather this very diluted red-orange tint onto the bone immediately surrounding the eye sockets — inner brow ridge, nasal bridge, upper cheekbone areas close to the socket edge. Only the nearest few millimeters. This subtle red spill suggests the eyes are genuinely lighting the skull from within. Less is dramatically more here.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#882020"></div><div class="swatch-info"><div class="swatch-name">Burnt Red 008 — 1:8 thinned</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">peri-socket OSL tint — extremely subtle</div></div></div>
+      </div>
+      <div class="warning"><strong>⚠ NOTE:</strong> If this red bleeds onto the cheekbones or forehead it will look sunburned rather than glowing. Keep it within 3–4mm of the socket edge. If you overshoot, re-establish the bone highlight on top while still wet.</div>
+    </div>
+
+    <div class="phase-label">Ram Skull Ornament</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 11 · Brush</span>
+      <h3>Ram Skull — Aged Bone</h3>
+      <p>Same bone process as the main skull but pushed dirtier and more weathered. Use more Brown Wash 201 pooled into the orbital and nasal detail, and deepen with an Agrax Earthshade (Citadel) targeted application in the deepest skull crevices for a warmer, more aged quality. Highlight less aggressively than the main skull — this is a trophy piece, not a living magical entity. Top highlight stops at Bright Ivory 022 without pushing to near-white specular.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#c8b87a"></div><div class="swatch-info"><div class="swatch-name">Ivory 023</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">mid-tone — same bone base</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#5a3a1a"></div><div class="swatch-info"><div class="swatch-name">Brown Wash 201</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">heavier application than main skull</div></div></div>
+      </div>
+    </div>
+
+  </div><!-- end #skull-head -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: BLUE-GREY BODY
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="blue-body">
+
+    <div class="section-header">
+      <h2>Blue-Grey Body</h2>
+      <p>Skeletor's iconic blue-grey musculature — undead, arcane, not flesh. Smooth gradient work across broad muscle forms. The dark purple zenithal primer pre-shade gives an eerie sub-surface quality that sets this apart from standard skin painting. Push the highlights much further than feels natural — 1:6 scale demands it.</p>
+    </div>
+
+    <div class="phase-label">Value Structure — Blue-Grey</div>
+    <div class="value-map">
+      <div class="value-chip"><div class="chip-swatch" style="background:#14181f;"></div><div class="chip-val">~10%</div><div class="chip-label">Deep Shadow</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#2a3545;"></div><div class="chip-val">~25%</div><div class="chip-label">Shadow</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#5c7a9e;"></div><div class="chip-val">~45%</div><div class="chip-label">Mid-Tone</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#8bacc8;"></div><div class="chip-val">~65%</div><div class="chip-label">Highlight</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#bdd0e8;"></div><div class="chip-val">~85%</div><div class="chip-label">Specular</div></div>
+    </div>
+
+    <div class="phase-label">Step-by-Step</div>
+
+    <div class="sub-tabs">
+      <div class="sub-tab active"     onclick="showSubTab('blue-body', 'blue-pro', this)">Pro Acryl</div>
+      <div class="sub-tab expert-tab" onclick="showSubTab('blue-body', 'blue-expert', this)">✦ Expert Acrylics — Brush Only</div>
+    </div>
+
+    <!-- PRO ACRYL SUB-TAB -->
+    <div class="sub-content active" id="blue-pro">
+
+      <div class="phase-label">Foundation</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 1 · Airbrush</span>
+        <h3>Dark Purple Zenithal Pre-Shade</h3>
+        <p>After black prime (done in the skull session), apply P-023 Dark Purple Primer from 45° above — a medium-coverage pass across all body surfaces. This gives the recesses a deep cool purple quality that reads as mystical shadow through the blue layers above. This is the secret to giving Skeletor's body an arcane, otherworldly character rather than simply grey-blue skin.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#2a1040"></div><div class="swatch-info"><div class="swatch-name">P-023 Dark Purple Primer</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~15% value — eerie purple pre-shade</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> Do not thin primer. Let this layer dry fully before the next step — the purple needs to set so it doesn't lift when the blue goes on top.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 2 · Airbrush</span>
+        <h3>Grey Blue Mid-Tone — Multiple Thin Passes</h3>
+        <p>Grey Blue 055 thinned 1:3 to 1:4, applied from above in multiple semi-transparent passes. Start from zenithal angle and let the passes build up gradually. The goal is to push the lit surfaces to ~45% value while leaving the dark purple visible in all recesses, joint creases, underarm areas, between muscle groups. Do not fill — let the purple breathe through the shadows.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#5c7a9e"></div><div class="swatch-info"><div class="swatch-name">Grey Blue 055</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~45% value — THE Skeletor blue mid-tone</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> Grey Blue 055 is the signature color. If this reads too grey (not blue enough), add a very small touch of White Blue S04 into the mix on subsequent passes to push the chroma. If it reads too blue, it's perfect — it will settle as the layers build.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span>
+        <h3>Shadow Reinforcement</h3>
+        <p>Dark Grey Blue 014 thinned 1:3, applied with a flat shader brush into all muscular separation creases — between pecs, abdominal divisions, deltoid/bicep separation, posterior muscle groups, back of the knee. Flow in carefully rather than painting aggressively. This reinforces the value structure below the Grey Blue coverage.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#2a3545"></div><div class="swatch-info"><div class="swatch-name">Dark Grey Blue 014</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~25% value — muscle crease shadow</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush</span>
+        <h3>Deep Shadow — Blue-Black</h3>
+        <p>Blue Black 056 + a touch of Payne's Grey (Expert Acrylics) in the very deepest muscle junctions and all contact-point occlusion zones. Underarm, groin area, deepest abdominal creases, posterior knee. These should read ~10% value — just short of the black prime. Keep this tightly targeted.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#1a2030"></div><div class="swatch-info"><div class="swatch-name">Blue Black 056</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~10% value — deepest occlusion zones</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#2a3040"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">cool shadow anchor — blends with Blue Black</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 2:1 Blue Black 056 + Payne's Grey — thin 1:3 with water. Use sparingly; a little goes a long way in deep recesses.</div>
+      </div>
+
+      <div class="phase-label">Highlights</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 5 · Brush</span>
+        <h3>First Highlight — Muscle Peak</h3>
+        <p>Grey Blue 055 + White Blue S04 (1:1) thinned 1:2, applied to raised muscle forms — top of deltoids, chest peak, abdominal button centres, top of forearm muscle bundles, outer knee cap. Use a medium filbert or flat brush in thin, controlled strokes following the muscle form direction. This should read ~65% value — brighter than feels right. It will look correct at arm's length.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#5c7a9e"></div><div class="swatch-info"><div class="swatch-name">Grey Blue 055</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">base of mix</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#8ab0d8"></div><div class="swatch-info"><div class="swatch-name">White Blue S04</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~65% value highlight shift</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 1:1 Grey Blue 055 + White Blue S04 — thin 1:2 with water</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 6 · Brush</span>
+        <h3>Second Highlight — Near-White Blue</h3>
+        <p>White Blue S04 thinned 1:2, applied only to the absolute muscle peaks — the highest point of each deltoid, the top-center of each pectoral, the central abdominal ridge. This highlight should read ~75–80% value. It will look very light at close range; that's intentional. Step back and check — at arm's length this is what makes the figure read dramatically lit.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#8ab0d8"></div><div class="swatch-info"><div class="swatch-name">White Blue S04</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~78% value — upper muscle highlight</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 7 · Brush</span>
+        <h3>Specular — Cool Near-White</h3>
+        <p>White Blue S04 + a small touch of Heavy Titanium White S21 (3:1) undiluted or very lightly thinned. One or two tiny strokes on the absolute apex of the shoulder caps and the chest peak. These are the hottest points of top-plane direct light. This sits at ~85% value — as bright as the bone specular but cooler in temperature, differentiating the two surface types at a glance.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#8ab0d8"></div><div class="swatch-info"><div class="swatch-name">White Blue S04</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">base of mix</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#f4f4f8"></div><div class="swatch-info"><div class="swatch-name">Heavy Titanium White S21</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~85% value — apex specular</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 3:1 White Blue S04 + Heavy Titanium White S21 — near undiluted for specular dot</div>
+        <div class="tip"><strong>✦ TIP:</strong> The blue-grey body and the bone skull should read as similar values at the very top (both ~85–90% specular) but with clearly different temperatures — warm ivory vs. cool blue. This temperature contrast is what keeps the eye moving between the two zones.</div>
+      </div>
+
+    </div><!-- end #blue-pro -->
+
+    <!-- EXPERT ACRYLICS SUB-TAB -->
+    <div class="sub-content" id="blue-expert">
+      <div class="tip"><strong>✦ Brush-only workflow.</strong> Expert Acrylics stay open longer than standard acrylics — use this for wet-blending the broad muscle gradients. Start with P-005 Dark Neutral Grey primer (no airbrush zenithal needed), then build everything brush-to-brush.</div>
+
+      <div class="phase-label">Foundation</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Shadow Base — Payne's Grey + Prussian Blue</h3>
+        <p>Prussian Blue + Payne's Grey (3:1) thinned 2:1 paint:water — apply as full basecoat across all body surfaces. This is the starting shadow tone. Cover everything evenly; let dry fully. This mix sits at ~18–22% value — dark, cool, and slightly blue, which is the right starting point for Skeletor's shadow zones.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#1a3450"></div><div class="swatch-info"><div class="swatch-name">Prussian Blue</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">primary blue base</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#2a3040"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">cool shadow anchor</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 3:1 Prussian Blue + Payne's Grey — thin 2:1 paint:water for base coat</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush — Wet Blend</span>
+        <h3>Mid-Tone Blend — Into Shadow</h3>
+        <p>While the shadow base is still slightly tacky (or re-wet with a damp brush), place Prussian Blue + Titanium White (2:1) as the mid-tone at the 50% value zone on each muscle peak. Use a clean damp flat brush to blend the edge between shadow and mid-tone. Expert Acrylics stay open long enough to feather this edge. Work one muscle group at a time.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#1a3450"></div><div class="swatch-info"><div class="swatch-name">Prussian Blue</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">blue shift agent</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#f0f0f0"></div><div class="swatch-info"><div class="swatch-name">Titanium White</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">value lifter — use carefully</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 2:1 Prussian Blue + Titanium White — near undiluted for wet blend placement</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span>
+        <h3>Highlight Glaze — Layered</h3>
+        <p>After mid-tones are dry, thin Prussian Blue + Titanium White + a touch of Primary Cyan (4:3:1) at 1:3 and apply as multiple thin glaze strokes on raised muscle peaks. Build up in 3–4 passes rather than one opaque hit. Final specular: near-undiluted Titanium White with a micro touch of Prussian Blue — single stroke per muscle apex only.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#1a3450"></div><div class="swatch-info"><div class="swatch-name">Prussian Blue</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">main mix base</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#00aacc"></div><div class="swatch-info"><div class="swatch-name">Primary Cyan</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">chroma boost — tiny touch only</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#f0f0f0"></div><div class="swatch-info"><div class="swatch-name">Titanium White</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">highlight value</div></div></div>
+        </div>
+      </div>
+
+    </div><!-- end #blue-expert -->
+
+  </div><!-- end #blue-body -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: PURPLE CLOAK & HOOD
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="cloak">
+
+    <div class="section-header">
+      <h2>Purple Cloak, Hood &amp; Lower Body</h2>
+      <p>All fabric on this figure is purple — the inner hood/cowl (medium-dark purple), the outer cloak (deep near-black purple with dramatic fold contrast), and the lower body wrapping beneath the shin armor. All share the same value foundation and purple recipe; the cloak is pushed darkest, the hood slightly lighter. Note: what reads as green in the render's lower body is entirely OSL from the base — the fabric underneath is the same purple. The metallic shin armor panels follow the Armor &amp; Hardware tab.</p>
+    </div>
+
+    <div class="phase-label">Value Structure — Purple</div>
+    <div class="value-map">
+      <div class="value-chip"><div class="chip-swatch" style="background:#130a1a;"></div><div class="chip-val">~5%</div><div class="chip-label">Deep Fold</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#2a1640;"></div><div class="chip-val">~18%</div><div class="chip-label">Shadow</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#4a2268;"></div><div class="chip-val">~30%</div><div class="chip-label">Mid-Tone</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#7a3aaa;"></div><div class="chip-val">~48%</div><div class="chip-label">Highlight</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#b088e0;"></div><div class="chip-val">~72%</div><div class="chip-label">Specular Edge</div></div>
+    </div>
+
+    <div class="phase-label">Step-by-Step</div>
+
+    <div class="sub-tabs">
+      <div class="sub-tab active"     onclick="showSubTab('cloak', 'cloak-pro', this)">Pro Acryl</div>
+      <div class="sub-tab expert-tab" onclick="showSubTab('cloak', 'cloak-expert', this)">✦ Expert Acrylics — Brush Only</div>
+    </div>
+
+    <div class="sub-content active" id="cloak-pro">
+
+      <div class="phase-label">Foundation</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 1 · Airbrush</span>
+        <h3>Dark Plum Shadow Base</h3>
+        <p>Dark Plum S11 thinned 1:3, applied as full basecoat across all cloak and hood surfaces. This is the starting shadow tone — deep, cool purple with near-black value in deep folds. Multiple thin passes from all angles to ensure coverage in every crease. The goal is flat, even coverage at this stage — no zenithal highlighting yet.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#2a1238"></div><div class="swatch-info"><div class="swatch-name">Dark Plum S11</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~12% value — cloak shadow base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 2 · Airbrush</span>
+        <h3>Mid-Tone Zenithal — Dark Purple</h3>
+        <p>Dark Purple 035 thinned 1:3, applied from above on a zenithal angle — upper fabric folds, shoulders of the cloak, top of the hood. Do not cover the underside fold creases from Step 1. Build up to ~30% value on the lit surfaces. For the inner hood/cowl, which is a brighter purple than the outer cloak, build one additional pass of Dark Purple 035 to push it slightly lighter.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#4a2268"></div><div class="swatch-info"><div class="swatch-name">Dark Purple 035</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~30% value — fabric mid-tone</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-label">Highlights &amp; Detail</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span>
+        <h3>Fold Highlight — Purple</h3>
+        <p>Purple 010 thinned 1:2, applied to the raised fold ridges and outer fabric peaks — cloak shoulders, any exposed fold running from shoulder to hem. Use a flat or filbert brush with gentle edge-only strokes following the fold direction. On the hood, push this lighter since the hood sits closer to overhead light. Target ~48% value on these peaks.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#7a3aaa"></div><div class="swatch-info"><div class="swatch-name">Purple 010</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~48% value — fold highlight</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush</span>
+        <h3>Upper Highlight — Royal Purple</h3>
+        <p>Royal Purple S03 thinned 1:2, applied only to the sharpest fold ridges and any fabric edge catching direct overhead light. Thin strokes, one per fold peak. On the outer cloak, use very sparingly — only the 2–3 most prominent folds. On the hood framing the skull, be more generous since it catches more light from above and needs to contrast against the purple to let the skull read clearly.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#9a56cc"></div><div class="swatch-info"><div class="swatch-name">Royal Purple S03</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~58% value — upper fold peak</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 5 · Brush</span>
+        <h3>Specular Edge</h3>
+        <p>Faded Plum 063 (very thin, 1:3) drawn along the absolute sharpest fabric fold edge — a single thin line per fold using a liner brush. Only on 3–4 folds on the entire cloak — the ones with the hardest edge geometry. This reads ~72% value and contrasts dramatically against the near-black fold recesses adjacent to it. This is what makes fabric look convincing at 1:6 scale.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#b888d8"></div><div class="swatch-info"><div class="swatch-name">Faded Plum 063</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~72% value — specular fabric edge</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number filter">Step 6 · Filter</span>
+        <h3>Depth Glaze — Transparent Purple</h3>
+        <p>Thin Transparent Purple 051 at 1:5, apply one pass over the entire cloak mid-tone areas (not into fold recesses, not on the highlight edges). This enriches the color saturation and unifies the layered paints into one coherent hue without flattening the value work beneath. Applied over a sealed layer gives best results — seal between Steps 5 and 6 if you have time.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#8844aa"></div><div class="swatch-info"><div class="swatch-name">Transparent Purple 051</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">filter glaze — unifying pass, 1:5 thinned</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 7 · Brush</span>
+        <h3>Deepest Fold — Near-Black</h3>
+        <p>Coal Black 002 thinned 1:3, targeted into the very deepest fold crevices — where two fabric folds press together, where the cloak meets the figure, deep inside the hood shadow. These should read near-absolute dark. The extreme contrast between this and Faded Plum 063 specular edges on adjacent fold ridges is what sells the drama of the cloak at arm's length.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#1a1a1a"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~3% value — deepest fold void</div></div></div>
+        </div>
+        <div class="warning"><strong>⚠ NOTE:</strong> Do not use pure black for general shadow tones — only for the absolute deepest fold contacts. Payne's Grey (Expert Acrylics) is the shadow anchor for broad shadow areas; Coal Black is only for contact-point voids.</div>
+      </div>
+
+    </div><!-- end #cloak-pro -->
+
+    <div class="sub-content" id="cloak-expert">
+      <div class="tip"><strong>✦ Brush-only workflow.</strong> Expert Acrylics' Dioxazine Violet is an exceptional deep transparent purple — ideal for wet-blending fabric shadow transitions. Pair with Quinacridone Magenta for warm purple highlights. No airbrush required.</div>
+
+      <div class="phase-label">Foundation</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Deep Shadow Base</h3>
+        <p>Dioxazine Violet + Carbon Black (2:1) thinned 2:1 paint:water — apply as full base coat across all cloak surfaces. Dioxazine Violet is a deep, rich transparent purple that naturally pools and concentrates in recesses. The Carbon Black component pushes the value to near-dark without losing the purple temperature. Full, even coverage.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#2a1060"></div><div class="swatch-info"><div class="swatch-name">Dioxazine Violet</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">deep transparent purple — rich shadow base</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#111111"></div><div class="swatch-info"><div class="swatch-name">Carbon Black</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">value control — push to near-dark</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 2:1 Dioxazine Violet + Carbon Black — thin 2:1 with water</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush — Wet Blend</span>
+        <h3>Mid-Tone — Dioxazine Violet + Quinacridone Magenta</h3>
+        <p>While the shadow base is still slightly wet, place Dioxazine Violet + Quinacridone Magenta (3:1) as the mid-tone on raised fold surfaces. The Quinacridone Magenta warms and brightens the purple toward the highlight range. Blend the edge between shadow and mid-tone with a clean damp flat brush. Work one fold cluster at a time.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#2a1060"></div><div class="swatch-info"><div class="swatch-name">Dioxazine Violet</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">base of mix</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#cc2288"></div><div class="swatch-info"><div class="swatch-name">Quinacridone Magenta</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">warm purple highlight shift</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 3:1 Dioxazine Violet + Quinacridone Magenta — near undiluted for wet blend placement</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span>
+        <h3>Highlight Glazes — Layered</h3>
+        <p>After mid-tones dry, thin Quinacridone Magenta + a touch of Titanium White (3:1) at 1:4 and apply multiple thin glaze strokes on fold peak ridges. Layer 3–4 passes to build up without going opaque. Final specular: Titanium White + Quinacridone Magenta (4:1) near-undiluted on the absolute sharpest fold edge — one line per fold, 2–3 folds max on the entire cloak.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#cc2288"></div><div class="swatch-info"><div class="swatch-name">Quinacridone Magenta</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">highlight base</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#f0f0f0"></div><div class="swatch-info"><div class="swatch-name">Titanium White</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">specular — small addition only</div></div></div>
+        </div>
+      </div>
+
+    </div><!-- end #cloak-expert -->
+
+  </div><!-- end #cloak -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: ARMOR & HARDWARE
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="armor">
+
+    <div class="section-header">
+      <h2>Armor &amp; Hardware</h2>
+      <p>Dark gunmetal shoulder pauldrons, bracers, shin armor, and belt hardware — all sharing a cold steel palette with purple-tinted shadows. The shin armor panels follow the same TMM process as the shoulder armor but with a stronger purple accent wash in the recesses to tie them visually to the purple fabric above. Belt leather in warm dark brown. Chains in bright steel. Gold ornamental hardware. VMC used for all airbrush metallic passes; Pro Acryl metallics for brush-only highlights and details.</p>
+    </div>
+
+    <div class="phase-label">Gunmetal Armor — Pauldrons, Bracers, Boot Caps</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 · Airbrush</span>
+      <h3>Gloss Black Base</h3>
+      <p>Satin Black S39 thinned 1:2 applied over all armor surfaces — shoulder pauldrons, forearm bracers, boot armor caps, chest harness elements. The slight sheen of Satin Black creates a more reflective ground for the metallic layers above, producing a higher-contrast TMM result than flat black.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#1a1a1a"></div><div class="swatch-info"><div class="swatch-name">Satin Black S39</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~3% value — gloss armor ground</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 2 · Airbrush</span>
+      <h3>Shadow Metallic — Gunmetal Grey</h3>
+      <p>VMC 77.720 Gunmetal Grey thinned 1:1 with distilled water, airbrushed at 15 PSI from 45° above onto the shadow-side planes of all armor. This is a dark, cold metallic — it reads as the mid-dark zone of the metal before the main metallic layer lands on top. Cover the upper-facing planes lightly; leave the deep recesses as Satin Black.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#58606a"></div><div class="swatch-info"><div class="swatch-name">VMC 77.720 Gunmetal Grey</div><div class="swatch-brand">Vallejo Metal Color</div><div class="swatch-value">~35% value — shadow-side armor metallic</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 3 · Airbrush</span>
+      <h3>Mid-Tone Metallic — Duraluminium</h3>
+      <p>VMC 77.702 Duraluminium thinned 1:1, applied from zenithal above onto light-facing armor planes. Multiple thin passes — let the Gunmetal show through on angled surfaces naturally. The armor reads light on top, dark underneath, with a mid-range in between. Agitate the cup frequently; metallic pigment settles fast.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#8c9196"></div><div class="swatch-info"><div class="swatch-name">VMC 77.702 Duraluminium</div><div class="swatch-brand">Vallejo Metal Color</div><div class="swatch-value">~55% value — lit-plane metallic</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 4 · Airbrush</span>
+      <h3>Bright Edge Highlight — Chrome</h3>
+      <p>VMC 77.707 Chrome thinned 1:1, reduced PSI to 10–12, 6–8cm from surface — apply to apex armor edges only. The outer shoulder pauldron rim, the top edge of forearm bracers, the boot cap edges. This is a tight, controlled pass; not a zenithal spray. Chrome is the brightest metallic in the VMC line — use it sparingly or it flattens contrast.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#c6c8c9"></div><div class="swatch-info"><div class="swatch-name">VMC 77.707 Chrome</div><div class="swatch-brand">Vallejo Metal Color</div><div class="swatch-value">~88% value — apex armor edge</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 5 · Wash</span>
+      <h3>Recess Line Wash</h3>
+      <p>Black Wash 200 applied targeted into all engraved line details, panel seams, rivet recesses, and armor plate joins. Pull capillary flow carefully — do not flood the broad armor surface (the Satin Black base already handles broad shadows). A clean brush quickly wiped over any pooling before it dries will prevent tide marks.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#141414"></div><div class="swatch-info"><div class="swatch-name">Black Wash 200</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">panel line shadow</div></div></div>
+      </div>
+    </div>
+
+    <div class="phase-label">Shin Armor — Purple-Tinted Steel</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 5b · Brush</span>
+      <h3>Shin Armor — Purple Recess Wash</h3>
+      <p>The shin armor follows the same TMM process as the shoulder armor (Steps 1–5 above), but gets an additional targeted wash of Dark Plum S11 thinned 1:4 into all the recess lines and panel joins — replacing the Black Wash in those areas. This tints the deepest shadows purple rather than neutral black, visually connecting the shin armor to the purple fabric above. The broad metallic surfaces stay neutral gunmetal; only the recesses carry the purple hue. Keep the Chrome specular edge clean — any purple bleed onto the edge can be corrected with a fine pass of VMC 77.707 Chrome.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2a1238"></div><div class="swatch-info"><div class="swatch-name">Dark Plum S11 — 1:4 thinned</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">recess tint — purple shadow on shin armor</div></div></div>
+      </div>
+    </div>
+
+    <div class="phase-label">Purple Armor Accents</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 6 · Brush</span>
+      <h3>Purple Inlaid Panels</h3>
+      <p>Several armor elements have purple inlaid panels or ornamentation (visible on the belt/waist armor and likely shoulder details). Dark Purple 035 as the base, thinned 1:2, carefully painted within the inlaid borders. Highlight with Royal Purple S03 from above within those same panels. Keep the metallic frame clean — these two materials must read as distinctly different at arm's length.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#4a2268"></div><div class="swatch-info"><div class="swatch-name">Dark Purple 035</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">inlaid panel base</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#9a56cc"></div><div class="swatch-info"><div class="swatch-name">Royal Purple S03</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">panel highlight — top edge only</div></div></div>
+      </div>
+    </div>
+
+    <div class="phase-label">Chain Details</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 7 · Brush</span>
+      <h3>Chain Links — Bright Steel</h3>
+      <p>The bandolier chains are the brightest metallic element on the figure — lighter in value than the armor to create material contrast. Brush VMC 77.701 Aluminium (undiluted or 1:1 water) onto all chain link surfaces with a fine round brush. Then edge-highlight individual links with VMC 77.707 Chrome applied near-dry on a fine detail brush. Black Wash 200 between links to separate them.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#a8adaf"></div><div class="swatch-info"><div class="swatch-name">VMC 77.701 Aluminium</div><div class="swatch-brand">Vallejo Metal Color</div><div class="swatch-value">~65% value — chain link mid-tone</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#c6c8c9"></div><div class="swatch-info"><div class="swatch-name">VMC 77.707 Chrome</div><div class="swatch-brand">Vallejo Metal Color</div><div class="swatch-value">~88% — link edge specular</div></div></div>
+      </div>
+    </div>
+
+    <div class="phase-label">Belt &amp; Leather Straps — Purple</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 8 · Brush</span>
+      <h3>Belt Leather — Purple</h3>
+      <p>Skeletor's belt and straps are purple leather — same hue family as the cloak, but with a satin finish to distinguish leather from fabric. Dark Plum S11 as the shadow base (thin 1:2), full coverage of all strap and belt surfaces. Dark Purple 035 thinned 1:2 on the raised strap faces and belt center. Purple 010 as the highlight on strap edges and the forward-facing belt ridge. Finish with a very light pass of Royal Purple S03 on the sharpest strap edges. The leather should read slightly lighter and more satin than the cloak — leather catches light more sharply than woven fabric. Seal with a satin varnish (vs. matte for the cloak) to reinforce the material difference.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2a1238"></div><div class="swatch-info"><div class="swatch-name">Dark Plum S11</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~12% value — leather shadow base</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#4a2268"></div><div class="swatch-info"><div class="swatch-name">Dark Purple 035</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~30% value — leather mid-tone</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#7a3aaa"></div><div class="swatch-info"><div class="swatch-name">Purple 010</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~48% value — raised strap highlight</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#9a56cc"></div><div class="swatch-info"><div class="swatch-name">Royal Purple S03</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~58% value — sharpest strap edge specular</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> The key material distinction between the purple leather and the purple cloak fabric is finish — satin on leather vs. matte on fabric. The paint colors can be nearly identical; the varnish is what sells the difference. Apply targeted satin varnish to belt and straps only after all purple areas are complete.</div>
+      <div class="tip"><strong>✦ BELT SKULL:</strong> The skull on the belt buckle gets the full bone treatment from the Skull &amp; Head tab — Ivory 023 mid-tone, Brown Wash 201 in the recesses, Bright Ivory 022 highlight. Keep it consistent with the main skull and the ram skull ornament so all three read as the same material. It's small, so skip freckling and keep the highlight passes tight.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 9 · Brush</span>
+      <h3>Gold Ornamental Hardware</h3>
+      <p>Belt medallion and any gold-accented detail elements. VMC 77.725 Gold applied with a fine brush (undiluted); thin second pass to even the coverage. Shadow within the medal design with Transparent Brown 052 thinned 1:3 glazed into recesses. Final gold specular: Bright Gold 031 near-dry on a stiff flat brush, catching only raised relief detail. Do NOT use Chrome as a gold highlight — too cool. A tiny touch of VMC 77.725 + VMC 77.707 Chrome (4:1) is the brightest acceptable gold specular.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#ae8738"></div><div class="swatch-info"><div class="swatch-name">VMC 77.725 Gold</div><div class="swatch-brand">Vallejo Metal Color</div><div class="swatch-value">gold mid-tone</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#d4a828"></div><div class="swatch-info"><div class="swatch-name">Bright Gold 031</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">gold specular drybrush</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#6a3a18"></div><div class="swatch-info"><div class="swatch-name">Transparent Brown 052</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">gold recess shadow glaze</div></div></div>
+      </div>
+    </div>
+
+  </div><!-- end #armor -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: TRANSPARENT FX
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="transparent-fx">
+
+    <div class="section-header">
+      <h2>Transparent FX — Two Methods</h2>
+      <p>The spirit creature circling the base, the torch flames, the mini He-Man figure — all are transparent glowing green effects. Choose your method based on how you printed them: <strong>Method A</strong> for standard opaque/white resin (paint the color on); <strong>Method B</strong> for transparent clear resin (tint the existing translucency). Both methods produce vivid green glow — just through different routes.</p>
+    </div>
+
+    <div class="sub-tabs">
+      <div class="sub-tab active" onclick="showSubTab('transparent-fx', 'fx-standard', this)">Method A — Standard Resin + Paint</div>
+      <div class="sub-tab"       onclick="showSubTab('transparent-fx', 'fx-transparent', this)">Method B — Transparent Resin Tinted</div>
+    </div>
+
+    <!-- METHOD A: STANDARD RESIN -->
+    <div class="sub-content active" id="fx-standard">
+
+      <div class="tip"><strong>✦ METHOD A — Standard opaque/white resin.</strong> The color is built entirely from paint layers. White prime is essential — without it, the transparent greens read dark and muddy. The key is building toward the brightest green at the tips and thinnest extremities, and finishing with gloss varnish to amplify the luminous quality.</div>
+
+      <div class="phase-label">Foundation</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 1 · Airbrush</span>
+        <h3>White Prime — All Transparent FX Pieces</h3>
+        <p>P-003 White Primer undiluted on all spirit/torch/He-Man parts. Crucial — white base makes transparent and semi-transparent greens glow rather than muddy. 30+ PSI, 0.5mm, even full coverage. Leave no grey or bare resin showing. This is the luminosity foundation for everything that follows.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#f0f0f0"></div><div class="swatch-info"><div class="swatch-name">P-003 White Primer</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~95% — luminosity base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 2 · Airbrush</span>
+        <h3>Transparent Green — Base Tint</h3>
+        <p>Transparent Green 048 thinned 1:2 with water — multiple thin passes building up a glowing green over the white base. Start from all angles for even initial coverage, then switch to zenithal-from-below for the lower spirit forms to suggest the glow emanates from within. 4–6 passes. Should read a vivid translucent green — the white should still glow through. At this stage it looks very bright; subsequent passes will temper this in recesses.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#2a8822"></div><div class="swatch-info"><div class="swatch-name">Transparent Green 048</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">primary luminous green tint — 1:2 thinned</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-label">Depth &amp; Shading</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span>
+        <h3>Internal Shadow — Dark Green Recesses</h3>
+        <p>Camo Green 020 + Coal Black 002 (2:1) thinned 1:3, brushed carefully into the deepest recesses of the spirit form — the body-to-base contact points, inner coil curves, where the spirit wraps under itself. This establishes depth inside the translucent form. Leave any thin protrusions or outstretched extremities as pure bright green from the base layer.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#4a6032"></div><div class="swatch-info"><div class="swatch-name">Camo Green 020</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">shadow base of mix</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#1a1a1a"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">darkening agent — small addition</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 2:1 Camo Green 020 + Coal Black 002 — thin 1:3 with water</div>
+      </div>
+
+      <div class="phase-label">Highlight &amp; Energy Core</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush</span>
+        <h3>Mid-Highlight — Bright Green</h3>
+        <p>Bright Green S33 thinned 1:2 — applied to raised surface areas of the spirit body, outer coil surfaces, upward-facing planes. This sits between the vivid Transparent Green base and the specular above it. The spirit should read darker in its deep coils and masses, brighter on the surfaces facing the implied energy source (itself) and overhead light.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#3aaa2a"></div><div class="swatch-info"><div class="swatch-name">Bright Green S33</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~55% value — surface highlight green</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number effects">Step 5 · Effects</span>
+        <h3>Specular — Bright Yellow-Green Tips</h3>
+        <p>Bright Yellow Green 039 near-undiluted, applied to the absolute extremities — outstretched claws of the spirit creature, tip of the tail, topmost point of each torch flame, leading edge of the mini He-Man silhouette. These hottest points shift toward yellow-green (energy cores are hotter and shift wavelength). This contrast between vivid green body and yellow-green tips creates the energy-in-motion reading.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#8acc20"></div><div class="swatch-info"><div class="swatch-name">Bright Yellow Green 039</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">energy core — hot point specular</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number effects">Step 6 · Effects</span>
+        <h3>Fluorescent Green — Absolute Peak</h3>
+        <p>Fluorescent Green F04 undiluted, a very small application at the single hottest point of the spirit body and torch tips — think of the center-innermost flame of a real flame. This is a small touch, not a full pass. Fluorescent paints glow under UV and read intensely bright in standard light. Overuse reads garish — one or two micro-placements per element only.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#44ff44"></div><div class="swatch-info"><div class="swatch-name">Fluorescent Green F04</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">hot core — single point per element</div></div></div>
+        </div>
+        <div class="warning"><strong>⚠ NOTE:</strong> Fluorescent paint fades over time with UV exposure and requires UV-stable varnish over the top. Apply gloss varnish within 24 hours of placing fluorescent accents.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 7 · Finish</span>
+        <h3>Gloss Varnish — Amplify Luminosity</h3>
+        <p>Gloss varnish over all transparent FX elements. This step dramatically amplifies the glow quality of the transparent green layers — the glossy surface catches ambient light and increases the sense of translucency. Do not matte-coat these elements. The entire spirit creature, all torches, and the He-Man figure stay gloss throughout.</p>
+        <div class="tip"><strong>✦ TIP:</strong> If the green reads too dark after gloss varnish, add another thin pass of Transparent Green 048 (1:3) before the second gloss coat. The varnish deepens transparent colors slightly — always test on a scrap piece first.</div>
+      </div>
+
+    </div><!-- end #fx-standard -->
+
+    <!-- METHOD B: TRANSPARENT RESIN -->
+    <div class="sub-content" id="fx-transparent">
+
+      <div class="tip"><strong>✦ METHOD B — Transparent clear resin.</strong> The resin already carries the translucency — you're tinting an existing glowing structure, not building the glow from scratch. The key differences: (1) matte seal the bare resin before any paint — bare resin resists water-based acrylics and Speedpaints, (2) Speedpaint Medium instead of water for all Speedpaint thinning, (3) keep applications thin so the resin depth remains visible, (4) gloss varnish at the end amplifies the inherent translucency dramatically.</div>
+
+      <div class="phase-label">Surface Prep — Critical Step</div>
+
+      <div class="step">
+        <span class="step-number finish">Step 1 · Finish</span>
+        <h3>Matte Varnish Seal — Bare Resin</h3>
+        <p>Apply matte varnish to all bare transparent resin parts before any paint. This is non-negotiable — bare resin has no tooth for water-based paints. The matte varnish provides mechanical adhesion. Let fully cure (minimum 30 minutes, ideally overnight). Do not skip this step or the Speedpaint will bead and peel.</p>
+        <div class="warning"><strong>⚠ NOTE:</strong> Clean up any support nub marks on the transparent pieces before sealing — they will be visible in the final piece. Sand with 800 grit then 2000 grit, then buff gently with a cloth to restore clarity in those areas before sealing.</div>
+      </div>
+
+      <div class="phase-label">Depth Tinting — Recesses First</div>
+
+      <div class="step">
+        <span class="step-number filter">Step 2 · Filter</span>
+        <h3>Recess Tint — Absolution Green Speedpaint</h3>
+        <p>Absolution Green Speedpaint 2.0 thinned 1:3 with Speedpaint Medium (not water), applied with a fine brush into all deepest recesses and coil-interior zones of the spirit creature. This establishes dark depth within the form — the recesses should read dark green, not clear. One controlled pass; let the capillary pull work for you. Don't overwork while wet — the self-leveling agent in Speedpaint activates with brushing and ruins the blend.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#294f2d"></div><div class="swatch-info"><div class="swatch-name">Absolution Green (Speedpaint 2.0)</div><div class="swatch-brand">Army Painter</div><div class="swatch-value">deep recess — dark green anchor tint</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#cacaca"></div><div class="swatch-info"><div class="swatch-name">Speedpaint Medium</div><div class="swatch-brand">Army Painter</div><div class="swatch-value">thinner — use instead of water for ALL Speedpaint mixing</div></div></div>
+        </div>
+        <div class="ratio-box">Thin: 1:3 Absolution Green + Speedpaint Medium — flow into recesses, do not overbrush</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number filter">Step 3 · Filter</span>
+        <h3>Overall Body Tint — Shamrock Green Speedpaint</h3>
+        <p>Shamrock Green Speedpaint 2.0 thinned 1:4 with Speedpaint Medium — apply as a flowing pass across all external surfaces of the spirit body, torch forms, and He-Man silhouette. Let it flow from a loaded brush and spread naturally; do not drag back and forth. Wipe back very lightly from the absolute highest raised surfaces with a clean flat brush (not quite dry) to leave the tips slightly lighter. Let fully cure — 15–20 minutes at minimum.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#4b9e36"></div><div class="swatch-info"><div class="swatch-name">Shamrock Green (Speedpaint 2.0)</div><div class="swatch-brand">Army Painter</div><div class="swatch-value">main body tint — vivid green</div></div></div>
+        </div>
+        <div class="ratio-box">Thin: 1:4 Shamrock Green + Speedpaint Medium — flow on, wipe back from tips only</div>
+        <div class="tip"><strong>✦ TIP:</strong> If the single Shamrock Green pass isn't vivid enough, let it fully cure, then apply a second 1:4 pass. Two thin passes always beat one heavy pass for transparency depth.</div>
+      </div>
+
+      <div class="phase-label">Tip Highlights &amp; Energy Core</div>
+
+      <div class="step">
+        <span class="step-number filter">Step 4 · Filter</span>
+        <h3>Warm Yellow-Green Tip Glaze — Ghillie Dew</h3>
+        <p>Ghillie Dew Speedpaint 2.0 thinned 1:6 with Speedpaint Medium — an extremely thin, warm yellow-green glaze applied only to the absolute outermost tips and thinnest protrusions of the spirit creature, torch tips, and He-Man extremities. These thinnest zones of clear resin already pass the most light; the warm yellow-green tint amplifies the "hot core" reading. Apply one very thin pass only — this is a tint, not a layer.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#81a617"></div><div class="swatch-info"><div class="swatch-name">Ghillie Dew (Speedpaint 2.0)</div><div class="swatch-brand">Army Painter</div><div class="swatch-value">tip warm tint — brilliant yellowish green</div></div></div>
+        </div>
+        <div class="ratio-box">Thin: 1:6 Ghillie Dew + Speedpaint Medium — near-watercolor thin; one pass only at tips</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number effects">Step 5 · Effects</span>
+        <h3>Optional: Fluorescent Green Tip Accent</h3>
+        <p>Pro Acryl Fluorescent Green F04 undiluted, a micro-touch at the single hottest tip of each torch flame and the spirit creature's outstretched claws. Over a sealed transparent surface this sits on top of the resin glow rather than replacing it. Very small — 1–2mm per element maximum. If it reads too opaque, thin very slightly with a drop of water only (not Speedpaint Medium) and re-apply.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#44ff44"></div><div class="swatch-info"><div class="swatch-name">Fluorescent Green F04</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">hot tip accent — small point per element</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 6 · Finish</span>
+        <h3>Gloss Varnish — Essential</h3>
+        <p>Gloss varnish over all transparent FX elements. For transparent resin, this step transforms the appearance — the glossy surface multiplies the light transmission through the resin body, making the whole form appear to glow more intensely. Apply 2–3 light coats, letting each dry. Do not apply matte or satin over these elements at any point.</p>
+        <div class="tip"><strong>✦ TIP:</strong> After the gloss coat cures, hold the pieces up to a strong light source and look through them. If the tint reads even and the tips glow brighter than the body, the process worked. If the body looks uniformly opaque, the Speedpaint was applied too thick — you can strip and restart with acetone if needed, or thin the Speedpaint further and add additional translucent passes on top.</div>
+      </div>
+
+    </div><!-- end #fx-transparent -->
+
+  </div><!-- end #transparent-fx -->
+
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: OSL — GREEN MAGICAL LIGHT
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="osl">
+
+    <div class="section-header">
+      <h2>OSL — Green Magical Light</h2>
+      <p>Every glowing green element on this figure casts light: the spirit creature, the torch flames, the mini He-Man, and the magical energy in Skeletor's raised hand. Together they create a strong secondary green light source radiating primarily from the base, with a secondary source from the raised hand. Apply OSL as the final paint step before varnishing the whole figure — it works on top of completed, sealed surfaces.</p>
+    </div>
+
+    <div class="phase-label">Planning — Light Zones</div>
+
+    <div class="step">
+      <span class="step-number brush">Planning · No Paint</span>
+      <h3>Map the Affected Surfaces Before Painting</h3>
+      <p>Before mixing anything, identify every surface that receives green light. Base ground: everything. Lower figure: boots, boot armor, lower green clothing, bottom hem of cloak. Mid figure: inner surfaces of the cloak near the base, undersides of belt elements, lower body where OSL reaches upward. Raised hand zone: inner forearm, the palm side of the hand, inner cloak edge near that arm. Nothing on the upper skull or top-of-shoulder surfaces — the overhead light source dominates there and the green OSL doesn't reach that far.</p>
+      <div class="tip"><strong>✦ TIP:</strong> Photograph the figure from arm's length. Mentally draw where green light would realistically fall given the ground-level sources. Only those zones get OSL treatment. OSL on non-affected surfaces reads as a mistake, not atmosphere.</div>
+    </div>
+
+    <div class="phase-label">OSL Glaze — Seal First</div>
+
+    <div class="step">
+      <span class="step-number finish">Step 1 · Finish</span>
+      <h3>Seal All Affected Surfaces</h3>
+      <p>Apply matte varnish to all surfaces that will receive OSL glazes. This step locks down the base layers and gives the OSL glaze a consistent surface to flow across. Without sealing, the OSL glaze can lift soft paint layers and create tide marks. One thin coat; let fully cure before proceeding.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 2 · Airbrush</span>
+      <h3>Far-Field Green Tint — Broad Ambient Pass</h3>
+      <p>Transparent Green 048 thinned 1:8 with water — an extremely thin pass over all lower figure surfaces and the entire base. 0.2mm nozzle, 8–10 PSI, 3–4cm from surface. This barely-there tint shifts everything below the knee toward green-ambient. Multiple passes build too fast at this distance — one pass only, step back and assess. The figure should look subtly warmer-green from below, nothing more.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2a8822"></div><div class="swatch-info"><div class="swatch-name">Transparent Green 048 — 1:8 thinned</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">far-field ambient — near-invisible single pass</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 3 · Airbrush</span>
+      <h3>Near-Field Glow — Torch and Spirit Proximity</h3>
+      <p>Transparent Green 048 thinned 1:5, applied from the direction of each light source toward the surfaces closest to it. From below (base-upward direction): boots, boot armor, lower cloak hem, base stone nearest each torch. From the spirit creature's direction: stone surfaces immediately adjacent to the spirit form. 2–3 passes building up to a clearly visible green tint at ~1–2cm radius from the source.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2a8822"></div><div class="swatch-info"><div class="swatch-name">Transparent Green 048 — 1:5 thinned</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">near-field glow — visible green cast</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 4 · Brush</span>
+      <h3>Contact Glow — Surfaces Adjacent to Light Source</h3>
+      <p>For stone surfaces literally touching or within 5mm of a torch base or spirit element: Yellow Green 065 + Transparent Green 048 (1:1) thinned 1:4 — brush-applied as a glowing contact patch. The warmth of Yellow Green 065 reads as the hottest zone — surfaces this close get visibly green-lit with a warm, slightly yellow-green core. Feather outward from the contact point. Keep it organic; straight edges read false.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#8ab828"></div><div class="swatch-info"><div class="swatch-name">Yellow Green 065</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">warm contact-zone — nearest to source</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#2a8822"></div><div class="swatch-info"><div class="swatch-name">Transparent Green 048</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">mix base — carries the contact tint outward</div></div></div>
+      </div>
+      <div class="ratio-box">Mix: 1:1 Yellow Green 065 + Transparent Green 048 — thin 1:4. Feather from contact point outward; the mix fades to pure Transparent Green and then to nothing.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number filter">Step 5 · Filter</span>
+      <h3>Hand Magic — OSL on Upper Arm and Torso</h3>
+      <p>The magical energy in Skeletor's raised hand casts green light inward on the forearm, inner wrist, and the adjacent cloak section. Transparent Green 048 thinned 1:5, applied with a fine brush in feathering strokes from the hand outward toward the forearm — getting progressively thinner as you move away. The hand itself (if painted separately from the transparent piece) should show the strongest green glow on the palm-facing surface and inner wrist; the back of the hand receives far less.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2a8822"></div><div class="swatch-info"><div class="swatch-name">Transparent Green 048 — 1:5 thinned</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">hand OSL — strongest near palm, fades up the arm</div></div></div>
+      </div>
+      <div class="warning"><strong>⚠ NOTE:</strong> The blue-grey skin can absorb a green glaze and shift toward teal if over-applied. One light pass; assess at arm's length. If it reads teal, immediately wipe back with a barely-damp flat brush while still wet. Less is far more convincing than over-lit.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number finish">Step 6 · Finish</span>
+      <h3>OSL Highlight Restoration</h3>
+      <p>After OSL glazes are dry, check all previously highlighted surfaces near the light sources. If the green glaze has toned them down (common — transparent green reduces perceived value slightly), restore the brightest highlights with a single thin pass of the original highlight mix for that material: White Blue S04 on the blue-grey body, Bright Ivory 022 on the bone, Royal Purple S03 on the cloak where the OSL reaches. Tiny corrections only — the OSL tint underneath should still read clearly.</p>
+    </div>
+
+  </div><!-- end #osl -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: BASE
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="base">
+
+    <div class="section-header">
+      <h2>Base — Diorama</h2>
+      <p>Weathered stone ruins with staircase, rocky terrain, a miniature Castle Grayskull structure, and the embedded transparent green elements. The stone reads as ancient, damp, and mossy — slightly warm grey-brown, not clean military grey. The Castle Grayskull elements are a slightly greener-grey stone (canonical). Green OSL from the transparent pieces ties everything together after all stone painting is complete — apply OSL last (see OSL tab).</p>
+    </div>
+
+    <div class="phase-label">Stone — Main Base</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 · Airbrush</span>
+      <h3>Black Prime + Grey Zenithal</h3>
+      <p>P-002 Black Primer full coverage, then P-005 Dark Neutral Grey from directly above — this creates the base stone value structure without any additional zenithal work. The grey zenithal landing from 90° produces a hard-edged top-lit stone look that works well for architectural ruins. White zenithal on top of this (P-003, narrow cone, very directly above) only on the uppermost flat surfaces like stair treads and battlement tops.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#111111"></div><div class="swatch-info"><div class="swatch-name">P-002 Black Primer</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~3% value — base shadow</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#404040"></div><div class="swatch-info"><div class="swatch-name">P-005 Dark Neutral Grey</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~25% value — stone zenithal</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 2 · Brush</span>
+      <h3>Stone Mid-Tone — Warm Grey</h3>
+      <p>Dark Neutral Grey 044 + a touch of Green Brown 020 (8:1) thinned 1:2 — brushed onto all mid-value stone surfaces. The slight warm-brown tint reads as old, organic stone rather than clean modern concrete. Leave the zenithal primer showing in the top-lit areas and the black in deep crevices. This is a translucent pass, not opaque coverage.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#404040"></div><div class="swatch-info"><div class="swatch-name">Dark Neutral Grey 044</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">stone mid-tone base</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#3a3820"></div><div class="swatch-info"><div class="swatch-name">Green Brown 020</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">tiny touch — organic stone warmth</div></div></div>
+      </div>
+      <div class="ratio-box">Mix: 8:1 Dark Neutral Grey 044 + Green Brown 020 — thin 1:2</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 3 · Wash</span>
+      <h3>Crevice Wash — Recess Deepening</h3>
+      <p>Black Wash 200 + Brown Wash 201 (1:1 mix) applied targeted into all stone cracks, mortar lines, step risers, rock face fissures, and sculptural detail recesses. Pull capillary flow along the cracks. A second pass of pure Black Wash 200 into the very deepest crevices that meet at right angles. Let fully dry before dry brushing — minimum 30 minutes.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#141414"></div><div class="swatch-info"><div class="swatch-name">Black Wash 200</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">deep crack shadow</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#5a3a1a"></div><div class="swatch-info"><div class="swatch-name">Brown Wash 201</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">warm organic tone — mixed 1:1 with Black</div></div></div>
+      </div>
+      <div class="ratio-box">Mix: 1:1 Black Wash 200 + Brown Wash 201 for general crevices. Pure Black Wash 200 for deepest recesses only.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 4 · Brush</span>
+      <h3>Drybrush — Bright Neutral Grey</h3>
+      <p>Bright Neutral Grey 045 on a stiff flat brush, wiped nearly dry on paper towel, dragged across all stone surfaces — picking up only the raised texture points and step edges. Medium-pressure stroke following the stone face direction. This single pass does most of the work in making the stone read as textured rock at arm's length.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#7a7a7a"></div><div class="swatch-info"><div class="swatch-name">Bright Neutral Grey 045</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~47% value — primary stone drybrush</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 5 · Brush</span>
+      <h3>Second Drybrush — Warm Light Grey</h3>
+      <p>Bright Warm Grey 015 on a near-dry brush, very light pressure, only on the absolute uppermost stone surfaces — stair tread tops, battlement tops, upward-facing rock faces. This lighter pass reads as the top-lit specular of the stone and gives the architecture a sense of age and natural weathering. Barely loaded brush — if paint is visible on the first stroke on paper towel, too much.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#988070"></div><div class="swatch-info"><div class="swatch-name">Bright Warm Grey 015</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~60% value — top-plane specular drybrush</div></div></div>
+      </div>
+    </div>
+
+    <div class="phase-label">Castle Grayskull Mini — Greener Stone</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 6 · Brush</span>
+      <h3>Castle Grayskull Stone — Green-Grey</h3>
+      <p>The miniature Castle Grayskull in the scene uses the canonical skull-castle green-grey stone. Dark Neutral Grey 044 + Grey Green 022 (2:1) as the mid-tone — gives the Grayskull stone its characteristic cool green-grey that distinguishes it from the warmer main base stone. Apply the same wash and drybrush process (Steps 3–5) but use Grey Green 022 alone as the second lighter drybrush pass. The skull imagery on the castle facade: Dark Neutral Grey 044 for the recessed areas, a tiny dot of Coal Black 002 in the deepest skull eye sockets.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#404040"></div><div class="swatch-info"><div class="swatch-name">Dark Neutral Grey 044</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">Grayskull stone base</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#6a7848"></div><div class="swatch-info"><div class="swatch-name">Grey Green 022</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">canonical Grayskull green-grey tint + drybrush</div></div></div>
+      </div>
+      <div class="ratio-box">Mix: 2:1 Dark Neutral Grey 044 + Grey Green 022 for Grayskull stone mid-tone</div>
+    </div>
+
+    <div class="phase-label">Ground &amp; Debris</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 7 · Brush</span>
+      <h3>Organic Ground Patches</h3>
+      <p>Dark Golden Brown 062 + Green Brown 020 (2:1) thinned 1:2 — apply to any dirt patches, soil, or ground-cover areas between stone elements. Dry brush Khaki 061 lightly over these areas after washing with Brown Wash 201. Any moss or lichen patches: Faded Green 066 stippled sparingly on shadowed stone surfaces (north-facing in natural-light terms). Adds organic life to an otherwise hard stone surface.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#4a3010"></div><div class="swatch-info"><div class="swatch-name">Dark Golden Brown 062</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">soil/earth base</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#7a8a5a"></div><div class="swatch-info"><div class="swatch-name">Faded Green 066</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">moss/lichen patches — stipple sparingly</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number finish">Step 8 · Finish</span>
+      <h3>Seal and Apply OSL</h3>
+      <p>Matte varnish the completed base before OSL. Then apply the OSL glaze passes from the OSL tab — the base is the primary recipient of green OSL, receiving the contact-glow treatment around each torch and the spirit creature, plus the broad ambient green wash across all ground surfaces. After OSL dries, do not apply additional matte varnish to the stone — it should stay matte. The transparent FX elements sitting in the base are gloss only.</p>
+      <div class="tip"><strong>✦ TIP:</strong> Expert Acrylics brush-only approach for stone: Payne's Grey as shadow base; Burnt Umber + Sepia glazes for organic warmth in recesses; Chrome Oxide Green drybrush for the Grayskull green-grey tint. Sap Green + Titanium White (small touch) for moss patches.</div>
+    </div>
+
+  </div><!-- end #base -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: METALS (TMM)
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="metals">
+
+    <div class="section-header">
+      <h2>Metals — TMM</h2>
+      <p>Skeletor's armor sits in the dark gunmetal range — cold, sinister steel with purple-shadowed recesses. Gold medallion hardware glows warmly against the cold steel. Chain links are the brightest metallic elements and read as contrast against the dark armor. All airbrush steps use VMC for finest metallic surface quality; Pro Acryl metallics for brush-only detail passes. Full per-material recipes are in the Armor &amp; Hardware tab — this tab covers the TMM theory and method specifics.</p>
+    </div>
+
+    <div class="phase-label">True Metallic Metal (TMM) — 1:6 Scale</div>
+
+    <div class="tip"><strong>✦ VALUE FIRST — METALLICS:</strong> Even metallic paint obeys value rules. Deep recesses near-black (Satin Black base), mid-tones carry the primary metallic, raised edges get the specular bright hit. A metallic surface with compressed value range reads flat and unconvincing at any scale. Push the contrast between Satin Black recesses and Chrome specular edges harder than feels right.</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 · Airbrush</span>
+      <h3>Satin Black Ground — All Metal Surfaces</h3>
+      <p>Satin Black S39 thinned 1:2, applied over all metal surfaces after the base coats for adjacent materials are done. The satin sheen (as opposed to matte primer black) gives VMC metallic particles a more reflective surface to sit on, producing higher-contrast specular results at 1:6 scale. Cover evenly; let dry fully before metallic passes.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#1a1a1a"></div><div class="swatch-info"><div class="swatch-name">Satin Black S39</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~3% value — reflective metal ground</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 2 · Airbrush</span>
+      <h3>Gunmetal Shadow — VMC 77.720</h3>
+      <p>VMC 77.720 Gunmetal Grey thinned 1:1 with distilled water — pass across all armor shadow-side planes at 45° from the dominant light. Not a zenithal — this paints the light/shadow bands on the metal surface. Upper-facing planes stay black (next step will cover those). The Gunmetal Grey reads as the transitional zone between deep shadow and the main metallic mid-tone. Multiple thin passes; agitate cup between each.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#58606a"></div><div class="swatch-info"><div class="swatch-name">VMC 77.720 Gunmetal Grey</div><div class="swatch-brand">Vallejo Metal Color</div><div class="swatch-value">~35% value — transition metallic shadow</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 3 · Airbrush</span>
+      <h3>Mid-Tone Metallic — VMC 77.702 + 77.701</h3>
+      <p>Pass 1: VMC 77.702 Duraluminium 1:1 water — light-facing planes, 2–3 thin passes building coverage. Pass 2: VMC 77.701 Aluminium 1:1 water — center of light-facing planes only, narrowing the zone to add brightness graduation. These two together create the metallic mid-range: dark Duraluminium toward the transition zone, brighter Aluminium at the peak. The light-banding effect of polished steel is what's being replicated.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#8c9196"></div><div class="swatch-info"><div class="swatch-name">VMC 77.702 Duraluminium</div><div class="swatch-brand">Vallejo Metal Color</div><div class="swatch-value">~55% value — mid-zone metallic</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#a8adaf"></div><div class="swatch-info"><div class="swatch-name">VMC 77.701 Aluminium</div><div class="swatch-brand">Vallejo Metal Color</div><div class="swatch-value">~65% value — lighter mid-tone peak</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 4 · Airbrush</span>
+      <h3>Specular Edge — VMC 77.707 Chrome</h3>
+      <p>VMC 77.707 Chrome 1:1 water — reduced PSI to 10–12, distance 6–8cm. Apply only to the absolute rim and apex edge of each armor plate and the leading edge of each bracer. This is a tight controlled application, not a broad pass. Chrome is the most reflective VMC; use it as sparingly as Skeletor uses mercy. The hard contrast between near-black recesses and Chrome edges is the visual signature of polished dark armor.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#c6c8c9"></div><div class="swatch-info"><div class="swatch-name">VMC 77.707 Chrome</div><div class="swatch-brand">Vallejo Metal Color</div><div class="swatch-value">~88% value — apex armor specular</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 5 · Wash</span>
+      <h3>Panel Line Wash</h3>
+      <p>Black Wash 200 targeted into all engraved lines, rivet holes, and panel joins. Pull capillary flow; do not flood the broad metallic surface — the Satin Black base already handles broad recesses. Any tide marks: clean while wet with a barely-damp flat brush, wiping away from the panel line toward the center of the metallic plane.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#141414"></div><div class="swatch-info"><div class="swatch-name">Black Wash 200</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">panel line shadow — targeted only</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> After the wash dries, if any Chrome edge highlight was dulled by capillary spread, restore it with a single fine-brush stroke of Pro Acryl Silver 025 near-undiluted directly on the edge. One pass; don't go back over it.</div>
+    </div>
+
+  </div><!-- end #metals -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: AIRBRUSH SKILLS
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="airbrush-skills">
+
+    <div class="section-header">
+      <h2>Airbrush Skills</h2>
+      <p>Techniques used in this guide: zenithal pre-shading (two-pass and colored), VMC metallic banding, semi-transparent color building, and low-PSI OSL glaze passes.</p>
+    </div>
+
+    <div class="phase-label">Nozzle Assignments</div>
+    <table class="thin-table">
+      <thead>
+        <tr><th>Task</th><th>Nozzle</th><th>Why</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Priming (undiluted — do not thin)</td><td>0.5mm</td><td>High flow needed for primer viscosity; 30+ PSI</td></tr>
+        <tr><td>Zenithal passes / base coats / VMC metallics</td><td>0.3mm</td><td>Controlled coverage, smooth gradients, clean metallic delivery</td></tr>
+        <tr><td>OSL glazes / detail tinting / freckling</td><td>0.2mm</td><td>Fine control; low-volume thin passes for OSL and final color work</td></tr>
+      </tbody>
+    </table>
+
+    <div class="phase-label">Zenithal Sequence</div>
+    <div id="ab-zenithal-anchor"></div>
+
+    <div class="phase-label">PSI &amp; Distance Reference</div>
+    <table class="psi-table">
+      <thead>
+        <tr><th>Task</th><th>PSI</th><th>Distance</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Priming (undiluted)</td><td>30+</td><td>20–25cm</td><td>0.5mm nozzle; do NOT thin primer</td></tr>
+        <tr><td>Zenithal — black / grey</td><td>30+</td><td>20–25cm</td><td>0.5mm nozzle; undiluted</td></tr>
+        <tr><td>Zenithal — white (tight cone)</td><td>28–30</td><td>15–20cm</td><td>0.5mm; narrow pass from 90° only</td></tr>
+        <tr><td>Base coat (bone, purple, green)</td><td>15–18</td><td>10–15cm</td><td>0.3mm; 1:3 to 1:4 paint:water</td></tr>
+        <tr><td>VMC metallics</td><td>15–18</td><td>8–12cm</td><td>0.3mm; 1:1 VMC:distilled water — agitate frequently</td></tr>
+        <tr><td>Chrome specular edge</td><td>10–12</td><td>6–8cm</td><td>0.3mm; tight controlled pass — very small zone</td></tr>
+        <tr><td>OSL glaze (far-field)</td><td>8–10</td><td>3–5cm</td><td>0.2mm; 1:8 Transparent Green — single pass</td></tr>
+        <tr><td>OSL glaze (near-field)</td><td>10–12</td><td>4–6cm</td><td>0.2mm; 1:5 Transparent Green — 2–3 passes max</td></tr>
+      </tbody>
+    </table>
+
+    <div id="ab-greyscale-anchor"></div>
+
+    <div class="phase-label">Colored Zenithal Pre-Shading</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Technique · Airbrush</span>
+      <h3>Dark Purple Primer as Pre-Shade</h3>
+      <p>For Skeletor's blue-grey body, P-023 Dark Purple Primer (undiluted, 0.5mm, 30 PSI) is applied between the black prime and the blue-grey color layers. This colored pre-shade creates a cool purple temperature in the recesses that persists through the semi-transparent grey-blue layers applied above it. The effect gives the body a mystical, arcane quality that standard grey zenithal doesn't produce. Principle: a colored primer pre-shade shifts the shadow temperature of everything painted on top, for the entire session. Use this whenever the character's shadow zones should carry a specific color temperature rather than neutral dark.</p>
+      <div class="tip"><strong>✦ TIP:</strong> All Pro Acryl primers are undiluted. Do not apply flow improver or water to any primer regardless of method. The binders that make primer work are disrupted by dilution.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Technique · Airbrush</span>
+      <h3>Low-PSI OSL Glazing</h3>
+      <p>OSL glazes require a fundamentally different airbrush approach than coverage passes. At 8–12 PSI with a 0.2mm nozzle at 3–5cm, the paint barely exits as a near-mist. The goal is accumulation of color temperature, not coverage. Keep the trigger barely open — a quick pass, then stop. The most common mistake is over-applying in one session and then fighting to fix over-saturated OSL that looks painted rather than light. One session = one or two passes maximum. Reassess 24 hours later under controlled lighting before adding more.</p>
+    </div>
+
+    <div class="phase-label">Troubleshooting</div>
+    <div class="trouble-grid">
+      <div class="trouble-card">
+        <h4>Blowback / Bubbling</h4>
+        <p>Cause: air pressure too high relative to paint viscosity, or nozzle partially clogged forcing a backpressure bubble. Fix: reduce PSI by 5, check for dried paint around the needle tip (clean with a dry brush lightly dipped in cleaner), and confirm the needle seal washer is seated.</p>
+      </div>
+      <div class="trouble-card">
+        <h4>Uneven Coverage / Banding</h4>
+        <p>Cause: inconsistent trigger pull, moving too slow at the start and end of each pass, or paint drying too fast in the cup. Fix: keep the airbrush moving before and after triggering — never stop over the surface with trigger open. Add a drop of flow improver if paint dries in the cup within a few minutes.</p>
+      </div>
+      <div class="trouble-card">
+        <h4>Paint Too Thin / Runs on Stone Base</h4>
+        <p>Cause: over-thinned base coat on a horizontal surface (stone base faces up and collects pooling paint). Fix: reduce to one or two very thin passes and let dry between each. For horizontal surfaces, reduce PSI further to 12 and increase distance to 15cm to reduce paint volume per pass. Let vertical figure pieces dry first, then base last.</p>
+      </div>
+    </div>
+
+  </div><!-- end #airbrush-skills -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: BRUSH SKILLS
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="brush-skills">
+
+    <div class="section-header">
+      <h2>Brush Skills</h2>
+      <p>Techniques used in this guide: glazing for OSL and color filters, wet blending for muscle transitions (Expert Acrylics path), edge highlighting for metallic armor, dry brushing for stone texture, and Speedpaint 2.0 flow-on application for transparent resin tinting.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number filter">Technique · Filter</span>
+      <h3>Transparent Paint Glazing</h3>
+      <p>Used throughout this guide for OSL (Transparent Green 048), bone warmth (Transparent Brown 052), and color filters. Key rule: the glaze should be so thin that its contribution in one pass is barely visible. Thin to 1:5 minimum for filters, 1:3 for color-building glazes. Apply with a soft flat brush — load, then wipe one side on a palette or paper towel, leaving paint on the other side only. This "side-loaded" application feathers naturally rather than flooding. Let each pass fully dry before assessing whether more is needed. Glazing is cumulative — you can always add more, but you cannot subtract.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Brush</span>
+      <h3>Edge Highlighting — Metal and Fabric</h3>
+      <p>Used on armor edges (Chrome specular), cloak fold ridges (Faded Plum 063), and green clothing edges (Grey Green + Camo Green). The technique: load a fine round or liner brush, pull most of the paint off onto a palette until almost dry, then draw the brush along the target edge using the very tip only. The bone-dry bristle deposits a thin, consistent line without flooding or running. Practice on card first — a consistent edge highlight requires very little paint and a nearly-dry brush. If the first stroke leaves a visible, wide line, the brush is still too wet.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Brush</span>
+      <h3>Speedpaint 2.0 — Flow-On for Transparent Resin</h3>
+      <p>Used in Method B of the Transparent FX section. Unlike standard acrylics, Speedpaint 2.0 has a self-leveling agent that activates with overworking. The correct technique is: load a soft round brush generously, touch it to the sealed resin surface, and let capillary action pull the paint into position. Move the brush only to direct the flow to new areas — never back-and-forth brushing. For controlled small-area application (recess tinting), use a fine round brush loaded half-way, touch to the recess entry point, and let it pool naturally. If it doesn't flow, add more Speedpaint Medium (not water) to the mix.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Brush</span>
+      <h3>Drybrushing — Stone Texture</h3>
+      <p>Used on the base stone. Load a stiff flat or fan brush with paint, then wipe aggressively on a paper towel until almost no paint transfers on the towel surface — then wipe once more. This "almost-dry" state is critical. Apply with a rapid back-and-forth scrubbing motion across the stone surface at a nearly-perpendicular angle to the raised texture. The paint catches only the very tallest texture points, building up with multiple passes to create a realistic stone highlight without filling in the dark crevices below. Check frequently — drybrushing looks subtler while wet than after drying.</p>
+    </div>
+
+    <!-- Greyscale check tip injected here by skills-reference.js -->
+
+  </div><!-- end #brush-skills -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: THINNING REF (always last)
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="thinning-ref">
+    <!-- Content injected by skills-reference.js -->
+  </div><!-- end #thinning-ref -->
+
+</div><!-- end .container -->
+
+
+<footer class="guide-footer">
+  Guide by
+  <a href="https://www.youtube.com/@brent_the_programmer9108" target="_blank">brent_the_programmer</a>
+  &middot;
+  <a href="https://instagram.com/stephenson913" target="_blank">@stephenson913</a>
+</footer>
+
+<button class="back-to-top" id="backToTop" title="Back to top"
+        onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<div class="ref-modal" id="refModal" onclick="if(event.target===this)closeRefModal()">
+  <div class="ref-modal-inner">
+    <button class="ref-modal-close" onclick="closeRefModal()" title="Close">✕</button>
+    <img class="ref-modal-img" id="refModalImg" src="" alt="">
+    <div class="ref-modal-caption" id="refModalCaption"></div>
+  </div>
+</div>
+
+<script>
+window.GUIDE_THINNING = {
+  airbrushRows: [
+    { technique: 'Bone base coat',               nozzle: '0.3mm', ratio: '1:3 to 1:4', behavior: 'Semi-transparent; builds over zenithal without obscuring value foundation.' },
+    { technique: 'Blue-grey body — mid-tone',     nozzle: '0.3mm', ratio: '1:3',        behavior: 'Multiple thin passes; lets Dark Purple zenithal show through in recesses.' },
+    { technique: 'Purple cloak',                  nozzle: '0.3mm', ratio: '1:3',        behavior: 'Several light passes; builds saturation without obscuring shadow structure.' },
+    { technique: 'OSL green glaze (far-field)',   nozzle: '0.2mm', ratio: '1:8',        behavior: 'Near-mist; 8–10 PSI, 3–5cm. Single pass only — cumulative effect.' },
+    { technique: 'OSL green glaze (near-field)',  nozzle: '0.2mm', ratio: '1:5',        behavior: 'Slightly more pigment; 2–3 passes max. Assess between each.' },
+    { technique: 'Transparent FX tinting (Method A)', nozzle: '0.3mm', ratio: '1:2',   behavior: 'More pigment density to build color over opaque white prime; 4–6 passes.' },
+    { technique: 'VMC metallics',                 nozzle: '0.3mm', ratio: '1:1 (VMC:distilled water)', behavior: 'VMC is pre-thinned; 1:1 water is the sweet spot. Agitate the cup every 2 minutes — metallic pigment settles fast.' },
+    { technique: 'Chrome specular edge',          nozzle: '0.3mm', ratio: '1:1',        behavior: 'Reduced PSI (10–12), close range (6–8cm). Tight controlled pass — small zone only.' },
+  ],
+  brushRows: [],
+  thinningCards: []
+};
+</script>
+
+<script src="../../assets/guide.js"></script>
+<script src="../../assets/skills-reference.js"></script>
+<script>
+  function openRefModal(src, alt) {
+    var modal = document.getElementById('refModal');
+    document.getElementById('refModalImg').src = src;
+    document.getElementById('refModalImg').alt = alt;
+    document.getElementById('refModalCaption').textContent = alt;
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeRefModal() {
+    document.getElementById('refModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeRefModal();
+  });
+
+  function showSubTab(parentId, contentId, btn) {
+    const parent = document.getElementById(parentId);
+    if (!parent) return;
+    parent.querySelectorAll('.sub-content').forEach(c => c.classList.remove('active'));
+    parent.querySelectorAll('.sub-tab').forEach(b => b.classList.remove('active'));
+    const el = document.getElementById(contentId);
+    if (el) el.classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+  (function() {
+    const btn = document.getElementById('backToTop');
+    if (!btn) return;
+    window.addEventListener('scroll', function() {
+      btn.classList.toggle('visible', window.scrollY > 300);
+    }, { passive: true });
+  })();
+</script>
+
+</body>
+</html>
+

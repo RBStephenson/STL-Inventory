@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bobby the Barbarian — 1:6 Scale Painting Guide</title>
+  <link rel="stylesheet" href="../../assets/guide.css">
+  <link rel="stylesheet" href="../../assets/print.css" media="print">
+  <style>
+    :root {
+      --bg:       #110a00;
+      --surface:  #1a1000;
+      --surface2: #221500;
+      --surface3: #2a1c00;
+      --border:      #3a2800;
+      --text:        #f0e8d8;
+      --text-muted:  #b89870;
+      --text-dim:    #6a5030;
+      --accent: #c86020;
+      --tag-airbrush: #2266aa;
+      --tag-brush:    #226622;
+      --tag-wash:     #884422;
+      --tag-finish:   #555555;
+      --tag-effects:  #882244;
+      --tag-filter:   #446688;
+      --tip-bg:      rgba(0,160,0,0.08);
+      --tip-border:  #2a6a2a;
+      --warn-bg:     rgba(200,50,50,0.08);
+      --warn-border: #882222;
+    }
+    .hero { background: linear-gradient(135deg,#1a0a00 0%,#2e1500 45%,#1a0800 100%); border-bottom: 2px solid var(--accent); }
+    .category { font-size:10px; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:var(--accent); margin-bottom:10px; }
+    .subtitle { color:var(--text-muted); font-size:14px; margin-top:8px; }
+    .film-ref { font-size:12px; color:var(--text-dim); margin-top:10px; }
+    .film-ref em { color:var(--text-muted); font-style:italic; }
+    .creator-credit { font-size:11px; color:var(--text-dim); margin-top:14px; letter-spacing:0.3px; }
+    .creator-credit a { color:var(--text-muted); text-decoration:none; border-bottom:1px solid transparent; transition:all 0.15s; }
+    .creator-credit a:hover { color:var(--text); border-bottom-color:var(--text-muted); }
+    .guide-footer { text-align:center; padding:24px 20px 32px; color:var(--text-dim); font-size:12px; border-top:1px solid var(--border); margin-top:48px; letter-spacing:0.3px; }
+    .guide-footer a { color:var(--text-muted); text-decoration:none; border-bottom:1px solid transparent; transition:all 0.15s; }
+    .guide-footer a:hover { color:var(--text); border-bottom-color:var(--text-muted); }
+    .back-to-top { position:fixed; bottom:28px; right:28px; width:38px; height:38px; border-radius:50%; background:var(--surface2); border:1px solid var(--border); color:var(--text-muted); font-size:17px; line-height:1; cursor:pointer; opacity:0; pointer-events:none; transition:opacity 0.2s,background 0.15s,color 0.15s; z-index:999; display:flex; align-items:center; justify-content:center; }
+    .back-to-top.visible { opacity:1; pointer-events:auto; }
+    .back-to-top:hover { background:var(--surface3); color:var(--text); }
+    .char-brief { background:var(--surface); border:1px solid var(--border); border-left:4px solid var(--accent); border-radius:0 8px 8px 0; padding:16px 20px; margin:16px 0 8px; font-size:13px; color:var(--text-muted); line-height:1.7; }
+    .char-brief strong { color:var(--text); }
+    .phase-label { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--text-dim); margin:28px 0 12px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+    .value-map { display:flex; gap:8px; margin:16px 0; flex-wrap:wrap; }
+    .value-chip { flex:1; min-width:80px; border-radius:8px; overflow:hidden; border:1px solid var(--border); text-align:center; }
+    .chip-swatch { height:40px; }
+    .chip-val { font-size:10px; font-weight:700; color:var(--text); padding:4px 0 2px; background:var(--surface2); }
+    .chip-label { font-size:9px; color:var(--text-dim); padding:0 4px 4px; background:var(--surface2); }
+    .method-rec-block { background:var(--surface2); border-left:4px solid var(--accent); border-radius:0 8px 8px 0; padding:14px 18px; margin-bottom:20px; font-size:13px; color:var(--text); }
+    .method-rec-block strong { color:var(--accent); }
+    .method-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:24px; }
+    .method-card { background:var(--surface); border:2px solid var(--border); border-radius:10px; padding:16px; position:relative; }
+    .method-card.recommended { border-color:var(--accent); background:var(--surface2); }
+    .method-card-badge { position:absolute; top:-10px; right:12px; background:var(--accent); color:#fff; font-size:9px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; padding:2px 8px; border-radius:3px; }
+    .method-card h4 { font-size:13px; font-weight:700; margin-bottom:8px; color:var(--text); }
+    .method-card p { font-size:12px; color:var(--text-muted); margin-bottom:8px; line-height:1.5; }
+    .mc-pros,.mc-cons,.mc-best { display:block; font-size:11px; color:var(--text-muted); margin-top:6px; line-height:1.5; }
+    .mc-pros::before { content:"✦ "; color:#4a9a4a; }
+    .mc-cons::before { content:"✖ "; color:#9a4444; }
+    .mc-best::before { content:"★ "; color:var(--accent); }
+    .freckle-note { background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:12px 16px; margin:8px 0 20px; font-size:12px; color:var(--text-muted); }
+    .freckle-note strong { color:var(--text); }
+    .step { margin-bottom:18px; }
+    .step-number { display:inline-block; font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; padding:2px 10px; border-radius:3px; margin-bottom:6px; color:#fff; }
+    .step-number.airbrush { background:var(--tag-airbrush); }
+    .step-number.brush    { background:var(--tag-brush); }
+    .step-number.wash     { background:var(--tag-wash); }
+    .step-number.finish   { background:var(--tag-finish); }
+    .step-number.effects  { background:var(--tag-effects); }
+    .step-number.filter   { background:var(--tag-filter); }
+    .step h3 { font-size:14px; font-weight:700; margin-bottom:6px; color:var(--text); }
+    .step p { font-size:13px; color:var(--text-muted); line-height:1.7; margin-bottom:8px; }
+    .swatch-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:10px 0; }
+    .step-swatch { width:36px; height:36px; border-radius:5px; flex-shrink:0; border:1px solid rgba(255,255,255,0.15); }
+    .swatch-label { font-size:11px; color:var(--text-muted); line-height:1.4; }
+    .mix { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:10px 0; }
+    .plus  { color:var(--text-dim); font-size:16px; }
+    .ratio { font-size:10px; color:#c8a030; font-weight:600; }
+    .result-row { display:flex; align-items:center; gap:8px; margin:4px 0; font-size:11px; color:var(--text-muted); }
+    .warning { background:var(--warn-bg); border-left:4px solid var(--warn-border); border-radius:0 6px 6px 0; padding:10px 14px; margin:12px 0; font-size:12px; line-height:1.6; }
+    .warning strong { color:#ee8888; }
+    .sub-tabs { display:flex; gap:6px; margin:20px 0 0; }
+    .sub-tab { padding:7px 14px; background:var(--surface); border:1px solid var(--border); border-radius:6px 6px 0 0; cursor:pointer; font-size:12px; color:var(--text-muted); user-select:none; transition:all 0.2s; }
+    .sub-tab:hover { color:var(--text); }
+    .sub-tab.active { background:var(--surface2); color:var(--text); font-weight:600; border-bottom-color:var(--surface2); }
+    .sub-tab.expert-tab.active { border-color:#8855cc; color:#bb88ff; }
+    .sub-tab.folk-art-tab.active { border-color:#7a9a3a; color:#a8cc66; }
+    .sub-tab.effects-tab.active  { border-color:#b87030; color:#e8a050; }
+    .sub-content { display:none; background:var(--surface2); border:1px solid var(--border); border-radius:0 6px 6px 6px; padding:20px 24px; }
+    .sub-content.active { display:block; }
+    .nozzle-callout { background:var(--surface2); border:2px solid var(--accent); border-radius:8px; padding:14px 18px; margin-bottom:20px; }
+    .nozzle-callout h4 { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--accent); margin-bottom:6px; }
+    .nozzle-callout p { font-size:12px; color:var(--text-muted); line-height:1.7; }
+    .nozzle-callout strong { color:var(--text); }
+    .psi-table { width:100%; border-collapse:collapse; font-size:12px; margin:10px 0; }
+    .psi-table th { background:var(--surface3); color:var(--text-muted); padding:8px 12px; text-align:left; font-weight:600; border-bottom:2px solid var(--border); }
+    .psi-table td { padding:8px 12px; border-bottom:1px solid var(--border); color:var(--text-muted); }
+    .psi-table tr:hover td { background:var(--surface2); }
+    .trouble-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:16px 0; }
+    .trouble-card { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:14px; }
+    .trouble-card h4 { font-size:12px; font-weight:700; color:#ee8888; margin-bottom:6px; }
+    .trouble-card p { font-size:12px; color:var(--text-muted); line-height:1.6; }
+    /* ── SERIES BADGE — pill styling for <a> cross-links ── */
+    .series-badge a {
+      font-size:11px; padding:3px 12px; border-radius:10px;
+      border:1px solid var(--border); color:var(--text-muted);
+      background:var(--surface); text-decoration:none;
+      transition:color 0.15s, border-color 0.15s;
+    }
+    .series-badge a:hover { color:var(--text); border-color:var(--text-muted); }
+    .series-badge span {
+      font-size:11px; padding:3px 12px; border-radius:10px;
+      border:1px solid var(--border); color:var(--text-muted); background:var(--surface);
+    }
+    .series-badge span.active {
+      border-color:var(--accent); color:var(--accent);
+      background:rgba(0,0,0,0.3); font-weight:700;
+    }
+    .series-badge { display:inline-flex; gap:8px; margin-top:14px; flex-wrap:wrap; justify-content:center; }
+
+    @media (max-width:600px) {
+      .method-cards { grid-template-columns:1fr; }
+      .trouble-grid { grid-template-columns:1fr; }
+      .value-map    { flex-direction:column; }
+      .sub-tabs     { flex-wrap:wrap; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="guide-nav">
+  <a href="../../index.html">&#8592; All Guides</a>
+</nav>
+
+<div class="hero">
+  <div class="category">D&amp;D Animated Series · 1983–1985</div>
+  <h1><span>Bobby</span> the Barbarian</h1>
+  <div class="subtitle">1:6 Scale &middot; Fair warm skin &middot; Tawny orange-brown fur &middot; Hardwood cudgel &middot; Adventure terrain base</div>
+  <div class="film-ref"><em>"I don't care what happens to me &#8212; nobody's gonna hurt my friends!"</em></div>
+  <div class="series-badge">
+    <a href="hank-ranger-dnd-painting-guide.html">Hank</a>
+    <a href="eric-cavalier-dnd-painting-guide.html">Eric</a>
+    <a href="diana-acrobat-dnd-painting-guide.html">Diana</a>
+    <a href="sheila-dd-cartoon-painting-guide.html">Sheila</a>
+    <span class="active">Bobby</span>
+    <a href="uni-unicorn-dnd-painting-guide.html">Uni</a>
+    <a href="presto-magician-dnd-painting-guide.html">Presto</a>
+  </div>
+  <div class="creator-credit">
+    Figure by <strong>Toon Studios</strong> · <a href="https://tooniverse83.gumroad.com/" target="_blank">tooniverse83.gumroad.com</a>
+  </div>
+  <div class="ref-thumb-wrap">
+    <img class="ref-thumb"
+         src="img/bobby-uni-reference.png"
+         alt="Bobby &amp; Uni — Toon Studios render reference"
+         onclick="openRefModal(this.src, this.alt)"
+         title="Click to view full reference image">
+    <div class="ref-thumb-label">Reference</div>
+  </div>
+</div>
+
+<div class="paint-bar">
+  <span class="paint-bar-label">Paint Lines Used</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#cc4444;"></span>Pro Acryl</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#9966cc;"></span>Expert Acrylics</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#4488cc;"></span>Army Painter Fanatic</span>
+</div>
+
+<div class="container">
+
+  <div class="char-brief">
+    <strong>Bobby the Barbarian</strong> &#8212; the youngest and most fearless of the D&amp;D kids, rendered here at 1:6 scale from Toon Studios' faithful cartoon-accurate sculpt. <strong>Color reference:</strong> canonical 1983 animated series design &#8212; fair warm skin with peachy-pink undertones, sandy golden-blonde hair, blue eyes, tawny orange-brown fur on loincloth/boots/helmet, cream-white horns, dark leather cross-harness with bronze studs, and a gnarled hardwood war cudgel. <strong>Light source:</strong> zenithal overhead with warm fill from the right &#8212; matching the cartoon's punchy heroic lighting. <strong>Priority materials:</strong> skin (luminous youth via Pinkle), fur (texture-forward drybrush layers), and the war club (wood grain reads at distance). Values go wider than feels comfortable &#8212; Bobby is small but he needs to read from a shelf.
+  </div>
+
+  <div class="tabs">
+    <div class="tab tab-btn active" onclick="showTab('skin',this)">Skin</div>
+    <div class="tab tab-btn" onclick="showTab('hair-eyes',this)">Hair &amp; Eyes</div>
+    <div class="tab tab-btn" onclick="showTab('outfit',this)">Outfit</div>
+    <div class="tab tab-btn" onclick="showTab('weapon',this)">War Club</div>
+    <div class="tab tab-btn" onclick="showTab('base',this)">Base</div>
+    <div class="tab tab-btn" onclick="showTab('airbrush-skills',this)">Airbrush Skills</div>
+    <div class="tab tab-btn" onclick="showTab('brush-skills',this)">Brush Skills</div>
+    <div class="tab tab-btn" onclick="showTab('thinning-ref',this)">Thinning Ref</div>
+  </div>
+
+
+  <!-- ═══ SKIN ═══ -->
+  <div class="tab-content active" id="skin">
+    <div class="section-header">
+      <h2 style="color:#e8a080;">Skin</h2>
+      <p>Fair warm complexion &#8212; pale and peachy with pink undertones. Bobby reads as a young, energetic kid: bright, alive, sun-touched but not tanned. No freckling (cartoon stylization). Push the specular hard on the nose tip, cheekbones, and forehead &#8212; it reads as youthful vitality at this scale.</p>
+    </div>
+
+    <div class="phase-label">Value Structure</div>
+    <div class="value-map">
+      <div class="value-chip"><div class="chip-swatch" style="background:#1a0c08;"></div><div class="chip-val">~12%</div><div class="chip-label">Deep Shadow</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#4a2015;"></div><div class="chip-val">~28%</div><div class="chip-label">Shadow</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#c08a6a;"></div><div class="chip-val">~52%</div><div class="chip-label">Mid-Tone</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#e8c4a0;"></div><div class="chip-val">~75%</div><div class="chip-label">Highlight</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#f5e2cc;"></div><div class="chip-val">~92%</div><div class="chip-label">Specular</div></div>
+    </div>
+
+    <div class="phase-label">Method Selection</div>
+    <div class="method-rec-block">
+      <strong>RECOMMENDED: Method 2A &#8212; The Pinkle</strong> &#8212; Bobby is a fair-skinned young protagonist, the fearless heart of the group. The Pinkle's magenta underpainting creates the luminous, lit-from-within quality that reads as youthful energy rather than flat paint. At 1:6 scale the sub-surface scattering effect is very visible &#8212; it's worth the setup. Cartoon stylization means smooth transitions rather than freckling; push the specular bright and the shadow deep for that graphic hero-light quality.
+    </div>
+
+    <div class="method-cards">
+      <div class="method-card">
+        <h4>Method 1 &#8212; Basic</h4>
+        <p>Prime &#8594; shadow undercoat &#8594; base coat &#8594; mid-tone &#8594; highlight &#8594; optional unifying glaze.</p>
+        <span class="mc-pros">Most predictable; easy to correct at any stage</span>
+        <span class="mc-cons">Reads flat without enough layers; easy to under-highlight</span>
+        <span class="mc-best">First-time painters, 28mm scale, speed priority</span>
+      </div>
+      <div class="method-card recommended">
+        <div class="method-card-badge">Recommended</div>
+        <h4>Method 2A &#8212; Pinkle</h4>
+        <p>Black prime &#8594; white zenithal &#8594; magenta all over &#8594; FW Crimson Ink into recesses &#8594; thin flesh layers building up.</p>
+        <span class="mc-pros">Luminous sub-surface scattering; naturally warm, alive-looking skin</span>
+        <span class="mc-cons">Requires a solid zenithal &#8212; poor coverage produces muddy shadows</span>
+        <span class="mc-best">Fair-skinned protagonist display figures, 1:6 and busts</span>
+      </div>
+      <div class="method-card">
+        <h4>Method 2B &#8212; Red Zenithal</h4>
+        <p>Same as 2A but skip the magenta &#8212; go straight to FW Crimson Ink at 1:2 over the white zenithal, then build flesh layers.</p>
+        <span class="mc-pros">Natural warmth without the pink saturation of 2A</span>
+        <span class="mc-cons">Same zenithal dependency as 2A; slightly less luminous</span>
+        <span class="mc-best">Rugged male, military, or darker-complexioned figures</span>
+      </div>
+    </div>
+
+    <div class="freckle-note">
+      <strong>No Freckling &#8212; Cartoon Stylization:</strong> Bobby is an 80s animated character. His skin should be clean and graphic &#8212; smooth transitions with bold value contrast, no organic texture. Skip the freckle pass entirely. The high specular on the nose and cheekbones does the same work of making skin feel alive without the realism-breaking detail.
+    </div>
+
+    <div class="phase-label">Step-by-Step</div>
+    <div class="sub-tabs">
+      <div class="sub-tab active"     onclick="showSubTab('skin','skin-pro',this)">Pro Acryl</div>
+      <div class="sub-tab expert-tab" onclick="showSubTab('skin','skin-expert',this)">&#10022; Expert Acrylics &#8212; Brush Only</div>
+    </div>
+
+    <div class="sub-content active" id="skin-pro">
+
+      <div class="phase-label">Foundation</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 1 &middot; Airbrush</span>
+        <h3>Black Prime &#8212; Full Coverage</h3>
+        <p>Pro Acryl Primer Black thinned 1:1, PSI 22, 20&#8211;25cm. Full rotation &#8212; no bare resin showing. Check undercuts around the helmet rim, under the chin, and between fingers on the club hand. These must stay black &#8212; they are your permanent shadow anchors.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#111111;"></div><div class="swatch-info"><div class="swatch-name">Primer Black</div><div class="swatch-brand">Pro Acryl Primer</div><div class="swatch-value">~0% value</div></div></div>
+        <div class="tip"><strong>&#10022; TIP:</strong> Tilt the figure 45&#176; and hit recesses from the side &#8212; a straight-down prime misses undercuts entirely.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 2 &middot; Airbrush</span>
+        <h3>White Zenithal &#8212; Top Down</h3>
+        <p>Primer White or Heavy Warm White S18 thinned 1:2, PSI 15, 15&#8211;18cm. Point straight down. Near-white on crown of head, tops of cheekbones, nose bridge, shoulder tops. Black fully retained in all recesses. The contrast at this stage should look dramatic &#8212; that's correct.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#f0f0e8;"></div><div class="swatch-info"><div class="swatch-name">Primer P-003 or Bold TW 001 + WF 073 3:1</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~95% value, sub for S18</div></div></div>
+        <div class="tip"><strong>&#10022; GREYSCALE CHECK:</strong> Photograph and desaturate. You should see a clear overhead light source &#8212; bright top planes, dark recesses. If it looks flat, add another zenithal pass. Color cannot fix a bad value foundation.</div>
+      </div>
+
+      <div class="phase-label">Pinkle Underpainting</div>
+
+      <div class="step">
+        <span class="step-number filter">Step 3 &middot; Filter &#8212; Airbrush</span>
+        <h3>Magenta All Over &#8212; The Pinkle Layer</h3>
+        <p>Pro Acryl Magenta 011 thinned 1:4, PSI 15, 15cm. Single thin pass over all skin from all angles &#8212; tinting the zenithal, not covering it. The white must still show through. The figure should glow pink-magenta. One pass, then stop.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#BB4D73;"></div><div class="swatch-info"><div class="swatch-name">Magenta 011</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~15% value, transparent tint</div></div></div>
+        <div class="warning"><strong>&#9888; NOTE:</strong> Overworking this layer creates muddy purple-grey shadows. One smooth pass and leave it. Do not go back and forth.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number filter">Step 4 &middot; Filter &#8212; Brush</span>
+        <h3>FW Crimson Ink &#8212; Sub-Surface Recess Tinting</h3>
+        <p>FW Crimson Ink thinned 1:2, size 1 brush. Deepest recesses only: under chin, neck fold, between fingers, eyelid creases, under brow ridge, knuckle grooves. These should glow warm red-brown &#8212; the illusion of light scattering through skin from beneath. Do not apply to open flat skin.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#aa1515;"></div><div class="swatch-info"><div class="swatch-name">FW Crimson Ink</div><div class="swatch-brand">FW Inks</div><div class="swatch-value">~20% value, recesses only</div></div></div>
+      </div>
+
+      <div class="phase-label">Flesh Build</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 5 &middot; Brush</span>
+        <h3>Shadow Flesh Base &#8212; Mid-to-Lower Zones</h3>
+        <p>Shadow Flesh 042 thinned 1:1. Apply from mid-value zones downward &#8212; cheeks, chin, sides of nose, under the brow. Leave recesses (still showing FW Crimson Ink) untouched. Leave upper highlight zones for later. Two thin semi-transparent coats &#8212; let the pink underpainting show through.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#9F645B;"></div><div class="swatch-info"><div class="swatch-name">Shadow Flesh 042</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~38% value</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 6 &middot; Brush</span>
+        <h3>Mid-Tone &#8212; True Skin Color</h3>
+        <p>Warm Flesh 073 thinned 1:2. This is Bobby's actual skin color. Apply over shadow flesh, leaving recesses showing through. Three thin passes, each drying fully. The upper lit planes should be solidly this color; shadows should still glow warm-pink through the layers beneath.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#F9C884;"></div><div class="swatch-info"><div class="swatch-name">Warm Flesh 073</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~52% value &#8212; the true skin tone</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 7 &middot; Brush</span>
+        <h3>First Highlight &#8212; Upper Planes</h3>
+        <p>Warm Flesh 073 + Bright Shadow Flesh S41 at 1:1, thin 1:2. Cheekbone peaks, nose bridge, center of forehead, chin point, top of lip arch, knuckles. Thin strokes pulled upward from the shadow edge. This value (~68%) should clearly read lighter than the mid-tone at arm's length.</p>
+        <div class="mix">
+          <div class="step-swatch" style="background:#c88868;"></div>
+          <span class="plus">+</span>
+          <div class="step-swatch" style="background:#e8c4a0;"></div>
+          <span class="ratio">1:1</span>
+        </div>
+        <div class="result-row">
+          <div class="step-swatch" style="background:#d8a882; width:24px; height:24px; border-radius:3px;"></div>
+          &#8594; Warm peach, ~68% value &#8212; upper lit planes
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 8 &middot; Brush</span>
+        <h3>Second Highlight &#8212; Peak Planes</h3>
+        <p>Bright Shadow Flesh S41 thinned 1:2. Smaller area than Step 7 &#8212; tip of nose, center of cheekbone, highest forehead point, center of chin only. Pull tiny strokes from center outward. Should read ~80% value. If it doesn't look too bright at close range, it is not bright enough.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#EA9D82;"></div><div class="swatch-info"><div class="swatch-name">Bright Shadow Flesh S41</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~80% value &#8212; peak planes</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 9 &middot; Brush</span>
+        <h3>Specular &#8212; Catch Lights</h3>
+        <p>Bright Shadow Flesh S41 + Heavy Warm White S18 at 1:1, near-dry. Absolute tip of nose, highest cheekbone point, center of lower lip, peak of brow ridge &#8212; one tiny mark each. Near-white (~92% value). One photon of light catching the sharpest surface per location. Don't overwork.</p>
+        <div class="mix">
+          <div class="step-swatch" style="background:#e8c8aa;"></div>
+          <span class="plus">+</span>
+          <div class="step-swatch" style="background:#f5f0e8;"></div>
+          <span class="ratio">1:1</span>
+        </div>
+        <div class="result-row">
+          <div class="step-swatch" style="background:#f2e2d0; width:24px; height:24px; border-radius:3px;"></div>
+          &#8594; Near-white warm cream, ~92% value &#8212; specular catch points only
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 10 &middot; Finish</span>
+        <h3>Seal &#8212; Satin Varnish</h3>
+        <p>Seal all skin with satin varnish before moving to adjacent areas. Satin matches living skin &#8212; neither chalky-matte nor wet-gloss. Eyes get gloss over iris/pupil only (see Hair &amp; Eyes tab).</p>
+        <div class="tip"><strong>&#10022; TIP:</strong> Cartoon figures benefit from slightly higher sheen on skin than realistic pieces &#8212; the satin catches light in a way that amplifies the graphic, heroic read.</div>
+      </div>
+
+    </div><!-- end skin-pro -->
+
+    <div class="sub-content" id="skin-expert">
+      <div class="tip"><strong>&#10022; Brush-only workflow.</strong> Expert Acrylics are heavy-body re-wettable acrylics. Works on a grey-primed surface. The earth tone transparents in the Expert range are exceptional for skin glazing.</div>
+
+      <div class="phase-label">Foundation</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 &middot; Brush</span>
+        <h3>Grey Prime + Mid-Tone Base</h3>
+        <p>Apply Pro Acryl Primer Dark Neutral Gray over all skin. Once dry, apply Warm Flesh 073 (Pro Acryl) thinned 2:1 &#8212; two coats for even coverage. This is your starting value anchor.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#F9C884;"></div><div class="swatch-info"><div class="swatch-name">Warm Flesh 073</div><div class="swatch-brand">Pro Acryl over grey prime</div><div class="swatch-value">~52% value &#8212; base coat</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 &middot; Brush &#8212; Wet Blend</span>
+        <h3>Shadow Wet Blend &#8212; Recesses While Wet</h3>
+        <p>While the second base coat pass is still wet, pick up Burnt Umber (Expert Acrylics) thinned 1:2 and pull into recesses: under chin, eyelid creases, neck fold, knuckle grooves, elbow folds. Use a clean damp brush to feather the edge. Expert Acrylics stay open long enough to blend without visible transitions. Burnt Umber should read warm and deep (~22% value) at deepest points.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#3a1a08;"></div><div class="swatch-info"><div class="swatch-name">Burnt Umber &#8212; Expert Acrylics</div><div class="swatch-brand">Thin 1:2</div><div class="swatch-value">~22% value, wet blend</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 &middot; Brush</span>
+        <h3>Burnt Sienna Glaze &#8212; Warmth Layer</h3>
+        <p>Burnt Sienna (Expert Acrylics) thinned 1:5. Glaze over cheeks, nose, ear rims, and knuckles. Two thin passes. Produces the flushed warmth that the Pinkle method achieves via airbrush &#8212; matching the pink undertone of Bobby's fair cartoon skin.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#9a3c18;"></div><div class="swatch-info"><div class="swatch-name">Burnt Sienna &#8212; Expert Acrylics</div><div class="swatch-brand">Thin 1:5</div><div class="swatch-value">~35% value glaze</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 &middot; Brush</span>
+        <h3>Warm White Highlight Layers</h3>
+        <p>Titanium White (Expert Acrylics) + trace of Pyrrole Orange at 8:1, thin 1:2. Apply to raised planes in progressive layers &#8212; first pass covers cheekbones, nose bridge, forehead crown, chin; second pass tightens to peak points only. Final specular: near-pure Titanium White + trace warmth on nose tip and cheekbone peak (~92% value). Expert Acrylics Titanium White is extremely opaque &#8212; add it drop by drop and test on palette first.</p>
+        <div class="mix">
+          <div class="step-swatch" style="background:#f0ece0;"></div>
+          <span class="plus">+</span>
+          <div class="step-swatch" style="background:#dd5500;"></div>
+          <span class="ratio">8:1</span>
+        </div>
+        <div class="result-row">
+          <div class="step-swatch" style="background:#f2e4d2; width:24px; height:24px; border-radius:3px;"></div>
+          &#8594; Warm near-white, ~88&#8211;92% value &#8212; highlight and specular layers
+        </div>
+      </div>
+
+    </div><!-- end skin-expert -->
+  </div><!-- end #skin -->
+
+
+  <!-- ═══ HAIR & EYES ═══ -->
+  <div class="tab-content" id="hair-eyes">
+    <div class="section-header">
+      <h2 style="color:#d4b060;">Hair &amp; Eyes</h2>
+      <p>Sandy golden-blonde hair with strong value contrast &#8212; dark roots, bright crown. Blue cartoon eyes with a gloss catch-light. Keep both graphic and punchy to match the animated source.</p>
+    </div>
+
+    <div class="phase-label">Hair &#8212; Sandy Blonde</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 &middot; Airbrush</span>
+      <h3>Dark Brown Base &#8212; All Hair</h3>
+      <p>Dark Golden Brown 062 thinned 1:2, PSI 18, 15cm. Full coverage of all hair surfaces. This is the shadow color that remains in roots and recesses between hair masses (~20% value). Warm, not cold or grey.</p>
+      <div class="swatch"><div class="swatch-dot" style="background:#614B22;"></div><div class="swatch-info"><div class="swatch-name">Dark Golden Brown 062</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~20% value &#8212; hair shadow base</div></div></div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 2 &middot; Airbrush</span>
+      <h3>Golden Mid-Tone &#8212; Zenithal Pass</h3>
+      <p>Dark Golden Brown 062 + Golden Yellow 006 at 1:1, thin 1:2, PSI 15, 15cm. From above &#8212; crown and top of hair masses. Fades into shadow base at sides and roots. Warm golden-brown body of the hair color (~50% value).</p>
+      <div class="mix">
+        <div class="step-swatch" style="background:#3a2208;"></div>
+        <span class="plus">+</span>
+        <div class="step-swatch" style="background:#c89010;"></div>
+        <span class="ratio">1:1</span>
+      </div>
+      <div class="result-row">
+        <div class="step-swatch" style="background:#7a5010; width:24px; height:24px; border-radius:3px;"></div>
+        &#8594; Golden brown, ~50% value &#8212; top of hair masses
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 3 &middot; Brush</span>
+      <h3>Hair Strand Mid-Highlights</h3>
+      <p>Golden Yellow 006 + Warm Yellow 072 at 1:1, thin 1:2. Size 0 or 00 liner brush following hair direction. Short individual strokes &#8212; you are painting hair strands, not flooding a surface. Focus on crown and outer edges. Slight irregularity is correct; organic rather than mechanical.</p>
+      <div class="mix">
+        <div class="step-swatch" style="background:#c89010;"></div>
+        <span class="plus">+</span>
+        <div class="step-swatch" style="background:#d8b020;"></div>
+        <span class="ratio">1:1</span>
+      </div>
+      <div class="result-row">
+        <div class="step-swatch" style="background:#cca018; width:24px; height:24px; border-radius:3px;"></div>
+        &#8594; Bright golden-yellow, ~65% value &#8212; mid-highlight hair strands
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 4 &middot; Brush</span>
+      <h3>Bright Strand Highlights &#8212; Crown</h3>
+      <p>Warm Yellow 072 + Heavy Warm White S18 at 2:1, thin 1:2. Absolute crown only &#8212; topmost hair catching direct overhead light. Fine strokes following hair direction, outer edges and tips. ~82% value. Bobby has the bright-blonde-kid-in-sunlight quality &#8212; this step delivers it.</p>
+      <div class="mix">
+        <div class="step-swatch" style="background:#d8b020;"></div>
+        <span class="plus">+</span>
+        <div class="step-swatch" style="background:#f5f0e0;"></div>
+        <span class="ratio">2:1</span>
+      </div>
+      <div class="result-row">
+        <div class="step-swatch" style="background:#e8d070; width:24px; height:24px; border-radius:3px;"></div>
+        &#8594; Bright warm yellow, ~82% value &#8212; crown highlight strands
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 5 &middot; Brush</span>
+      <h3>Specular Hair Catch</h3>
+      <p>Heavy Warm White S18, near-dry on size 000. One or two single-stroke catch lights on the very crown &#8212; sharpest points only. ~92% value. One bright catch light reads as "shiny hair"; ten reads as "static mess." Restraint is the technique here.</p>
+      <div class="swatch"><div class="swatch-dot" style="background:#f2edd8;"></div><div class="swatch-info"><div class="swatch-name">Bold TW 001 + WF 073 3:1</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~92% value — crown catch light</div></div></div>
+    </div>
+
+    <div class="phase-label">Eyes &#8212; Cartoon Blue</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 6 &middot; Brush</span>
+      <h3>Eye Socket Shadow</h3>
+      <p>Coal Black 002 + Dark Navy Blue 005 at 2:1 thinned 1:1. Thin shadow into the eye socket before painting the eye itself &#8212; creates depth and a sense of recessing. Size 000, controlled. Let dry fully before the sclera.</p>
+      <div class="mix">
+        <div class="step-swatch" style="background:#111111;"></div>
+        <span class="plus">+</span>
+        <div class="step-swatch" style="background:#1a2a5a;"></div>
+        <span class="ratio">2:1</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 7 &middot; Brush</span>
+      <h3>Sclera &#8212; White of the Eye</h3>
+      <p>Bright Ivory 022, full coverage of the visible white area. Avoid pure white &#8212; bright ivory reads more natural and prevents the cold "Dracula eyes" problem. Dry fully before the iris.</p>
+      <div class="swatch"><div class="swatch-dot" style="background:#F6F2DE;"></div><div class="swatch-info"><div class="swatch-name">Bright Ivory 022</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~88% value &#8212; warm white sclera</div></div></div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 8 &middot; Brush</span>
+      <h3>Iris &#8212; Cartoon Blue</h3>
+      <p>Sky Blue 012 &#8212; filled circle within the sclera. Bobby has bright, clear cartoon-blue eyes. Once dry, add a hint of Dark Navy Blue 005 around the upper-inner edge of the iris (upper eyelid shadow). Size 000 brush; work both eyes simultaneously to keep them matching.</p>
+      <div class="swatch"><div class="swatch-dot" style="background:#349ED6;"></div><div class="swatch-info"><div class="swatch-name">Sky Blue 012</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~55% value &#8212; iris base</div></div></div>
+      <div class="swatch"><div class="swatch-dot" style="background:#2C2D43;"></div><div class="swatch-info"><div class="swatch-name">AMP-005 Dark Navy Blue</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~18% value &#8212; upper iris shadow</div></div></div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 9 &middot; Brush</span>
+      <h3>Pupil + Catch-Light Dot</h3>
+      <p>Coal Black 002 &#8212; single centered pupil dot, size 000. Once dry: Heavy Warm White S18 catch-light dot in the upper-left quadrant of the iris, overlapping both iris and pupil slightly. This single mark is what brings the eye to life. Work both eyes simultaneously so the catch-lights land in matching positions.</p>
+      <div class="swatch"><div class="swatch-dot" style="background:#2A2A2A;"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002 &#8212; pupil</div><div class="swatch-brand">Pro Acryl</div></div></div>
+      <div class="swatch"><div class="swatch-dot" style="background:#f5f0e0;"></div><div class="swatch-info"><div class="swatch-name">Bold TW 001 + WF 073 3:1 — catch-light dot</div><div class="swatch-brand">Pro Acryl</div></div></div>
+      <div class="tip"><strong>&#10022; TIP:</strong> Work each eye completely dry between steps. Wet into wet on eyes almost always bleeds. Patience pays off &#8212; eyes are the first thing any viewer looks at.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number finish">Step 10 &middot; Finish</span>
+      <h3>Gloss Varnish &#8212; Eyes Only</h3>
+      <p>Tiny drop of gloss varnish on iris and pupil only &#8212; fine brush, just enough to coat. The gloss catches light and reads as a wet eye. Keep gloss off the sclera (satin/matte there).</p>
+    </div>
+
+  </div><!-- end #hair-eyes -->
+
+
+  <!-- ═══ OUTFIT ═══ -->
+  <div class="tab-content" id="outfit">
+    <div class="section-header">
+      <h2 style="color:#c88040;">Outfit</h2>
+      <p>Three material groups: tawny orange-brown fur (loincloth, boots, helmet backing), cream-white horns, and dark leather cross-harness with bronze studs. The fur is the dominant visual element of the figure &#8212; get the warm orange-brown right and the whole character snaps into focus.</p>
+    </div>
+
+    <div class="phase-label">Step-by-Step</div>
+    <div class="sub-tabs">
+      <div class="sub-tab active"     onclick="showSubTab('outfit','outfit-pro',this)">Pro Acryl</div>
+      <div class="sub-tab expert-tab" onclick="showSubTab('outfit','outfit-expert',this)">&#10022; Expert Acrylics &#8212; Brush Only</div>
+    </div>
+
+    <div class="sub-content active" id="outfit-pro">
+
+      <div class="phase-label">Fur &#8212; Loincloth, Boots &amp; Helmet Backing</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 1 &middot; Airbrush</span>
+        <h3>Fur Shadow Base &#8212; All Fur Surfaces</h3>
+        <p>Mahogany 009 + Coal Black 002 at 2:1, thin 1:2, PSI 18, 15cm. Full coverage of all fur areas. Deepest shadow between fur strands and in undercuts (~18% value). Warm-dark rather than cool-black &#8212; the fur reads as an organic material throughout.</p>
+        <div class="mix">
+          <div class="step-swatch" style="background:#5a2008;"></div>
+          <span class="plus">+</span>
+          <div class="step-swatch" style="background:#111111;"></div>
+          <span class="ratio">2:1</span>
+        </div>
+        <div class="result-row">
+          <div class="step-swatch" style="background:#2e1004; width:24px; height:24px; border-radius:3px;"></div>
+          &#8594; Very dark warm brown, ~18% value &#8212; fur shadow anchor
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 2 &middot; Airbrush</span>
+        <h3>Tawny Base Coat &#8212; Fur Body</h3>
+        <p>Caramel Brown S28 or Orange Brown S27 thinned 1:2, PSI 15, from above. Heavy zenithal over all fur &#8212; fading toward underside. Bobby's canonical fur reads as tawny orange-brown &#8212; lion-mane warmth. Shadow base from Step 1 remains in recesses and undercuts.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#aa6020;"></div><div class="swatch-info"><div class="swatch-name">Caramel Brown S28 or Orange Brown S27</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~45% value</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 &middot; Brush &#8212; Drybrush</span>
+        <h3>Fur Mid-Highlight &#8212; First Drybrush</h3>
+        <p>Burnt Orange 037, near-dry flat brush. Load, wipe until almost no paint transfers, sweep across fur surfaces in short multi-directional strokes. Catches raised texture peaks and strand tips. Build gradually &#8212; upper surfaces of loincloth, boot tops, helmet band. Two light passes beat one heavy one.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#9C493D;"></div><div class="swatch-info"><div class="swatch-name">Burnt Orange 037</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~58% value drybrush</div></div></div>
+        <div class="tip"><strong>&#10022; TIP:</strong> Check the drybrush on your wrist first &#8212; if you can feel paint but barely see it, the load is right. Visible wet paint on the brush fills recesses instead of catching peaks.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 &middot; Brush &#8212; Drybrush</span>
+        <h3>Fur Highlight &#8212; Second Drybrush</h3>
+        <p>Orange 007 + Khaki 061 at 2:1, near-dry. Lighter load than Step 3, focused on topmost strand tips and the very crest of fur masses. Direct overhead light catching lightest strands (~72% value). The contrast between this and the Step 1 shadow anchor is what sells the fur texture.</p>
+        <div class="mix">
+          <div class="step-swatch" style="background:#dd7000;"></div>
+          <span class="plus">+</span>
+          <div class="step-swatch" style="background:#c0a060;"></div>
+          <span class="ratio">2:1</span>
+        </div>
+        <div class="result-row">
+          <div class="step-swatch" style="background:#cc8830; width:24px; height:24px; border-radius:3px;"></div>
+          &#8594; Warm orange-tan, ~72% value &#8212; top strand tips
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 5 &middot; Brush &#8212; Drybrush</span>
+        <h3>Fur Specular Tips</h3>
+        <p>Khaki 061 + Heavy Warm White S18 at 1:1, near-dry, almost no paint. Extreme tips of the most exposed strands only &#8212; a final barely-there pass on the crown of each fur mass (~85% value). Barely visible at 30cm but clearly present under a lamp. The difference between "nice fur" and "real fur."</p>
+        <div class="mix">
+          <div class="step-swatch" style="background:#c0a060;"></div>
+          <span class="plus">+</span>
+          <div class="step-swatch" style="background:#f2edd8;"></div>
+          <span class="ratio">1:1</span>
+        </div>
+        <div class="result-row">
+          <div class="step-swatch" style="background:#dac898; width:24px; height:24px; border-radius:3px;"></div>
+          &#8594; Pale warm tan, ~85% value &#8212; specular fur tips
+        </div>
+      </div>
+
+      <div class="phase-label">Helmet Shell</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 6 &middot; Airbrush</span>
+        <h3>Helmet Base &#8212; Near-Black Iron Shadow</h3>
+        <p>Coal Black 002 thinned 1:2, PSI 18, 15cm. Full coverage of the helmet shell. The shell is a silver/iron metallic &#8212; metal reads deep and dark in shadow. This near-black base (~5% value) lives in all recesses, under the brow rim, and in any surface texture. It's what makes the metallic highlights pop later.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#2A2A2A;"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~5% value &#8212; iron shadow base</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 7 &middot; Airbrush</span>
+        <h3>Iron Mid-Tone &#8212; Zenithal</h3>
+        <p>Dark Silver 030 thinned 1:2, PSI 15, from above. Zenithal pass over the helmet crown, brow rim face, and ear flange tops. The coal-black base remains in undercuts and recesses. Top planes read as dull raw iron (~30% value) &#8212; the characteristic flat grey of unpolished steel. Don't flood the sides; keep the dark shadow fully retained below the midline.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#797A7A;"></div><div class="swatch-info"><div class="swatch-name">Dark Silver 030</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~30% value &#8212; dull iron mid-tone</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 8 &middot; Brush</span>
+        <h3>Steel Surface Highlight + Specular Edge</h3>
+        <p>Two passes. First: Steel 010 thinned 1:2, applied to all directly lit upper surfaces &#8212; crown dome, brow ridge face, ear flange tops (~52% value). Layered brush strokes following the surface contour. Let dry fully. Second: Silver 025, near-dry on size 000, on the absolute sharpest edges only &#8212; the very rim of the brow ridge, ear flange edges, any prominent surface ridge or cast line (~80% value). These bright catches against the near-black recesses are what reads as cold hard metal at a glance.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#8B8C8C;"></div><div class="swatch-info"><div class="swatch-name">Steel AMP-010</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~52% value &#8212; lit helmet surfaces</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#ACAEAE;"></div><div class="swatch-info"><div class="swatch-name">Silver 025</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~80% value &#8212; specular edge catches</div></div></div>
+        <div class="tip"><strong>&#10022; TIP:</strong> A thin wash of Pro Acryl Payne's Grey Wash 024 or thinned Coal Black 002 floated into the helmet recesses after Step 7 (before brushwork) will unify the metallic and pull it together. Optional but recommended for display quality.</div>
+      </div>
+
+      <div class="phase-label">Horns &#8212; Cream Ivory</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 9 &middot; Brush</span>
+        <h3>Horn Shadow Base</h3>
+        <p>Bone S23 + Dark Umber 019 at 3:1, thin 1:1. All over both horns. Warm off-white-tan (~45% value) &#8212; old bone with subtle warmth. Shadow remains at the horn base where it meets the helmet.</p>
+        <div class="mix">
+          <div class="step-swatch" style="background:#d0b880;"></div>
+          <span class="plus">+</span>
+          <div class="step-swatch" style="background:#3a1c08;"></div>
+          <span class="ratio">3:1</span>
+        </div>
+        <div class="result-row">
+          <div class="step-swatch" style="background:#aa9050; width:24px; height:24px; border-radius:3px;"></div>
+          &#8594; Warm tan-bone, ~45% value &#8212; horn shadow tones
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 10 &middot; Brush</span>
+        <h3>Horn Mid and Highlight &#8212; Ivory</h3>
+        <p>Bright Ivory 022 thinned 1:2 &#8212; apply to upper two-thirds of each horn, leaving shadow showing at the base. Follow with Heavy Warm White S18 on just the tip and outer ridge of each horn (~92% value). Clean cream-white at tips, warming to bone-tan at the base.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#F6F2DE;"></div><div class="swatch-info"><div class="swatch-name">Bright Ivory 022 &#8212; upper horn body</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~78% value &#8212; upper horn body</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#f5f0e0;"></div><div class="swatch-info"><div class="swatch-name">Bold TW 001 + WF 073 3:1 — horn tips</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~92% value — horn tips</div></div></div>
+      </div>
+
+      <div class="phase-label">Leather Harness &amp; Cross-Belt</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 11 &middot; Airbrush</span>
+        <h3>Leather Shadow Base</h3>
+        <p>Dark Umber 019 thinned 1:2, PSI 15. Full coverage of straps and cross-belt. Very dark (~15% value) &#8212; the leather is worn and aged. Also separates the straps visually from the fur and skin.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#54443F;"></div><div class="swatch-info"><div class="swatch-name">Dark Umber 019</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~15% value &#8212; leather shadow base</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 12 &middot; Brush</span>
+        <h3>Leather Mid-Tone &#8212; Strap Faces</h3>
+        <p>Warm Brown S09 thinned 1:1. Top surfaces of straps and belts, leaving edges and recesses in the dark base. Strap faces read as medium brown (~42% value). Bobby's harness is simple &#8212; clean strap faces with dark edges is correct without over-detailing.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#6a3c18;"></div><div class="swatch-info"><div class="swatch-name">Warm Brown S09</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~42% value &#8212; strap face mid-tone</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 13 &middot; Brush</span>
+        <h3>Leather Edge Highlight</h3>
+        <p>Golden Brown 017 thinned 1:2. Thin edge highlight along sharpest strap edges &#8212; top rim, buckle tongue, strap ends. Keep it tight. ~58% value. Immediately defines strap edges cleanly against adjacent surfaces.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#D2AC6D;"></div><div class="swatch-info"><div class="swatch-name">Golden Brown 017</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~58% value &#8212; strap edge highlight</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 14 &middot; Brush</span>
+        <h3>Studs &amp; Rivets &#8212; Iron</h3>
+        <p>Dark Silver 030 base coat on each stud, size 000 loading just the tip. Once dry: Silver 025 highlight dot on the upper-left face of each stud &#8212; one tiny mark per stud only. The studs match the helmet shell material: cold iron, not warm brass. The dark leather background makes even a small Silver 025 catch read as bright metal. Keep the base coat muted so the highlight pops cleanly.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#797A7A;"></div><div class="swatch-info"><div class="swatch-name">Dark Silver 030 &#8212; stud base</div><div class="swatch-brand">Pro Acryl</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#ACAEAE;"></div><div class="swatch-info"><div class="swatch-name">Silver 025 &#8212; stud highlight dot</div><div class="swatch-brand">Pro Acryl</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 15 &middot; Finish</span>
+        <h3>Outfit Seal &#8212; Matte Varnish</h3>
+        <p>Matte varnish over all fur, leather, and horn. Fur and leather are matte materials. Horns can be satin if you want a polished quality. <strong>Helmet shell and iron studs:</strong> no varnish needed &#8212; Pro Acryl metallics already carry their own sheen. If the metallic looks too bright after drying, a single very light pass of satin varnish (not matte) will knock it back without killing the metallic quality.</p>
+      </div>
+
+    </div><!-- end outfit-pro -->
+
+    <div class="sub-content" id="outfit-expert">
+      <div class="tip"><strong>&#10022; Brush-only workflow.</strong> Expert Acrylics earth tones are exceptional for fur and leather. Burnt Sienna / Burnt Umber / Chrome Oxide Green cover Bobby's entire outfit.</div>
+
+      <div class="phase-label">Fur &#8212; Expert Acrylics Recipe</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 &middot; Brush</span>
+        <h3>Burnt Umber Base &#8212; All Fur</h3>
+        <p>Burnt Umber (Expert Acrylics) thinned 2:1. Full coverage over all fur. Warm dark brown (~20% value) &#8212; perfect shadow anchor for tawny fur. Two coats for solid coverage.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#3a1a08;"></div><div class="swatch-info"><div class="swatch-name">Burnt Umber &#8212; Expert Acrylics</div><div class="swatch-brand">Heavy body &#8212; thin 2:1</div><div class="swatch-value">~20% value</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 &middot; Brush &#8212; Wet Blend</span>
+        <h3>Burnt Sienna Mid-Tone &#8212; While Wet</h3>
+        <p>While the Burnt Umber pass is still wet, apply Burnt Sienna (Expert Acrylics) thinned 1:1 to upper fur surfaces. Feather the edge between the two with a clean damp brush. Sienna dominates on top planes; Umber remains in recesses.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#9a3c18;"></div><div class="swatch-info"><div class="swatch-name">Burnt Sienna &#8212; Expert Acrylics</div><div class="swatch-brand">Wet blend over Burnt Umber</div><div class="swatch-value">~40% value</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 &middot; Brush &#8212; Drybrush</span>
+        <h3>Pyrrole Orange Drybrush</h3>
+        <p>Pyrrole Orange (Expert Acrylics), near-dry. Heavy-body paint holds perfectly for drybrushing &#8212; no water needed. Catches raised texture peaks. Two passes: first ~65%, second ~78% value. This is what makes Bobby's fur read as tawny lion-pelt rather than muddy brown.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#cc5500;"></div><div class="swatch-info"><div class="swatch-name">Pyrrole Orange &#8212; Expert Acrylics</div><div class="swatch-brand">Near-dry brush, catches texture peaks</div><div class="swatch-value">~65&#8211;78% drybrush</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 &middot; Brush &#8212; Drybrush</span>
+        <h3>Titanium White Tip Specular</h3>
+        <p>Titanium White (Expert Acrylics) + trace Pyrrole Orange at 6:1, near-dry. Extreme fur tips only (~88% value). Expert Acrylics Titanium White is very opaque &#8212; barely load the brush and test first. Gives the fur the bright sun-catching quality of the cartoon's punchy lighting.</p>
+        <div class="mix">
+          <div class="step-swatch" style="background:#f0ece0;"></div>
+          <span class="plus">+</span>
+          <div class="step-swatch" style="background:#cc5500;"></div>
+          <span class="ratio">6:1</span>
+        </div>
+        <div class="result-row">
+          <div class="step-swatch" style="background:#f0e0c8; width:24px; height:24px; border-radius:3px;"></div>
+          &#8594; Warm near-white, ~88% value &#8212; extreme fur tip specular
+        </div>
+      </div>
+
+      <div class="phase-label">Leather &#8212; Expert Acrylics Recipe</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 5 &middot; Brush</span>
+        <h3>Sepia + Burnt Umber &#8212; Leather Glaze Build</h3>
+        <p>Sepia + Burnt Umber at 1:1 (Expert Acrylics), thinned 1:3. Apply as glaze over leather straps in 3 passes &#8212; each builds depth and replicates worn lived-in leather. ~25% value in deepest areas. Let each pass dry fully before the next.</p>
+        <div class="mix">
+          <div class="step-swatch" style="background:#4a2808;"></div>
+          <span class="plus">+</span>
+          <div class="step-swatch" style="background:#3a1a08;"></div>
+          <span class="ratio">1:1</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 6 &middot; Brush</span>
+        <h3>Arylide Yellow Deep &#8212; Leather Highlight</h3>
+        <p>Arylide Yellow Deep + Burnt Umber at 2:1 (Expert Acrylics), thin 1:2. Thin edge highlights on strap rims. Progressively more Arylide for brighter passes. Final specular &#8212; Arylide Yellow Deep alone at 1:3 on sharpest edges (~65% value). The Arylide warmth gives leather a golden-brown aged quality rather than newly cut wood.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#c09020;"></div><div class="swatch-info"><div class="swatch-name">Arylide Yellow Deep &#8212; Expert Acrylics</div><div class="swatch-brand">Thin 1:2 layering, 1:3 for specular</div><div class="swatch-value">~65% value edge highlight</div></div></div>
+      </div>
+
+    </div><!-- end outfit-expert -->
+  </div><!-- end #outfit -->
+
+
+  <!-- ═══ WAR CLUB ═══ -->
+  <div class="tab-content" id="weapon">
+    <div class="section-header">
+      <h2 style="color:#a07840;">War Club (Cudgel)</h2>
+      <p>Bobby's magic cudgel is a gnarled hardwood club &#8212; dense dark wood with visible grain and impact wear. Keep it dark overall with bright catches only on the sharpest ridges and striking face. This is a weapon, not a furniture prop.</p>
+    </div>
+
+    <div class="phase-label">Step-by-Step</div>
+    <div class="sub-tabs">
+      <div class="sub-tab active"     onclick="showSubTab('weapon','weapon-pro',this)">Pro Acryl</div>
+      <div class="sub-tab expert-tab" onclick="showSubTab('weapon','weapon-expert',this)">&#10022; Expert Acrylics &#8212; Brush Only</div>
+    </div>
+
+    <div class="sub-content active" id="weapon-pro">
+
+      <div class="step">
+        <span class="step-number airbrush">Step 1 &middot; Airbrush</span>
+        <h3>Dark Wood Base</h3>
+        <p>Black Brown 040 + Coal Black 002 at 3:1, thin 1:2, PSI 18, 15cm. Full coverage &#8212; nearly black at this stage (~12% value). Shadow living in deep grain grooves and underside. A heavy war club is a dark object; don't be timid here.</p>
+        <div class="mix">
+          <div class="step-swatch" style="background:#2a1808;"></div>
+          <span class="plus">+</span>
+          <div class="step-swatch" style="background:#111111;"></div>
+          <span class="ratio">3:1</span>
+        </div>
+        <div class="result-row">
+          <div class="step-swatch" style="background:#180e04; width:24px; height:24px; border-radius:3px;"></div>
+          &#8594; Very dark warm near-black, ~12% value &#8212; wood shadow anchor
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 2 &middot; Airbrush</span>
+        <h3>Wood Mid-Tone &#8212; Zenithal</h3>
+        <p>Dark Umber 019 thinned 1:2, PSI 15, from above. Top plane of the club head, top of handle, prominent raised grain ridges. Dark base still dominates &#8212; this is a mid-pass, not a full coat (~32% value on lit surfaces).</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#54443F;"></div><div class="swatch-info"><div class="swatch-name">Dark Umber 019</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~32% value &#8212; wood mid-tone</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 &middot; Brush</span>
+        <h3>Wood Grain Streaks</h3>
+        <p>Warm Brown S09 thinned 1:2, size 0 or liner brush. Pull fine strokes following grain direction (along handle length, radially on club head). Mid-value grain lines &#8212; light wood showing between dark grooves (~45% value). Vary stroke length and weight; wood grain is organic, not mechanical.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#6a3c18;"></div><div class="swatch-info"><div class="swatch-name">Warm Brown S09</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~45% value &#8212; mid grain lines</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 &middot; Brush</span>
+        <h3>Impact Wear &amp; Ridge Highlight</h3>
+        <p>Golden Brown 017 + Khaki 061 at 1:1, thin 1:2. Sharpest raised ridges on the club head, edge catches, top of handle grip, and the striking face. Use a scratchy irregular stroke technique &#8212; don't paint clean smooth edges. Old clubs look battered (~62% value).</p>
+        <div class="mix">
+          <div class="step-swatch" style="background:#906030;"></div>
+          <span class="plus">+</span>
+          <div class="step-swatch" style="background:#c0a060;"></div>
+          <span class="ratio">1:1</span>
+        </div>
+        <div class="result-row">
+          <div class="step-swatch" style="background:#a87840; width:24px; height:24px; border-radius:3px;"></div>
+          &#8594; Medium tan-brown, ~62% value &#8212; ridge and impact wear
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 5 &middot; Brush</span>
+        <h3>Specular &#8212; Sharpest Edge Catches</h3>
+        <p>Khaki 061 + Heavy Warm White S18 at 1:1, near-dry, size 000. Absolute sharpest edge catches only &#8212; very rim of club head, prominent knot ridges, a couple of glinting impact points on the striking face (~82% value). Three to five marks total. Less is more on wood highlights; too many reads as plastic.</p>
+        <div class="mix">
+          <div class="step-swatch" style="background:#c0a060;"></div>
+          <span class="plus">+</span>
+          <div class="step-swatch" style="background:#f2edd8;"></div>
+          <span class="ratio">1:1</span>
+        </div>
+        <div class="result-row">
+          <div class="step-swatch" style="background:#dac898; width:24px; height:24px; border-radius:3px;"></div>
+          &#8594; Pale warm tan, ~82% value &#8212; specular edge catches
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 6 &middot; Finish</span>
+        <h3>Club Seal &#8212; Matte Varnish</h3>
+        <p>Matte varnish. Wood is matte &#8212; even a satin coat makes it read as plastic. Spot-check after drying; if any area looks glossy, hit with another matte pass.</p>
+      </div>
+
+    </div><!-- end weapon-pro -->
+
+    <div class="sub-content" id="weapon-expert">
+      <div class="tip"><strong>&#10022; Brush-only workflow.</strong> Expert Acrylics earth pigments are tailor-made for old dark wood. Burnt Umber + Sepia + Arylide Yellow Deep handles the whole club.</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 &middot; Brush</span>
+        <h3>Carbon Black + Burnt Umber &#8212; Dark Base</h3>
+        <p>Carbon Black + Burnt Umber at 1:2 (Expert Acrylics), thinned 2:1. Full coverage. Very dark warm near-black &#8212; shadow anchor for grain grooves and underside. Two coats.</p>
+        <div class="mix">
+          <div class="step-swatch" style="background:#111111;"></div>
+          <span class="plus">+</span>
+          <div class="step-swatch" style="background:#3a1a08;"></div>
+          <span class="ratio">1:2</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 &middot; Brush &#8212; Glaze</span>
+        <h3>Sepia Glaze &#8212; Wood Body Color</h3>
+        <p>Sepia (Expert Acrylics) thinned 1:4. Two passes over all wood surfaces &#8212; transparent warm-brown mid-tone over the dark base. Rich dark-brown with warm undertones (~30&#8211;35% value on lit surfaces). Let each pass cure fully.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#4a2808;"></div><div class="swatch-info"><div class="swatch-name">Sepia &#8212; Expert Acrylics</div><div class="swatch-brand">Thin 1:4</div><div class="swatch-value">~35% value glaze</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 &middot; Brush</span>
+        <h3>Burnt Sienna + Arylide &#8212; Grain &amp; Highlights</h3>
+        <p>Burnt Sienna + Arylide Yellow Deep at 2:1, thin 1:2. Pull fine grain lines along wood direction. Add more Arylide for progressively brighter passes on ridge highlights. Final specular: Arylide Yellow Deep + Titanium White at 2:1, sharpest edges only. The Arylide warmth keeps the wood looking aged rather than freshly cut.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#9a3c18;"></div><div class="swatch-info"><div class="swatch-name">Burnt Sienna &#8212; Expert Acrylics &#8212; grain lines</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">thin 1:2</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#c09020;"></div><div class="swatch-info"><div class="swatch-name">Arylide Yellow Deep &#8212; Expert Acrylics &#8212; ridge highlight</div><div class="swatch-brand">Add more with each brighter pass</div></div></div>
+      </div>
+
+    </div><!-- end weapon-expert -->
+  </div><!-- end #weapon -->
+
+
+  <!-- ═══ BASE ═══ -->
+  <div class="tab-content" id="base">
+    <div class="section-header">
+      <h2 style="color:#887060;">Base &amp; Groundwork</h2>
+      <p>Adventure terrain &#8212; the D&amp;D kids were always tearing through dungeons, forests, and rocky wilderness. This recipe covers outdoor adventure ground: dark earth base with scattered stone, dirt highlight, and tufted grass. Neutral enough not to compete with Bobby's warm orange palette.</p>
+    </div>
+
+    <div class="sub-tabs">
+      <div class="sub-tab active" onclick="showSubTab('base','base-pro',this)">Pro Acryl</div>
+      <div class="sub-tab folk-art-tab" onclick="showSubTab('base','base-folkart',this)">🎨 Craft Paints — Basing</div>
+      <div class="sub-tab effects-tab" onclick="showSubTab('base','base-effects',this)">✦ Effects</div>
+    </div>
+
+    <div class="sub-content active" id="base-pro">
+    <div class="phase-label">Surface Prep</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 1 &middot; Brush</span>
+      <h3>Prime Base Surface</h3>
+      <p>If the base is resin-cast with the figure it shares the same black prime. If a separate MDF or display base, apply Pro Acryl Primer Black by brush &#8212; thin 1:1, two coats, working paint into all texture. Let cure 30+ minutes before painting.</p>
+      <div class="tip"><strong>&#10022; TIP:</strong> Add PVA + coarse sand before priming for texture. Thin wash of PVA, scatter sand, let dry, then prime. The texture catches drybrushing dramatically and reads as real dirt at arm's length.</div>
+    </div>
+
+    <div class="phase-label">Ground &#8212; Earth &amp; Dirt</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 2 &middot; Brush</span>
+      <h3>Dark Earth Base Coat</h3>
+      <p>Dark Umber 019 thinned 2:1, full coverage of all ground surfaces. Work paint deep into texture grooves. Dark-brown shadow (~18% value) that lives between dirt clumps and rock recesses. Apply liberally with a flat brush.</p>
+      <div class="swatch"><div class="swatch-dot" style="background:#54443F;"></div><div class="swatch-info"><div class="swatch-name">Dark Umber 019</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~18% value &#8212; earth shadow</div></div></div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 3 &middot; Wash</span>
+      <h3>Brown Wash &#8212; Recess Pool</h3>
+      <p>Pro Acryl Brown Wash 201, applied liberally over all ground surfaces. Work into cracks and texture recesses. Let capillary action do the work &#8212; do not brush around after application. Deepens and unifies the earth color with organic variation between texture peaks.</p>
+      <div class="swatch"><div class="swatch-dot" style="background:#594942;"></div><div class="swatch-info"><div class="swatch-name">Brown Wash 201 &#8212; recess pooling</div><div class="swatch-brand">Pro Acryl</div></div></div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 4 &middot; Brush &#8212; Drybrush</span>
+      <h3>Mid Earth Drybrush</h3>
+      <p>Burnt Sienna 059 + Khaki 061 at 1:1, near-dry. Sweep across all ground surfaces in random short strokes. Warm reddish-brown mid-tone on all texture peaks (~48% value). This is the main earth color the eye reads across the base.</p>
+      <div class="mix">
+        <div class="step-swatch" style="background:#9a3c18;"></div>
+        <span class="plus">+</span>
+        <div class="step-swatch" style="background:#c0a060;"></div>
+        <span class="ratio">1:1</span>
+      </div>
+      <div class="result-row">
+        <div class="step-swatch" style="background:#a86030; width:24px; height:24px; border-radius:3px;"></div>
+        &#8594; Warm reddish-brown, ~48% value &#8212; mid earth
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 5 &middot; Brush &#8212; Drybrush</span>
+      <h3>Light Soil Highlight</h3>
+      <p>Khaki 061 + Warm Grey 074 at 2:1, lighter load. Topmost texture peaks only &#8212; dry surface soil catching direct light (~68% value). Open areas between rocks and scatter. Dried earth is pale in direct sun; go lighter than feels intuitive.</p>
+      <div class="mix">
+        <div class="step-swatch" style="background:#c0a060;"></div>
+        <span class="plus">+</span>
+        <div class="step-swatch" style="background:#888070;"></div>
+        <span class="ratio">2:1</span>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 6 &middot; Brush &#8212; Drybrush</span>
+      <h3>Final Dust Highlight</h3>
+      <p>Heavy Warm White S18 + Khaki 061 at 1:2, barely-there load. Extreme peaks only &#8212; top ridges of rocks, topmost dirt clumps (~82% value). One pass, very light. The contrast between this pale specular and the dark wash recesses is what gives the ground its three-dimensional read.</p>
+      <div class="swatch"><div class="swatch-dot" style="background:#ddd0a0;"></div><div class="swatch-info"><div class="swatch-name">Bold TW 001 + WF 073 3:1 + Khaki 061 at 1:2</div><div class="swatch-brand">Pro Acryl — extreme peaks only</div><div class="swatch-value">~82% value</div></div></div>
+    </div>
+
+    <div class="phase-label">Scatter &amp; Finish</div>
+
+    <div class="step">
+      <span class="step-number finish">Step 7 &middot; Finish</span>
+      <h3>Static Grass &amp; Tufts</h3>
+      <p>PVA in small patches around the base edge. Mix of 2mm and 4mm static grass (dark green + medium green, 50/50). Let dry 5 minutes, blow off loose fibers. Add 1&#8211;2 pre-made tufts with PVA dot. Cluster grass toward edges; leave the center clear around Bobby's feet to ground him visually.</p>
+      <div class="tip"><strong>&#10022; TIP:</strong> Two grass colors read more natural than one &#8212; dark near the base of clumps, lighter tips catching the light. Variation prevents the base from reading as AstroTurf.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number finish">Step 8 &middot; Finish</span>
+      <h3>Matte Varnish &#8212; Base Seal</h3>
+      <p>Seal the entire base with matte varnish before attaching the figure. Earth, stone, and grass are all matte materials. Let cure completely before mounting.</p>
+      <div class="warning"><strong>&#9888; NOTE:</strong> Seal the base first, then attach the figure. Trying to varnish around boot pegs is frustrating and often leaves missed spots. Base fully finished &#8594; figure attached &#8594; figure sealed separately.</div>
+    </div>
+
+
+    </div><!-- end base-pro -->
+
+    <div class="sub-content" id="base-folkart">
+      <div class="tip"><strong>🎨 Craft Paints — Budget Basing Palette.</strong> These are inexpensive craft acrylics (currently Folk Art brand, 2 oz bottles — more brands may join the basing palette over time). Coverage is solid, matte finish is great for terrain. Drybrush techniques work especially well. Thin slightly more than Pro Acryl for any wash-style applications. Save your Pro Acryl for the figure itself.</div>
+
+      <div class="phase-label">Surface Prep</div>
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Prime Base Surface</h3>
+        <p>Same as Pro Acryl method — Pro Acryl Primer Black thinned 1:1 if a separate base, or shares the figure black prime if cast together. PVA + coarse sand before priming recommended for texture.</p>
+        <div class="tip"><strong>✦ TIP:</strong> Rough texture catches drybrushing dramatically — even a light sand coat makes the Folk Art drybrushing read as real earth.</div>
+      </div>
+
+      <div class="phase-label">Ground — Earth &amp; Dirt</div>
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush</span>
+        <h3>Dark Earth Base Coat</h3>
+        <p>Coffee Bean (K940) thinned 1:1.5. Full coverage of all ground surfaces. Work paint deep into texture. Dark cool-brown shadow (~15% value) that lives in cracks and between clumps.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#3a2820;"></div><div class="swatch-info"><div class="swatch-name">Coffee Bean K940</div><div class="swatch-brand">Folk Art</div><div class="swatch-value">~15% value — earth shadow base</div></div></div>
+      </div>
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush — Drybrush</span>
+        <h3>Mid Earth Drybrush</h3>
+        <p>Bark Brown (2560) near-dry, short multi-directional strokes. Warm dark-brown mid-tone on all texture peaks (~42% value). 2–3 passes — this is the main earth read.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#6a4030;"></div><div class="swatch-info"><div class="swatch-name">Bark Brown 2560</div><div class="swatch-brand">Folk Art</div><div class="swatch-value">~42% value — earth mid-tone</div></div></div>
+      </div>
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush — Drybrush</span>
+        <h3>Warm Earth Mid-Highlight</h3>
+        <p>Raw Sienna (K452) lighter drybrush pass over raised texture peaks. Shifts the earth toward warm red-clay tone (~58% value). Bobby's terrain has a rugged wilderness feel — that warm sienna reads as sun-baked adventuring ground.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#a86830;"></div><div class="swatch-info"><div class="swatch-name">Raw Sienna K452</div><div class="swatch-brand">Folk Art</div><div class="swatch-value">~55% value — warm clay mid-highlight</div></div></div>
+      </div>
+      <div class="step">
+        <span class="step-number brush">Step 5 · Brush — Drybrush</span>
+        <h3>Light Soil &amp; Final Dust Highlight</h3>
+        <p>Yellow Ochre (K917) light drybrush on topmost clumps (~65% value), then Camel (JA953) near-barely-there load on the very peak of the highest ridges (~78% value). Dried earth gets pale in direct light — go lighter than feels right.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#b88830;"></div><div class="swatch-info"><div class="swatch-name">Yellow Ochre K917</div><div class="swatch-brand">Folk Art</div><div class="swatch-value">~65% — light soil</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#c0a070;"></div><div class="swatch-info"><div class="swatch-name">Camel JA953</div><div class="swatch-brand">Folk Art</div><div class="swatch-value">~78% — dust specular peaks</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-label">Stone Scatter</div>
+      <div class="step">
+        <span class="step-number brush">Step 6 · Brush — Drybrush</span>
+        <h3>Rocks — Dark to Light</h3>
+        <p>Pure Black (K479) base on any rock/stone pieces. Medium Gray (K425) drybrush for mid-tone. Linen (K420) final very light drybrush on top faces — just enough warmth to separate stone clearly from the earth. Stone reads cold grey; earth reads warm brown. That contrast is everything.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#111111;"></div><div class="swatch-info"><div class="swatch-name">Pure Black K479</div><div class="swatch-brand">Folk Art</div><div class="swatch-value">~5% — rock shadow base</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#888888;"></div><div class="swatch-info"><div class="swatch-name">Medium Gray K425</div><div class="swatch-brand">Folk Art</div><div class="swatch-value">~50% — rock mid-tone</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#e8e0cc;"></div><div class="swatch-info"><div class="swatch-name">Linen K420</div><div class="swatch-brand">Folk Art</div><div class="swatch-value">~75% — warm stone highlight</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-label">Scatter &amp; Finish</div>
+      <div class="step">
+        <span class="step-number finish">Step 7 · Finish</span>
+        <h3>Static Grass &amp; Tufts</h3>
+        <p>PVA in small patches around the base edge. Mix 2mm + 4mm static grass (dark + medium green). Let dry, blow off loose fibers. Add 1–2 pre-made tufts. Cluster toward edges; leave center clear around Bobby's feet.</p>
+      </div>
+      <div class="step">
+        <span class="step-number finish">Step 8 · Finish</span>
+        <h3>Matte Varnish — Base Seal</h3>
+        <p>Seal the entire base with matte varnish before attaching the figure. Let cure completely before mounting.</p>
+        <div class="warning"><strong>⚠ NOTE:</strong> Seal the base first, then attach the figure.</div>
+      </div>
+    </div><!-- end base-folkart -->
+        <div class="sub-content" id="base-effects">
+
+      <div class="phase-label">Effects Products — Apply Over Sealed Paint</div>
+
+      <div class="tip"><strong>💡 Timing Rule:</strong> Dirty Down products go on <em>after</em> your paint is fully cured and <em>before</em> your final matte varnish coat. Apply over a sealed (satin or matte) surface for best adhesion.</div>
+
+      <h3>Dirty Down Moss</h3>
+      <p>Adds hyper-realistic organic moss to rocks, stone scatter, and root edges. Works best in crevices and shadowed zones where real moss would grow — avoid flat top surfaces.</p>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span> <span class="tag tag-effects">Effects</span>
+        <h3>Optional undercoat — deepen the crevices</h3>
+        <p>For richer moss, dab a small amount of Hunter Green (JA406, Folk Art) into the target rock crevices or root edges before applying Dirty Down. Let dry. This gives the moss a naturally shadowed base and is optional but worth the 30 seconds.</p>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush</span> <span class="tag tag-effects">Effects</span>
+        <h3>Stipple Dirty Down Moss onto rocks and scatter</h3>
+        <p>Using a stiff, older brush, stipple Dirty Down Moss into rock crevices, along root edges, and any shaded ground areas. Use a pouncing motion — avoid brushing it on like a wash or it will spread uncontrollably.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#4a6830;"></div><div class="swatch-info"><div class="swatch-name">Dirty Down Moss</div><div class="swatch-brand">Dirty Down</div><div class="swatch-value">effect product — stipple onto rocks and edges</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span> <span class="tag tag-effects">Effects</span>
+        <h3>Shape and thin while wet</h3>
+        <p>Use a damp brush to push the product into crevices, pull it up rock walls, and remove any that landed on highlight surfaces. Dirty Down stays workable for a few minutes. Keep it patchy and irregular — aim for 25–35% coverage on rock areas.</p>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 4 · Finish</span>
+        <h3>Cure — then matte varnish</h3>
+        <p>Allow 2–3 hours cure time (overnight preferred) before applying your final matte varnish over the base. Varnishing too early can reactivate the product and cause streaking.</p>
+      </div>
+
+      <div class="warning"><strong>⚠ Apply last:</strong> Dirty Down goes on after all base painting is complete. Follow with a final matte varnish coat to seal and unify the base finish.</div>
+
+    </div><!-- end base-effects -->
+
+
+  </div><!-- end #base -->
+
+
+  <!-- ═══ AIRBRUSH SKILLS ═══ -->
+  <div class="tab-content" id="airbrush-skills">
+    <div class="section-header">
+      <h2>Airbrush Skills</h2>
+      <p>This guide uses the airbrush for priming, zenithal preshading, the Pinkle underpainting on skin, and base-coat zenithal on fur and leather. Skin passes are thin filter-level work; fur and outfit are conventional zenithal coverage.</p>
+    </div>
+
+    <div class="phase-label">Nozzle Assignments</div>
+    <table class="thin-table">
+      <thead><tr><th>Task</th><th>Nozzle</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Priming &#8212; full coverage</td><td>0.5mm</td><td>High flow rate handles primer viscosity; fast coverage without clogging</td></tr>
+        <tr><td>Zenithal black + white</td><td>0.3mm</td><td>Controlled gradient; wide enough for fast coverage, fine enough to fade precisely</td></tr>
+        <tr><td>Magenta Pinkle + FW Crimson Ink filter</td><td>0.3mm</td><td>Thin passes at low PSI; 0.3mm gives control without over-atomizing at low pressure</td></tr>
+        <tr><td>Fur + outfit zenithal base coats</td><td>0.3mm</td><td>Consistent coverage across large textured areas</td></tr>
+        <tr><td>Skin flesh build (optional)</td><td>0.2mm</td><td>Fine control for thin successive passes on face and hands; reduces overspray on adjacent materials</td></tr>
+      </tbody>
+    </table>
+
+    <div class="phase-label">Zenithal Sequence</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 &middot; Airbrush</span>
+      <h3>Black Foundation &#8212; Full Coverage</h3>
+      <p>Pro Acryl Primer Black, 1:1, PSI 22, 20&#8211;25cm. Full rotation. No bare resin showing. Deep recesses &#8212; under helmet rim, between fingers, under chin &#8212; get a targeted pass at 45&#176;. This layer does not come off. Get it right before continuing.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 2 &middot; Airbrush</span>
+      <h3>White Zenithal &#8212; Top Down</h3>
+      <p>Primer White or Heavy Warm White S18, 1:2, PSI 15, 15&#8211;18cm. Point straight down at the figure. Heavy white on all top planes. Fade to nothing before reaching the sides. Black fully retained in recesses and undercuts.</p>
+      <div class="tip"><strong>&#10022; GREYSCALE CHECK:</strong> Photograph the figure. Open in your phone's photo editor, reduce saturation to zero. Should show clear overhead light source &#8212; bright top planes, dark recesses. If it reads flat, add more zenithal. Do not start the Pinkle pass until the greyscale looks right &#8212; color cannot fix value problems.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 3 &middot; Airbrush</span>
+      <h3>Pinkle Layer &#8212; Thin &amp; Transparent</h3>
+      <p>Magenta 011 at 1:4, PSI 15, 15cm. Single thin pass from all angles over skin surfaces &#8212; not a zenithal, a full tint. Nozzle nearly closed, light mist, keep moving continuously. White zenithal must still show through clearly. Tinting the zenithal pink, not coating it.</p>
+    </div>
+
+    <div class="phase-label">PSI &amp; Distance Reference</div>
+    <table class="psi-table">
+      <thead><tr><th>Task</th><th>PSI</th><th>Distance</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Priming</td><td>20&#8211;25</td><td>20&#8211;25cm</td><td>Keep moving; primer builds up fast</td></tr>
+        <tr><td>Zenithal &#8212; black</td><td>20&#8211;22</td><td>20cm</td><td>Full rotation; undercuts get separate targeted pass</td></tr>
+        <tr><td>Zenithal &#8212; white</td><td>15&#8211;18</td><td>15&#8211;18cm</td><td>Top-down only; heavy on top planes, nothing on sides</td></tr>
+        <tr><td>Pinkle / Transparent filter</td><td>12&#8211;15</td><td>15cm</td><td>Single continuous pass; do not overwork</td></tr>
+        <tr><td>Fur base coat</td><td>15&#8211;18</td><td>15cm</td><td>From above; shadow base remains in recesses</td></tr>
+        <tr><td>Skin flesh build (optional)</td><td>10&#8211;12</td><td>10&#8211;12cm</td><td>Very thin layers; 0.2mm nozzle for face precision</td></tr>
+      </tbody>
+    </table>
+
+    <div class="phase-label">Troubleshooting</div>
+    <div class="trouble-grid">
+      <div class="trouble-card">
+        <h4>Tip Dry / Spitting</h4>
+        <p>Paint drying on the needle tip causes spatter. Cause: pausing mid-pass with thin paint, or Pro Acryl drying fast in dry ambient conditions. Fix: keep moving at all times; dip needle tip in water between passes; add 5% flow improver to the mix.</p>
+      </div>
+      <div class="trouble-card">
+        <h4>Pinkle Too Opaque &#8212; Muddy Result</h4>
+        <p>Magenta overcoat fills the zenithal and creates flat purple-pink. Cause: paint ratio too thick or too many passes. Fix: let dry, hit with a light white zenithal to recover highlights, then re-attempt the Pinkle thinner (1:5 or 1:6). There's no shortcut to undoing an overcoat.</p>
+      </div>
+      <div class="trouble-card">
+        <h4>Uneven Coverage / Banding</h4>
+        <p>Visible bands or lines in the zenithal gradient. Cause: inconsistent movement speed or stopping mid-pass. Fix: practice gradient motion on card first. Smooth arc-like passes at consistent speed. Overlapping passes at lower PSI smooth out banding.</p>
+      </div>
+      <div class="trouble-card">
+        <h4>Paint Too Thin / Runs</h4>
+        <p>Paint pooling in recesses and running down the figure. Cause: too much volume (PSI too high or too close) with very thin paint. Fix: increase distance to 20cm, reduce PSI by 3&#8211;5, or let each pass flash-dry before adding another.</p>
+      </div>
+    </div>
+
+  </div><!-- end #airbrush-skills -->
+
+
+  <!-- ═══ BRUSH SKILLS ═══ -->
+  <div class="tab-content" id="brush-skills">
+    <div class="section-header">
+      <h2>Brush Skills</h2>
+      <p>Techniques used in this guide: layering (skin and hair), drybrushing (fur and base), glazing (skin transparents and leather), edge highlighting (leather straps and club ridges), and eye painting.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique &middot; Brush Loading</span>
+      <h3>The Two-Stage Load</h3>
+      <p>Load fully, then drag sideways twice across a dry palette section to shape the tip and remove excess. Almost all control problems in brush painting are loading problems &#8212; too much paint floods, bleeds, and kills tip precision. Pro Acryl flows easily when thin; err on less paint and more passes. Check load on the back of your non-painting hand: visible mark immediately = correct. Paint floods out = wipe once more.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique &middot; Drybrushing</span>
+      <h3>Fur Drybrush Control</h3>
+      <p>Load a flat or fan brush, wipe on paper towel until no visible wet mark transfers. Sweep across fur in short multi-directional strokes to catch texture peaks. Two light passes build more cleanly than one heavy pass. If you over-drybrush (filled-in texture, no shadow contrast), thin a dark wash and float it back over the surface &#8212; it will re-establish recesses. Used in: Outfit Steps 3&#8211;5, Base Steps 4&#8211;6.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique &middot; Glazing</span>
+      <h3>Building Depth with Transparent Layers</h3>
+      <p>Glaze = paint thinned to near-transparency (1:4 to 1:8) applied in multiple thin passes. Builds color and depth without covering work beneath. Used in: skin (FW Crimson Ink recesses, unifying glaze), leather (Expert Acrylics Sepia build). Let each glaze dry fully before the next &#8212; stacking wet glazes creates muddy pools. Multiple thin passes beat one medium pass every time.</p>
+      <div class="tip"><strong>&#10022; TIP:</strong> If a glaze leaves tide marks, the paint was too thick or the surface wasn't fully cured (not just surface-dry). Wait 5+ minutes between passes, not 1&#8211;2.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique &middot; Edge Highlighting</span>
+      <h3>Leather Straps and Club Ridges</h3>
+      <p>Hold the brush near-perpendicular to the surface. Rest your painting hand against the figure or a stable surface for support. A continuous stroke along an edge is better than short dabs &#8212; maintains even pressure and width. Intentional slight imperfection is correct on worn surfaces; Bobby's harness is years old and well-used. Used in: Outfit Steps 12&#8211;13, Weapon Steps 4&#8211;5.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique &middot; Eye Painting</span>
+      <h3>Layered Eye Sequence</h3>
+      <p>Work both eyes simultaneously. Size 000 round brush. Sequence: socket shadow &#8594; sclera &#8594; iris circle &#8594; dark upper iris shadow &#8594; pupil dot &#8594; catch-light dot &#8594; gloss varnish over iris. Let each step dry fully &#8212; the whole sequence takes 20&#8211;30 minutes with dry time. The catch-light dot (upper-left quadrant, overlapping iris and pupil) is the single mark that brings the eye to life. Don't rush the pupil dot; a smeared pupil is the quickest way to make a figure look unfinished.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique &middot; Washes vs. Glazes</span>
+      <h3>When to Use Each</h3>
+      <p><strong>Wash:</strong> thin, high-flow, pools in recesses by capillary action. Apply and leave it &#8212; fighting a wash mid-flow leaves brush marks. Used: base ground (Step 3). <strong>Glaze:</strong> very thin, applied with brush control to specific zones. Shifts color temperature and value without covering. Used: FW Crimson Ink recess tinting, leather Expert Acrylics build, unifying skin glaze. The key difference: washes self-locate in recesses; glazes go exactly where you put them.</p>
+    </div>
+
+  </div><!-- end #brush-skills -->
+
+
+  <!-- ═══ THINNING REF ═══ -->
+  <div class="tab-content" id="thinning-ref">
+    <!-- Content injected by skills-reference.js -->
+  </div><!-- end #thinning-ref -->
+
+</div><!-- end .container -->
+
+<footer class="guide-footer">
+  Guide by
+  <a href="https://youtube.com/@brent_the_programmer" target="_blank">brent_the_programmer</a>
+  &middot;
+  <a href="https://instagram.com/stephenson913" target="_blank">@stephenson913</a>
+</footer>
+
+<button class="back-to-top" id="backToTop" title="Back to top"
+        onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
+
+<div class="ref-modal" id="refModal" onclick="if(event.target===this)closeRefModal()">
+  <div class="ref-modal-inner">
+    <button class="ref-modal-close" onclick="closeRefModal()" title="Close">✕</button>
+    <img class="ref-modal-img" id="refModalImg" src="" alt="">
+    <div class="ref-modal-caption" id="refModalCaption"></div>
+  </div>
+</div>
+
+<script>
+window.GUIDE_THINNING = {
+  airbrushRows: [],
+  brushRows:    [],
+  thinningCards:[]
+};
+</script>
+<script src="../../assets/guide.js"></script>
+<script src="../../assets/skills-reference.js"></script>
+<script>
+  /* ── Reference image modal ─────────────────────────────── */
+  function openRefModal(src, alt) {
+    var modal = document.getElementById('refModal');
+    document.getElementById('refModalImg').src = src;
+    document.getElementById('refModalImg').alt = alt;
+    document.getElementById('refModalCaption').textContent = alt;
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeRefModal() {
+    document.getElementById('refModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeRefModal();
+  });
+
+  function showSubTab(parentId, contentId, btn) {
+    var parent = document.getElementById(parentId);
+    if (!parent) return;
+    parent.querySelectorAll('.sub-content').forEach(function(c){ c.classList.remove('active'); });
+    parent.querySelectorAll('.sub-tab').forEach(function(b){ b.classList.remove('active'); });
+    var el = document.getElementById(contentId);
+    if (el) el.classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+  (function() {
+    var btn = document.getElementById('backToTop');
+    if (!btn) return;
+    window.addEventListener('scroll', function() {
+      btn.classList.toggle('visible', window.scrollY > 300);
+    }, { passive: true });
+  })();
+</script>
+</body>
+</html>
+                

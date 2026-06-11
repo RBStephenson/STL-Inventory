@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RoboCop — 1:6 Scale Painting Guide</title>
+  <link rel="stylesheet" href="../../assets/guide.css">
+  <link rel="stylesheet" href="../../assets/print.css" media="print">
+  <style>
+    :root {
+      --bg:       #0d1218;
+      --surface:  #131a23;
+      --surface2: #1b2535;
+      --surface3: #222f40;
+      --border:      #2a3a50;
+      --text:        #e4eaf2;
+      --text-muted:  #8aa0bb;
+      --text-dim:    #4a6080;
+      --accent: #4a88cc;
+      --tag-airbrush: #2266aa;
+      --tag-brush:    #226622;
+      --tag-wash:     #884422;
+      --tag-finish:   #555555;
+      --tag-effects:  #882244;
+      --tag-filter:   #446688;
+      --tip-bg:      rgba(0, 160, 0, 0.07);
+      --tip-border:  #2a6a2a;
+      --warn-bg:     rgba(200, 50, 50, 0.07);
+      --warn-border: #882222;
+    }
+    .hero {
+      background: linear-gradient(135deg, #0a1520 0%, #14243a 40%, #0e1a28 70%, #080e14 100%);
+      border-bottom: 2px solid var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+<nav class="guide-nav">
+  <a href="../../index.html">← All Guides</a>
+</nav>
+
+<div class="hero">
+  <div class="category">Film · TV · Comics</div>
+  <h1><span>RoboCop</span></h1>
+  <div class="subtitle">1:6 Scale · Cinematic OSL · Turbo Dork Color Shift · Urban Gore Diorama</div>
+  <div class="film-ref">
+    <em>"Dead or alive, you're coming with me."</em>
+  </div>
+  <div class="series-badge">
+    <span class="active">RoboCop</span>
+  </div>
+  <div class="creator-credit">
+    Figure by <strong>CA3D Studios</strong> · <a href="https://www.instagram.com/ca.3d.studios/" target="_blank">@ca.3d.studios</a>
+  </div>
+  <div class="ref-thumb-wrap">
+    <img class="ref-thumb"
+         src="img/robocop (2).png"
+         alt="RoboCop 1987 — artist render"
+         onclick="openRefModal(this.src, this.alt)"
+         title="Click to view full reference image">
+    <div class="ref-thumb-label">Artist Render</div>
+  </div>
+</div>
+
+<div class="paint-bar">
+  <span class="paint-bar-label">Paint Lines Used</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#cc4444;"></span>Pro Acryl</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#4488cc;"></span>Army Painter Fanatic</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#cc6600;"></span>Army Painter Speedpaint 2.0</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#9955dd;"></span>Pro Acryl Expert Acrylics</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#22aacc;"></span>Turbo Dork Turboshift</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#2266aa;"></span>Vallejo Metal Color</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#2288aa;"></span>Vallejo Model Air</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#446688;"></span>FW Acrylic Inks</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#884400;"></span>Villainy Ink</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#333333;"></span>Tamiya</span>
+</div>
+
+<div class="container">
+
+  <div class="char-brief">
+    <strong>RoboCop</strong> — Film-accurate Detroit steel means cold, blue-grey metallic with subtle aqua-to-purple interference — not the toy-silver you see on action figures. Turbo Dork Ice To Never over a dark silver base reproduces that on-screen color ghost. The cinematic lighting rig is baked in: a hard red/magenta bounce from the left, cold blue fill from the right — do not rely on ambient room lighting; build both into the paint. Murphy's exposed skin is barely human, and the punk below is all impact, blood, and bright green hair. Values first, always — the armor reads flat at any distance if the recesses don't go near-black.
+  </div>
+
+  <div class="tabs">
+    <div class="tab tab-btn active" onclick="showTab('skin', this)">Skin</div>
+    <div class="tab tab-btn" onclick="showTab('armor', this)">Armor</div>
+    <div class="tab tab-btn" onclick="showTab('punk-skin', this)">Punk Skin</div>
+    <div class="tab tab-btn" onclick="showTab('punk-clothing', this)">Punk &amp; Hair</div>
+    <div class="tab tab-btn" onclick="showTab('weapons', this)">Weapons</div>
+    <div class="tab tab-btn" onclick="showTab('base', this)">Base</div>
+    <div class="tab tab-btn" onclick="showTab('gore', this)">Gore</div>
+    <div class="tab tab-btn" onclick="showTab('airbrush-skills', this)">Airbrush Skills</div>
+    <div class="tab tab-btn" onclick="showTab('brush-skills', this)">Brush Skills</div>
+    <div class="tab tab-btn" onclick="showTab('thinning-ref', this)">Thinning Ref</div>
+  </div>
+
+
+  <!-- ═══ TAB: SKIN (Murphy's exposed lower face) ═══ -->
+  <div class="tab-content active" id="skin">
+    <div class="section-header">
+      <h2>Skin — Alex Murphy (Exposed Lower Face)</h2>
+      <p>Only the lower jaw and chin are visible beneath the visor. Pale, waxy — diminished blood flow and cyborg trauma. Keep it slightly corpse-like, not healthy.</p>
+    </div>
+
+    <div class="phase-label">Value Structure</div>
+    <div class="value-map">
+      <div class="value-chip"><div class="chip-swatch" style="background:#1a0e0a;"></div><div class="chip-val">~10%</div><div class="chip-label">Deep Shadow</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#3d2015;"></div><div class="chip-val">~25%</div><div class="chip-label">Shadow</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#7a4a2e;"></div><div class="chip-val">~40%</div><div class="chip-label">Mid-Tone</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#b07858;"></div><div class="chip-val">~65%</div><div class="chip-label">Highlight</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#d9b898;"></div><div class="chip-val">~85%</div><div class="chip-label">Specular</div></div>
+    </div>
+
+    <div class="phase-label">Method Selection</div>
+    <div class="method-rec-block">
+      <strong>RECOMMENDED: Method 2B — Red Zenithal</strong> — Murphy is rugged, masculine, and barely-human. The red zenithal underpainting reads as suppressed warmth — the ghost of the living man underneath the machine. Keep highlights restrained; this isn't a heroic complexion, it's a surviving one.
+    </div>
+
+    <div class="method-cards">
+      <div class="method-card">
+        <h4>Method 1 — Basic</h4>
+        <p>Prime → shadow undercoat → base coat → mid-tone → highlight → optional unifying glaze.</p>
+        <span class="mc-pros">Most predictable; easy to correct</span>
+        <span class="mc-cons">Can read flat at this scale without tight value range</span>
+        <span class="mc-best">First-time painters; speed priority; any skin tone</span>
+      </div>
+      <div class="method-card recommended">
+        <span class="method-card-badge" style="color:#fff;">Recommended</span>
+        <h4>Method 2B — Red Zenithal</h4>
+        <p>Black prime → white zenithal → Flesh Wash 202 all over (or thinned FW Crimson Ink 1:3 as red glaze) → thin flesh layers over top. Skip magenta.</p>
+        <span class="mc-pros">Underlying warmth and exertion flush; reads masculine and world-worn</span>
+        <span class="mc-cons">Needs good zenithal — poor zenithal = muddy result</span>
+        <span class="mc-best">Rugged male, military, survivor, weathered — Murphy exactly</span>
+      </div>
+      <div class="method-card">
+        <h4>Method 2A — Pinkle</h4>
+        <p>Black prime → white zenithal → magenta all over → FW Crimson Ink recesses → thin flesh layers.</p>
+        <span class="mc-pros">Luminous sub-surface scattering; fewer layers</span>
+        <span class="mc-cons">Too bright and heroic for Murphy's pallor; magenta would over-pink</span>
+        <span class="mc-best">Fair/feminine, protagonist/hero figures, luminous complexions</span>
+      </div>
+    </div>
+
+    <div class="freckle-note">
+      <strong>No Freckling:</strong> Murphy's exposed skin is too small at 1:6 and the pallid cyborg tone should read smooth and slightly waxy. Skip freckling entirely — add only a subtle gloss varnish over the lips and a very thin cool wash under the jawline to suggest the machine beneath.
+    </div>
+
+    <div class="phase-label">Step-by-Step</div>
+    <div class="sub-tabs">
+      <div class="sub-tab active"     onclick="showSubTab('skin', 'skin-pro', this)">Pro Acryl</div>
+      <div class="sub-tab expert-tab" onclick="showSubTab('skin', 'skin-expert', this)">✦ Expert Acrylics — Brush Only</div>
+    </div>
+
+    <div class="sub-content active" id="skin-pro">
+
+      <div class="phase-label">Foundation</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 1 · Airbrush</span>
+        <h3>Black Prime</h3>
+        <p>P-002 Black Primer — undiluted, 30+ PSI, 0.5mm nozzle, 20–25cm. Full coverage, no bare resin. The black zenithal must be truly dark in recesses — this is where Murphy's pallor will live.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#111111"></div><div class="swatch-info"><div class="swatch-name">P-002 Black Primer</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~3% value — primer base</div></div></div>
+        </div>
+        <div class="warning"><strong>⚠ NOTE:</strong> Never thin primer. Full viscosity, high PSI only.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 2 · Airbrush</span>
+        <h3>White Zenithal</h3>
+        <p>P-003 White Primer — undiluted, 0.5mm nozzle, 30+ PSI. Heavy from directly above, fading to nothing by the neck and underside. Upper planes near-white; undercuts stay black. This is your entire value roadmap.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#f5f5f5"></div><div class="swatch-info"><div class="swatch-name">P-003 White Primer</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~95% value — zenithal high point</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> Desaturate a photo of the primed piece. It should already read light source from above and shadow below. If it looks flat, re-do the zenithal before adding any paint.</div>
+      </div>
+
+      <div class="phase-label">Red Underpainting</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 3 · Airbrush</span>
+        <h3>Warm Red Underpainting — All Skin</h3>
+        <p>Flesh Wash 202 thinned 1:2 — apply over all skin surfaces from a zenithal angle. This creates a warm blood-red underpainting in the mid-tones and shadows, visible through subsequent thin flesh layers. Alternatively use FW Crimson Ink thinned 1:3 for a deeper, cooler red.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#7a3020"></div><div class="swatch-info"><div class="swatch-name">Flesh Wash 202</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~30% value — warm underpainting</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> Let this dry fully before proceeding. The warmth visible at mid-tone reads as suppressed life beneath the pallid skin.</div>
+      </div>
+
+      <div class="phase-label">Skin Build</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush</span>
+        <h3>Shadow Base — Pale, Cool Flesh</h3>
+        <p>Shadow Flesh 042 thinned 1:2 — apply to all skin except deepest recesses (jaw underside, nostril, lip corners). Leave the warm underpainting showing in shadows. The key is deliberate pallor — resist the urge to push this tone warmer.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#7a4a30"></div><div class="swatch-info"><div class="swatch-name">Shadow Flesh 042</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~35% value — pale base tone</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 5 · Brush</span>
+        <h3>Mid-Tone — Slightly Muted Flesh</h3>
+        <p>Shadow Flesh 042 + Warm Flesh 073 at 2:1, thinned 1:2. Apply to upper planes of the chin, jaw ridge, and lip area. Leave shadows from step 4 untouched. This should be noticeably paler than a healthy complexion.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#7a4a30"></div><div class="swatch-info"><div class="swatch-name">Shadow Flesh 042</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~35% value — base anchor</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#d09060"></div><div class="swatch-info"><div class="swatch-name">Warm Flesh 073</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~55% value — warm mid-tone</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 2:1 Shadow Flesh 042 + Warm Flesh 073 — thin 1:2 with water. Should be semi-transparent; builds in 2 passes.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 6 · Brush</span>
+        <h3>Highlight — Raised Planes</h3>
+        <p>Shadow Flesh 042 + Bright Shadow Flesh S41 at 1:1, thinned 1:2. Chin peak, lip ridge, jaw corners catching light. This highlight should read at approximately 65% value — not cream, still somewhat grey-tinged.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#7a4a30"></div><div class="swatch-info"><div class="swatch-name">Shadow Flesh 042</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~35% value — anchor</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#e0c0a0"></div><div class="swatch-info"><div class="swatch-name">Bright Shadow Flesh S41</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~80% value — light tone</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 1:1 — thin 1:2. Should catch on raised planes only.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 7 · Brush</span>
+        <h3>Specular — Chin Peak and Lip Highlight</h3>
+        <p>Bold Titanium White 001 + Bright Shadow Flesh S41 at 1:3, thinned 1:3. Tiny catch-light on the forward peak of the chin, center of the lower lip. At 1:6 scale this is a 1mm dot. If it's too large, it's wrong.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#f5f5f5"></div><div class="swatch-info"><div class="swatch-name">Bold Titanium White 001</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~97% value — specular</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number wash">Step 8 · Wash</span>
+        <h3>Cool Shadow Under Jawline</h3>
+        <p>Thin Transparent Blue 046 at 1:8 with water — apply only to the deep underside of the jaw where it meets the neck area. This pushes the shadow toward a slightly corpse-blue, hinting at the mechanical skeleton beneath.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#3366cc"></div><div class="swatch-info"><div class="swatch-name">Transparent Blue 046</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~30% value — cool shadow glaze</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> One thin pass only. This is a whisper of cool, not a full blue shadow. If you can clearly see the blue, it's too heavy.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 9 · Finish</span>
+        <h3>Varnish — Satin Overall, Gloss on Lips</h3>
+        <p>Satin varnish over all skin. Add a targeted gloss coat on the lower lip only — suggests moisture without making the face look oily.</p>
+      </div>
+
+    </div><!-- end #skin-pro -->
+
+    <div class="sub-content" id="skin-expert">
+      <div class="tip"><strong>✦ Brush-only workflow.</strong> Expert Acrylics are re-wettable heavy-body acrylics — excellent for wet-blending this small area. Prime grey (P-005 Dark Neutral Grey), then build directly without zenithal.</div>
+
+      <div class="phase-label">Foundation</div>
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Shadow Base</h3>
+        <p>Burnt Umber MEA-007 + Carbon Black MEA-002 at 3:1, thinned 2:1 with water. Apply to all skin as the dark foundation. Builds automatic shadow in recesses.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#5a3018"></div><div class="swatch-info"><div class="swatch-name">Burnt Umber MEA-007</div><div class="swatch-brand">Pro Acryl Expert Acrylics</div><div class="swatch-value">~25% value — shadow</div></div></div>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush — Wet Blend</span>
+        <h3>Mid-Tone Wet Blend</h3>
+        <p>Burnt Sienna MEA-010 + Titanium White MEA-001 at 3:1 — while the shadow layer is still wet, pull mid-tone upward into raised planes. Expert Acrylics stay open long enough to blend the edge. The result should be a smooth shadow-to-mid gradient on the small jaw area.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#aa5522"></div><div class="swatch-info"><div class="swatch-name">Burnt Sienna MEA-010</div><div class="swatch-brand">Pro Acryl Expert Acrylics</div><div class="swatch-value">~45% value — mid skin tone</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#f5f5f5"></div><div class="swatch-info"><div class="swatch-name">Titanium White MEA-001</div><div class="swatch-brand">Pro Acryl Expert Acrylics</div><div class="swatch-value">~97% value — lightener</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 3:1 Burnt Sienna + Titanium White. Add Payne's Grey MEA-013 in very small amounts to push the pallor cool.</div>
+      </div>
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span>
+        <h3>Specular — Dry Brush Catch-Light</h3>
+        <p>Titanium White MEA-001 nearly undiluted on a near-dry flat brush. Drag lightly over the forward chin and lip ridge. One pass. The heavy-body paint holds well on a nearly-dry brush.</p>
+      </div>
+    </div><!-- end #skin-expert -->
+  </div><!-- end #skin -->
+
+
+  <!-- ═══ TAB: ARMOR ═══ -->
+  <div class="tab-content" id="armor">
+    <div class="section-header">
+      <h2>Armor — Film-Accurate Blue-Grey Steel</h2>
+      <p>The 1987 suit is NOT silver — it's a dark blue-grey with aqua, purple, and gold interference that shifts depending on angle and lighting. Turbo Dork Ice To Never reproduces this over a dark metallic zenithal. Cinematic OSL from two sources: red/magenta from the left, cold blue from the right.</p>
+    </div>
+
+    <div class="phase-label">Value Structure — Armor Panels</div>
+    <div class="value-map">
+      <div class="value-chip"><div class="chip-swatch" style="background:#0d1218;"></div><div class="chip-val">~5%</div><div class="chip-label">Deep Recess</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#1e2d3c;"></div><div class="chip-val">~18%</div><div class="chip-label">Shadow Metal</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#3a5068;"></div><div class="chip-val">~40%</div><div class="chip-label">Mid Metallic</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#6a8faa;"></div><div class="chip-val">~65%</div><div class="chip-label">Highlight</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#c8e0f0;"></div><div class="chip-val">~90%</div><div class="chip-label">Specular Edge</div></div>
+    </div>
+
+    <div class="phase-label">Foundation — Dark Metallic Base</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 · Airbrush</span>
+      <h3>Black Prime</h3>
+      <p>P-002 Black Primer — undiluted, 0.5mm, 30+ PSI. Full coverage of all armor surfaces. The black must be solid — Turbo Dork's color shift only activates over dark surfaces, so any grey or light areas beneath will kill the effect.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#111111"></div><div class="swatch-info"><div class="swatch-name">P-002 Black Primer</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~3% value — black primer base</div></div></div>
+      </div>
+      <div class="warning"><strong>⚠ NOTE:</strong> Do NOT thin primer. It must go on undiluted at 30+ PSI through a 0.5mm nozzle. Thinning primer breaks its adhesion and coverage properties.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 2 · Airbrush</span>
+      <h3>Dark Silver Metallic Zenithal</h3>
+      <p>VMC 77.702 Duraluminium thinned 1:1 with distilled water — zenithal pass from above and slightly forward. Leave deep recesses, panel line undersides, and joint gaps pure black. Upper armor panels should reach approximately 40–50% metallic coverage. This is NOT full coverage — the black underneath is load-bearing for the Turbo Dork step.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2a3a48"></div><div class="swatch-info"><div class="swatch-name">Duraluminium 77.702</div><div class="swatch-brand">Vallejo Metal Color</div><div class="swatch-value">~25% value — dark metallic base</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> Use the zenithal to establish your light source direction — slightly forward and above. This should match the natural overhead-plus-forward angle of a display light.</div>
+    </div>
+
+    <div class="phase-label">Turbo Dork Color Shift — The Film-Accurate Effect</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 3 · Airbrush</span>
+      <h3>Turbo Dork Ice To Never — Color Shift Layer</h3>
+      <p>Ice To Never thinned 1:1 with Turbo Dork Thinning Medium. Apply from the same zenithal angle as step 2 — 2 to 3 thin coats, allowing each to dry between passes. This activates over the dark metallic base and produces a blue → greenish-blue → purple shift at different viewing angles, reproducing the film suit's interference effect. Do NOT apply over any areas that are not dark — if silver migrated into recesses, mask them first.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2255aa"></div><div class="swatch-info"><div class="swatch-name">Ice To Never</div><div class="swatch-brand">Turbo Dork Turboshift</div><div class="swatch-value">Color shift — blue → greenish-blue → purple</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> View the piece from multiple angles after each coat. The shift should be visible when you rock the figure. If it looks flat/dull, it's either over a too-light base or needs another coat.</div>
+      <div class="warning"><strong>⚠ NOTE:</strong> ONLY thin Turbo Dork with Turbo Dork Thinning Medium, not water. Water can break the interference suspension.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 3b · Airbrush — Optional Gold Layer</span>
+      <h3>Galaxia — Adding the Gold Interference Note</h3>
+      <p>Optional: one very thin coat of Galaxia thinned 1:1 with TD Medium, zenithal angle only, hitting the very top third of upper armor panels. Galaxia shifts blue → purple → gold and adds the subtle warm gold notes visible in the 1987 suit at certain angles. Do NOT layer this heavily — it should only be visible as a warm glint at extreme angles.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#3344aa"></div><div class="swatch-info"><div class="swatch-name">Galaxia</div><div class="swatch-brand">Turbo Dork Turboshift</div><div class="swatch-value">Color shift — blue → purple → gold</div></div></div>
+      </div>
+    </div>
+
+    <div class="phase-label">Blue Tint and Mid-Tone Build</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 4 · Airbrush</span>
+      <h3>Cool Blue-Tinted Silver Mid-Tone</h3>
+      <p>VMC 77.701 Aluminium + Transparent Blue 046 at 4:1, thinned 1:1 with distilled water. Apply zenithal over the Turbo Dork layers — this deposits a semi-transparent cool blue-silver on the upper surfaces, pulling the color toward the film's distinctive blue-grey rather than warm silver. The Turbo Dork interference still shows through. 2 thin coats from above only.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#aabbcc"></div><div class="swatch-info"><div class="swatch-name">Aluminium 77.701</div><div class="swatch-brand">Vallejo Metal Color</div><div class="swatch-value">~70% value — metallic mid-tone</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#3366cc"></div><div class="swatch-info"><div class="swatch-name">Transparent Blue 046</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">Color tint — cool blue shift</div></div></div>
+      </div>
+      <div class="ratio-box">Mix: 4:1 Aluminium 77.701 + Transparent Blue 046 — thin 1:1. VMC is pre-thinned; the blue tint should be subtle and the silver stays the dominant tone.</div>
+    </div>
+
+    <div class="phase-label">Edge Highlights — Chrome Apex Catches</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 5 · Brush</span>
+      <h3>Hard Edge Highlights — Chrome</h3>
+      <p>Vallejo Model Air Chrome 71.064 — undiluted or thinned 1:1 with water on a liner or flat brush. Apply only to the absolute apex of raised panel edges, shoulder peaks, helmet crown. These should read nearly white-silver at 90%+ value. Work with a loaded brush dragged along the edge, then wipe to near-dry for final pass. One line per edge, no filling.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#e0eef8"></div><div class="swatch-info"><div class="swatch-name">Chrome 71.064</div><div class="swatch-brand">Vallejo Model Air</div><div class="swatch-value">~92% value — specular edge</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> This step is what makes the figure read as polished metal from 2 feet away. If the edge highlights aren't nearly white, the armor reads as grey plastic. Push it. At 1:6 scale you almost cannot go too bright here.</div>
+    </div>
+
+    <div class="phase-label">Black Suit Body — Joint and Undersuit Panels</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 6 · Airbrush</span>
+      <h3>Black Body Panels — Satin Near-Black Base</h3>
+      <p>Coal Black 002 thinned 1:2 — apply to chest black sections, joint connectors, exposed suit body between the outer armor plates. These are near-matte dark panels, NOT metallic. 2 coats for full coverage. Leave the pure black primer recesses inside joints and panel gaps untouched.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#1a1a1e"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~5% value — dark body panels</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 7 · Brush</span>
+      <h3>Black Panel Edge Highlights — Cool Grey</h3>
+      <p>Dark Neutral Grey 044 thinned 1:2 — very thin edge highlight on the black suit panels. Just the raised edges of the ribbed sections. These should be barely visible — suggesting form, not glinting. A single thin line, no more.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#3a4a56"></div><div class="swatch-info"><div class="swatch-name">Dark Neutral Grey 044</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~30% value — subtle body edge</div></div></div>
+      </div>
+    </div>
+
+    <div class="phase-label">Panel Line Detail</div>
+
+    <div class="step">
+      <span class="step-number wash">Step 8 · Wash</span>
+      <h3>Panel Line Wash — Armor Seams</h3>
+      <p>Apply Black Wash 200 undiluted into the recessed seams of the armor panels with a fine liner brush. Pull the wash by capillary action — do not brush it around. The wash should flow into the line and stop at the panel surface. Wipe any excess that migrates onto flat surfaces before it dries.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#1a1a22"></div><div class="swatch-info"><div class="swatch-name">Black Wash 200</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~5% value — panel line shadow</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> For the very finest panel lines, Tamiya Panel Line Accent Black 87131 (enamel) gives finer capillary action. Apply only over a sealed surface, remove excess with enamel thinner on a cotton swab.</div>
+    </div>
+
+    <div class="phase-label">Cinematic OSL — Build the Light Into the Figure</div>
+
+    <div class="step">
+      <span class="step-number filter">Step 9 · Filter</span>
+      <h3>Red/Magenta OSL — Left-Side Panels</h3>
+      <p>Seal armor with satin varnish first. Then FW Crimson Ink 513 thinned 1:5 with water — apply as a very thin glaze to the left-facing surfaces of the shoulder, helmet, chest plate, and left arm. This simulates a hard red bounce light from the left (matching the render's red-magenta practical light). 1–2 thin passes; wipe back the edges with a damp flat brush to keep it from pooling.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#aa0022"></div><div class="swatch-info"><div class="swatch-name">FW Crimson Ink 513</div><div class="swatch-brand">FW Acrylic Inks</div><div class="swatch-value">Thinned 1:5 — red OSL filter</div></div></div>
+      </div>
+      <div class="warning"><strong>⚠ NOTE:</strong> Never use PA Transparent Red thinned for this — it shifts to magenta. Use FW Crimson Ink only for glazed red applications.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number filter">Step 10 · Filter</span>
+      <h3>Blue OSL — Right-Side and Helmet Top Panels</h3>
+      <p>Transparent Blue 046 thinned 1:5 — apply as a thin glaze to right-facing surfaces and the top of the helmet. This simulates the cold blue fill light from the right. It should subtly push those surfaces cooler and bluer. Again, 1–2 passes maximum — too heavy and it kills the metallic base.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#3366cc"></div><div class="swatch-info"><div class="swatch-name">Transparent Blue 046</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">Thinned 1:5 — blue OSL filter</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> The OSL is baked in, not reliant on display lighting. Your figure should look cinematic under any light — even overhead room light — because the lighting information lives in the paint.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number finish">Step 11 · Finish</span>
+      <h3>Varnish — Satin Overall, Targeted Gloss</h3>
+      <p>Satin varnish over all armor. Then spot-apply gloss varnish with a brush to any particularly prominent edge highlights and specular catch points on the helmet and shoulder plates. The contrast between matte recesses and gloss highlights amplifies the sense of polished metal.</p>
+    </div>
+
+  </div><!-- end #armor -->
+
+
+  <!-- ═══ TAB: PUNK SKIN ═══ -->
+  <div class="tab-content" id="punk-skin">
+    <div class="section-header">
+      <h2>Punk Skin — Crushed Gang Member</h2>
+      <p>Rugged, masculine, post-punk 80s Detroit. Being crushed under RoboCop — face contorted, impact bruising, blood. Heavy shadow, livid impact zones, no softness.</p>
+    </div>
+
+    <div class="phase-label">Value Structure — Impact-Damaged Skin</div>
+    <div class="value-map">
+      <div class="value-chip"><div class="chip-swatch" style="background:#190a04;"></div><div class="chip-val">~8%</div><div class="chip-label">Deep Shadow</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#3d1a10;"></div><div class="chip-val">~22%</div><div class="chip-label">Shadow</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#7a4020;"></div><div class="chip-val">~42%</div><div class="chip-label">Mid-Tone</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#b07040;"></div><div class="chip-val">~62%</div><div class="chip-label">Highlight</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#d8a880;"></div><div class="chip-val">~80%</div><div class="chip-label">Specular</div></div>
+    </div>
+
+    <div class="method-rec-block">
+      <strong>RECOMMENDED: Method 2B — Red Zenithal</strong> — Brutal, masculine, physically overwhelmed. The red underpainting naturally creates the florid, blood-flushed look of impact trauma without painting each bruise individually. Add targeted blue-purple glazes for impact zones after the base skin is done.
+    </div>
+
+    <div class="method-cards">
+      <div class="method-card">
+        <h4>Method 1 — Basic</h4>
+        <p>Prime → shadow undercoat → base coat → mid-tone → highlight → optional glaze.</p>
+        <span class="mc-pros">Predictable; easy to correct</span>
+        <span class="mc-cons">May lack the natural impact-flush that Method 2B delivers</span>
+        <span class="mc-best">Speed priority; first-time painters</span>
+      </div>
+      <div class="method-card recommended">
+        <span class="method-card-badge" style="color:#fff;">Recommended</span>
+        <h4>Method 2B — Red Zenithal</h4>
+        <p>Black prime → white zenithal → Flesh Wash 202 all over → thin skin layers over top.</p>
+        <span class="mc-pros">Natural impact flush; brutal warmth under raised skin tone</span>
+        <span class="mc-cons">Zenithal-dependent</span>
+        <span class="mc-best">Rugged male, bruised, physically damaged figures</span>
+      </div>
+      <div class="method-card">
+        <h4>Method 2A — Pinkle</h4>
+        <p>Black prime → white zenithal → magenta underpainting → flesh layers.</p>
+        <span class="mc-pros">Sub-surface scattering</span>
+        <span class="mc-cons">Too luminous and heroic for a bruised punk getting crushed</span>
+        <span class="mc-best">Fair/feminine, heroic display figures</span>
+      </div>
+    </div>
+
+    <div class="freckle-note">
+      <strong>Freckling / Speckling:</strong> Optional light freckling on the forearms and backs of hands — thin Burnt Sienna 059 at 8 PSI, 3–4cm distance, micro-dots. Skip the face entirely; the bruise glazes will add enough visual texture there.
+    </div>
+
+    <div class="phase-label">Step-by-Step</div>
+    <div class="sub-tabs">
+      <div class="sub-tab active"     onclick="showSubTab('punk-skin', 'punk-skin-pro', this)">Pro Acryl</div>
+      <div class="sub-tab expert-tab" onclick="showSubTab('punk-skin', 'punk-skin-expert', this)">✦ Expert Acrylics — Brush Only</div>
+    </div>
+
+    <div class="sub-content active" id="punk-skin-pro">
+
+      <div class="phase-label">Foundation</div>
+      <div class="step">
+        <span class="step-number airbrush">Step 1 · Airbrush</span>
+        <h3>Black Prime + White Zenithal</h3>
+        <p>P-002 Black Primer undiluted → dry → P-003 White Primer zenithal from above. Heavy on the top of the skull, crown, and upper face. Black stays in recesses, eye sockets, and neck shadow.</p>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 2 · Airbrush</span>
+        <h3>Red Underpainting</h3>
+        <p>Flesh Wash 202 thinned 1:2 — apply all over skin from zenithal angle. Alternatively Flesh Wash 202 undiluted on a brush, stippled into all surface areas. This creates the impact flush and blood-red undertone visible through thin skin layers.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#7a3020"></div><div class="swatch-info"><div class="swatch-name">Flesh Wash 202</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~30% value — warm underpainting</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-label">Skin Build</div>
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span>
+        <h3>Base — Warm, Rough Skin Tone</h3>
+        <p>Advanced Flesh Tone S17 thinned 1:2 — apply to all skin except deepest shadows. Leave underpainting showing in recesses and around the eyes. This punk is medium complexion, weathered.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#c08060"></div><div class="swatch-info"><div class="swatch-name">Advanced Flesh Tone S17</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~50% value — mid skin base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush</span>
+        <h3>Mid-Tone + Light Highlights</h3>
+        <p>Tan Flesh 024 thinned 1:2 — raised planes of forehead, cheekbones, nose ridge. Leave shadow layers below. Then Tan Flesh 024 + Bright Shadow Flesh S41 at 1:1 for final highlights on highest points. Push them to ~75% value.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#c8885a"></div><div class="swatch-info"><div class="swatch-name">Tan Flesh 024</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~55% value — warm mid-tone</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#e0c0a0"></div><div class="swatch-info"><div class="swatch-name">Bright Shadow Flesh S41</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~80% value — highlight</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 1:1 Tan Flesh 024 + Bright Shadow Flesh S41 for highlights — thin 1:2.</div>
+      </div>
+
+      <div class="phase-label">Impact Damage — Bruising and Livid Zones</div>
+      <div class="step">
+        <span class="step-number filter">Step 5 · Filter</span>
+        <h3>Bruise Glaze — Impact Zones</h3>
+        <p>Seal skin with matte varnish first. Then mix Transparent Blue 046 + Purple 010 at 2:1, thinned 1:6. Apply as a very thin glaze to the cheek areas, temple, under the eye, and areas where the armor is pressing into flesh. Let pool slightly in compressed skin recesses. 1–2 passes, wipe back edges with a damp flat brush.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#3366cc"></div><div class="swatch-info"><div class="swatch-name">Transparent Blue 046</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">Bruise cool tone</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#6600aa"></div><div class="swatch-info"><div class="swatch-name">Purple 010</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">Bruise purple tone</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 2:1 Transparent Blue 046 + Purple 010 — thin 1:6 with water. Test on card first — it should be barely tinting, not clearly blue.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 6 · Finish</span>
+        <h3>Varnish — Satin with Spot Gloss</h3>
+        <p>Satin varnish overall. Spot gloss on the lips, open wounds, and any fresh blood-contact skin areas. The contrast between satin skin and gloss wounds reads as fresh trauma.</p>
+      </div>
+
+    </div><!-- end #punk-skin-pro -->
+
+    <div class="sub-content" id="punk-skin-expert">
+      <div class="tip"><strong>✦ Brush-only workflow.</strong> Expert Acrylics wet-blending works well here — the punk's face has dramatic shadows that blend easily while wet.</div>
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Dark Shadow Base + Wet Blend Mid-Tone</h3>
+        <p>Burnt Umber MEA-007 as shadow base (2:1 with water). While wet, pull Burnt Sienna MEA-010 upward into mid-tone. Then while that's still workable, add small amount of Titanium White MEA-001 to the mix for highlight areas. Expert Acrylics stay open long enough for all three in one session on a small face area.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#5a3018"></div><div class="swatch-info"><div class="swatch-name">Burnt Umber MEA-007</div><div class="swatch-brand">Pro Acryl Expert Acrylics</div><div class="swatch-value">~25% value — shadow</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#aa5522"></div><div class="swatch-info"><div class="swatch-name">Burnt Sienna MEA-010</div><div class="swatch-brand">Pro Acryl Expert Acrylics</div><div class="swatch-value">~45% value — mid-tone</div></div></div>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush</span>
+        <h3>Bruise Glaze — Impact Zones</h3>
+        <p>Dioxazine Violet MEA-008 thinned 4:1 with water — very thin glaze on the impact areas and eye sockets. While wet add a tiny touch of Payne's Grey MEA-013 for the coolest shadow zones. One pass only.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#2d0f5e"></div><div class="swatch-info"><div class="swatch-name">Dioxazine Violet MEA-008</div><div class="swatch-brand">Pro Acryl Expert Acrylics</div><div class="swatch-value">~15% value — bruise glaze</div></div></div>
+        </div>
+      </div>
+    </div><!-- end #punk-skin-expert -->
+  </div><!-- end #punk-skin -->
+
+
+  <!-- ═══ TAB: PUNK & HAIR ═══ -->
+  <div class="tab-content" id="punk-clothing">
+    <div class="section-header">
+      <h2>Punk — Hair, Clothing &amp; Accessories</h2>
+      <p>80s Detroit post-punk: bright green mohawk/spikes, worn leather jacket, dark clothing. All of it distressed, dirty, and getting crushed. The green hair is the color accent of the whole diorama — make it vivid.</p>
+    </div>
+
+    <div class="phase-label">Step-by-Step</div>
+    <div class="sub-tabs">
+      <div class="sub-tab active"     onclick="showSubTab('punk-clothing', 'punk-clothing-pro', this)">Pro Acryl</div>
+      <div class="sub-tab expert-tab" onclick="showSubTab('punk-clothing', 'punk-clothing-expert', this)">✦ Expert Acrylics — Brush Only</div>
+    </div>
+
+    <div class="sub-content active" id="punk-clothing-pro">
+
+      <div class="phase-label">Green Hair — The Diorama's Color Accent</div>
+      <div class="step">
+        <span class="step-number airbrush">Step 1 · Airbrush</span>
+        <h3>Hair Shadow Base — Deep Green-Black</h3>
+        <p>Coal Black 002 + Dark Camo Green 036 at 3:1, thinned 1:2. Apply to all hair surfaces. The deepest recesses between spikes should stay near-black. This dark base gives the fluorescent highlights their maximum pop.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#1a1a1e"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~5% value — deep shadow</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#2a3a18"></div><div class="swatch-info"><div class="swatch-name">Dark Camo Green 036</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~15% value — dark green undertone</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 3:1 Coal Black 002 + Dark Camo Green 036 — thin 1:2.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 2 · Airbrush</span>
+        <h3>Mid-Tone — Bright Green Build</h3>
+        <p>Bright Green S33 thinned 1:2 — zenithal pass from above over the hair spikes. Leave the deep base in recesses. The upper thirds of each spike should reach a vivid bright green. This paint is highly saturated — two thin coats build it up well.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#22aa22"></div><div class="swatch-info"><div class="swatch-name">Bright Green S33</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~55% value — vivid green mid-tone</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span>
+        <h3>Fluorescent Tip Highlights</h3>
+        <p>Fluorescent Green F04 thinned 1:2 — apply to the tips of each spike and the crown/top of the hair mass. Then add Fluorescent Yellow F03 at the very tip of each spike point, just a dot or tiny stroke. The yellow on the tips creates the impression of bleach-damaged punk hair and adds a brilliant catch-light at the top of each spike.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#00ee44"></div><div class="swatch-info"><div class="swatch-name">Fluorescent Green F04</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~80% value — fluorescent tip highlight</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#eeff00"></div><div class="swatch-info"><div class="swatch-name">Fluorescent Yellow F03</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~92% value — spike tip specular</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> Fluorescent paints are translucent — don't thin below 1:1 or they'll lose their pop. For maximum vibrancy, apply over the bright green mid-tone, not over shadows.</div>
+      </div>
+
+      <div class="phase-label">Leather Jacket — Worn and Dirty</div>
+      <div class="step">
+        <span class="step-number airbrush">Step 4 · Airbrush</span>
+        <h3>Jacket Shadow Base — Near-Black Warm Brown</h3>
+        <p>Black Brown 040 thinned 1:2 — full coverage over all jacket surfaces. This warm near-black establishes the old, dirty leather tone. Recesses stay this color.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#2a1a10"></div><div class="swatch-info"><div class="swatch-name">Black Brown 040</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~10% value — dark leather base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 5 · Airbrush</span>
+        <h3>Jacket Mid-Tone — Dark Umber Zenithal</h3>
+        <p>Dark Umber 019 thinned 1:2 — zenithal pass over the jacket. Shoulders, collar, and any surfaces catching overhead light. Leave Black Brown 040 in recesses and folds.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#4a2a18"></div><div class="swatch-info"><div class="swatch-name">Dark Umber 019</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~22% value — leather mid-tone</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number wash">Step 6 · Wash</span>
+        <h3>Grime Wash — Villainy Ink</h3>
+        <p>Seal jacket with satin varnish. Then Villainy Ink Goon's Grime — apply over the whole jacket, let pool in fold recesses and wrinkles. Remove excess from flat surfaces with a flat brush dampened with enamel thinner before it fully dries. Leave it heavy in deep fold recesses. Dry time: 4–6 hours.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#1a1808"></div><div class="swatch-info"><div class="swatch-name">Goon's Grime VI-001</div><div class="swatch-brand">Villainy Ink</div><div class="swatch-value">Grimy grime wash — dirty brown-black</div></div></div>
+        </div>
+        <div class="warning"><strong>⚠ NOTE:</strong> Villainy Ink is enamel-based. MUST apply over sealed surface. Clean up with enamel thinner only — not water. Remove excess while wet with a cotton swab moistened with enamel thinner.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 7 · Brush</span>
+        <h3>Leather Edge Highlights — Worn Creases</h3>
+        <p>Light Umber 018 thinned 1:2 — apply to the sharp edges of leather creases, collar, and raised stitching. These simulate worn/cracked leather where the brown shows through. Just the absolute edge, no filling.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#8a5530"></div><div class="swatch-info"><div class="swatch-name">Light Umber 018</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~42% value — worn leather edge</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-label">Dark Clothing — Pants and T-Shirt</div>
+      <div class="step">
+        <span class="step-number airbrush">Step 8 · Airbrush</span>
+        <h3>Dark Clothing Base — Navy Black</h3>
+        <p>Coal Black 002 + AMP AMP Dark Navy Blue 005 at 2:1, thinned 1:2. Apply over all non-leather clothing. This reads as very dark blue-black fabric — classic punk dark pants and shirt.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#1a1a1e"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~5% value — shadow base</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#1a2050"></div><div class="swatch-info"><div class="swatch-name">AMP AMP Dark Navy Blue 005</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~12% value — navy blue tone</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 2:1 Coal Black 002 + AMP AMP Dark Navy Blue 005 — thin 1:2.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 9 · Brush</span>
+        <h3>Fabric Edge Highlights — Raised Fold Lines</h3>
+        <p>Dark Grey Blue 014 thinned 1:2 — very thin highlight on the raised fold edges of the dark pants and shirt. Fabric catches show a slightly lighter blue-grey, not bright. Then a final touch of Faded Ultramarine 013 on the absolute topmost folds.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#3a4a68"></div><div class="swatch-info"><div class="swatch-name">Dark Grey Blue 014</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~30% value — fabric highlight</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 10 · Finish</span>
+        <h3>Varnish — Matte Fabric, Satin Leather</h3>
+        <p>Matte varnish over all fabric (shirt, pants). Satin varnish over the leather jacket and boots. Matte over the hair base coat, then re-apply the Fluorescent Green F04 and Yellow F03 AFTER varnishing (fluorescents lose intensity under matte varnish — apply them last).</p>
+        <div class="tip"><strong>✦ TIP:</strong> Apply fluorescent paints last, after all varnishing is done. A matte topcoat will significantly reduce their vibrancy. Leave them unvarnished or use satin at most over the hair tips.</div>
+      </div>
+
+    </div><!-- end #punk-clothing-pro -->
+
+    <div class="sub-content" id="punk-clothing-expert">
+      <div class="tip"><strong>✦ Brush-only workflow.</strong> Expert Acrylics for the leather jacket and fabric; Pro Acryl Fluorescents for the hair (these are dropper-bottle format only — no EA alternative).</div>
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Leather Jacket — Wet Blend</h3>
+        <p>Carbon Black MEA-002 as the shadow base. While wet, pull Burnt Umber MEA-007 into mid-tones. Then Sepia MEA-012 on the very highest folds for the worn leather highlight. Expert Acrylics' re-wettability is ideal for the continuous smooth gradients on leather — keep the surface slightly damp and blend in sections.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#111111"></div><div class="swatch-info"><div class="swatch-name">Carbon Black MEA-002</div><div class="swatch-brand">Pro Acryl Expert Acrylics</div><div class="swatch-value">~4% value — deep shadow</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#5a3018"></div><div class="swatch-info"><div class="swatch-name">Burnt Umber MEA-007</div><div class="swatch-brand">Pro Acryl Expert Acrylics</div><div class="swatch-value">~25% value — leather mid</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#6a4820"></div><div class="swatch-info"><div class="swatch-name">Sepia MEA-012</div><div class="swatch-brand">Pro Acryl Expert Acrylics</div><div class="swatch-value">~35% value — worn leather highlight</div></div></div>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush</span>
+        <h3>Dark Clothing — Payne's Grey Wet Blend</h3>
+        <p>Carbon Black MEA-002 shadow → Payne's Grey MEA-013 mid-tone on fold peaks. Expert Acrylics give the dark blue-grey fabric look without needing a blue paint — Payne's Grey reads as cold blue-black fabric when applied thinly over Carbon Black.</p>
+      </div>
+    </div><!-- end #punk-clothing-expert -->
+  </div><!-- end #punk-clothing -->
+
+
+  <!-- ═══ TAB: WEAPONS ═══ -->
+  <div class="tab-content" id="weapons">
+    <div class="section-header">
+      <h2>Weapons — Auto-9 and Data Spike</h2>
+      <p>The Auto-9 is matte/satin dark metallic with chrome catch-lights — not bright silver, very dark. The data spike (terminal strip) is bright polished steel. The mechanical leg holster matches the armor finish.</p>
+    </div>
+
+    <div class="phase-label">Auto-9 Pistol</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 · Airbrush</span>
+      <h3>Dark Near-Black Base</h3>
+      <p>Coal Black 002 thinned 1:2 — full coverage on the Auto-9 body. The gun is nearly black overall — a very dark gunmetal, not grey or silver. 2 thin coats for full coverage.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#1a1a1e"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~5% value — gun base</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 2 · Airbrush</span>
+      <h3>Dark Metallic Zenithal</h3>
+      <p>VMC 77.702 Duraluminium thinned 1:1 with distilled water — zenithal pass from directly above. Just enough to show the metallic quality on the flat upper surfaces of the frame and barrel. Leave Coal Black 002 in all recesses, grip texture, and trigger guard.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2a3a48"></div><div class="swatch-info"><div class="swatch-name">Duraluminium 77.702</div><div class="swatch-brand">Vallejo Metal Color</div><div class="swatch-value">~25% value — subtle metallic mid</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 3 · Brush</span>
+      <h3>Chrome Barrel and Slide Edges</h3>
+      <p>Vallejo Chrome 71.064 — pure, fine liner brush. Drag along the barrel top ridge, slide edges, and muzzle rim. These should be bright white-silver, giving the gun a hard metallic edge that pops against the dark body. Very thin line, no filling.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#e0eef8"></div><div class="swatch-info"><div class="swatch-name">Chrome 71.064</div><div class="swatch-brand">Vallejo Model Air</div><div class="swatch-value">~92% value — specular edge</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 4 · Wash</span>
+      <h3>Panel Line Accent — Trigger and Frame Details</h3>
+      <p>Tamiya Panel Line Accent Black 87131 — apply over a sealed surface (matte varnish first). Flow into the trigger assembly, frame rails, and any recessed detail. Capillary action pulls it in; remove excess with enamel thinner on a cotton swab.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#111111"></div><div class="swatch-info"><div class="swatch-name">Panel Line Accent Black 87131</div><div class="swatch-brand">Tamiya</div><div class="swatch-value">~3% value — detail lining</div></div></div>
+      </div>
+      <div class="warning"><strong>⚠ NOTE:</strong> Enamel-based. Apply only over sealed surface. Remove with enamel thinner only — not water.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number finish">Step 5 · Finish</span>
+      <h3>Varnish — Satin Overall, No Gloss</h3>
+      <p>Satin varnish over the whole gun. The Auto-9 is NOT a polished chrome piece — it's a matte/satin dark weapon. Gloss would read incorrectly. The chrome edge highlights stay bright enough without any extra gloss.</p>
+    </div>
+
+    <div class="phase-label">Data Spike — Terminal Strip / Hand Probe</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 6 · Airbrush</span>
+      <h3>Spike Base — Near-Black</h3>
+      <p>Coal Black 002 — base for the spike's housing where it meets the glove. The needle itself needs black underneath for the chrome to read correctly.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 7 · Brush</span>
+      <h3>Needle/Spike — Polished Chrome</h3>
+      <p>Vallejo Chrome 71.064 — applied directly with a fine liner over the needle length. This part IS polished bright steel. Two passes for full coverage. Then Vallejo Steel 71.065 thinned 1:1 at the base of the needle where it sits in the housing — creates a shadow/transition to the chrome tip.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#e0eef8"></div><div class="swatch-info"><div class="swatch-name">Chrome 71.064</div><div class="swatch-brand">Vallejo Model Air</div><div class="swatch-value">~92% value — polished needle</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#778899"></div><div class="swatch-info"><div class="swatch-name">Steel 71.065</div><div class="swatch-brand">Vallejo Model Air</div><div class="swatch-value">~55% value — housing transition</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number finish">Step 8 · Finish</span>
+      <h3>Gloss Varnish — Needle Only</h3>
+      <p>Gloss varnish targeted to the needle/spike only. This makes it read as a different material to the matte-satin armor and weapon body — a precision polished instrument.</p>
+    </div>
+
+  </div><!-- end #weapons -->
+
+
+  <!-- ═══ TAB: BASE ═══ -->
+  <div class="tab-content" id="base">
+    <div class="section-header">
+      <h2>Base — Urban Detroit Street</h2>
+      <p>Broken asphalt and concrete, a cast-iron sewer manhole cover, rubble and debris. Everything is grimy, weathered, and soaked in blood. The base anchors the cinematic feel.</p>
+    </div>
+
+    <div class="phase-label">Step-by-Step</div>
+    <div class="sub-tabs">
+      <div class="sub-tab active"     onclick="showSubTab('base', 'base-pro', this)">Pro Acryl</div>
+      <div class="sub-tab expert-tab" onclick="showSubTab('base', 'base-expert', this)">✦ Expert Acrylics — Brush Only</div>
+    </div>
+
+    <div class="sub-content active" id="base-pro">
+
+      <div class="phase-label">Ground — Asphalt and Concrete</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Texture Application</h3>
+        <p>Apply Pro Acryl Basing Texture MPA-T05 Concrete over the ground area with an old flat brush. Stipple for irregular asphalt-style texture. Let dry fully (20–30 min). The texture agent already has color baked in — it's a good neutral starting point.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#6a6258"></div><div class="swatch-info"><div class="swatch-name">Basing Texture T05 Concrete</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~40% value — base texture</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 2 · Airbrush</span>
+        <h3>Dark Asphalt Base Coat</h3>
+        <p>Dark Neutral Grey 044 + Coal Black 002 at 2:1, thinned 1:2. Apply over all ground/concrete surfaces. Leave the pure black in the deepest cracks and rubble recesses. Old Detroit asphalt is very dark — closer to black than grey in shadow.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#2a3038"></div><div class="swatch-info"><div class="swatch-name">Dark Neutral Grey 044</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~22% value — asphalt base</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#1a1a1e"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~5% value — recess shadow</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 2:1 Dark Neutral Grey 044 + Coal Black 002 — thin 1:2.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush — Drybrush</span>
+        <h3>Surface Drybrush — Grit and Wear</h3>
+        <p>Neutral Grey 075 on a near-dry flat brush — drybrush over the whole ground surface. Hits only the texture peaks, building up the grit and road wear appearance. Two passes, second pass with Warm Grey 074 on an even drier brush for very subtle warm tone at the peaks.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#888888"></div><div class="swatch-info"><div class="swatch-name">Neutral Grey 075</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~52% value — surface drybrush</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#8a7a6a"></div><div class="swatch-info"><div class="swatch-name">Warm Grey 074</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~50% value — warm grit peak</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number wash">Step 4 · Wash</span>
+        <h3>Grime and Street Filth</h3>
+        <p>Seal ground with matte varnish. Then Villainy Ink Goon's Grime applied liberally over the ground, let pool in cracks and depressions. Use a large flat brush. Remove excess from high surfaces after 15–20 minutes with enamel thinner on a wide brush. Leave it thick in cracks.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#1a1808"></div><div class="swatch-info"><div class="swatch-name">Goon's Grime VI-001</div><div class="swatch-brand">Villainy Ink</div><div class="swatch-value">Street grime — dirty brown-black enamel</div></div></div>
+        </div>
+        <div class="warning"><strong>⚠ NOTE:</strong> Villainy Ink is enamel. Seal with varnish first. Clean up with enamel thinner. Dry time 4+ hours.</div>
+      </div>
+
+      <div class="phase-label">Sewer Manhole Cover — Cast Iron</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 5 · Airbrush</span>
+        <h3>Manhole Base — Dark Iron</h3>
+        <p>Coal Black 002 + Dark Neutral Grey 044 at 2:1, thinned 1:2. Apply over the manhole cover. Cast iron is very dark and non-reflective. Zenithal from above only — no bright highlights on a flat surface like this.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#1e2228"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~5% value — iron base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 6 · Brush — Drybrush</span>
+        <h3>Manhole Metallic Drybrush</h3>
+        <p>Dark Silver 030 on a near-dry stiff brush — drybrush the raised relief pattern of the manhole cover. The embossed pattern peaks get a metallic catch while the flat field stays near-black. Then a second pass with Silver 025 on an even drier brush for the very highest spots.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#2a3a48"></div><div class="swatch-info"><div class="swatch-name">Dark Silver 030</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~25% value — iron relief drybrush</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number wash">Step 7 · Wash</span>
+        <h3>Rust and Oxidation — Manhole Edges</h3>
+        <p>Seal manhole with matte varnish. Then Villainy Ink Sector Rust (VI-002) applied to the rim edges and recessed bolt holes where water and oxidation would collect. Apply with a fine brush — just the edges and inside the relief channels. Remove excess with enamel thinner.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#8a3510"></div><div class="swatch-info"><div class="swatch-name">Sector Rust VI-002</div><div class="swatch-brand">Villainy Ink</div><div class="swatch-value">Rust orange-brown — oxidation enamel</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 8 · Finish</span>
+        <h3>Varnish — Matte Ground, Satin Manhole</h3>
+        <p>Matte varnish over all ground and concrete. Satin varnish just over the manhole cover — the cast iron should have a very slight sheen, as if damp from a recent rain. Gives it visual separation from the flat matte ground.</p>
+      </div>
+
+    </div><!-- end #base-pro -->
+
+    <div class="sub-content" id="base-expert">
+      <div class="tip"><strong>✦ Brush-only workflow.</strong> Expert Acrylics are excellent for the ground — Burnt Umber and Payne's Grey build the grimy asphalt look with natural variation.</div>
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Dark Asphalt — Wet Blend</h3>
+        <p>Carbon Black MEA-002 as the base (full coverage). While wet, stipple Payne's Grey MEA-013 + small Chrome Oxide Green MEA-017 into the mid-surface areas for the slightly greenish-grey cast of old wet asphalt. Expert Acrylics stay open for 5–8 min on a textured surface — enough to work the whole ground in sections.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#111111"></div><div class="swatch-info"><div class="swatch-name">Carbon Black MEA-002</div><div class="swatch-brand">Pro Acryl Expert Acrylics</div><div class="swatch-value">~4% value — asphalt base</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#3a4a58"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey MEA-013</div><div class="swatch-brand">Pro Acryl Expert Acrylics</div><div class="swatch-value">~28% value — cool grey surface</div></div></div>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush — Drybrush</span>
+        <h3>Surface Drybrush</h3>
+        <p>Chrome Oxide Green MEA-017 on a near-dry flat brush — drybrush the whole ground texture. This earthy green-grey reads as aged, weathered asphalt with organic growth. Then Titanium White MEA-001 at extreme drybrush for the very highest points.</p>
+      </div>
+    </div><!-- end #base-expert -->
+  </div><!-- end #base -->
+
+
+  <!-- ═══ TAB: GORE ═══ -->
+  <div class="tab-content" id="gore">
+    <div class="section-header">
+      <h2>Gore — Blood Effects and Crushed Arm</h2>
+      <p>Fresh and pooled blood, exposed raw flesh in the crushed wound, and blood splatter on the armor and ground. Value matters here too — deep blood is near-black; fresh blood is vivid scarlet; specular catch on wet blood reads near-white under gloss.</p>
+    </div>
+
+    <div class="phase-label">Step-by-Step</div>
+    <div class="sub-tabs">
+      <div class="sub-tab active"     onclick="showSubTab('gore', 'gore-pro', this)">Pro Acryl</div>
+      <div class="sub-tab expert-tab" onclick="showSubTab('gore', 'gore-expert', this)">✦ Expert Acrylics — Brush Only</div>
+    </div>
+
+    <div class="sub-content active" id="gore-pro">
+
+      <div class="phase-label">Pooled and Drying Blood</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Deep Blood — Pooled, Drying</h3>
+        <p>Army Painter Speedpaint WP2057 Murder Scene — apply undiluted as the base for all blood pool areas (ground pool, deep wound). This is a dark red-black that reads as drying/dried blood. Apply liberally — let it pool and self-level. Allow to fully cure (30+ minutes — do not rush this).</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#3a0808"></div><div class="swatch-info"><div class="swatch-name">Murder Scene WP2057</div><div class="swatch-brand">Army Painter Speedpaint 2.0</div><div class="swatch-value">~10% value — deep pooled blood</div></div></div>
+        </div>
+        <div class="warning"><strong>⚠ NOTE:</strong> Speedpaint 2.0 is a one-pass product. Apply and leave it — do NOT overwork it while wet or it will streak and lose its self-leveling effect.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush</span>
+        <h3>Fresh Blood — Vivid Scarlet Over Dark Base</h3>
+        <p>Army Painter Fanatic True Blood WP3165 — apply over the Murder Scene base, particularly around the wound edges and the active blood flow areas. This creates the graduated blood effect: dark and dried at the edges, vivid fresh red at the wound source. Apply with a loaded fine brush in flowing strokes.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#cc1111"></div><div class="swatch-info"><div class="swatch-name">True Blood WP3165</div><div class="swatch-brand">Army Painter Fanatic</div><div class="swatch-value">~30% value — fresh blood</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number filter">Step 3 · Filter</span>
+        <h3>Blood Glaze — Crimson Depth</h3>
+        <p>FW Crimson Ink 513 undiluted — apply with a fine brush as a glaze over the freshest blood areas and on top of the True Blood. Crimson Ink gives a transparent deep red with extreme vibrancy, and undiluted it stays crimson (not magenta). Pool it inside the wound cavity for the deepest wet red.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#aa0022"></div><div class="swatch-info"><div class="swatch-name">FW Crimson Ink 513</div><div class="swatch-brand">FW Acrylic Inks</div><div class="swatch-value">~20% value — transparent deep crimson</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> FW Crimson Ink dries with a semi-gloss finish naturally. The gloss varnish in the final step will amplify this to full wet blood look.</div>
+      </div>
+
+      <div class="phase-label">Blood Splatter — Armor and Ground</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 4 · Airbrush</span>
+        <h3>Blood Spatter — Micro-Dots</h3>
+        <p>Army Painter Speedpaint Blood Red WP2010 thinned 1:3 to near-watercolor. Seal armor and ground with matte varnish first. Then PSI 8–12, 0.2mm nozzle, held 3–5cm from the surface. Needle barely open — micro-dots only. Apply to the lower leg armor, ground around the wound, and bottom edge of the chestplate. One pass → step back → assess. Easy to overdo.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#cc2222"></div><div class="swatch-info"><div class="swatch-name">Blood Red WP2010</div><div class="swatch-brand">Army Painter Speedpaint 2.0</div><div class="swatch-value">~35% value — blood spatter</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> Practice on a scrap card first. The trigger window between micro-dots and a streak is about half a second. Short bursts, not sustained spray.</div>
+      </div>
+
+      <div class="phase-label">Crushed Arm and Wound — Exposed Tissue</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 5 · Brush</span>
+        <h3>Raw Flesh — Wound Cavity</h3>
+        <p>Shadow Flesh 042 + Mahogany 009 + Coal Black 002 at 3:1:0.5 — apply to the exposed flesh/raw tissue inside the wound. This mix reads as raw meat — neither skin nor bone. Apply with a stippling technique for texture. Deep shadows inside the wound cavity go darker by adding more Coal Black 002.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#7a4a30"></div><div class="swatch-info"><div class="swatch-name">Shadow Flesh 042</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~35% value — raw flesh base</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#6a2010"></div><div class="swatch-info"><div class="swatch-name">Mahogany 009</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~20% value — deep red-brown flesh</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#1a1a1e"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~5% value — wound shadow</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 3:1:0.5 Shadow Flesh 042 + Mahogany 009 + Coal Black 002 — thin 1:1 for stippling.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 6 · Brush</span>
+        <h3>Bone — Visible Fragment (If Present)</h3>
+        <p>Bold Titanium White 001 + Ivory 023 at 2:1 — apply to any visible bone fragment. This should be yellowish-white, not pure white. Shade with Dark Umber 019 thinned glaze for the marrow end. Edge highlight with Bold Titanium White 001 on the snap point.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#f5f5f5"></div><div class="swatch-info"><div class="swatch-name">Bold Titanium White 001</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~97% value — bone highlight</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#d4c080"></div><div class="swatch-info"><div class="swatch-name">Ivory 023</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~72% value — warm bone base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 7 · Finish</span>
+        <h3>Varnish — Gloss Blood, Matte Flesh</h3>
+        <p>Matte varnish on exposed flesh/raw tissue — flesh tissue isn't wet-glossy overall, just moist. Gloss varnish on all blood surfaces (pools, spatter, wound cavity fill, and any wet-blood trails). The gloss-on-blood vs. matte-on-flesh contrast is what sells the wound as real. Apply gloss with a fine brush for precise placement — don't spray gloss over matte flesh areas.</p>
+        <div class="tip"><strong>✦ TIP:</strong> Deliberate gloss placement makes blood look catastrophically wet. If the whole area is gloss, it reads as lacquer. Targeted gloss only on the liquid blood surfaces.</div>
+      </div>
+
+    </div><!-- end #gore-pro -->
+
+    <div class="sub-content" id="gore-expert">
+      <div class="tip"><strong>✦ Brush-only workflow.</strong> Expert Acrylics for the raw flesh tissue; Pro Acryl/Speedpaint for blood (no EA equivalent for the blood effect paints).</div>
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Raw Flesh — Wet Blend</h3>
+        <p>Carbon Black MEA-002 in the deepest wound recess → Burnt Umber MEA-007 in the cavity mid-tone → Burnt Sienna MEA-010 on the raised tissue edges. Wet-blend using Expert Acrylics' open time. Stipple while blending for organic texture. Quinacridone Magenta MEA-020 thinned as a very thin glaze over the fresh wound edge — sub-surface scattering effect for raw tissue.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#111111"></div><div class="swatch-info"><div class="swatch-name">Carbon Black MEA-002</div><div class="swatch-brand">Pro Acryl Expert Acrylics</div><div class="swatch-value">~4% value — deep shadow</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#5a3018"></div><div class="swatch-info"><div class="swatch-name">Burnt Umber MEA-007</div><div class="swatch-brand">Pro Acryl Expert Acrylics</div><div class="swatch-value">~25% value — raw tissue</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#aa5522"></div><div class="swatch-info"><div class="swatch-name">Burnt Sienna MEA-010</div><div class="swatch-brand">Pro Acryl Expert Acrylics</div><div class="swatch-value">~45% value — raised tissue</div></div></div>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush</span>
+        <h3>Blood Effects — Use Pro Acryl / Speedpaint Range</h3>
+        <p>For all blood effects (Murder Scene, True Blood, FW Crimson Ink, Blood Red spatter) — follow the Pro Acryl sub-tab steps 1–4. The Expert Acrylics sub-tab only covers the raw tissue; blood effects require the dedicated Pro Acryl and Speedpaint products.</p>
+      </div>
+    </div><!-- end #gore-expert -->
+  </div><!-- end #gore -->
+
+
+  <!-- ═══ TAB: AIRBRUSH SKILLS ═══ -->
+  <div class="tab-content" id="airbrush-skills">
+    <div class="section-header">
+      <h2>Airbrush Skills</h2>
+      <p>Techniques used in this guide: zenithal priming, metallic zenithal, Turbo Dork color-shift layering, OSL filter glazing, blood spatter.</p>
+    </div>
+
+    <div class="phase-label">Nozzle Assignments</div>
+    <table class="thin-table">
+      <thead>
+        <tr><th>Task</th><th>Nozzle</th><th>Why</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Priming (undiluted — do not thin)</td><td>0.5mm</td><td>High flow for primer viscosity; 30+ PSI</td></tr>
+        <tr><td>Zenithal primer / Dark Silver metallic base</td><td>0.5mm for primer / 0.3mm for Dark Silver</td><td>Wide coverage; semi-opaque metallics need lower pressure</td></tr>
+        <tr><td>Turbo Dork Ice To Never / Galaxia</td><td>0.3mm</td><td>Interference paints need consistent thin coats; 0.3mm gives control</td></tr>
+        <tr><td>OSL filter glazes (Transparent Blue / FW Crimson Ink)</td><td>0.3mm</td><td>Very thin glaze — 0.3mm handles the thinned consistency well</td></tr>
+        <tr><td>Skin tones (Murphy, punk)</td><td>0.3mm</td><td>Smooth gradient builds; fine enough for faces</td></tr>
+        <tr><td>Blood spatter</td><td>0.2mm</td><td>Micro-dot only — fine needle control at 8–12 PSI</td></tr>
+      </tbody>
+    </table>
+
+    <div class="phase-label">Zenithal Sequence</div>
+    <div id="ab-zenithal-anchor"></div>
+
+    <div class="phase-label">PSI &amp; Distance Reference</div>
+    <table class="psi-table">
+      <thead>
+        <tr><th>Task</th><th>PSI</th><th>Distance</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Priming (undiluted)</td><td>30+</td><td>20–25cm</td><td>0.5mm nozzle; do NOT thin primer</td></tr>
+        <tr><td>Zenithal — black</td><td>30+</td><td>20–25cm</td><td>0.5mm; undiluted</td></tr>
+        <tr><td>Zenithal — white</td><td>30+</td><td>20–25cm</td><td>0.5mm; undiluted</td></tr>
+        <tr><td>VMC Duraluminium 77.702 — metallic base coat</td><td>15–18</td><td>10–15cm</td><td>0.3mm; thinned 1:1 with distilled water (VMC pre-thinned)</td></tr>
+        <tr><td>Turbo Dork Ice To Never</td><td>12–15</td><td>10–15cm</td><td>0.3mm; thinned 1:1 with TD Medium</td></tr>
+        <tr><td>VMC Aluminium 77.701 blue-tinted mid-tone</td><td>15</td><td>12–15cm</td><td>0.3mm; thinned 1:1 with distilled water</td></tr>
+        <tr><td>OSL glazes</td><td>12</td><td>8–12cm</td><td>0.3mm; very thin 1:4 to 1:5</td></tr>
+        <tr><td>Skin base coats</td><td>15–18</td><td>10–15cm</td><td>0.3mm; thinned 1:3</td></tr>
+        <tr><td>Blood spatter</td><td>8–12</td><td>3–5cm</td><td>0.2mm; needle almost closed — micro-dots</td></tr>
+        <tr><td>Freckling (punk arms)</td><td>8–12</td><td>3–5cm</td><td>0.2mm; micro-dot; practice on card first</td></tr>
+      </tbody>
+    </table>
+
+    <div id="ab-greyscale-anchor"></div>
+
+    <div class="phase-label">OSL — Building Cinematic Lighting Into the Figure</div>
+    <div class="step">
+      <span class="step-number filter">Technique · OSL Filter</span>
+      <h3>Two-Source Cinematic Lighting</h3>
+      <p>OSL (Object Source Lighting) simulates a specific light source hitting the figure, independent of where the viewer's display light is. For RoboCop, the render uses two practicals: hard red-magenta from the left, cold blue from the right. After establishing the metallic base and sealing it, apply the OSL as transparent tinted filter glazes — very thin, two or three passes maximum. The key rule: only the surfaces geometrically facing the light source receive the tint. Front-facing surfaces get neither or both, depending on which light dominates at that plane. Getting this right means the figure looks cinematic under any ambient light.</p>
+      <div class="tip"><strong>✦ TIP:</strong> Hold the figure at the angle of each light source while applying. Your brush should be going toward the light-facing planes and nowhere else. It's a targeting exercise.</div>
+    </div>
+
+    <div class="phase-label">Troubleshooting</div>
+    <div class="trouble-grid">
+      <!-- Tip Dry injected by skills-reference.js -->
+      <div class="trouble-card">
+        <h4>Blowback / Bubbling</h4>
+        <p>Cause: pressure too high, distance too close, cup overfilled, or needle pulled back too far at once. Effect: paint pushes back into cup or spits bubbles. Fix: reduce PSI to 12–15, move back to 15cm, reduce cup fill to 1/3 max, use shorter needle pulls with more passes instead of one heavy pull.</p>
+      </div>
+      <div class="trouble-card">
+        <h4>Uneven Coverage / Banding</h4>
+        <p>Cause: inconsistent trigger pressure, moving the airbrush at uneven speed, starting/stopping the stroke over the model. Effect: visible stripes or hot spots. Fix: start and end each stroke off the model, keep airbrush moving at constant speed. Rotate the model rather than changing airbrush angle for large coverage areas.</p>
+      </div>
+      <div class="trouble-card">
+        <h4>Turbo Dork — Color Shift Not Visible</h4>
+        <p>Cause: base wasn't dark enough (grey or pale surface underneath), paint was applied too thick in one coat, or thinned with water instead of TD Medium. Fix: Ensure primer black is truly dark in the application area. Re-prime if needed. Thin only with TD Medium. Apply in 2–3 very thin coats and view from multiple angles after each coat.</p>
+      </div>
+    </div>
+
+  </div><!-- end #airbrush-skills -->
+
+
+  <!-- ═══ TAB: BRUSH SKILLS ═══ -->
+  <div class="tab-content" id="brush-skills">
+    <div class="section-header">
+      <h2>Brush Skills</h2>
+      <p>Techniques used in this guide: edge highlighting on metallic armor, wet blending on skin, glazing for OSL and blood, drybrushing for base texture, controlled enamel wash.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Edge Highlighting</span>
+      <h3>Hard Edge Highlight on Armor Panels</h3>
+      <p>Load a flat or liner brush with chrome/metallic. Drag the side of the tip along the edge of an armor panel — the goal is a thin, consistent bright line at 90%+ value. Before the stroke: wipe the brush to near-dry on a paper towel after loading. The drag should deposit just enough paint to catch the edge. Common failure mode: brush too loaded → wide blob instead of line. If it's too wide, wipe back immediately with a damp brush.</p>
+      <div class="tip"><strong>✦ TIP:</strong> These highlights are what makes the armor read as polished steel from display distance. If they look too bright up close, step back — at arm's length they should look exactly right.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Wet Blending</span>
+      <h3>Wet Blending — Expert Acrylics Workflow</h3>
+      <p>Expert Acrylics stay wet and workable longer than standard acrylics. Apply the shadow color, then immediately apply the mid-tone color adjacent to it. Use a clean, slightly damp flat brush to stroke into the join — the two colors will blend. Work quickly in sections and keep the surface slightly damp (a breath on the figure can buy 30 more seconds). Ideal for skin and leather on a 1:6 face at this scale.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Targeted Gloss — Blood Effects</span>
+      <h3>Selective Gloss for Blood</h3>
+      <p>Gloss varnish with a fine brush, applied only to blood surfaces. The key is sharp cutoff between gloss blood and matte skin/ground. Use the side of the brush tip to feather the gloss edge exactly at the blood boundary. Gloss on the wrong surface (matte flesh) immediately kills the realism — clean it up with a damp brush before it dries.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Enamel Wash Control</span>
+      <h3>Villainy Ink / Tamiya Enamel Panel Lines</h3>
+      <p>Apply enamel washes only to surfaces sealed with acrylic varnish (matte or gloss). Let the enamel flow into recesses by capillary action — do not spread it with the brush. Allow 10–15 minutes, then remove excess from raised surfaces by stroking with a flat brush lightly moistened with enamel thinner. The enamel in recesses is protected by the seal; the enamel on raised surfaces comes off cleanly. Cure time 4+ hours before re-sealing.</p>
+      <div class="warning"><strong>⚠ NOTE:</strong> Never apply enamel over unsealed acrylic paint. It will dissolve and lift the layer beneath.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Drybrush — Base Texture</span>
+      <h3>Drybrushing for Base Surface Grit</h3>
+      <p>Load brush with paint, then wipe aggressively on paper towel until virtually no paint comes off. Stroke lightly over the textured base surface — paint deposits only on the peaks of the texture. For Expert Acrylics: heavy-body formula means they hold on a near-dry brush exceptionally well. Apply in overlapping short strokes in multiple directions to avoid a grain pattern.</p>
+    </div>
+
+    <!-- Greyscale check injected by skills-reference.js -->
+    <div id="brush-skills"></div>
+
+  </div><!-- end #brush-skills -->
+
+
+  <!-- ═══ TAB: THINNING REF ═══ -->
+  <div class="tab-content" id="thinning-ref">
+    <!-- Content injected by skills-reference.js -->
+  </div>
+
+</div><!-- end .container -->
+
+
+<footer class="guide-footer">
+  Guide by
+  <a href="https://www.youtube.com/@brent_the_programmer9108" target="_blank">brent_the_programmer</a>
+  &middot;
+  <a href="https://instagram.com/stephenson913" target="_blank">@stephenson913</a>
+</footer>
+
+<button class="back-to-top" id="backToTop" title="Back to top"
+        onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+window.GUIDE_THINNING = {
+  airbrushRows: [
+    { technique: 'Dark Silver metallic base coat (armor)', nozzle: '0.3mm', ratio: '1:2 to 1:3', behavior: 'Semi-opaque; builds metallic coverage in 2 passes. Does not obscure the black zenithal base.' },
+    { technique: 'Turbo Dork Ice To Never (color shift)', nozzle: '0.3mm', ratio: '1:1 with TD Medium only', behavior: 'Thin interference coat; color shift activates over dark base. 2–3 light passes. Never thin with water.' },
+    { technique: 'Silver + Transparent Blue mid-tone (armor)', nozzle: '0.3mm', ratio: '1:2', behavior: 'Semi-transparent cool tint; deposits on top of TD layer without obscuring the interference shift.' },
+    { technique: 'OSL filter (Transparent Blue / FW Crimson Ink)', nozzle: '0.3mm', ratio: '1:4 to 1:5', behavior: 'Very thin glaze; tints surface color without blocking metallic base. One-sided surface targeting.' },
+    { technique: 'Skin base coat (Murphy / punk)', nozzle: '0.3mm', ratio: '1:2 to 1:3', behavior: 'Semi-transparent; builds in 2 passes. Should not fully obscure red zenithal underpainting.' },
+    { technique: 'Blood spatter (Blood Red WP2010)', nozzle: '0.2mm', ratio: '1:3', behavior: 'Near-watercolor thin; PSI 8–12 at 3–5cm with nearly closed needle. Micro-dots, not streaks.' },
+  ],
+  brushRows: [
+    { technique: 'Villainy Ink / Tamiya enamel washes', ratio: 'Undiluted', behavior: 'Apply undiluted over sealed surface. Thin with enamel thinner for selective removal, not water.' },
+    { technique: 'FW Crimson Ink — blood glaze (undiluted)', ratio: 'Undiluted', behavior: 'Apply neat for maximum crimson depth. Thinned PA Transparent Red must never be substituted here — it shifts to magenta.' },
+    { technique: 'Turbo Dork (brush, optional)', ratio: '2:1 TD paint : TD Medium', behavior: 'Brush application viable for small areas. Keep coats thin and even. Apply over black base only.' },
+  ],
+  thinningCards: []
+};
+</script>
+
+<script src="../../assets/guide.js"></script>
+<script src="../../assets/skills-reference.js"></script>
+<script>
+  function showSubTab(parentId, contentId, btn) {
+    const parent = document.getElementById(parentId);
+    if (!parent) return;
+    parent.querySelectorAll('.sub-content').forEach(c => c.classList.remove('active'));
+    parent.querySelectorAll('.sub-tab').forEach(b => b.classList.remove('active'));
+    const el = document.getElementById(contentId);
+    if (el) el.classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+  (function() {
+    const btn = document.getElementById('backToTop');
+    if (!btn) return;
+    window.addEventListener('scroll', function() {
+      btn.classList.toggle('visible', window.scrollY > 300);
+    }, { passive: true });
+  })();
+</script>
+
+</body>
+</html>
