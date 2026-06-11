@@ -1,5 +1,13 @@
 # STL Library — Documentation
 
+<!-- wiki-only:strip -->
+> ✏️ **This folder is the single source of truth for the user docs.** The
+> [STL Library Wiki](https://github.com/RBStephenson/STL-Inventory/wiki) is
+> **generated** from these files by `scripts/wiki/build_wiki.py` on every merge
+> to `main` — so edit Markdown here (via a PR), never on the wiki directly.
+> These same files also back the in-app **Help** page.
+<!-- /wiki-only -->
+
 A locally-hosted web app for cataloguing, browsing, and managing a large STL
 model library — search, filter, tag, preview in 3D, and plan your prints.
 
