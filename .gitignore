@@ -9,3 +9,5 @@ __pycache__/
 *.pyc
 .DS_Store
 .claude/
+# Generated GitHub Wiki output (built by scripts/wiki/build_wiki.py)
+_wiki_build/

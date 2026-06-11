@@ -1,0 +1,86 @@
+name: Publish Wiki
+
+# The GitHub Wiki is generated from the in-repo docs (docs/ + ROADMAP.md) by
+# scripts/wiki/build_wiki.py. On pull requests we build + test the generator
+# (no publish); on push to main we regenerate and push to the wiki repo.
+#
+# Publishing requires a Personal Access Token with permission to write the wiki
+# (the automatic GITHUB_TOKEN cannot push to wikis). Store it as the WIKI_TOKEN
+# repository secret. A classic PAT with the `repo` scope works.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'ROADMAP.md'
+      - 'scripts/wiki/**'
+      - '.github/workflows/publish-wiki.yml'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'ROADMAP.md'
+      - 'scripts/wiki/**'
+      - '.github/workflows/publish-wiki.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build & test wiki generator
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test deps
+        run: pip install pytest
+      - name: Unit tests
+        run: pytest scripts/wiki -q
+      - name: Build wiki
+        run: python scripts/wiki/build_wiki.py --out _wiki_build
+      - name: Upload generated wiki
+        uses: actions/upload-artifact@v4
+        with:
+          name: wiki
+          path: _wiki_build
+
+  publish:
+    name: Publish to wiki
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build wiki
+        run: python scripts/wiki/build_wiki.py --out _wiki_build
+      - name: Push to wiki
+        env:
+          WIKI_TOKEN: ${{ secrets.WIKI_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${WIKI_TOKEN:-}" ]; then
+            echo "::error::WIKI_TOKEN secret is not set — cannot push to the wiki."
+            echo "Create a PAT with wiki write access and add it as the WIKI_TOKEN secret."
+            exit 1
+          fi
+          git clone "https://x-access-token:${WIKI_TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git" wiki_repo
+          # Sync generated pages into the wiki working tree (drop deleted pages).
+          rsync -a --delete --exclude='.git' _wiki_build/ wiki_repo/
+          cd wiki_repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "Wiki already up to date — nothing to publish."
+          else
+            git commit -m "Sync wiki from docs @ ${GITHUB_SHA::7}"
+            git push
+            echo "Wiki updated."
+          fi

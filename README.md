@@ -23,7 +23,7 @@ Local web app for cataloguing, browsing, and managing an STL file library.
 [Scanning & Folder Structure](https://github.com/RBStephenson/STL-Inventory/wiki/Scanning-and-Folder-Structure) ·
 [Troubleshooting](https://github.com/RBStephenson/STL-Inventory/wiki/Troubleshooting-and-FAQ)
 
-> The in-repo [`docs/`](docs/README.md) folder mirrors the wiki and backs the in-app **Help** page.
+> The wiki is generated from the in-repo [`docs/`](docs/README.md) folder (the single source of truth, which also backs the in-app **Help** page).
 
 ## Installation
 
