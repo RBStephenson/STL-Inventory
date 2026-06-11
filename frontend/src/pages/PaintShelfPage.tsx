@@ -5,6 +5,7 @@ import {
   api, ImportDiff, Paint, PaintBrand, PaintCreate, PaintFinish, PAINT_FINISHES,
 } from "../api/client";
 import { useToast } from "../context/ToastContext";
+import HelpLink from "../components/HelpLink";
 
 const PAGE_SIZE = 48;
 
@@ -284,6 +285,7 @@ export default function PaintShelfPage() {
         <h1 className="flex items-center gap-2 text-2xl font-bold text-white">
           <Palette size={22} className="text-indigo-400" />
           Paint Shelf
+          <HelpLink section="paint-shelf" label="How the Paint Shelf works" />
         </h1>
         <div className="flex items-center gap-2">
           <input

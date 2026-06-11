@@ -90,6 +90,14 @@ describe("PaintShelfPage", () => {
     expect(screen.getAllByText("Monument Hobbies — Pro Acryl Standard")).toHaveLength(2);
   });
 
+  it("links the header help icon to the Paint Shelf Help section", async () => {
+    renderPage();
+    await screen.findByText("Coal Black");
+
+    expect(screen.getByRole("link", { name: /how the paint shelf works/i }))
+      .toHaveAttribute("href", "/help#paint-shelf");
+  });
+
   it("passes filters to the API when changed", async () => {
     const { api } = await import("../api/client");
     renderPage();
