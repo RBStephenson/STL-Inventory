@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import {
   Rocket, LayoutGrid, Layers, FileBox, Box, Image as ImageIcon,
   Star, Wrench, Globe, AlertTriangle, Tags, Users, FolderSearch,
-  Settings as SettingsIcon, Database, EyeOff, LifeBuoy, FolderOpen, Heart, type LucideIcon,
+  Settings as SettingsIcon, Database, EyeOff, LifeBuoy, FolderOpen, Heart, Palette, type LucideIcon,
 } from "lucide-react";
 
 /** A keyboard key, styled like the hints elsewhere in the app. */
@@ -330,6 +330,63 @@ const SECTIONS: Section[] = [
           </li>
           <li><strong>Enrich from web</strong> — match a creator's online storefront listings against your local models and bulk-apply metadata.</li>
         </ul>
+      </>
+    ),
+  },
+  {
+    id: "paint-shelf",
+    title: "Paint Shelf (painting guides)",
+    icon: Palette,
+    body: (
+      <>
+        <p>
+          An opt-in module for tracking your paint inventory — the foundation for
+          the upcoming painting-guides feature. Turn it on under{" "}
+          <strong>Settings → Painting Guides</strong>; the nav then gains{" "}
+          <strong>Guides</strong> and <strong>Paint Shelf</strong> entries.
+        </p>
+        <p>
+          The <strong>Paint Shelf</strong> is a table of every paint you own (or
+          want). Search by name or code, filter by brand, line, finish, or owned
+          state, and see a <strong>color chip</strong> for any paint with a swatch
+          color set. Add or edit paints inline with the <strong>Add paint</strong>{" "}
+          form.
+        </p>
+        <p>
+          A paint line can declare a <strong>code pattern</strong> (a regex like{" "}
+          <code>{"^MPA-\\d{3}$"}</code>); codes are then validated on entry, so
+          typos like <code>MPA-12</code> are caught with a clear message instead of
+          polluting the shelf.
+        </p>
+        <p className="font-medium text-gray-200">PaintRack CSV import &amp; export</p>
+        <p>If you track paints in <strong>PaintRack</strong>, import its CSV export directly:</p>
+        <ul>
+          <li>
+            <strong>Import CSV</strong> shows a <strong>diff preview</strong> first —
+            what would be added, changed, or removed — and writes nothing until you
+            confirm. Removals are off by default behind a separate checkbox, and only
+            ever touch paints that came from a previous import; paints you added by
+            hand are never deleted.
+          </li>
+          <li>
+            Codes that don't match a line's code pattern are listed as{" "}
+            <strong>warnings</strong> in the preview — informational only, the rows
+            still import.
+          </li>
+          <li>
+            <strong>Export CSV</strong> downloads your shelf in the same format, and an
+            export re-imports as an empty diff (a lossless round-trip).
+          </li>
+        </ul>
+        <p>
+          The CSV has an optional seventh <strong>Color</strong> column, so an import
+          can pre-populate swatch colors and every export includes the ones you've set.
+          Hex (<code>#2A2A2A</code>), <code>rgb(…)</code>, and <code>hsv(…)</code> are
+          all accepted and normalized to hex on import — because the latter two contain
+          commas, those cells must be <strong>quoted</strong>. Files without the column
+          (like real PaintRack exports) import exactly as before, and an empty color
+          cell never clears a swatch you've already set.
+        </p>
       </>
     ),
   },
