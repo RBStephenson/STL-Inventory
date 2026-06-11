@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cassie Hack — 1:6 Scale Painting Guide</title>
+
+  <link rel="stylesheet" href="../../assets/guide.css">
+  <link rel="stylesheet" href="../../assets/print.css" media="print">
+
+  <style>
+    :root {
+      --bg:       #0e0c0c;
+      --surface:  #161212;
+      --surface2: #1c1717;
+      --surface3: #242020;
+      --border:      #2e2424;
+      --text:        #e8e0e0;
+      --text-muted:  #a89898;
+      --text-dim:    #5c4a4a;
+      --accent: #cc1122;
+      --tag-airbrush: #2266aa;
+      --tag-brush:    #226622;
+      --tag-wash:     #884422;
+      --tag-finish:   #555555;
+      --tag-effects:  #882244;
+      --tag-filter:   #446688;
+      --tip-bg:      rgba(0, 160, 0, 0.08);
+      --tip-border:  #2a6a2a;
+      --warn-bg:     rgba(200, 50, 50, 0.08);
+      --warn-border: #882222;
+    }
+    .hero {
+      background: linear-gradient(135deg, #0a0000 0%, #180808 35%, #2a0a0a 55%, #180606 75%, #0a0000 100%);
+      border-bottom: 2px solid var(--accent);
+    }
+    .method-card-badge { color: #fff; }
+  </style>
+</head>
+<body>
+
+<nav class="guide-nav">
+  <a href="../../index.html">← All Guides</a>
+</nav>
+
+<div class="hero">
+  <div class="category">Comics · Hack/Slash</div>
+  <h1><span>Cassie</span> Hack</h1>
+  <div class="subtitle">1:6 Scale · Survivor skin · punk horror aesthetic · heavy blood effects · rusty bat</div>
+  <div class="film-ref">
+    <em>"I hunt the things that kill people. Someone has to."</em>
+  </div>
+  <div class="series-badge">
+    <span class="active">① Cassie ✓</span>
+    <a href="vlad-painting-guide.html">② Vlad</a>
+  </div>
+  <div class="creator-credit">
+    Character by <strong>Tim Seeley</strong> · <em>Hack/Slash</em> published by Image Comics
+  </div>
+  <div class="ref-thumb-wrap">
+    <img class="ref-thumb"
+         src="img/cassie-hack-reference.png"
+         alt="Cassie Hack — reference"
+         onclick="openRefModal(this.src, this.alt)"
+         title="Click to view full reference image">
+    <div class="ref-thumb-label">Reference</div>
+  </div>
+</div>
+
+<div class="paint-bar">
+  <span class="paint-bar-label">Paint Lines Used</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#cc4444;"></span>Pro Acryl</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#8855cc;"></span>Pro Acryl Expert Acrylics</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#4488cc;"></span>Army Painter Fanatic</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#22aaaa;"></span>Army Painter Speedpaint 2.0</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#888888;"></span>Army Painter John Blanche</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#885522;"></span>FW Acrylic Inks</span>
+</div>
+
+<div class="container">
+
+  <div class="char-brief">
+    <strong>Cassie Hack</strong> — slasher hunter from Tim Seeley's <em>Hack/Slash</em> comic series. Fair warm skin with the exertion flush of someone who's been in a fight all night; values first means reading rugged and world-worn, not soft and idealized. Zenithal light source from directly above: her pale face catches top-light hard while deep shadows pool under her chin and in the creases of her outfit. Outfit breakdown: black bikini halter top, dark navy pleated mini skirt, green-and-black striped arm warmers, white knee-high socks, and a choker with chrome "FaQ" belt buckle. Right hand: nail-studded baseball bat (aged wood, rusted iron hardware, dried blood). Left hand: a blood-red axe with fresh blood on the blade. Icy pale blue eyes. Priority materials: skin (Method 2B Red Zenithal), high-contrast dark fabric with pleat differentiation, heavy dried body splatter, fresh axe blood as satin narrative contrast. Every surface should tell a story of survival.
+  </div>
+
+  <div class="tabs">
+    <div class="tab tab-btn active" onclick="showTab('skin', this)">Skin</div>
+    <div class="tab tab-btn" onclick="showTab('hair-eyes', this)">Hair &amp; Eyes</div>
+    <div class="tab tab-btn" onclick="showTab('outfit', this)">Outfit</div>
+    <div class="tab tab-btn" onclick="showTab('boots-hardware', this)">Boots &amp; Hardware</div>
+    <div class="tab tab-btn" onclick="showTab('baseball-bat', this)">Weapons</div>
+    <div class="tab tab-btn" onclick="showTab('blood-effects', this)">Blood Effects</div>
+    <div class="tab tab-btn" onclick="showTab('base', this)">Base</div>
+    <div class="tab tab-btn" onclick="showTab('airbrush-skills', this)">Airbrush Skills</div>
+    <div class="tab tab-btn" onclick="showTab('brush-skills', this)">Brush Skills</div>
+    <div class="tab tab-btn" onclick="showTab('thinning-ref', this)">Thinning Ref</div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: SKIN
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content active" id="skin">
+
+    <div class="section-header">
+      <h2>Skin</h2>
+      <p>Fair warm complexion — survivor energy, exertion flush, world-worn rather than idealized. Red Zenithal method recommended.</p>
+    </div>
+
+    <div class="phase-label">Value Structure</div>
+    <div class="value-map">
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#1a0a06;"></div>
+        <div class="chip-val">~10%</div>
+        <div class="chip-label">Deep Shadow</div>
+      </div>
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#4a2215;"></div>
+        <div class="chip-val">~28%</div>
+        <div class="chip-label">Shadow</div>
+      </div>
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#c08055;"></div>
+        <div class="chip-val">~52%</div>
+        <div class="chip-label">Mid-Tone</div>
+      </div>
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#ddb090;"></div>
+        <div class="chip-val">~75%</div>
+        <div class="chip-label">Highlight</div>
+      </div>
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#f0dcc8;"></div>
+        <div class="chip-val">~90%</div>
+        <div class="chip-label">Specular</div>
+      </div>
+    </div>
+
+    <div class="phase-label">Method Selection</div>
+    <div class="method-rec-block">
+      <strong>RECOMMENDED: Method 2B — Red Zenithal.</strong> Cassie has a fair warm complexion, but she's a fighter — her skin should read as warm and flushed, with exertion visible in the cheeks and knuckles. The red zenithal creates that underlying warmth automatically, giving her the look of someone who's been sprinting through the dark rather than sitting for a portrait. Magenta (Method 2A) would skew too soft and feminine for the character's energy.
+    </div>
+
+    <div class="method-cards">
+
+      <div class="method-card">
+        <h4>Method 1 — Basic</h4>
+        <p>Classic layering. Prime → shadow undercoat → base coat → mid-tone → highlight → optional unifying glaze.</p>
+        <span class="mc-pros">Most predictable; easy to correct mid-session</span>
+        <span class="mc-cons">Can read flat without enough layers at 1:6 scale</span>
+        <span class="mc-best">First-time painters, 28mm tabletop, speed priority</span>
+      </div>
+
+      <div class="method-card">
+        <h4>Method 2A — Pinkle</h4>
+        <p>Black prime → white zenithal → magenta all over → red ink into recesses → thin flesh layers over top.</p>
+        <span class="mc-pros">Luminous sub-surface scattering; fewer layers needed</span>
+        <span class="mc-cons">Skews too soft and pink for Cassie's tougher character energy</span>
+        <span class="mc-best">Fair / feminine / heroic protagonist display figures</span>
+      </div>
+
+      <div class="method-card recommended">
+        <span class="method-card-badge">★ Recommended for Cassie</span>
+        <h4>Method 2B — Red Zenithal</h4>
+        <p>Black prime → white zenithal → FW Crimson Ink glaze all over → thin flesh layers over top. The red underlayer creates natural exertion flush and survivor warmth.</p>
+        <span class="mc-pros">Natural warmth and flush; zenithal does the heavy lifting on value</span>
+        <span class="mc-cons">Same zenithal quality dependency as Method 2A — nail the zenithal first</span>
+        <span class="mc-best">Rugged, weathered, world-worn figures; survivor and fighter skin types</span>
+      </div>
+
+      <div class="method-card">
+        <h4>Method 3 — Wash Tinting</h4>
+        <p>Mid-tone base → satin varnish seal → yellow wash (fatty areas) → seal → blue wash (vein areas) → seal → red wash (capillary zones). Filter variant uses Speedpaint Medium, not water.</p>
+        <span class="mc-pros">Most realistic tonal mapping; three distinct undertone zones</span>
+        <span class="mc-cons">Slowest method — three varnish layers and dry times required</span>
+        <span class="mc-best">Historical, portrait, maximum-realism display pieces</span>
+      </div>
+
+    </div>
+
+    <div class="freckle-note">
+      <strong>Freckling / Speckling:</strong> After skin is sealed, thin Burnt Sienna 059 to near-watercolor. PSI 8–12, airbrush 3–5cm from surface, needle almost fully closed. Short trigger bursts — micro-dots, not lines. Target nose bridge, cheeks, and the backs of hands. One pass → step back → assess. Cassie's aesthetic reads as physically real rather than clean — moderate freckle density suits her well.
+    </div>
+
+    <div class="phase-label">Step-by-Step</div>
+
+    <div class="sub-tabs">
+      <div class="sub-tab active"     onclick="showSubTab('skin', 'skin-pro', this)">Pro Acryl</div>
+      <div class="sub-tab expert-tab" onclick="showSubTab('skin', 'skin-expert', this)">✦ Expert Acrylics — Brush Only</div>
+    </div>
+
+    <div class="sub-content active" id="skin-pro">
+
+      <div class="phase-label">Foundation</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 1 · Airbrush</span>
+        <h3>Black Prime</h3>
+        <p>Full coverage with P-002 Black Primer — undiluted, 0.5mm nozzle, 30+ PSI, 20–25cm distance. Rotate the figure to eliminate bare patches. This is the zenithal shadow and the darkest value in every material on this figure.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#111111;"></div><div class="swatch-info"><div class="swatch-name">Black Primer P-002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~5% value — zenithal base, deepest shadow anchor</div></div></div>
+        </div>
+        <div class="warning"><strong>⚠ NOTE:</strong> Never thin primer. It breaks down surface adhesion and defeats the purpose. Use straight from bottle at 30+ PSI.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 2 · Airbrush</span>
+        <h3>White Zenithal</h3>
+        <p>P-003 White Primer — undiluted, 0.5mm nozzle, 30+ PSI. Spray from directly above (90° to the figure's crown). Heavy coverage on top surfaces — forehead, top of nose, cheekbones, chin, tops of hands. Fade to nothing by the underside of the chin, under the nose, under the brows. The black should remain completely untouched on underplanes. This gradient IS your value structure — everything after this is color, not light.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#f5f5f5;"></div><div class="swatch-info"><div class="swatch-name">White Primer P-003</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~95% value — top-plane catch-light anchor</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> After the zenithal, photograph the face and desaturate it. You should see a clear light-source read — bright forehead, dark under-brows, bright nose tip, dark under-nose, bright chin top, dark under-chin. If it looks flat, add more white from directly overhead before continuing.</div>
+      </div>
+
+      <div class="phase-label">Red Zenithal Underpainting</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 3 · Airbrush — Filter</span>
+        <h3>FW Crimson Ink — Red Zenithal Glaze</h3>
+        <p>Thin FW Crimson Ink 513 at 1:4 to 1:5 (ink to water). Apply all over the skin areas — face, neck, hands, any exposed flesh. This floods the figure with warm red that pools in zenithal shadows and reads as pink warmth on the lit top surfaces. This is the exertion flush Cassie needs. Don't try to control it — let it flow everywhere and trust the value structure underneath.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#aa0022;"></div><div class="swatch-info"><div class="swatch-name">FW Crimson Ink 513</div><div class="swatch-brand">FW Acrylic Inks</div><div class="swatch-value">~20% value — transparent red underpainting; warm exertion glaze</div></div></div>
+        </div>
+        <div class="warning"><strong>⚠ TRANSPARENT RED SUBSTITUTION:</strong> Pro Acryl Transparent Red 047 turns <em>magenta</em> when thinned for glazing — it is not suitable for this step or any thinned transparent red application. FW Crimson Ink 513 is the correct substitute. PA Transparent Red 047 may still be used near-undiluted for spot applications on completed and sealed skin, but NOT for this glaze pass.</div>
+      </div>
+
+      <div class="phase-label">Flesh Build</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush</span>
+        <h3>Shadow Flesh — Recess Base</h3>
+        <p>Coal Black 002 + Dark Umber 019 at 3:1 into the deepest skin recesses (contact shadows, deepest underchin, deepest nasolabial folds). Then Shadow Flesh 042 thinned 1:2 across the broader shadow areas — under brows, sides of the nose, under the chin ledge, between fingers. These are semi-transparent flesh-colored shadow layers that warm the zenithal black without fully covering it.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#1a0a06;"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002 + Dark Umber 019 (3:1)</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~8% value — deepest recess liner; contact shadows only</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#7a4a30;"></div><div class="swatch-info"><div class="swatch-name">Shadow Flesh 042</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~35% value — broad shadow flesh; dark side of face</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> At 1:6 scale, Shadow Flesh lives only in the recesses — nowhere near the raised planes. If you can see it on the cheekbones, you've gone too far.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 5 · Brush</span>
+        <h3>Mid-Tone — True Skin Color</h3>
+        <p>Warm Flesh 073 thinned 1:2. This is Cassie's actual skin color — apply it across the middle-value areas, leaving shadow recesses untouched. Think of the mid-tone as occupying the 40–60% value zone: cheek planes (not the topmost highlight area), the sides of the nose, the forehead edges, the backs of hands. Several thin passes rather than one coat.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#d09060;"></div><div class="swatch-info"><div class="swatch-name">Warm Flesh 073</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~52% value — mid-tone anchor, true skin color</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 6 · Brush</span>
+        <h3>Highlight 1 — Raised Planes</h3>
+        <p>Warm Flesh 073 + Peach Flesh at 1:1, thinned 1:2. Apply to raised surfaces that catch zenithal light directly: cheekbone peaks, nose bridge, center of the brow ridge, chin tip, knuckle tops. Target approximately 70–75% value — clearly lighter than mid-tone. Feather the edges with a clean damp brush.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#d09060;"></div><div class="swatch-info"><div class="swatch-name">Warm Flesh 073</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">base of highlight mix</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#e8a880;"></div><div class="swatch-info"><div class="swatch-name">Peach Flesh</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">highlight lifter — warm peach direction</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 1:1 Warm Flesh 073 + Peach Flesh — thin 1:2 with water; feather onto raised planes only</div>
+        <div class="tip"><strong>✦ TIP:</strong> This highlight should read about 70–75% value — noticeably lighter than the mid-tone when viewed at arm's length. If it looks subtle, push it.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 7 · Brush</span>
+        <h3>Highlight 2 — Near-Specular Planes</h3>
+        <p>Bright Shadow Flesh S41 thinned 1:2. Apply only to the absolute peak of each raised plane: the very top of the cheekbone, the nose tip, the center of the brow, the very tip of the chin. Tiny area, high impact. Should read approximately 80–85% value — almost cream. This is what makes skin pop at display distance.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#e0c0a0;"></div><div class="swatch-info"><div class="swatch-name">Bright Shadow Flesh S41</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~82% value — near-specular highlight; very small area</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-label">Specular &amp; Finish</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 8 · Brush</span>
+        <h3>Specular Highlight</h3>
+        <p>Bold Titanium White 001 + Warm Flesh 073 at 3:1 — the tint keeps it integrating with the skin rather than reading as a stuck-on dot. One micro-dot on each specular point: nose tip, cheekbone peak, center lower lip, catch-light on brow ridge. Load brush, wipe nearly dry, touch the peak only. Approximately 90% value — the hottest point of light contact. Note: Pro Acryl S18 Heavy Warm White is not in inventory — this 3:1 mix is the correct substitute.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#f5f5f5;"></div><div class="swatch-info"><div class="swatch-name">Bold Titanium White 001</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">dominant mix component (~75%)</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#d09060;"></div><div class="swatch-info"><div class="swatch-name">Warm Flesh 073</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">tint to integrate with skin tone (~25%)</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 3:1 Bold Titanium White 001 + Warm Flesh 073 — near-dry brush, single dot per specular point</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number wash">Step 9 · Glaze</span>
+        <h3>FW Crimson Ink — Capillary Zone Glaze</h3>
+        <p>FW Crimson Ink 513 thinned heavily at 1:8 (near-watercolor). Apply with a fine brush to the nose tip, ear rims, knuckle tops, and lips. Draws out the capillary flush and makes skin look alive. Very small amounts — one or two passes. Wipe back excess immediately with a barely-damp clean brush.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#aa0022;"></div><div class="swatch-info"><div class="swatch-name">FW Crimson Ink 513</div><div class="swatch-brand">FW Acrylic Inks</div><div class="swatch-value">transparent crimson glaze — capillary zone tint</div></div></div>
+        </div>
+        <div class="warning"><strong>⚠ NOTE:</strong> Do NOT use Pro Acryl Transparent Red 047 thinned at this ratio — it turns magenta. FW Crimson Ink 513 stays true red at all dilution levels.</div>
+      </div>
+
+    </div><!-- end #skin-pro -->
+
+    <div class="sub-content" id="skin-expert">
+      <div class="tip"><strong>✦ Brush-only workflow.</strong> Expert Acrylics are heavy-body re-wettable acrylics — they stay open long enough for wet blending. Grey prime works better than black for this method. The red zenithal mood is achieved through warm underpainting rather than an airbrush glaze.</div>
+
+      <div class="phase-label">Foundation</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Grey Prime + Warm Shadow Undercoat</h3>
+        <p>Prime with P-005 Dark Neutral Grey. Then apply Burnt Umber MEA-007 + Payne's Grey MEA-013 at 2:1, thinned 1:2, over all skin areas. Warm dark shadow tone — the foundation from which everything builds up.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#4a2810;"></div><div class="swatch-info"><div class="swatch-name">Burnt Umber MEA-007</div><div class="swatch-brand">Pro Acryl Expert Acrylics</div><div class="swatch-value">warm dark shadow base — dominant</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#3a4a5a;"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey MEA-013</div><div class="swatch-brand">Pro Acryl Expert Acrylics</div><div class="swatch-value">cool muting agent — prevents shadow reading too warm</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 2:1 Burnt Umber MEA-007 + Payne's Grey MEA-013 — thin 1:2; shadow undercoat across all skin</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush — Wet Blend</span>
+        <h3>Mid-Tone Wet Blend</h3>
+        <p>While the shadow undercoat is still slightly wet (or rewet a small area), apply Warm Flesh 073 to raised planes. Expert Acrylics stay open long enough to blend the edge. Use a clean damp flat brush to feather the join between Warm Flesh and the shadow undercoat. Work one area at a time.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#d09060;"></div><div class="swatch-info"><div class="swatch-name">Warm Flesh 073</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~52% value — mid-tone, wet blend into shadow</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span>
+        <h3>Highlight Layers + Specular</h3>
+        <p>Once the mid-tone is fully dry: Warm Flesh 073 + Peach Flesh (1:1) on raised planes, then Bright Shadow Flesh S41 on the peak areas. Specular: Bold Titanium White 001 + Warm Flesh 073 at 3:1 (not pure white — the tint integrates it).</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#e8a880;"></div><div class="swatch-info"><div class="swatch-name">Peach Flesh</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">highlight lift — warm peach direction</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#e0c0a0;"></div><div class="swatch-info"><div class="swatch-name">Bright Shadow Flesh S41</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~82% value — near-specular planes</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number wash">Step 4 · Glaze</span>
+        <h3>FW Crimson Ink Capillary Glaze</h3>
+        <p>FW Crimson Ink 513 thinned 1:8 — nose tip, ear rims, knuckles, lips. Same substitution rule: do NOT use Transparent Red 047 thinned — it turns magenta.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#aa0022;"></div><div class="swatch-info"><div class="swatch-name">FW Crimson Ink 513</div><div class="swatch-brand">FW Acrylic Inks</div><div class="swatch-value">transparent crimson — capillary zone tint</div></div></div>
+        </div>
+      </div>
+
+    </div><!-- end #skin-expert -->
+
+  </div><!-- end #skin -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: HAIR & EYES
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="hair-eyes">
+
+    <div class="section-header">
+      <h2>Hair &amp; Eyes</h2>
+      <p>Cassie's trademark black hair with a punk blue-sheen highlight; dark green eyes with high contrast against pale skin.</p>
+    </div>
+
+    <div class="phase-label">Hair — Black with Blue Sheen</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 · Airbrush</span>
+      <h3>Hair Base — Coal Black</h3>
+      <p>Coal Black 002 thinned 1:2, full coverage over the hair sculpt. Coal Black carries a very slight blue undertone that cooperates with the blue sheen glaze in a later step. This is the hair base — NOT Carbon Black, which has no temperature and will fight the blue sheen.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#1a1a1e;"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~5% value — hair base; blue-undertone near-black (not Carbon Black)</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 2 · Airbrush</span>
+      <h3>Value Build — Payne's Grey Zenithal</h3>
+      <p>Payne's Grey S02 thinned 1:3, zenithal from above. Builds value structure in the hair — crown and top strands catch light, underside stays near-black. Payne's Grey is dark enough to read as black at arm's length but carries cool blue-grey that cooperates with the sheen glaze. Target approximately 35–40% value on topmost areas only.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#4a5a6a;"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey S02</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~35% value — hair zenithal; cool blue-grey value build</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 3 · Airbrush — Filter</span>
+      <h3>Blue Sheen Glaze</h3>
+      <p>Transparent Blue 046 thinned 1:5 to 1:6. Apply from directly above, covering the crown and top of the hair mass. Extremely thin pass — cool blue tint on the Payne's Grey zenithal planes, not a visible blue coat. Should be almost invisible at first glance but shift the hair from grey-black to blue-black at the right angle. One pass, step back, assess.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#3366cc;"></div><div class="swatch-info"><div class="swatch-name">Transparent Blue 046</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">transparent tint — blue-black sheen on crown</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> If the blue comes out too strong, immediately hit the same area with a very thin pass of Payne's Grey S02 to knock it back. Blue on black hair should read as a sheen, not a blue highlight.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 4 · Brush</span>
+      <h3>Strand Highlights</h3>
+      <p>Grey Blue 055 with a fine liner brush — follow the direction of hair flow, pulling thin lines from the base of each strand toward the tip. Focus on the crown and outer silhouette where light catches individual strands. These lines should be subtle — texture at arm's length, not visible painted lines.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#6a80a0;"></div><div class="swatch-info"><div class="swatch-name">Grey Blue 055</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~55% value — individual strand highlight lines; blue-grey direction</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 5 · Brush</span>
+      <h3>Specular Strand Catch-Lights</h3>
+      <p>Grey Blue 055 + Bold Titanium White 001 at 1:1 — micro-dots or very short lines at the absolute peak of the crown. These are the hot-spot catch-lights. Keep them very sparse — no more than 4–6 points across the whole hair mass. These make black hair read as shiny rather than just dark.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#6a80a0;"></div><div class="swatch-info"><div class="swatch-name">Grey Blue 055</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">base of specular mix</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#f5f5f5;"></div><div class="swatch-info"><div class="swatch-name">Bold Titanium White 001</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">specular lifter — final hotspot only</div></div></div>
+      </div>
+      <div class="ratio-box">Mix: 1:1 Grey Blue 055 + Bold Titanium White 001 — near-dry brush tip, micro-dot on crown peaks only</div>
+    </div>
+
+    <div class="phase-label">Eyes</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 6 · Brush</span>
+      <h3>Eye Socket Shadow</h3>
+      <p>Payne's Grey S02 + Coal Black 002 at 1:1 — deepen the socket recess before touching the iris. Establishes depth and makes the iris pop. Socket shadow should be darker than surrounding skin — if skin is at 52% value, socket should be closer to 25–30%. Let dry completely before the iris.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#4a5a6a;"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey S02</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">socket shadow — cool dark tone, not flat black</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#1a1a1e;"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">deepening agent for socket</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 7 · Brush</span>
+      <h3>Iris — Icy Pale Blue Base</h3>
+      <p>White Blue S04 as the full iris base — this is a very pale, cool blue that sits close to white on the value scale. Cassie's eyes in the reference are strikingly light, almost silver-blue, which creates high contrast against her dark hair and pale skin. Paint the full iris area carefully with a size 0 or 00 brush. Work both eyes simultaneously.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#c8d8f0;"></div><div class="swatch-info"><div class="swatch-name">White Blue S04</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~80% value — icy pale blue iris base; near-white with cool blue tint</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 8 · Brush</span>
+      <h3>Iris Detail — Depth Ring, Pupil, Sclera, Catch-Light</h3>
+      <p>Outer iris ring: thin Grey Blue 055 around the outer edge of the iris only — this adds depth and prevents the eye from reading as a blank white disc. Keep it to 1–2mm at most. Pupil: Coal Black 002 — centered dot (permitted use of near-black). Sclera: Shadow Flesh 042 rather than pure white — realistic eyes are off-white; the slight warmth integrates with skin tone. Catch-light: Bold Titanium White 001 — one tiny dot at the lower-left of the iris/pupil junction, the only pure white on the eye.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#6a80a0;"></div><div class="swatch-info"><div class="swatch-name">Grey Blue 055</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">outer iris ring — thin dark edge gives depth to pale iris</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#1a1a1e;"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">pupil — permitted use of near-black</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#7a4a30;"></div><div class="swatch-info"><div class="swatch-name">Shadow Flesh 042</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">sclera — warm off-white, integrates with skin</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#f5f5f5;"></div><div class="swatch-info"><div class="swatch-name">Bold Titanium White 001</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">catch-light dot — final specular only, lower-left iris position</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> The pale iris + dark outer ring combination is what gives Cassie her distinctive intense stare. If the iris base looks too similar to the sclera, add one more thin coat of White Blue S04 to the iris only to increase the separation. Work both eyes simultaneously — mirror-image strokes keep them matched.</div>
+    </div>
+
+  </div><!-- end #hair-eyes -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: OUTFIT
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="outfit">
+
+    <div class="section-header">
+      <h2>Outfit</h2>
+      <p>Black bikini halter top, dark navy pleated mini skirt, green/black striped arm warmers, white knee-high socks, black leather choker, and a chrome "FaQ" belt buckle. Multiple materials in close proximity — differentiated by value, texture, and finish contrast.</p>
+    </div>
+
+    <div class="phase-label">Step-by-Step</div>
+
+    <div class="sub-tabs">
+      <div class="sub-tab active"     onclick="showSubTab('outfit', 'outfit-pro', this)">Pro Acryl</div>
+      <div class="sub-tab expert-tab" onclick="showSubTab('outfit', 'outfit-expert', this)">✦ Expert Acrylics — Brush Only</div>
+    </div>
+
+    <div class="sub-content active" id="outfit-pro">
+
+      <div class="phase-label">Black Bikini Halter Top</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 1 · Airbrush</span>
+        <h3>Bikini Top — Value Structure</h3>
+        <p>The figure is primed black from the Skin tab — the bikini top already has its base. Apply a targeted Payne's Grey S02 zenithal at 1:2 over the top surfaces of the bra cups and straps. The halter top is a fitted garment with small, tight fabric areas — value contrast is subtle here compared to the skirt. Push the direct top-lit surfaces to approximately 35% value; sides and underside stay at 5–8%.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#4a5a6a;"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey S02</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~35% value — fitted fabric zenithal; top surface of cups and straps</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush</span>
+        <h3>Bikini Top — Fold Edge Highlights</h3>
+        <p>Dark Neutral Grey 044 thinned 1:1 — fine edge highlight along the top rim of the cups and along strap edges. This is fitted fabric, so highlights are tight and minimal compared to looser garments. Black Wash 200 into any seam lines or where the strap meets the cup.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#555566;"></div><div class="swatch-info"><div class="swatch-name">Dark Neutral Grey 044</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~45% value — fitted fabric edge highlight; rim of cups and straps</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ MATERIAL CONTRAST:</strong> Bikini top = matte. Skirt = matte. Arm warmers = matte. Socks = matte. Boots = satin. Belt buckle = gloss. Choker = satin. Varnish contrast is what separates materials — don't skip it.</div>
+      </div>
+
+      <div class="phase-label">Dark Navy Pleated Mini Skirt</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 3 · Airbrush</span>
+        <h3>Skirt Base — Dark Blue-Black</h3>
+        <p>Blue Black 056 thinned 1:2, zenithal coverage over the skirt. The skirt in the reference is dark navy/charcoal with a slight blue-purple undertone — not quite as warm as Coal Black, not as vivid as a true navy. Blue Black gives that dark cool near-black quality. Apply from above so the tops of the pleats catch light while the pleat valleys stay very dark.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#222230;"></div><div class="swatch-info"><div class="swatch-name">Blue Black 056</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~12% value — dark navy skirt base; cool blue-black undertone</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush</span>
+        <h3>Pleats — Value Build and Edge Highlights</h3>
+        <p>Pleated fabric has a very specific light pattern: each pleat is a folded panel, so one face catches direct overhead light while the adjacent face falls into shadow. Payne's Grey S02 thinned 1:2 on the front face of each pleat (the light-facing panel). Then Dark Neutral Grey 044 as a fine edge highlight on the sharpest fold edge of each pleat — this is the most important stroke on the skirt. Finally, Black Wash 200 into the deep valley between each pleat pair to separate them clearly.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#4a5a6a;"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey S02</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~35% value — pleat face highlight; light-facing panel of each pleat</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#555566;"></div><div class="swatch-info"><div class="swatch-name">Dark Neutral Grey 044</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~45% value — pleat fold edge; sharpest crease highlight line</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#1a1a22;"></div><div class="swatch-info"><div class="swatch-name">Black Wash 200</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">pleat valley shadow — deepest fold recess, capillary action</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> The pleated skirt reads as three-dimensional only if the alternating light/shadow faces of the pleats are clearly distinct. If the pleat faces all look the same value, the skirt reads flat. Exaggerate the contrast between the lit and shadow face of each pleat more than feels natural.</div>
+      </div>
+
+      <div class="phase-label">Green/Black Striped Arm Warmers</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 5 · Airbrush</span>
+        <h3>Arm Warmer Base — Dark Olive Green</h3>
+        <p>Camo Green 020 thinned 1:2, full coverage over both arm warmers. The reference shows a dark olive/army green — Camo Green is the right tone. Apply with a zenithal pass so the raised ribbing texture (if present in the sculpt) catches top light while the recesses between ribs stay dark.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#3a4a25;"></div><div class="swatch-info"><div class="swatch-name">Camo Green 020</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~30% value — dark olive green arm warmer base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 6 · Brush</span>
+        <h3>Arm Warmer Stripes &amp; Highlights</h3>
+        <p>Coal Black 002 thinned 1:1 — paint the black stripe bands across the arm warmer at regular intervals (reference shows approximately 3–4 black bands on each arm warmer). Then Dark Camo Green 036 + a touch of Bold Titanium White 001 (4:1) for a raised-rib highlight — drybrush lightly across the green sections to pick out knit texture peaks. The result should be dark olive green with slightly lighter rib tops and distinct black stripe bands.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#1a1a1e;"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">stripe bands — near-black horizontal accent bands</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#2a3a18;"></div><div class="swatch-info"><div class="swatch-name">Dark Camo Green 036</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">rib highlight — drybrush over green sections for knit texture</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> Paint the black stripes with a fine flat brush, keeping them parallel and evenly spaced. At 1:6 scale the stripes are narrow — one brush width each. Map out all stripe positions before painting any of them so the spacing stays consistent across the full arm length.</div>
+      </div>
+
+      <div class="phase-label">White Knee-High Socks</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 7 · Brush</span>
+        <h3>Sock Base — Worn Off-White</h3>
+        <p>Bold Titanium White 001 + Shadow Flesh 042 at 4:1, thinned 1:2 — the slight warm tint keeps the socks from reading as pure white plastic. Cassie's socks in the reference look slightly grubby, not fresh-laundered. Full coverage over the sock areas. Leave the very topmost sock surfaces for a brighter highlight pass.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#eeeedc;"></div><div class="swatch-info"><div class="swatch-name">Bold Titanium White 001 + Shadow Flesh 042 (4:1)</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~85% value — worn off-white sock base; slightly warm tint</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 8 · Brush</span>
+        <h3>Sock Stripes, Shadow &amp; Grime</h3>
+        <p>Coal Black 002 thinned 1:1 — paint 2 black stripe bands near the top cuff of each sock (the reference shows two distinct black stripes at the sock top). Payne's Grey S02 thinned 1:3 as a very light wash over the lower sock areas — adds the slight grime of a sock that's been in a boot all night. Black Wash 200 thinned 1:3 into the seam lines and toe area.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#1a1a1e;"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">sock top stripes — 2 black bands at the cuff</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#4a5a6a;"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey S02</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">grime wash — lower sock area; very thin pass only</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-label">Choker &amp; Belt Hardware</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 9 · Brush</span>
+        <h3>Black Leather Choker</h3>
+        <p>Coal Black 002 + Payne's Grey S02 at 2:1 as the choker base. The choker is a narrow band around the neck — it catches the overhead light on its top surface and stays near-black on the front face. Apply Payne's Grey S02 as a subtle top-surface highlight. Satin varnish — leather, same finish as the boots.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#222230;"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002 + Payne's Grey S02 (2:1)</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~10% value — dark leather choker base</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#4a5a6a;"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey S02</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">top-surface highlight — narrow highlight on top of choker band</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 10 · Brush</span>
+        <h3>Belt Buckle — Chrome TMM</h3>
+        <p>The "FaQ" belt buckle is large and prominent — chrome/silver hardware with engraved text. Same TMM gloss-black-base method as the boot buckles: Satin Black S39 base → Dark Silver 030 on light-facing planes only → Magnesium S42 on apex edges → gloss varnish spot. The belt strap itself is Coal Black 002 with subtle Payne's Grey S02 highlight, matte.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#606070;"></div><div class="swatch-info"><div class="swatch-name">Dark Silver 030</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~55% value — mid metallic; light-facing buckle planes only</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#e0e0e8;"></div><div class="swatch-info"><div class="swatch-name">Magnesium S42</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~92% value — apex edge specular; buckle corners and raised lettering</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> The buckle text is raised at 1:6 scale — the engraved letters catch the metallic drybrush automatically. Apply Magnesium S42 with a near-dry flat brush across the buckle face; the raised letters pick up the bright metallic while the recessed areas stay dark.</div>
+      </div>
+
+    </div><!-- end #outfit-pro -->
+
+    <div class="sub-content" id="outfit-expert">
+      <div class="tip"><strong>✦ Brush-only workflow.</strong> Expert Acrylics excel at black fabric — the heavy-body formula drybrushs cleanly for fold highlighting. Use it for the skirt pleats and arm warmers especially.</div>
+
+      <div class="phase-label">Expert Acrylics — Black Fabric &amp; Skirt</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Payne's Grey Fabric Underpainting</h3>
+        <p>Payne's Grey MEA-013 thinned 1:2 over all black fabric surfaces — bikini top, skirt. Drag the brush in the direction of fabric flow. For the skirt, stroke downward along the pleat faces to follow their natural drape.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#3a4a5a;"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey MEA-013</div><div class="swatch-brand">Pro Acryl Expert Acrylics</div><div class="swatch-value">~30% value — fabric value build from near-black</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush — Drybrush</span>
+        <h3>Pleat Face Drybrush</h3>
+        <p>Load Payne's Grey MEA-013 neat on a flat brush, wipe until almost nothing comes off, then drag down the front face of each pleat. The near-dry paint catches only the raised pleat face, leaving the deep valley between pleats untouched. This is the most efficient way to achieve the pleat light/shadow alternation without careful edge-painting each pleat.</p>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span>
+        <h3>Recess Deepening + Green Underpainting</h3>
+        <p>Carbon Black MEA-002 thinned 1:2 into the deepest pleat valleys. Then for the arm warmers, use Sap Green MEA (or Burnt Sienna MEA-010 + Prussian Blue MEA to mix an olive) as the base green — wet blend the rib highlights while the base is still open.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#111111;"></div><div class="swatch-info"><div class="swatch-name">Carbon Black MEA-002</div><div class="swatch-brand">Pro Acryl Expert Acrylics</div><div class="swatch-value">deepest pleat valleys — pure black where light cannot reach</div></div></div>
+        </div>
+      </div>
+
+    </div><!-- end #outfit-expert -->
+
+  </div><!-- end #outfit -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: BOOTS & HARDWARE
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="boots-hardware">
+
+    <div class="section-header">
+      <h2>Boots &amp; Hardware</h2>
+      <p>Heavy black leather combat boots with a satin finish; chrome/silver buckles using the 1:6 scale TMM gloss-black-base method.</p>
+    </div>
+
+    <div class="phase-label">Black Leather Boots</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 · Airbrush</span>
+      <h3>Leather Base — Warm Near-Black</h3>
+      <p>Payne's Grey S02 + Coal Black 002 at 1:2, thinned 1:2. Zenithal pass over the boots. Leather responds to light differently than fabric — it has form highlights on every rounded surface (toe cap, ankle bulge, heel), not just fold edges. Think of it as a rounded object: the top surface of the toe cap should be noticeably lighter than the underside.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#4a5a6a;"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey S02</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~30% value at zenithal peak — leather value structure</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#1a1a1e;"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">deep shadow — sides, under-boot, inside ankle</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 2 · Brush</span>
+      <h3>Leather Form Highlights</h3>
+      <p>Payne's Grey S02 thinned 1:2 — apply to the raised leather surfaces: top of toe cap, front ankle, boot shaft at its widest point. Smooth, even highlight rather than edge highlight — leather doesn't have sharp edges. Use a medium round brush and feather the edges outward.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#4a5a6a;"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey S02</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">leather form highlight — broad smooth application</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 3 · Wash</span>
+      <h3>Crease Lines &amp; Wear Marks</h3>
+      <p>Black Wash 200 into the flex creases across the boot ankle and toe — capillary action, not scrubbing. Coal Black 002 fine line along the boot sole seam. These crease lines tell the story that these boots have been worn hard.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#1a1a22;"></div><div class="swatch-info"><div class="swatch-name">Black Wash 200</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">crease and wear lines — boot flex lines and sole seam</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number finish">Step 4 · Finish</span>
+      <h3>Leather Varnish — Satin</h3>
+      <p>Satin varnish over all leather boot surfaces. Satin is the correct finish for well-worn leather — not matte (reads as canvas or suede), not gloss (reads as patent leather). Satin differentiates the boots from the matte fabric immediately.</p>
+    </div>
+
+    <div class="phase-label">Chrome Buckles &amp; Hardware — TMM 1:6 Scale</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 5 · Airbrush</span>
+      <h3>Gloss Black Base for Hardware</h3>
+      <p>Satin Black S39 over all buckle and metal hardware surfaces. The gloss black base IS the permanent shadow layer. You will NOT paint the shadow side of the hardware — the black base handles it automatically. This is the gloss-black-base method for 1:6 scale TMM: you're painting the light that hits the metal, not the metal itself.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#181818;"></div><div class="swatch-info"><div class="swatch-name">Satin Black S39</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~3% value — gloss black base; permanent hardware shadow layer</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 6 · Brush</span>
+      <h3>Mid Metallic — Light-Facing Planes Only</h3>
+      <p>Dark Silver 030 thinned 1:3 — apply ONLY to surfaces that face directly toward the overhead light source. On a buckle: the top horizontal face, the bail top, the prong face. Leave all side-facing and downward-facing surfaces as gloss black. Multiple thin passes rather than one coat.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#606070;"></div><div class="swatch-info"><div class="swatch-name">Dark Silver 030</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~55% value — mid metallic; light-facing planes only</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TMM PRINCIPLE:</strong> Restraint is the technique. You're not covering the buckle in metallic paint — you're painting the light that hits the buckle. The more selective you are with the metallic placement, the more convincing the metal reads.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 7 · Brush</span>
+      <h3>Bright Edge Highlight — Apex Corners</h3>
+      <p>Magnesium S42 — apply to the sharpest corners and edges of each buckle. Where an edge transitions from light-facing to dark-facing, put a very fine line of bright metallic. Micro-dots on the sharpest corner points. These are what make hardware read as metal rather than grey paint.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#e0e0e8;"></div><div class="swatch-info"><div class="swatch-name">Magnesium S42</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~92% value — apex edge highlight; brightest metallic specular</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number finish">Step 8 · Finish</span>
+      <h3>Hardware Finish — Spot Gloss Varnish</h3>
+      <p>Targeted gloss varnish on the metal hardware only using a fine brush with MPAM-003 Gloss Varnish. Polished chrome on combat boots should be gloss — it creates immediate visual pop against the surrounding satin leather and matte fabric. Do not gloss the leather or fabric accidentally.</p>
+    </div>
+
+  </div><!-- end #boots-hardware -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: BASEBALL BAT
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="baseball-bat">
+
+    <div class="section-header">
+      <h2>Weapons</h2>
+      <p>Two weapons: a battered wood-and-nail baseball bat in the right hand, and a blood-red axe in the left. The bat reads aged and rusted. The axe head is factory-coated red — treat it as a bold colour surface, not raw metal — with fresh blood applied over the top.</p>
+    </div>
+
+    <div class="phase-label">Step-by-Step</div>
+
+    <div class="sub-tabs">
+      <div class="sub-tab active"     onclick="showSubTab('baseball-bat', 'bat-pro', this)">Pro Acryl</div>
+      <div class="sub-tab expert-tab" onclick="showSubTab('baseball-bat', 'bat-expert', this)">✦ Expert Acrylics — Brush Only</div>
+    </div>
+
+    <div class="sub-content active" id="bat-pro">
+
+      <div class="phase-label">Wood — Aged Baseball Bat</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 1 · Airbrush</span>
+        <h3>Wood Base — Dark Umber</h3>
+        <p>Dark Umber 019 thinned 1:2, full coverage. This is the darkest value of the wood — the base of the value range. Wood grain is a lighter value running through this dark base, not a dark line through a light base. Starting dark is the right approach for aged, worn wood.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#4a2a18;"></div><div class="swatch-info"><div class="swatch-name">Dark Umber 019</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~25% value — wood dark base; shadow grain and flat areas</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 2 · Airbrush</span>
+        <h3>Wood Value Build — Zenithal</h3>
+        <p>Light Umber 018 thinned 1:2 from zenithal angle. A baseball bat is a cylinder: the very top stripe is lightest, transitioning to dark on the sides and underneath. Add a touch of Golden Brown 017 to the Light Umber for the final pass to introduce warm variation in the mid-tone area.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#8a5530;"></div><div class="swatch-info"><div class="swatch-name">Light Umber 018</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~45% value — wood mid-tone; top surface of bat cylinder</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#aa7722;"></div><div class="swatch-info"><div class="swatch-name">Golden Brown 017</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">warm tone variation — add to Light Umber for final pass</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span>
+        <h3>Wood Grain Lines</h3>
+        <p>Dark Umber 019 thinned to near-watercolor (1:4 to 1:5) — use a liner brush to pull fine grain lines along the length of the bat. Parallel to the bat axis, slightly irregular spacing, occasionally branching around knots. Subtle — visible at close range but not screaming "painted lines" at arm's length. No more than 8–12 grain lines total.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#4a2a18;"></div><div class="swatch-info"><div class="swatch-name">Dark Umber 019</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">near-watercolor — subtle grain line application</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number wash">Step 4 · Wash</span>
+        <h3>Wood Wash — Recess Unification</h3>
+        <p>Brown Wash 201 thinned 1:2 — flow over the entire wood surface. Let it pool in grain lines and knot recesses. Unifies the zenithal and grain work, gives the wood an aged read, deepens grain contrast without hard lines.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#3a2010;"></div><div class="swatch-info"><div class="swatch-name">Brown Wash 201</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">warm unifying wash — pools in grain lines and knots</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 5 · Finish</span>
+        <h3>Wood Varnish — Matte</h3>
+        <p>Matte varnish over the wood surface. Aged wood is matte — no lacquer sheen. This creates contrast with the gloss-varnished nail metal. Seal before adding rust effects.</p>
+      </div>
+
+      <div class="phase-label">Rusty Nails &amp; Spikes — Iron with Heavy Oxidation</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 6 · Airbrush</span>
+        <h3>Nail Base — Red Oxide Primer</h3>
+        <p>Red Oxide Primer MPAP-019 over all nail/spike surfaces. This primer is the perfect rust pre-shade: warm red-brown that acts as the ambient occlusion layer under the metallic. Metal and rust effects applied over it look like genuine oxidized iron, not painted metal.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#882222;"></div><div class="swatch-info"><div class="swatch-name">Red Oxide Primer MPAP-019</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~25% value — rust ambient occlusion base for iron hardware</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 7 · Brush</span>
+        <h3>Bare Metal — Nail Tips and Wear Points</h3>
+        <p>Dark Silver 030 thinned 1:2 — apply ONLY to the nail tips and areas that would have worn through their rust layer under physical stress. Leave most of the nail surface as red oxide. Target approximately 60% rusted, 40% bare-metal. Nail tips take the most impact and have the most bare metal.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#606070;"></div><div class="swatch-info"><div class="swatch-name">Dark Silver 030</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">bare metal — nail tips and impact-stressed surfaces only</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number effects">Step 8 · Effects</span>
+        <h3>Rust Effects — Three-Layer Texture Build</h3>
+        <p>Dark Rust WP3166 stippled around the nail base (moisture from the wood causes most oxidization here). Then Fresh Rust WP3167 stippled over the top with slightly less coverage. Finally Orange Brown S27 dry-brushed very lightly over the fresh rust for warm rust highlight. Three-layer rust creates visible texture — recesses stay dark, peaks pick up bright orange rust.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#7a3a18;"></div><div class="swatch-info"><div class="swatch-name">Dark Rust WP3166</div><div class="swatch-brand">Army Painter Fanatic</div><div class="swatch-value">deep rust — heavy around nail base and wood entry point</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#aa5522;"></div><div class="swatch-info"><div class="swatch-name">Fresh Rust WP3167</div><div class="swatch-brand">Army Painter Fanatic</div><div class="swatch-value">bright rust — stipple over Dark Rust, less coverage</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#cc7733;"></div><div class="swatch-info"><div class="swatch-name">Orange Brown S27</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">rust peak highlight — dry brush over fresh rust peaks</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> Stipple rust effects with an old worn brush — the ragged bristle tip creates naturally irregular rust texture that a clean flat brush cannot achieve. 2–3 stipple passes rather than one heavy coat.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 9 · Finish</span>
+        <h3>Hardware Finish — Matte</h3>
+        <p>Matte varnish over all rusted nail surfaces. Rust is fully matte — any sheen kills the effect. Bare nail tip points can receive a tiny spot of satin to suggest exposed metal, but the rusted body of each nail must be matte.</p>
+      </div>
+
+      <div class="phase-label">Axe — Red-Coated Head &amp; Wood Handle</div>
+
+      <div class="tip"><strong>✦ READ THE SURFACE:</strong> The axe head is not raw metal — it's a factory-applied red coating, like powder-coat or enamel. Paint it as a bold opaque red colour surface rather than a metallic one. The red is the feature. Blood effects come after, on top of the finished red.</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 10 · Airbrush</span>
+        <h3>Axe Head Base — Deep Crimson</h3>
+        <p>Matte Black 003 as a dark base prime, then Bold Pyrrole Red 003 thinned 1:2 as a full coverage coat. This is the richest mid-red — saturated and punchy. Start darker than you want to finish: Red Orange AMP 017 zenithal pass from above for the upper face of the axe head only. The underside and recesses stay at Bold Pyrrole Red depth. No metallic tones here — this reads as coated, not raw steel.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#8a0a0a;"></div><div class="swatch-info"><div class="swatch-name">Bold Pyrrole Red 003</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~35% value — full red basecoat; shadow and recess areas remain this depth</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#cc2211;"></div><div class="swatch-info"><div class="swatch-name">Red Orange AMP 017</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~55% value — warm zenithal pass; upper axe face only</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 11 · Brush</span>
+        <h3>Axe Head Edge Catch-Lights</h3>
+        <p>Bold Pyrrole Red 003 + Bold Titanium White 001 at 4:1, thinned 1:2 — fine line on the absolute top edge of the axe blade and any raised ridges. Keep these specular hits tiny. The blade edge gets the lightest value; everywhere else stays warm mid-red. No white on its own — this is a tinted near-white that stays within the red family.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#ee4433;"></div><div class="swatch-info"><div class="swatch-name">Bold Pyrrole Red 003 + Bold Titanium White 001 (4:1)</div><div class="swatch-brand">Pro Acryl mix</div><div class="swatch-value">~70% value — blade edge catch-light; tinted not white</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number wash">Step 12 · Wash</span>
+        <h3>Axe Recess Deepening</h3>
+        <p>Black Wash 200 thinned 1:3 — flow into the axe socket, any stamped markings, and the junction between the head and handle. The black wash neutralises the red very slightly in recesses, giving depth without muddying the overall red read. Keep it controlled — flow and wick, don't flood.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#1a1a1a;"></div><div class="swatch-info"><div class="swatch-name">Black Wash 200</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">recess unifier — thinned 1:3; shadow socket and deep recesses only</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 13 · Finish</span>
+        <h3>Axe Head Seal — Matte First, Then Blood</h3>
+        <p>Matte varnish over the axe head before blood effects. This locks in the red layer and gives the blood something consistent to sit on top of. Fresh blood effects go over the sealed matte surface (see Blood Effects tab — Fresh Blood section). After blood is dry, a spot of satin varnish on the wettest-looking fresh blood deposits only.</p>
+      </div>
+
+      <div class="phase-label">Axe Handle — Wood</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 14 · Brush</span>
+        <h3>Handle — Follow Bat Wood Recipe</h3>
+        <p>Use the same recipe as Steps 1–5 of the bat wood section: Dark Umber 019 base → Light Umber 018 mid-tone → Brown Wash 201 unification → matte varnish. Scale down grain line count (shorter handle = fewer visible grain lines). The handle should read as the same wood species as the bat — visual consistency tells the viewer these are tools from the same workbench.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#4a2a18;"></div><div class="swatch-info"><div class="swatch-name">Dark Umber 019</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">handle dark base — same recipe as bat</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#8a5530;"></div><div class="swatch-info"><div class="swatch-name">Light Umber 018</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">handle mid-tone — top surface zenithal</div></div></div>
+        </div>
+      </div>
+
+    </div><!-- end #bat-pro -->
+
+    <div class="sub-content" id="bat-expert">
+      <div class="tip"><strong>✦ Brush-only workflow.</strong> Expert Acrylics are excellent for wood — Burnt Umber, Burnt Sienna, and Sepia as a triad give rich organic wood tones with wet-blended grain detail.</div>
+
+      <div class="phase-label">Expert Acrylics — Wood</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Dark Wood Undercoat</h3>
+        <p>Burnt Umber MEA-007 + Sepia MEA-012 at 2:1, thinned 1:2. Rich warm dark brown as full basecoat — darker than the finished wood will appear, giving room to build highlights upward.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#4a2810;"></div><div class="swatch-info"><div class="swatch-name">Burnt Umber MEA-007</div><div class="swatch-brand">Pro Acryl Expert Acrylics</div><div class="swatch-value">~25% value — dark wood base</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#5a3515;"></div><div class="swatch-info"><div class="swatch-name">Sepia MEA-012</div><div class="swatch-brand">Pro Acryl Expert Acrylics</div><div class="swatch-value">warm dark modifier</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 2:1 Burnt Umber MEA-007 + Sepia MEA-012 — thin 1:2; full basecoat over primed wood</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush — Wet Blend</span>
+        <h3>Warm Mid-Tone Grain Wet Blend</h3>
+        <p>While the Burnt Umber base is still slightly wet, apply Burnt Sienna MEA-010 in broad strokes along the top face of the bat cylinder. Feather with a clean damp brush from Burnt Sienna into Burnt Umber on either side. Add fine grain lines with a liner brush in the same wet medium — they blend immediately for a soft, natural wood look.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#9a4418;"></div><div class="swatch-info"><div class="swatch-name">Burnt Sienna MEA-010</div><div class="swatch-brand">Pro Acryl Expert Acrylics</div><div class="swatch-value">~45% value — warm wood mid-tone; wet blend into dark base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span>
+        <h3>Grain Highlight + Sepia Unification Glaze</h3>
+        <p>Warm Brown S09 thinned 1:2 — drybrush lightly over the top surface once fully dry to pick out the highest grain ridges. Then a very thin glaze of Sepia MEA-012 at 1:4 over the whole wood surface to unify the colors and add the aged, slightly darkened look of an old bat.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#8a5535;"></div><div class="swatch-info"><div class="swatch-name">Warm Brown S09</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">dry brush highlight — grain peak catch-light</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#5a3515;"></div><div class="swatch-info"><div class="swatch-name">Sepia MEA-012</div><div class="swatch-brand">Pro Acryl Expert Acrylics</div><div class="swatch-value">unification glaze — thinned 1:4; ages the wood surface</div></div></div>
+        </div>
+      </div>
+
+    </div><!-- end #bat-expert -->
+
+  </div><!-- end #baseball-bat -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: BLOOD EFFECTS
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="blood-effects">
+
+    <div class="section-header">
+      <h2>Blood Effects</h2>
+      <p>Cassie is a slasher hunter — heavy blood coverage is part of the character. All blood here is <strong>dried</strong>: dark brown-red, matte, textured where thick. Not fresh. Not glossy. Not bright red.</p>
+    </div>
+
+    <div class="tip"><strong>✦ DRIED VS FRESH — THE KEY DISTINCTION:</strong> Fresh blood is bright red and slightly glossy. Dried blood is dark brown-red — almost black in thick deposits, transitioning to dark rust-red in thin layers. Cassie's blood has dried. If anything looks too red or too glossy, it needs another pass of darker color or matte varnish.</div>
+
+    <div class="phase-label">Blood Spatter — Airbrush</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 · Airbrush — Effects</span>
+      <h3>Large Splatter Pattern</h3>
+      <p>Dry Blood WP3164 thinned 1:3. PSI 8–12, 0.2mm nozzle, 3–5cm from the surface, needle almost fully closed. Short trigger bursts produce micro-droplets that scatter realistically. Aim for torso, arms, and face. Blood spatters radially from an impact — concentrate on one side of the figure as if from a single strike direction. Start with larger drops (slightly more trigger), then add micro-spatter over the top. Rotate the figure 30–40° between each burst — real fight splatter comes from multiple directions.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#551010;"></div><div class="swatch-info"><div class="swatch-name">Dry Blood WP3164</div><div class="swatch-brand">Army Painter Fanatic</div><div class="swatch-value">~15% value — dark dried blood; primary airbrush spatter base</div></div></div>
+      </div>
+      <div class="warning"><strong>⚠ NOTE:</strong> Practice blood spatter on a white card first. The gap between convincing splatter and "sneezed paint on it" is about two seconds of trigger time. One pass → step back → assess before adding more.</div>
+    </div>
+
+    <div class="phase-label">Thick Blood Deposits — Brush</div>
+
+    <div class="step">
+      <span class="step-number effects">Step 2 · Effects — Brush</span>
+      <h3>Heavy Impact Deposits — Stipple and Pool</h3>
+      <p>Murder Scene WP2057 Speedpaint applied near-undiluted to areas of concentrated blood — the bat head, hands, forearms, any direct-contact impact area. Stipple with an old frayed brush for texture — thick deposits of dried blood have a slightly crystalline surface texture. Layer Dark Rust WP3166 into the deepest deposits while Murder Scene is still slightly wet for the brown-red tonal variation of very old dried blood.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#3a0808;"></div><div class="swatch-info"><div class="swatch-name">Murder Scene WP2057</div><div class="swatch-brand">Army Painter Speedpaint 2.0</div><div class="swatch-value">~8% value — thick blood deposit base; darkest blood tone</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#7a3a18;"></div><div class="swatch-info"><div class="swatch-name">Dark Rust WP3166</div><div class="swatch-brand">Army Painter Fanatic</div><div class="swatch-value">~20% value — aged dried blood variation; warm brown-red modifier</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number effects">Step 3 · Effects — Brush</span>
+      <h3>Aged Blood Transition — Thin Deposit Edges</h3>
+      <p>Bloodmoon Red WP4006 (John Blanche) — deep desaturated red that reads as very old dried blood. Apply at the outer edges of thick blood deposits where they thin out onto surrounding surfaces. The transition from thick dark deposit to thin stain: Murder Scene (darkest) → Bloodmoon Red → Dry Blood WP3164 spatter → bare surface. This gradient tells the story of blood volume and age.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#662020;"></div><div class="swatch-info"><div class="swatch-name">Bloodmoon Red WP4006</div><div class="swatch-brand">Army Painter John Blanche</div><div class="swatch-value">~22% value — deep desaturated dried blood; thin-deposit transition tone</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number effects">Step 4 · Effects — Brush</span>
+      <h3>Bat Impact Zone — Concentrated Blood</h3>
+      <p>The bat head and area around each nail/spike should have concentrated, accumulated blood. Apply Murder Scene WP2057 thickly around the nail heads, stipple outward toward the bat edges. Dark Rust WP3166 into the nail recess channels (blood that dried inside the wound channel around the nail). The bat blood should look older and heavier than the spatter on Cassie's skin — darker, browner, more accumulated.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#3a0808;"></div><div class="swatch-info"><div class="swatch-name">Murder Scene WP2057</div><div class="swatch-brand">Army Painter Speedpaint 2.0</div><div class="swatch-value">thick deposit — around nail heads and bat impact zone</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#7a3a18;"></div><div class="swatch-info"><div class="swatch-name">Dark Rust WP3166</div><div class="swatch-brand">Army Painter Fanatic</div><div class="swatch-value">aged blood — inside nail channels and oldest deposits</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number finish">Step 5 · Finish</span>
+      <h3>Blood Varnish — Matte</h3>
+      <p>Matte varnish over all blood areas. Dried blood is fully matte. Even "relatively recent" impact zones should be matte — Cassie's blood has had time to oxidize. Gloss on blood reads as fresh, which is wrong for this figure's character and story.</p>
+      <div class="warning"><strong>⚠ NOTE:</strong> Resist glossing the blood for a "wet look." It destroys the dried character of the effect. If you want any finish contrast, limit it to the most minimal possible satin (not gloss) on the most recent-looking deposits only.</div>
+    </div>
+
+    <div class="phase-label">Fresh Blood — Axe Head Only</div>
+
+    <div class="tip"><strong>✦ FRESH VS DRIED — CASSIE'S TWO BLOOD STORIES:</strong> The blood on Cassie's <em>body</em> is dried: dark brown-red, fully matte, textured where thick. The blood on the <em>axe</em> is <strong>fresh</strong>: vivid red, slightly satin, still wet-looking. One weapon, one recent kill — this is the narrative contrast that makes the figure read immediately.</div>
+
+    <div class="step">
+      <span class="step-number effects">Step 6 · Effects — Brush</span>
+      <h3>Fresh Blood Base — Axe Blade and Socket</h3>
+      <p>Bold Pyrrole Red 003 thinned 1:2 — apply to the axe blade edge and socket area in irregular pools and drips. Don't cover the whole axe head; concentrate at the blade tip and any wound-channel recesses. Allow the red coat beneath to show — the blood should feel like it's sitting <em>on</em> the painted surface, not replacing it. Stipple some and drag some for variety of texture.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#cc1111;"></div><div class="swatch-info"><div class="swatch-name">Bold Pyrrole Red 003</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">vivid fresh blood base — concentrated at blade edge and socket</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number effects">Step 7 · Effects — Brush</span>
+      <h3>Fresh Blood Depth — Darkening Recess</h3>
+      <p>Murder Scene WP2057 into the deepest blood pools on the axe only — where blood has collected thickest in recesses. Apply sparingly: just the very deepest pools at the socket and any significant wound channels. Don't let it dull the overall bright-red read — it's there for depth, not to age the fresh blood.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#3a0808;"></div><div class="swatch-info"><div class="swatch-name">Murder Scene WP2057</div><div class="swatch-brand">Army Painter Speedpaint 2.0</div><div class="swatch-value">pool depth only — recess darkening in thickest fresh blood areas</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number finish">Step 8 · Finish</span>
+      <h3>Fresh Blood Seal — Satin Spot Varnish</h3>
+      <p>Satin varnish — spot application over the fresh blood areas on the axe only. Satin, not gloss: fresh blood straight from a wound has a satin-wet look, not a liquid-plastic gloss. Apply with a small brush, covering only the freshest-looking blood pools and drips. The dried blood elsewhere on the figure stays fully matte — the contrast in finish between axe (satin) and body (matte) is the final storytelling beat.</p>
+      <div class="warning"><strong>⚠ NOTE:</strong> Keep the satin isolated. If it bleeds onto the matte dried blood or the red axe surface beyond the blood pools, the whole effect collapses. Apply in small deliberate patches — build up if needed, but you can't take it back.</div>
+    </div>
+
+  </div><!-- end #blood-effects -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: BASE
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="base">
+
+    <div class="section-header">
+      <h2>Base</h2>
+      <p>Circular concrete street base with a manhole cover, two beer bottles, a spreading blood pool, and gravel/grime at the rim. Urban grit — every surface is worn, stained, and weathered.</p>
+    </div>
+
+    <div class="phase-label">Value Structure</div>
+    <div class="value-map">
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#1a1a1e;"></div>
+        <div class="chip-val">~5%</div>
+        <div class="chip-label">Deep Recess</div>
+      </div>
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#3a3a44;"></div>
+        <div class="chip-val">~25%</div>
+        <div class="chip-label">Shadow Concrete</div>
+      </div>
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#6a6a72;"></div>
+        <div class="chip-val">~50%</div>
+        <div class="chip-label">Mid Concrete</div>
+      </div>
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#9a9aa2;"></div>
+        <div class="chip-val">~70%</div>
+        <div class="chip-label">Highlight Slab</div>
+      </div>
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#c8c8cc;"></div>
+        <div class="chip-val">~85%</div>
+        <div class="chip-label">Edge Catch-Light</div>
+      </div>
+    </div>
+
+    <div class="phase-label">Concrete Slab &amp; Street Surface</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 · Airbrush</span>
+      <h3>Concrete Base — Dark Neutral Grey Prime</h3>
+      <p>P-005 Dark Neutral Grey Primer — undiluted, 0.5mm nozzle, full coverage. This primer colour is almost perfect for aged urban concrete straight out of the bottle; it gives you a genuine mid-value starting point rather than having to build grey from black. Let it fully cure before handling.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#444450;"></div><div class="swatch-info"><div class="swatch-name">Dark Neutral Grey Primer P-005</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~40% value — urban concrete starting tone</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 2 · Airbrush</span>
+      <h3>Concrete Zenithal — Value Structure</h3>
+      <p>Dark Neutral Grey 044 thinned 1:2, zenithal from above. The base disc is essentially a flat cylinder — the top face gets the lightest zenithal hit, the vertical rim and underside stay near the primer tone. Push the top face to approximately 55–60% value so the blood pool and bottles read against a lighter surface rather than disappearing into dark concrete.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#555566;"></div><div class="swatch-info"><div class="swatch-name">Dark Neutral Grey 044</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~55% value — concrete top face; zenithal pass from above</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 3 · Brush</span>
+      <h3>Concrete Texture — Stipple and Variation</h3>
+      <p>Payne's Grey S02 thinned 1:3, stippled with an old brush across the concrete surface — irregular pressure, random direction, not uniform. This adds the grain and micro-variation of real concrete. Then add a second stipple pass using Dark Neutral Grey 044 at slightly less coverage. Concrete is never a flat even colour — the two-tone stipple breaks up the uniformity convincingly.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#4a5a6a;"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey S02</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">dark stipple variation — cool tone contrast</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#555566;"></div><div class="swatch-info"><div class="swatch-name">Dark Neutral Grey 044</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">light stipple variation — lighter grain patches</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> Use the same old ratty brush you used for blood stippling — the irregular bristle tip is exactly what you want here for realistic concrete grain.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 4 · Wash</span>
+      <h3>Concrete Wash — Recess Staining</h3>
+      <p>Black Wash 200 thinned 1:2 — flow into the recessed texture of the manhole cover, the curb rim, and any panel lines in the base. Then immediately while that's still wet, touch in Brown Wash 201 (thinned 1:2) in isolated areas — corners, the gravel border zone, any area near the blood pool. Real street concrete is stained by oil, rust, and organic matter, not just uniform grey dust. The warm brown variation makes it read as genuinely dirty rather than just dark.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#1a1a22;"></div><div class="swatch-info"><div class="swatch-name">Black Wash 200</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">recess shadow — manhole recesses, panel lines, curb underside</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#3a2010;"></div><div class="swatch-info"><div class="swatch-name">Brown Wash 201</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">organic stain variation — corners, gravel zone, near blood pool</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 5 · Brush</span>
+      <h3>Curb Rim Edge Highlight</h3>
+      <p>Dark Neutral Grey 044 + Bold Titanium White 001 at 2:1, thinned 1:2 — edge highlight the top lip of the curb rim and any sharp concrete corners. This catches the overhead light source and makes the base read as three-dimensional rather than just a flat disc. Keep it fine — the raised rim is a narrow surface. Concrete chips and wear marks on the curb edge look convincing as deliberate irregular breaks in the highlight line.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#555566;"></div><div class="swatch-info"><div class="swatch-name">Dark Neutral Grey 044</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">base of rim highlight mix</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#f5f5f5;"></div><div class="swatch-info"><div class="swatch-name">Bold Titanium White 001</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">highlight lifter — rim and sharp edge catch-lights</div></div></div>
+      </div>
+      <div class="ratio-box">Mix: 2:1 Dark Neutral Grey 044 + Bold Titanium White 001 — thin 1:2; fine edge highlight on curb rim and concrete corners only</div>
+    </div>
+
+    <div class="phase-label">Manhole Cover</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 6 · Brush</span>
+      <h3>Manhole Cover — Cast Iron Detail</h3>
+      <p>The manhole cover sits recessed into the base disc. Its surface should read as dark cast iron — slightly different in tone from the surrounding concrete. Coal Black 002 + Payne's Grey S02 at 2:1 thinned 1:2 as the cover base — slightly cooler and darker than the surrounding concrete. Then drybrush Dark Silver 030 very lightly across the raised ridges and text of the cover — just enough to catch the highest texture points. This reads as worn metal, not polished chrome.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2a2a35;"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002 + Payne's Grey S02 (2:1)</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~15% value — dark cast iron base; cooler than surrounding concrete</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#606070;"></div><div class="swatch-info"><div class="swatch-name">Dark Silver 030</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">worn metal drybrush — raised ridges and texture peaks only</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> Apply Black Wash 200 into the recessed pattern lines of the manhole cover before the drybrush step — the capillary wash floods the inset pattern and makes the cast-iron detail pop dramatically.</div>
+    </div>
+
+    <div class="phase-label">Beer Bottles</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 7 · Brush</span>
+      <h3>Dark Green Glass — Bottle Bodies</h3>
+      <p>Coal Black 002 as a full base coat on both bottles. Then Transparent Green 048 over the top — the transparent green over black gives dark bottle glass its characteristic very-dark-green colour rather than a surface green. Apply two thin coats of Transparent Green, leaving the near-black base showing through. The bottles in the reference are dark green glass — the kind of near-black emerald green of old beer bottles.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#1a1a1e;"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">base coat — dark ground for transparent green glass</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#1a5522;"></div><div class="swatch-info"><div class="swatch-name">Transparent Green 048</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">dark bottle glass — transparent over black gives near-black green</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 8 · Brush</span>
+      <h3>Bottle Glass Highlight &amp; Labels</h3>
+      <p>Bold Titanium White 001 + Transparent Green 048 at 1:1 — one thin vertical stripe on the light-facing edge of each bottle (left side from the figure's perspective for the overhead light source). Glass highlights are thin and sharp, not broad. Finish with gloss varnish on the glass areas only. Labels: paint the label area with Warm Grey 074 or Bright Ivory 022 as the label ground, then add very rough lettering or just a colour block — at 1:6 scale the labels are tiny. Black Wash 200 as a thin border line between label and glass.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#f5f5f5;"></div><div class="swatch-info"><div class="swatch-name">Bold Titanium White 001</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">glass specular highlight — thin vertical stripe on light-facing edge</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#c0c0a0;"></div><div class="swatch-info"><div class="swatch-name">Warm Grey 074</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">label ground — warm off-white paper colour</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> The fallen bottle will read differently from the standing one — the highlight stripe should rotate to match the new orientation. Treat each bottle as an individual object with its own light-facing plane.</div>
+    </div>
+
+    <div class="phase-label">Blood Pool on Base</div>
+
+    <div class="step">
+      <span class="step-number effects">Step 9 · Effects</span>
+      <h3>Blood Pool — Spreading Dried Pool</h3>
+      <p>Murder Scene WP2057 near-undiluted — apply to the areas of the base directly below Cassie and spreading outward. The pool should be thickest under her feet and thinner at the spreading edges. Stipple the edges so they feather into the concrete rather than having a clean line. While still wet, add Dry Blood WP3164 at the furthest edges of the pool — where the blood is thinnest it dries lightest. Add Bloodmoon Red WP4006 as a mid-tone at the pool boundary for the transition tone. This is dried blood on the base — same matte rules as the body splatter.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#3a0808;"></div><div class="swatch-info"><div class="swatch-name">Murder Scene WP2057</div><div class="swatch-brand">Army Painter Speedpaint 2.0</div><div class="swatch-value">darkest pool centre — near-black blood pooling under figure</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#662020;"></div><div class="swatch-info"><div class="swatch-name">Bloodmoon Red WP4006</div><div class="swatch-brand">Army Painter John Blanche</div><div class="swatch-value">pool mid-transition — where thick pool thins to a stain</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#551010;"></div><div class="swatch-info"><div class="swatch-name">Dry Blood WP3164</div><div class="swatch-brand">Army Painter Fanatic</div><div class="swatch-value">pool outer edge — thinnest dried stain at spreading boundary</div></div></div>
+      </div>
+      <div class="warning"><strong>⚠ NOTE:</strong> Matte varnish over the entire blood pool. Dried blood on concrete is completely matte — any gloss reads as fresh and wet, which conflicts with the dried blood on the figure itself.</div>
+    </div>
+
+    <div class="phase-label">Gravel &amp; Grime — Base Rim</div>
+
+    <div class="step">
+      <span class="step-number effects">Step 10 · Effects</span>
+      <h3>Gravel Texture at Base Rim</h3>
+      <p>MPA-T07 Brown Earth Fine texture applied around the outer rim of the base where concrete meets the edge — use a palette knife or old brush to stipple it on in a thin layer. Let dry fully. Then paint over with Dark Umber 019 as the base tone, leaving the texture peaks for the drybrush step. Drybrush lightly with Burnt Sienna 059 over the dried texture to pick out the grain peaks. A final very light drybrush of Dark Neutral Grey 044 blends the gravel with the surrounding concrete tone.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#4a2a18;"></div><div class="swatch-info"><div class="swatch-name">Dark Umber 019</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">gravel base tone — dark earth in the texture recesses</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#aa5522;"></div><div class="swatch-info"><div class="swatch-name">Burnt Sienna 059</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">gravel drybrush highlight — warm grain peak catch-light</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#555566;"></div><div class="swatch-info"><div class="swatch-name">Dark Neutral Grey 044</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">final unification drybrush — blends gravel tone into surrounding concrete</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number finish">Step 11 · Finish</span>
+      <h3>Base Varnish — Matte Overall, Spot Gloss on Glass</h3>
+      <p>Matte varnish over the entire base surface — concrete, manhole, gravel, blood pool. Then spot-apply gloss varnish (MPAM-003 with a fine brush) on the glass surfaces of the bottles only. The visual contrast of the gloss bottles against the fully matte concrete base is part of what makes them read as glass rather than just painted cylinders.</p>
+    </div>
+
+  </div><!-- end #base -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: AIRBRUSH SKILLS
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="airbrush-skills">
+
+    <div class="section-header">
+      <h2>Airbrush Skills</h2>
+      <p>Zenithal foundation, FW Crimson Ink skin glazing, blood spatter, and blue hair sheen — the airbrush techniques used in this guide.</p>
+    </div>
+
+    <div class="phase-label">Nozzle Assignments</div>
+    <table class="thin-table">
+      <thead>
+        <tr><th>Task</th><th>Nozzle</th><th>Why</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Priming (undiluted — do not thin)</td><td>0.5mm</td><td>High flow for primer viscosity; 30+ PSI</td></tr>
+        <tr><td>Zenithal base coats / fabric value build</td><td>0.3mm</td><td>Controlled coverage; smooth gradients over larger areas</td></tr>
+        <tr><td>FW Crimson Ink skin glaze / hair blue sheen</td><td>0.3mm</td><td>Even transparent glaze passes; very thin ratios at moderate PSI</td></tr>
+        <tr><td>Fine skin highlight passes / detail glazes</td><td>0.2mm</td><td>Fine control for targeted highlight on face and hands</td></tr>
+        <tr><td>Blood spatter / freckling</td><td>0.2mm</td><td>Needle almost closed; micro-droplet spray at 3–5cm distance</td></tr>
+      </tbody>
+    </table>
+
+    <div class="phase-label">Zenithal Sequence</div>
+    <div id="ab-zenithal-anchor"></div>
+
+    <div class="phase-label">PSI &amp; Distance Reference</div>
+    <table class="psi-table">
+      <thead>
+        <tr><th>Task</th><th>PSI</th><th>Distance</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Priming (undiluted)</td><td>30+</td><td>20–25cm</td><td>0.5mm nozzle; do NOT thin primer</td></tr>
+        <tr><td>Zenithal — black</td><td>30+</td><td>20–25cm</td><td>0.5mm nozzle; undiluted</td></tr>
+        <tr><td>Zenithal — white</td><td>30+</td><td>20–25cm</td><td>0.5mm nozzle; undiluted</td></tr>
+        <tr><td>FW Crimson Ink skin glaze</td><td>15–18</td><td>12–15cm</td><td>0.3mm; thinned 1:4 to 1:5; very thin pass</td></tr>
+        <tr><td>Base coat (skin / fabric)</td><td>15–18</td><td>10–15cm</td><td>0.3mm; thinned 1:2 to 1:3</td></tr>
+        <tr><td>Skin highlight passes</td><td>12–15</td><td>8–12cm</td><td>0.2mm; thinned 1:4; builds in thin layers</td></tr>
+        <tr><td>Hair blue sheen glaze</td><td>12–15</td><td>12–15cm</td><td>0.3mm; thinned 1:5 to 1:6; single pass only</td></tr>
+        <tr><td>Blood spatter</td><td>8–12</td><td>3–5cm</td><td>0.2mm; needle almost closed; micro-droplets</td></tr>
+        <tr><td>Freckling</td><td>8–12</td><td>3–5cm</td><td>0.2mm; near-watercolor; short burst only</td></tr>
+      </tbody>
+    </table>
+
+    <div id="ab-greyscale-anchor"></div>
+
+    <div class="phase-label">Blood Spatter Technique</div>
+
+    <div class="step">
+      <span class="step-number effects">Technique · Effects</span>
+      <h3>Airbrush Blood Spatter</h3>
+      <p>Set PSI to 8–12 (lower than standard work). Hold airbrush 3–5cm from the figure surface — much closer than normal. Close the needle almost completely. Short, sharp trigger pulls produce droplets; longer pulls produce streaks. Build up in multiple passes from different angles — rotate the figure 30–40° between each burst so the spatter reads as coming from multiple impact events during a fight.</p>
+      <div class="tip"><strong>✦ TIP:</strong> Practice on a white card held at the same distance first. The gap between convincing splatter and chaotic mess is two seconds of trigger time. One pass, step back, assess.</div>
+      <div class="warning"><strong>⚠ NOTE:</strong> Mask Cassie's face with adhesive putty if you want to control the face separately from heavy body spatter. Remove carefully after drying, before varnishing.</div>
+    </div>
+
+    <div class="phase-label">Troubleshooting</div>
+    <div class="trouble-grid">
+      <!-- Tip Dry card injected here by skills-reference.js -->
+      <div class="trouble-card">
+        <h4>Blowback / Bubbling</h4>
+        <p>Cause: needle pulled back too far while trigger is depressed. Effect: large bubble of paint erupts from the nozzle. Fix: maintain a consistent, small needle pull. Close the needle before releasing the trigger at the end of a pass. Don't overfill a side-feed cup.</p>
+      </div>
+      <div class="trouble-card">
+        <h4>Uneven Coverage / Banding</h4>
+        <p>Cause: inconsistent trigger pressure or movement speed, or paint too thick. Effect: visible striped bands in what should be a smooth gradient. Fix: keep the airbrush moving at a consistent speed, and match trigger pull to movement speed — slow on trigger when slowing your hand. Add thinner in small increments if the paint is too thick.</p>
+      </div>
+      <div class="trouble-card">
+        <h4>Paint Runs / Too Thin</h4>
+        <p>Cause: ratio too high, or PSI too high at close distance. Effect: paint runs down the figure, obscuring the zenithal. Fix: add paint to reduce the water content. Increase distance or reduce PSI. On the zenithal, err toward too thin — you can always add more passes, but you can't un-flood a zenithal.</p>
+      </div>
+    </div>
+
+  </div><!-- end #airbrush-skills -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: BRUSH SKILLS
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="brush-skills">
+
+    <div class="section-header">
+      <h2>Brush Skills</h2>
+      <p>Edge highlighting, thin layering, capillary wash placement, and blood stippling — the brush techniques used in this guide.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Brush</span>
+      <h3>Edge Highlighting — Black Surfaces</h3>
+      <p>Load a fine flat or chisel brush with your highlight mix. Wipe the brush until nearly dry — only a small amount of paint remains. Drag the loaded tip along the fold edge or corner. Paint deposits on the raised edge only because pressure is light. Work a small section at a time. On Cassie's fabric, the highlight should be a fine even line — not a blob, not a wash. For torn short edges, use short 2–3mm irregular strokes rather than a continuous drag, replicating torn fabric rather than a clean sewn edge.</p>
+      <div class="tip"><strong>✦ TIP:</strong> Vary the highlight density along torn edges for a worn, irregular look — no two torn edges in a real garment are identical.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Technique · Wash</span>
+      <h3>Capillary Wash Placement</h3>
+      <p>For all wash steps — boot creases, wood grain, fabric fold lines — use capillary action, not brushwork. Touch the loaded wash brush to the edge of the target recess and let the paint flow in on its own. Do not scrub or push the wash. Wipe any pooling on raised surfaces immediately with a barely-damp clean brush before it dries.</p>
+      <div class="warning"><strong>⚠ NOTE:</strong> Over-brushing a wash while wet activates the surfactants and creates a tide-mark edge as it dries. Touch and release — don't scrub.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number effects">Technique · Effects</span>
+      <h3>Blood Stippling</h3>
+      <p>Use an old brush with splayed, irregular bristles. Load with near-undiluted Murder Scene WP2057 or Dry Blood WP3164. Dab the brush directly down — don't drag. The irregular bristle tips create the granular texture of dried blood rather than a smooth painted surface. Build up in multiple layers: first pass lighter and sparser; second pass denser in the impact zones. Work from dark (Murder Scene) at the center to slightly lighter (Bloodmoon Red WP4006) at the edges.</p>
+      <div class="tip"><strong>✦ TIP:</strong> If you don't have a ratty brush handy, deliberately splay the bristles of a synthetic brush by pressing the tip firmly against the palette. The resulting irregular splay replicates the stippling texture.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Brush</span>
+      <h3>Thin Layering — Skin Build</h3>
+      <p>Every skin layer in this guide is applied thinly (1:1 to 1:2 paint:water) and built up in multiple passes. Each layer should be semi-transparent — you should still be able to see the value structure of the zenithal through it. Paint that is too thick covers the zenithal completely and flattens the result. Three thin layers always produces a better result than one thick layer.</p>
+      <div class="tip"><strong>✦ TIP:</strong> A well-thinned skin layer should look almost too transparent when first applied. As it dries, it reaches correct opacity. If the zenithal disappears after one coat, the paint was too thick.</div>
+    </div>
+
+    <!-- Greyscale check tip injected here by skills-reference.js -->
+
+  </div><!-- end #brush-skills -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: THINNING REF  (always last)
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="thinning-ref">
+    <!-- Content injected by skills-reference.js -->
+  </div><!-- end #thinning-ref -->
+
+</div><!-- end .container -->
+
+
+<footer class="guide-footer">
+  Guide by
+  <a href="https://www.youtube.com/@brent_the_programmer9108" target="_blank">brent_the_programmer</a>
+  &middot;
+  <a href="https://instagram.com/stephenson913" target="_blank">@stephenson913</a>
+</footer>
+
+<button class="back-to-top" id="backToTop" title="Back to top"
+        onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<div class="ref-modal" id="refModal" onclick="if(event.target===this)closeRefModal()">
+  <div class="ref-modal-inner">
+    <button class="ref-modal-close" onclick="closeRefModal()" title="Close">✕</button>
+    <img class="ref-modal-img" id="refModalImg" src="" alt="">
+    <div class="ref-modal-caption" id="refModalCaption"></div>
+  </div>
+</div>
+
+<script>
+window.GUIDE_THINNING = {
+  airbrushRows: [
+    { technique: 'Base coat (skin / fabric)',             nozzle: '0.3mm', ratio: '1:2 to 1:3',  behavior: 'Semi-transparent; builds in passes without obscuring zenithal value structure.' },
+    { technique: 'FW Crimson Ink — red zenithal glaze',  nozzle: '0.3mm', ratio: '1:4 to 1:6',  behavior: 'Very thin; floods warm red tint over white zenithal. Single pass, then step back.' },
+    { technique: 'Skin highlight passes',                 nozzle: '0.2mm', ratio: '1:4 to 1:5',  behavior: 'Floats onto raised planes only. Greyscale-check after each pass.' },
+    { technique: 'Hair blue sheen glaze (Transparent Blue 046)', nozzle: '0.3mm', ratio: '1:5 to 1:6',  behavior: 'Extremely thin tint pass. One pass only — more turns the hair blue, not blue-black.' },
+    { technique: 'Blood spatter (Dry Blood WP3164)',      nozzle: '0.2mm', ratio: '1:3',          behavior: 'PSI 8–12, distance 3–5cm, needle almost closed. Micro-droplets, not streaks.' },
+  ],
+  brushRows: [],
+  thinningCards: []
+};
+</script>
+
+<script src="../../assets/guide.js"></script>
+<script src="../../assets/skills-reference.js"></script>
+<script>
+  /* ── Reference image modal ─────────────────────────────── */
+  function openRefModal(src, alt) {
+    var modal = document.getElementById('refModal');
+    document.getElementById('refModalImg').src = src;
+    document.getElementById('refModalImg').alt = alt;
+    document.getElementById('refModalCaption').textContent = alt;
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeRefModal() {
+    document.getElementById('refModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeRefModal();
+  });
+
+  function showSubTab(parentId, contentId, btn) {
+    var parent = document.getElementById(parentId);
+    if (!parent) return;
+    parent.querySelectorAll('.sub-content').forEach(function(c) { c.classList.remove('active'); });
+    parent.querySelectorAll('.sub-tab').forEach(function(b) { b.classList.remove('active'); });
+    var el = document.getElementById(contentId);
+    if (el) el.classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+  (function() {
+    var btn = document.getElementById('backToTop');
+    if (!btn) return;
+    window.addEventListener('scroll', function() {
+      btn.classList.toggle('visible', window.scrollY > 300);
+    }, { passive: true });
+  })();
+</script>
+
+</body>
+</html>

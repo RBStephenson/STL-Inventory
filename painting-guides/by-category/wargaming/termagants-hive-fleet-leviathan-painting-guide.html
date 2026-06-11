@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Termagants — Hive Fleet Leviathan Painting Guide</title>
+  <link rel="stylesheet" href="../../assets/guide.css">
+  <link rel="stylesheet" href="../../assets/print.css" media="print">
+  <style>
+    :root {
+      --bg:       #0f080f;
+      --surface:  #1a0f1a;
+      --surface2: #221422;
+      --surface3: #2a1a2a;
+      --border:      #3a2030;
+      --text:        #e8e0e8;
+      --text-muted:  #aa88aa;
+      --text-dim:    #664466;
+      --accent: #9b3c8c;
+      --tag-airbrush: #2266aa;
+      --tag-brush:    #226622;
+      --tag-wash:     #884422;
+      --tag-finish:   #555555;
+      --tag-effects:  #882244;
+      --tag-filter:   #446688;
+      --tip-bg:      rgba(0, 160, 0, 0.08);
+      --tip-border:  #2a6a2a;
+      --warn-bg:     rgba(200, 50, 50, 0.08);
+      --warn-border: #882222;
+    }
+    .hero {
+      background: linear-gradient(135deg, #0f0812 0%, #1a0820 40%, #200a18 70%, #0f0812 100%);
+      border-bottom: 2px solid var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+<nav class="guide-nav">
+  <a href="../../index.html">← All Guides</a>
+</nav>
+
+<div class="hero">
+  <div class="category">Warhammer 40,000 · Tyranids</div>
+  <h1><span>Termagants</span> — Hive Fleet Leviathan</h1>
+  <div class="subtitle">28mm Tabletop · Purple carapace · Bone flesh · Batch-painting efficiency</div>
+  <div class="film-ref">
+    <em>"They do not hate. They do not hesitate. The swarm simply consumes — and Leviathan's hunger knows no end."</em>
+  </div>
+  <div class="series-badge">
+    <span class="active">Termagants</span>
+  </div>
+  <div class="creator-credit">
+    Figure by <strong>Games Workshop / Citadel Miniatures</strong> · Warhammer 40,000 Range
+  </div>
+</div>
+
+<div class="paint-bar">
+  <span class="paint-bar-label">Paint Lines Used</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#cc4444;"></span>Pro Acryl</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#4488cc;"></span>Army Painter Fanatic</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#88aa44;"></span>Army Painter Speedpaint 2.0</span>
+</div>
+
+<div class="container">
+
+  <div class="char-brief">
+    <strong>Hive Fleet Leviathan Termagants</strong> — the quintessential Tyranid swarm in the most iconic bio-form scheme: deep purple carapace shifting to hot magenta at the plate edges, set against near-white bone flesh. At 28mm, value contrast does all the heavy lifting — rich near-black in the deepest plate recesses and pure near-white on the sharpest bone ridges is what makes this scheme sing across the tabletop. Zenithal priming locks in value structure before a single color touches the model. Light source is zenithal (from directly above). Priority order: carapace first (the defining read), then flesh, then claws, then details.
+  </div>
+
+  <div class="tabs">
+    <div class="tab tab-btn active"  onclick="showTab('carapace', this)">Carapace</div>
+    <div class="tab tab-btn"         onclick="showTab('flesh', this)">Flesh &amp; Body</div>
+    <div class="tab tab-btn"         onclick="showTab('claws', this)">Claws &amp; Teeth</div>
+    <div class="tab tab-btn"         onclick="showTab('weapons', this)">Bio-Weapons</div>
+    <div class="tab tab-btn"         onclick="showTab('details', this)">Details</div>
+    <div class="tab tab-btn"         onclick="showTab('base', this)">Base</div>
+    <div class="tab tab-btn"         onclick="showTab('airbrush-skills', this)">Airbrush Skills</div>
+    <div class="tab tab-btn"         onclick="showTab('brush-skills', this)">Brush Skills</div>
+    <div class="tab tab-btn"         onclick="showTab('thinning-ref', this)">Thinning Ref</div>
+    <div class="tab tab-btn"         onclick="showTab('grimdark', this)">Grimdark</div>
+  </div>
+
+
+  <!-- ═══ TAB: CARAPACE ═══ -->
+  <div class="tab-content active" id="carapace">
+    <div class="section-header">
+      <h2>Carapace</h2>
+      <p>The signature Leviathan purple — deep near-black in recesses, transitioning through purple to hot magenta at plate edges. High contrast is essential at 28mm; the edge highlights are the primary read from across the table.</p>
+    </div>
+
+    <div class="phase-label">Value Structure</div>
+    <div class="value-map">
+      <div class="value-chip"><div class="chip-swatch" style="background:#1a0f1c;"></div><div class="chip-val">~5%</div><div class="chip-label">Deep Recess</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#27224C;"></div><div class="chip-val">~12%</div><div class="chip-label">Shadow Base</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#7F517D;"></div><div class="chip-val">~30%</div><div class="chip-label">Plate Body</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#BB4D73;"></div><div class="chip-val">~52%</div><div class="chip-label">Crown Highlight</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#F5D4D2;"></div><div class="chip-val">~85%</div><div class="chip-label">Specular Edge</div></div>
+    </div>
+
+    <div class="phase-label">Step-by-Step</div>
+    <div class="sub-tabs">
+      <div class="sub-tab active" onclick="showSubTab('carapace', 'carapace-pro', this)">Pro Acryl</div>
+      <div class="sub-tab"        onclick="showSubTab('carapace', 'carapace-speed', this)">⚡ Speedpaint Speed Track</div>
+    </div>
+
+    <div class="sub-content active" id="carapace-pro">
+
+      <div class="phase-label">Foundation</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 1 · Airbrush</span>
+        <h3>Black Prime</h3>
+        <p>P-002 Black Primer undiluted, 0.5mm nozzle, 30+ PSI, 20–25cm. Full even coverage across the whole model. This anchors your deepest recess value permanently — any purple that doesn't fully cover it reads as shadow automatically.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#111111"></div><div class="swatch-info"><div class="swatch-name">P-002 Black Primer</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~2% value — permanent shadow anchor</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> Do NOT thin primer. Apply undiluted at 30+ PSI. Thinning breaks down adhesion and turns primer into paint.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 2 · Airbrush</span>
+        <h3>White Zenithal</h3>
+        <p>P-003 White Primer undiluted, 0.5mm nozzle, 30+ PSI. Aim directly from above — top surfaces get full white, sides get partial, undersides stay black. This establishes your full value gradient before color is applied. At 28mm, a strong zenithal is what prevents flat-looking miniatures.</p>
+        <div class="tip"><strong>✦ GREYSCALE CHECK:</strong> Photograph the primed model and desaturate it. Bright tops, mid-grey sides, dark undersides. If everything looks flat, redo the zenithal — stronger overhead angle, closer distance.</div>
+      </div>
+
+      <div class="phase-label">Color Build</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 3 · Airbrush</span>
+        <h3>Shadow Base — Dark Purple</h3>
+        <p>Thin Dark Purple 035 at 1:2.5 (paint:thinner). Wide cone, low PSI (12–15), over the whole carapace. Don't aim for full coverage — let black primer persist in the deepest recesses. You're tinting the zenithal, not replacing it.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#27224C"></div><div class="swatch-info"><div class="swatch-name">Dark Purple 035</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~12% value — deep shadow base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 4 · Airbrush</span>
+        <h3>Main Body — Purple</h3>
+        <p>Thin Purple 010 at 1:2, 0.3mm nozzle, PSI 15–18. Spray from a slight zenithal angle (30–45° above horizontal). Cover the top and upper-side of each plate. Leave Dark Purple 035 visible on lower plate areas and between recesses. Build in 2 thin passes.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#7F517D"></div><div class="swatch-info"><div class="swatch-name">Purple 010</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~30% value — plate body</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> At 28mm, each plate has a crown (most light) and a rim (edge light). Purple 010 covers the crown zone comfortably. The Dark Purple zone below is narrow — that's correct.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 5 · Airbrush</span>
+        <h3>Crown Pre-Highlight — Magenta</h3>
+        <p>Thin Magenta 011 at 1:3, 0.3mm nozzle, PSI 12–15. Reduce trigger to ~50%. Top-down angle only — tight cone on the uppermost surface of each plate crown. This shifts the color toward pink-magenta at the highlight zone. Think: spray the light, not the plate.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#BB4D73"></div><div class="swatch-info"><div class="swatch-name">Magenta 011</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~52% value — plate crown pre-highlight</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-label">Edge Highlights &amp; Finish</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 6 · Brush</span>
+        <h3>Edge Highlight — Pink</h3>
+        <p>Thin Pink 071 at 1:2. Load a size 0 round brush, wipe almost dry on palette. Drag along every raised plate edge in one confident stroke. This is the money step at 28mm — the edge highlight is what reads from across the table. If it looks too subtle at arm's length, it's not bright enough. Push it.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#EB9DAB"></div><div class="swatch-info"><div class="swatch-name">Pink 071</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~68% value — plate edge highlight</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ BATCH TIP:</strong> Work all models to this stage before moving to Step 7. Edge highlighting 10 models in rotation keeps paint consistency the same across the unit.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 7 · Brush</span>
+        <h3>Specular Corner — Pale Pink</h3>
+        <p>Thin Pale Pink 043 at 1:2. A tiny bright dot or short stroke at every plate corner and apex. This should read as approximately 85% value — near-white. It looks extreme close-up but at arm's length it simply reads as "this plate is catching hard light." Without it, the highlights look soft.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#F5D4D2"></div><div class="swatch-info"><div class="swatch-name">Pale Pink 043</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~85% value — apex specular</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number filter">Step 8 · Filter (Optional)</span>
+        <h3>Unifying Purple Glaze</h3>
+        <p>Mix Transparent Purple 051 with MPAM-001 Glaze &amp; Wash Medium at 1:5. Flow over the whole carapace once dry. Knits value transitions together and gives the surface a slightly wet, biological sheen. Especially useful if airbrush passes left hard lines between zones.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#594E6B"></div><div class="swatch-info"><div class="swatch-name">Transparent Purple 051</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">unifying glaze — transparent</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#c0c0c0"></div><div class="swatch-info"><div class="swatch-name">MPAM-001 Glaze &amp; Wash Medium</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">medium — flow and transparency</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 1:5 Transparent Purple 051 + MPAM-001 — thin enough to see your hand through on a loaded brush</div>
+      </div>
+
+    </div><!-- end #carapace-pro -->
+
+    <div class="sub-content" id="carapace-speed">
+      <div class="tip"><strong>✦ SPEED TRACK:</strong> For batch painting 10+ models. Hive Dweller Purple over grey prime flows into recesses and lays base color in a single pass. Two brush steps elevate the result well beyond "just Speedpainted."</div>
+
+      <div class="phase-label">Speed Foundation</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 1 · Airbrush</span>
+        <h3>Grey Prime</h3>
+        <p>P-005 Dark Neutral Grey Primer, undiluted, 0.5mm, 30+ PSI. Grey prime (rather than white) gives Hive Dweller Purple a deeper, richer result — less washed-out than over pure white, while still allowing the Speedpaint to flow and shade correctly.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#46484C"></div><div class="swatch-info"><div class="swatch-name">P-005 Dark Neutral Grey</div><div class="swatch-brand">Pro Acryl Primer</div><div class="swatch-value">~25% value — speed track base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush</span>
+        <h3>Hive Dweller Purple — One-Pass Basecoat</h3>
+        <p>Apply Hive Dweller Purple Speedpaint undiluted over all carapace areas. Flow it on — don't overwork or re-brush wet areas. It pools in recesses creating automatic shadow while the grey surface reads lighter. One pass only. Wait fully dry (15–20 min).</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#644A7B"></div><div class="swatch-info"><div class="swatch-name">Hive Dweller Purple</div><div class="swatch-brand">Army Painter Speedpaint 2.0</div><div class="swatch-value">~30% value — one-pass base + shade</div></div></div>
+        </div>
+        <div class="warning"><strong>⚠ NOTE:</strong> Do NOT re-brush Speedpaint while wet. The self-leveling agent activates and destroys the shading effect. Flow it on and leave it. If you miss a spot, wait fully dry before adding another thin pass.</div>
+      </div>
+
+      <div class="phase-label">Elevate from Speed Track</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span>
+        <h3>Edge Highlight — Pink</h3>
+        <p>Thin Pink 071 at 1:2. Edge highlight all raised plate rims. This single step is what separates a Speedpainted model from a finished miniature. If you only do one extra step, make it this one.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#EB9DAB"></div><div class="swatch-info"><div class="swatch-name">Pink 071</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~68% value — plate edge highlight</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush</span>
+        <h3>Specular Corner — Pale Pink</h3>
+        <p>Pale Pink 043 at 1:2. Tiny dot or short stroke on every plate apex. This creates the illusion of reflected hard light and makes the whole unit pop from a shelf or gaming table.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#F5D4D2"></div><div class="swatch-info"><div class="swatch-name">Pale Pink 043</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~85% value — apex specular</div></div></div>
+        </div>
+      </div>
+
+    </div><!-- end #carapace-speed -->
+  </div><!-- end #carapace -->
+
+
+  <!-- ═══ TAB: FLESH & BODY ═══ -->
+  <div class="tab-content" id="flesh">
+    <div class="section-header">
+      <h2>Flesh &amp; Body</h2>
+      <p>The ribbed bone-white musculature and soft tissue — high value, warm ivory tones, deep shadow in the muscle cords and belly folds. The extreme value contrast against the dark purple carapace is the defining visual of the Leviathan scheme.</p>
+    </div>
+
+    <div class="phase-label">Value Structure</div>
+    <div class="value-map">
+      <div class="value-chip"><div class="chip-swatch" style="background:#2a1a14;"></div><div class="chip-val">~10%</div><div class="chip-label">Deep Cord</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#4E5154;"></div><div class="chip-val">~28%</div><div class="chip-label">Shadow</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#E1D7C8;"></div><div class="chip-val">~82%</div><div class="chip-label">Flesh Body</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#F6F2DE;"></div><div class="chip-val">~92%</div><div class="chip-label">Highlight</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#F4EDE0;"></div><div class="chip-val">~96%</div><div class="chip-label">Specular</div></div>
+    </div>
+    <div class="warning"><strong>⚠ VALUE NOTE:</strong> The flesh body sits at VERY HIGH value — near-white. Do not tone it down to cream. The stark contrast against the dark purple carapace is the whole point of the Leviathan scheme. Push the flesh toward near-white on raised surfaces.</div>
+
+    <div class="phase-label">Step-by-Step</div>
+    <div class="sub-tabs">
+      <div class="sub-tab active" onclick="showSubTab('flesh', 'flesh-pro', this)">Pro Acryl</div>
+      <div class="sub-tab"        onclick="showSubTab('flesh', 'flesh-speed', this)">⚡ Speedpaint Speed Track</div>
+    </div>
+
+    <div class="sub-content active" id="flesh-pro">
+
+      <div class="phase-label">Foundation (built on zenithal)</div>
+
+      <div class="step">
+        <span class="step-number wash">Step 1 · Wash</span>
+        <h3>Warm Recess Wash</h3>
+        <p>Apply Brown Wash 201 targeted into the deep muscle cords, belly folds, and recesses in flesh areas only. Use a fine brush — let capillary action pull it in, don't flood over raised surfaces. This adds warm organic depth at approximately 15% value and gives the recesses a biological warmth.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#594942"></div><div class="swatch-info"><div class="swatch-name">Brown Wash 201</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~15% value — warm organic recess shadow</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> The zenithal black prime already provides initial shadow structure on the flesh. Brown Wash 201 adds warmth specifically into crevices. Apply selectively — targeted wash, not a flood.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 2 · Airbrush</span>
+        <h3>Ivory Base</h3>
+        <p>Thin Ivory 023 at 1:2, 0.3mm nozzle, PSI 15. Spray zenithal over all flesh areas. The warm brown recess wash will show through in the deepest parts automatically. Two thin passes — not one heavy coat.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#E1D7C8"></div><div class="swatch-info"><div class="swatch-name">Ivory 023</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~82% value — flesh body base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 3 · Airbrush</span>
+        <h3>Bright Ivory Zenithal Highlight</h3>
+        <p>Thin Bright Ivory 022 at 1:3, 0.3mm nozzle, PSI 12–14, strictly top-down. Apply only to the very uppermost surfaces — spine ridges, muscle cord peaks, top of the head dome. Very light pass. If this step is skipped, the flesh reads flat.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#F6F2DE"></div><div class="swatch-info"><div class="swatch-name">Bright Ivory 022</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~92% value — zenithal highlight</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush</span>
+        <h3>Specular Edge — Heavy Warm White</h3>
+        <p>Thin Heavy Warm White S18 at 1:2. Edge highlight the sharpest spine ridges, plate-adjacent flesh edges, and hard edges catching direct light. Near-white with just enough warmth to avoid looking clinical. If you step back and the flesh still looks flat, this highlight is too subtle — go brighter.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#F4EDE0"></div><div class="swatch-info"><div class="swatch-name">Heavy Warm White S18</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~96% value — specular edge, near-white</div></div></div>
+        </div>
+      </div>
+
+    </div><!-- end #flesh-pro -->
+
+    <div class="sub-content" id="flesh-speed">
+      <div class="tip"><strong>✦ SPEED TRACK:</strong> Pallid Bone Speedpaint over white prime gives you bone shadow + body color in one pass. Two drybrush steps do all the highlighting work.</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 1 · Airbrush</span>
+        <h3>White Prime (Flesh Areas)</h3>
+        <p>If using grey prime for carapace Speedpaint, lightly dust flesh areas from directly above with P-003 White Primer after the grey prime has dried. This creates a brighter base for Pallid Bone to pop over without re-priming the whole model.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#F0F0F0"></div><div class="swatch-info"><div class="swatch-name">P-003 White Primer</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">very high value — bright speed track base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush</span>
+        <h3>Pallid Bone — One-Pass Flesh</h3>
+        <p>Apply Pallid Bone Speedpaint undiluted over all flesh areas. Shades into recesses automatically, warm bone-yellow on raised surfaces. One pass. Wait fully dry.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#D7C392"></div><div class="swatch-info"><div class="swatch-name">Pallid Bone</div><div class="swatch-brand">Army Painter Speedpaint 2.0</div><div class="swatch-value">~75% value — one-pass flesh base</div></div></div>
+        </div>
+        <div class="warning"><strong>⚠ NOTE:</strong> One pass only. Do not re-brush wet Speedpaint.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush — Drybrush</span>
+        <h3>Bright Ivory Drybrush</h3>
+        <p>Load Bright Ivory 022 on a drybrush, wipe to almost nothing. Skim over all flesh surfaces — catches raised muscle ridges and bone bumps. The rougher the surface texture, the more this step shows.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#F6F2DE"></div><div class="swatch-info"><div class="swatch-name">Bright Ivory 022</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~92% value — drybrush highlight</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush — Light Drybrush</span>
+        <h3>Heavy Warm White — Final Specular Drybrush</h3>
+        <p>Very light final drybrush of Heavy Warm White S18 only on the sharpest ridges and highest points. The contrast between Speedpaint shadow zones and this near-white peak is what makes the flesh read correctly from across the table.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#F4EDE0"></div><div class="swatch-info"><div class="swatch-name">Heavy Warm White S18</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~96% value — final drybrush specular</div></div></div>
+        </div>
+      </div>
+
+    </div><!-- end #flesh-speed -->
+  </div><!-- end #flesh -->
+
+
+  <!-- ═══ TAB: CLAWS & TEETH ═══ -->
+  <div class="tab-content" id="claws">
+    <div class="section-header">
+      <h2>Claws &amp; Teeth</h2>
+      <p>Both claws and teeth use a base-to-tip gradient: near-black at the root (anchoring to the surrounding material) transitioning to near-white at the tip (hard keratin catching light). Fast and effective at 28mm scale.</p>
+    </div>
+
+    <div class="phase-label">Value Structure — Base-to-Tip Gradient</div>
+    <div class="value-map">
+      <div class="value-chip"><div class="chip-swatch" style="background:#4B4645;"></div><div class="chip-val">~20%</div><div class="chip-label">Claw Root</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#54443F;"></div><div class="chip-val">~28%</div><div class="chip-label">Lower Third</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#70584B;"></div><div class="chip-val">~40%</div><div class="chip-label">Mid Claw</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#E1D7C8;"></div><div class="chip-val">~82%</div><div class="chip-label">Upper Body</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#F4EDE0;"></div><div class="chip-val">~96%</div><div class="chip-label">Tip Specular</div></div>
+    </div>
+
+    <div class="phase-label">Claw &amp; Tooth Recipe</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 1 · Brush</span>
+      <h3>Dark Root — Black Brown</h3>
+      <p>Thin Black Brown 040 at 1:1.5. Paint the bottom 30–40% of each claw and the gum base of each tooth. Near-black anchor that ties the claw to its surrounding carapace or flesh surface.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#4B4645"></div><div class="swatch-info"><div class="swatch-name">Black Brown 040</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~20% value — claw/tooth root</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 2 · Brush</span>
+      <h3>Brown Transition — Dark Umber</h3>
+      <p>Thin Dark Umber 019 at 1:1.5. From root up to about 50% of claw length, overlapping Black Brown at the base. On teeth, take it from base up about 40% of tooth height.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#54443F"></div><div class="swatch-info"><div class="swatch-name">Dark Umber 019</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~28% value — lower transition</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 3 · Brush</span>
+      <h3>Upper Bone — Ivory</h3>
+      <p>Thin Ivory 023 at 1:1.5. Paint the upper 50% of the claw, feathering into Dark Umber below while both are wet if possible. A clean line is also acceptable — the scale hides it.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#E1D7C8"></div><div class="swatch-info"><div class="swatch-name">Ivory 023</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~82% value — upper claw body</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 4 · Brush</span>
+      <h3>Tip Specular — Heavy Warm White</h3>
+      <p>Thin Heavy Warm White S18 at 1:2. Apply only to the very tip of each claw and uppermost point of each tooth. A single tiny touch. This makes the whole claw read as sharp and hard.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#F4EDE0"></div><div class="swatch-info"><div class="swatch-name">Heavy Warm White S18</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~96% value — tip specular</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ BATCH TIP:</strong> For true speed on horde units — drybrush Light Umber 018 over the claw after the Black Brown base, then add a single Heavy Warm White S18 tip dot. Three steps total, acceptable result.</div>
+    </div>
+
+  </div><!-- end #claws -->
+
+
+  <!-- ═══ TAB: BIO-WEAPONS ═══ -->
+  <div class="tab-content" id="weapons">
+    <div class="section-header">
+      <h2>Bio-Weapons</h2>
+      <p>The Fleshborer — a living weapon-creature. Outer carapace shell is treated as a darker, more worn variation of the body carapace. The barrel interior is a biological void. Ties the weapon into the scheme without being identical to the armor.</p>
+    </div>
+
+    <div class="phase-label">Outer Shell (Carapace Extension)</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 1 · Brush</span>
+      <h3>Deep Shadow — Dark Plum</h3>
+      <p>Thin Dark Plum S11 at 1:1.5. Paint all deep recesses and the underside of the Fleshborer body. More desaturated and darker than the body carapace — the weapon has been used and is more battered than fresh plate armor.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#442430"></div><div class="swatch-info"><div class="swatch-name">Dark Plum S11</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~10% value — weapon deep shadow</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 2 · Brush</span>
+      <h3>Weapon Body — Purple</h3>
+      <p>Thin Purple 010 at 1:2. Main body of the Fleshborer, leaving Dark Plum S11 in recesses. Matches the carapace palette, unifying the whole model.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#7F517D"></div><div class="swatch-info"><div class="swatch-name">Purple 010</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~30% value — weapon body</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 3 · Brush</span>
+      <h3>Weapon Edge — Plum Highlight</h3>
+      <p>Thin Plum 070 at 1:2. Edge highlight raised ridges and outer edges of the Fleshborer. Slightly more desaturated and cooler than the Magenta 011 used on body carapace — makes the weapon read as a distinct material from the armor.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#89528B"></div><div class="swatch-info"><div class="swatch-name">Plum 070</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~45% value — weapon edge highlight</div></div></div>
+      </div>
+    </div>
+
+    <div class="phase-label">Barrel Maw &amp; Interior</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 4 · Brush</span>
+      <h3>Barrel Interior — Near Black</h3>
+      <p>Thin Coal Black 002 at 1:1.5. Paint the interior of the Fleshborer barrel deeply. This biological void reads as a hollow living weapon — no highlight needed. The darkness is the point.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2A2A2A"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~5% value — barrel void</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 5 · Brush</span>
+      <h3>Barrel Rim — Magenta Biological Detail</h3>
+      <p>Thin Magenta 011 at 1:3. Touch the very rim of the barrel opening with a tiny ring of magenta. This biological "gum line" echoes the Leviathan highlight color and reads as an organic aperture rather than just a hole.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#BB4D73"></div><div class="swatch-info"><div class="swatch-name">Magenta 011</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~52% value — barrel rim detail</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ BATCH TIP:</strong> Steps 4 and 5 are the highest-impact details on the Fleshborer. Dark barrel + magenta rim = instant visual interest. For true speed, skip steps 1–3 and just use carapace colors directly on the weapon body, then add the dark barrel and magenta rim.</div>
+    </div>
+
+  </div><!-- end #weapons -->
+
+
+  <!-- ═══ TAB: DETAILS ═══ -->
+  <div class="tab-content" id="details">
+    <div class="section-header">
+      <h2>Details</h2>
+      <p>Glowing red eyes are the primary detail that brings a Tyranid bioform to life. Even a simple two-step red eye reads well at 28mm. Tongue and maw details complete the organic horror.</p>
+    </div>
+
+    <div class="phase-label">Eyes — Glowing Red (Tyranid Bioform)</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 1 · Brush</span>
+      <h3>Eye Socket — Near Black</h3>
+      <p>Thin Coal Black 002 at 1:1.5. Paint the whole eye socket and surrounding orbital area dark. This makes the eye recess read deeper than it physically is and makes any color above it pop dramatically.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2A2A2A"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~5% value — eye socket shadow</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 2 · Brush</span>
+      <h3>Eye Base — Dark Red</h3>
+      <p>Thin Burnt Red 008 at 1:1.5. Fill the eye lens, leaving the Coal Black socket around the rim. At 28mm the whole eye is very small — this and the next step may be the only two you do.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#803939"></div><div class="swatch-info"><div class="swatch-name">Burnt Red 008</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~28% value — eye base</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 3 · Brush</span>
+      <h3>Eye Glow — Vivid Red</h3>
+      <p>Thin Bold Pyrrole Red 003 at 1:2. Upper portion of the eye, leaving Burnt Red 008 at the bottom as shadow. The eye now reads as glowing — darker at base, vivid red above.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#CB2535"></div><div class="swatch-info"><div class="swatch-name">Bold Pyrrole Red 003</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~45% value — vivid glow red</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 4 · Brush</span>
+      <h3>Eye Hot Spot — Orange</h3>
+      <p>Thin Orange 007 at 1:2.5. A tiny dot near the top of the eye lens. At 28mm this means 1–2 bristle widths of your finest brush. This small touch creates the illusion of a glowing lens rather than a flat surface.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#F0792D"></div><div class="swatch-info"><div class="swatch-name">Orange 007</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~65% value — eye hot spot</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number finish">Step 5 · Finish</span>
+      <h3>Eye Gloss Varnish</h3>
+      <p>A tiny dot of MPAM-003 Gloss Varnish on each eye using a toothpick or fine brush tip. Gloss = wet = alive. Even on a fully matte-varnished model, the glossy eye catches light and reads as a living creature.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#ccccdd"></div><div class="swatch-info"><div class="swatch-name">MPAM-003 Gloss Varnish</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">finish — targeted gloss on eyes only</div></div></div>
+      </div>
+    </div>
+
+    <div class="phase-label">Tongue &amp; Inner Maw</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 6 · Brush</span>
+      <h3>Tongue Base</h3>
+      <p>Thin Dark Flesh 068 at 1:1.5. Base coat the tongue and visible mouth interior. Dark, biological warm undertone contrasting with the pale bone teeth.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#63403C"></div><div class="swatch-info"><div class="swatch-name">Dark Flesh 068</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~22% value — tongue shadow base</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 7 · Brush</span>
+      <h3>Tongue Highlight — Magenta</h3>
+      <p>Thin Magenta 011 at 1:2.5. Highlight the raised center tongue ridge and elevated mouth surfaces. Ties the tongue into the Leviathan palette — it reads as a biological detail belonging to the same organism as the purple carapace.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#BB4D73"></div><div class="swatch-info"><div class="swatch-name">Magenta 011</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~52% value — tongue highlight</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> A gloss varnish dot on the tongue tip also helps it read as wet and organic — biological mouths should look damp, not matte.</div>
+    </div>
+
+  </div><!-- end #details -->
+
+
+  <!-- ═══ TAB: BASE ═══ -->
+  <div class="tab-content" id="base">
+    <div class="section-header">
+      <h2>Base</h2>
+      <p>Two options matching common Leviathan-era gaming aesthetics. Urban Rubble matches the 10th Edition Leviathan starter box style; Barren Wasteland gives a classic alien world contrast.</p>
+    </div>
+
+    <div class="sub-tabs">
+      <div class="sub-tab active" onclick="showSubTab('base', 'base-urban', this)">Urban Rubble (Leviathan Starter)</div>
+      <div class="sub-tab"        onclick="showSubTab('base', 'base-wasteland', this)">Barren Wasteland</div>
+    </div>
+
+    <div class="sub-content active" id="base-urban">
+      <div class="tip"><strong>✦ MATCHES 10th ED STARTER:</strong> Urban concrete rubble — consistent with the Warhammer 40,000 10th Edition Leviathan box basing aesthetic.</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Texture Base</h3>
+        <p>Apply MPA-T08 Brown Earth Coarse to the base with an old brush or palette knife. Press in any rubble or stone fragments. Let fully dry.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#5a4a3a"></div><div class="swatch-info"><div class="swatch-name">MPA-T08 Brown Earth Coarse</div><div class="swatch-brand">Pro Acryl Basing Texture</div><div class="swatch-value">base texture layer</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 2 · Airbrush</span>
+        <h3>Grey Base Coat</h3>
+        <p>Thin Dark Neutral Grey 044 at 1:2. Spray or brush over the whole base texture. Full grey coverage — concrete/rubble base color.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#46484C"></div><div class="swatch-info"><div class="swatch-name">Dark Neutral Grey 044</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~28% value — rubble base coat</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush — Drybrush</span>
+        <h3>Concrete Drybrush</h3>
+        <p>Drybrush Bright Neutral Grey 045 firmly over the textured base, catching all raised rubble edges and texture peaks. Dark grey recesses + light grey peaks = concrete debris in low light.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#D5D5D4"></div><div class="swatch-info"><div class="swatch-name">Bright Neutral Grey 045</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~82% value — concrete drybrush</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number wash">Step 4 · Wash</span>
+        <h3>Grime Wash</h3>
+        <p>Thin Black Wash 200 at 1:2 with water. Apply selectively into the lowest crevices and under rubble pieces. Adds depth in the deepest spots without flooding flat surfaces.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#3E3B3B"></div><div class="swatch-info"><div class="swatch-name">Black Wash 200</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">grime shadow — recesses only</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 5 · Finish</span>
+        <h3>Rim — Coal Black</h3>
+        <p>Coal Black 002 undiluted on the base rim. The rim is not a painting surface — it should disappear visually.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#2A2A2A"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">base rim</div></div></div>
+        </div>
+      </div>
+
+    </div><!-- end #base-urban -->
+
+    <div class="sub-content" id="base-wasteland">
+      <div class="tip"><strong>✦ ALIEN WORLD:</strong> Warm ochre-dust wasteland contrasts strongly with purple and white — models pop from the base instead of blending into it.</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Texture Base</h3>
+        <p>Apply MPA-T07 Brown Earth Fine across the base. Press any desired rocks in while wet. Let fully dry.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#5a4a2a"></div><div class="swatch-info"><div class="swatch-name">MPA-T07 Brown Earth Fine</div><div class="swatch-brand">Pro Acryl Basing Texture</div><div class="swatch-value">base texture layer</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush — Drybrush</span>
+        <h3>Ochre Dust — Heavy Drybrush</h3>
+        <p>Heavy drybrush Yellow Ochre 038 over the whole base. Warm, dusty alien terrain — no additional color work needed for a solid result.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#CB9A4C"></div><div class="swatch-info"><div class="swatch-name">Yellow Ochre 038</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~55% value — dust/soil drybrush</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush — Light Drybrush</span>
+        <h3>Pale Dust — Final Highlight</h3>
+        <p>Light drybrush Bright Ivory 022 on the highest texture points only. Mimics dust accumulation on raised terrain.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#F6F2DE"></div><div class="swatch-info"><div class="swatch-name">Bright Ivory 022</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~92% value — dust peak highlight</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 4 · Finish</span>
+        <h3>Rim — Coal Black</h3>
+        <p>Coal Black 002 undiluted on the base rim.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#2A2A2A"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">base rim</div></div></div>
+        </div>
+      </div>
+
+    </div><!-- end #base-wasteland -->
+  </div><!-- end #base -->
+
+
+  <!-- ═══ TAB: AIRBRUSH SKILLS ═══ -->
+  <div class="tab-content" id="airbrush-skills">
+    <div class="section-header">
+      <h2>Airbrush Skills</h2>
+      <p>Zenithal priming, carapace gradient layering, and targeted crown highlighting. Optimized for assembly-line batch painting of 10+ models.</p>
+    </div>
+
+    <div class="phase-label">Nozzle Assignments</div>
+    <table class="thin-table">
+      <thead><tr><th>Task</th><th>Nozzle</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Priming (undiluted — do not thin)</td><td>0.5mm</td><td>High flow required for primer viscosity; 30+ PSI</td></tr>
+        <tr><td>Zenithal black / white</td><td>0.5mm</td><td>Undiluted; even full-model coverage quickly</td></tr>
+        <tr><td>Carapace shadow + body (Dark Purple, Purple)</td><td>0.3mm</td><td>Controlled coverage; smooth gradient across plates</td></tr>
+        <tr><td>Carapace crown highlight (Magenta)</td><td>0.3mm</td><td>Reduced trigger for targeted plate crown work</td></tr>
+        <tr><td>Flesh base coats (Ivory, Bright Ivory)</td><td>0.3mm</td><td>Fine control; semi-transparent passes</td></tr>
+      </tbody>
+    </table>
+
+    <div class="phase-label">Zenithal Sequence</div>
+    <div id="ab-zenithal-anchor"></div>
+
+    <div class="phase-label">PSI &amp; Distance Reference</div>
+    <table class="psi-table">
+      <thead><tr><th>Task</th><th>PSI</th><th>Distance</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Priming (undiluted)</td><td>30+</td><td>20–25cm</td><td>0.5mm nozzle; do NOT thin primer</td></tr>
+        <tr><td>Zenithal — black</td><td>30+</td><td>20–25cm</td><td>0.5mm nozzle; undiluted</td></tr>
+        <tr><td>Zenithal — white</td><td>30+</td><td>20–25cm</td><td>0.5mm nozzle; undiluted</td></tr>
+        <tr><td>Carapace shadow (Dark Purple 035)</td><td>12–15</td><td>10–15cm</td><td>0.3mm; wide cone; tinted pass over zenithal</td></tr>
+        <tr><td>Carapace body (Purple 010)</td><td>15–18</td><td>10–15cm</td><td>0.3mm; 30–45° above horizontal</td></tr>
+        <tr><td>Crown pre-highlight (Magenta 011)</td><td>12–15</td><td>8–12cm</td><td>0.3mm; 50% trigger; top-down only</td></tr>
+        <tr><td>Flesh base (Ivory 023)</td><td>15</td><td>10–12cm</td><td>0.3mm; semi-transparent; 2 passes</td></tr>
+        <tr><td>Flesh peak (Bright Ivory 022)</td><td>12–14</td><td>8–10cm</td><td>0.3mm; strictly top-down; barely-there pass</td></tr>
+      </tbody>
+    </table>
+
+    <div id="ab-greyscale-anchor"></div>
+
+    <div class="phase-label">Batch Painting Assembly Line</div>
+    <div class="step">
+      <span class="step-number airbrush">Technique · Batch Flow</span>
+      <h3>Assembly-Line Airbrush Workflow</h3>
+      <p>Mount all models on cork or bluetack holders before starting. Complete each airbrush step across ALL models before moving to the next step. Prime all → zenithal all → Dark Purple all → Purple all → Magenta all → set down airbrush. Then brush steps the same way: wash all → edge all → specular all. Switching colors multiple times per model is the slowest possible approach. The purple gradient (steps 3–5) is the most impactful series. Even if you skip brush edge highlights, three airbrush passes give a complete, professional-looking carapace.</p>
+      <div class="tip"><strong>✦ TIP:</strong> Batch size of 10 is the sweet spot. Larger batches mean paint dries on the needle before you finish the row. If you're painting 30+ Termagants, work in groups of 10.</div>
+    </div>
+
+    <div class="phase-label">Troubleshooting</div>
+    <div class="trouble-grid">
+      <div class="trouble-card">
+        <h4>Blowback / Bubbling</h4>
+        <p>Cause: Too much air, trigger pressed fully before pulling back, or paint cup too full. Fix: Reduce PSI by 5, pull trigger back slowly while air is already flowing. Never fill the cup more than 2/3. Partially close needle while at rest between passes.</p>
+      </div>
+      <div class="trouble-card">
+        <h4>Uneven Coverage / Banding</h4>
+        <p>Cause: Moving the airbrush too slowly, stopping mid-stroke, or inconsistent trigger pressure. Fix: Keep moving at constant speed. Start and end each stroke off the model. Practice on scrap card before applying to figures.</p>
+      </div>
+      <div class="trouble-card">
+        <h4>Paint Too Thin / Runs</h4>
+        <p>Cause: Over-thinned paint or too many passes in one spot at 28mm scale. Fix: Test each mix on card — it should flow off a palette knife in a slow, unbroken ribbon. At 28mm, 1:2 is usually the maximum dilution for base coats. Add paint back to your mix if coverage is lost.</p>
+      </div>
+    </div>
+
+  </div><!-- end #airbrush-skills -->
+
+
+  <!-- ═══ TAB: BRUSH SKILLS ═══ -->
+  <div class="tab-content" id="brush-skills">
+    <div class="section-header">
+      <h2>Brush Skills</h2>
+      <p>Edge highlighting, targeted washing, drybrushing, and fine detail work — the four brush techniques that carry this guide.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Edge Highlighting</span>
+      <h3>Edge Highlighting at 28mm</h3>
+      <p>Load a size 0 or 00 round brush with thinned paint (1:2). Wipe excess on palette until the brush barely deposits color. Drag the tip along raised edges in one confident, continuous stroke. At 28mm the highlight line should be 0.3–0.5mm wide — visible but not fat. Hesitant strokes create wobbly highlights. Commit to the stroke and let it flow. Rest your brush hand's little finger on the model or a nearby surface for stability. Practice on a spare base or sprue first.</p>
+      <div class="tip"><strong>✦ TIP:</strong> Work across all models in the batch before stopping. Consistency of pressure and speed produces more uniform results than perfecting one model before moving to the next.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Targeted Wash</span>
+      <h3>Recess Washing — Capillary Control</h3>
+      <p>A correctly applied wash flows into recesses via capillary action without puddling on flat surfaces. Load the brush but don't overload — touch the tip to a recess and lift. The wash flows in on its own. Do not brush it around. If it puddles on a raised surface, pick up excess immediately with a clean, slightly damp brush. Thin washes 1:1 with water for tight 28mm recesses — full-strength wash is too viscous and leaves tide marks.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Drybrushing</span>
+      <h3>Drybrushing for Organic Texture</h3>
+      <p>Load a stiff, wide brush (an old flat brush worn down works perfectly). Wipe on cloth or tissue until almost no paint transfers — the brush should feel nearly dry. Skim lightly over the model surface. The bristles catch only the highest raised points. Two-pass approach for Termagant flesh: firm drybrush with Bright Ivory 022, then very light final drybrush with Heavy Warm White S18 on absolute peaks only.</p>
+      <div class="warning"><strong>⚠ NOTE:</strong> A wet or overloaded drybrush covers everything and destroys value structure. When in doubt, wipe more. The goal is delicate deposition, not heavy coverage.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Fine Eye Detail</span>
+      <h3>Eye Detail at 28mm</h3>
+      <p>At 28mm the eye is 0.5–1mm across. Use a freshly pointed size 000 brush. Two methods: (1) Dry-tip — wipe brush near-dry, press just the very tip to the surface. (2) For specular hot spot dots — a toothpick tip works better than any brush. Dip in thinned Orange 007, touch to eye, done. Always paint in order: dark socket → base color → glow color → hot spot. Never try to add a dark ring around a painted eye at this scale — it creates a muddy mess.</p>
+      <div class="tip"><strong>✦ TIP:</strong> The gloss varnish dot on the eye is the most impactful single brush touch on the whole model. Do not skip it.</div>
+    </div>
+
+    <!-- Greyscale check injected here by skills-reference.js -->
+
+  </div><!-- end #brush-skills -->
+
+
+  <!-- ═══ TAB: THINNING REF (always last) ═══ -->
+  <div class="tab-content" id="thinning-ref">
+    <!-- Content injected by skills-reference.js -->
+  </div>
+
+
+  <!-- ═══ TAB: GRIMDARK ═══════════════════════════════════════ -->
+  <div class="tab-content" id="grimdark">
+
+    <div class="section-header">
+      <h2>Grimdark Weathering</h2>
+      <p>The Tyranid are a living weapon system. Nothing about them is clean or manufactured — they are grown, and living things are messy. Ichor seeps where carapace plates meet living flesh. Spore colonies establish themselves on the carapace surface during transit. The biomass the Hive Fleet has been consuming for six thousand years has left traces on every organism it grows. These techniques lean into the biological horror rather than the mechanical grime of Space Marine weathering. Two paths: Villainy Ink enamel or John Blanche Masterclass acrylic.</p>
+    </div>
+
+    <div class="warning">
+      <strong>⚠ ENAMEL WARNING — READ BEFORE OPENING A VILLAINY INK:</strong><br>
+      Villainy Inks are <strong>oil/enamel-based</strong> — they are NOT acrylic. Applied to bare or unsealed acrylic paint they will soften and lift it. You <strong>must</strong> seal the model with varnish before any Villainy Ink step. Cleanup is with <strong>enamel thinner or white spirit only</strong>. Dry time: 4–12 hours. Keep a dedicated enamel-only brush and never rinse it in your acrylic water cup.
+    </div>
+
+    <!-- PATH OVERVIEW -->
+    <div class="phase-label">Choose Your Path</div>
+
+    <div class="step">
+      <span class="step-number">☠ Path A — Enamel</span>
+      <h3>Villainy Ink Path</h3>
+      <p>The Tyranid model is unusually well-suited to the enamel path because the biological detail — the carapace-to-flesh joins, the spore chimneys, the weapon symbiote interfaces — creates natural recess structures for the enamel to pool in. VI-004 Carrion Crimson at the flesh joins is the centrepiece step: it reads as ichor, haemolymph, and the general wet biological interface between a living creature's hard and soft tissues.</p>
+      <p><strong>You'll need:</strong> MPAR-V01 Matte Varnish, VI-004 Carrion Crimson, VI-005 Ichor of the Damned, VI-006 Decay of Death, VI-001 Goon's Grime, enamel thinner, cotton swabs, dedicated enamel brush.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number">🖌 Path B — Acrylic</span>
+      <h3>John Blanche Masterclass Path</h3>
+      <p>All acrylic, no seal required. The biological effects are achieved with WP4008 Grimdark Shadow for general grime, Army Painter Blood Effects for the ichor, and WP4013 for additional biological staining. Skip to the <em>John Blanche Acrylic Path</em> section below.</p>
+      <p><strong>You'll need:</strong> WP4008 Grimdark Shadow, WP3164 Blood Effects Acrylic, WP4005 Grime Wash.</p>
+    </div>
+
+    <!-- PHASE 1: SEAL -->
+    <div class="phase-label">Phase 1 — Seal the Model (Enamel Path Only)</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 1 · Spray</span>
+      <h3>Barrier Varnish — MPAR-V01 Matte</h3>
+      <p>Apply MPAR-V01 Matte Varnish over the fully painted and cured model. Every surface receiving Villainy Ink must be sealed. Allow minimum 30 minutes cure time. Note: on a model that is intended to have glossy flesh panels (from the gloss medium applied in the Skin tab), the varnish coat will dull those surfaces — you'll re-apply MPAM-003 Gloss spot-treatment to the flesh areas after all enamel work is complete.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#d8d8d4;"></div><div class="swatch-info"><div class="swatch-name">MPAR-V01 Matte Varnish</div><div class="swatch-brand">Pro Acryl Rattle Can</div><div class="swatch-value">barrier coat — must be fully cured before enamel application</div></div></div>
+      </div>
+    </div>
+
+    <!-- PHASE 2: VILLAINY INK APPLICATION -->
+    <div class="phase-label">Phase 2 — Villainy Ink Application</div>
+
+    <div class="step">
+      <span class="step-number wash">Step 2 · Enamel</span>
+      <h3>VI-004 Carrion Crimson — Carapace-to-Flesh Joins (The Key Step)</h3>
+      <p>This is the defining step for Grimdark Tyranid. Apply VI-004 Carrion Crimson into the join lines where carapace plates meet the underlying flesh — the join at the shoulder carapace base, around the edges of the head plate where it meets the neck flesh, around the leg carapace plates at the skin join, and at the base of any spine or spore detail where it grows from the flesh. The deep arterial red reads as haemolymph seeping at the biological interface, exactly as it would in a living creature with external chitin armour plates.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#6a0810;"></div><div class="swatch-info"><div class="swatch-name">VI-004 Carrion Crimson</div><div class="swatch-brand">Villainy Ink (enamel)</div><div class="swatch-value">deep arterial red — all carapace-to-flesh join lines; biological ichor and haemolymph</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ SELECTIVE REMOVAL:</strong> Remove the ink from the flat carapace surface using a cotton swab barely dampened with enamel thinner. Leave it pooled at the carapace edge and in the join groove. The transition from clean purple carapace to blood-red join line is the whole effect — don't let it flood onto the flat plate.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 3 · Enamel</span>
+      <h3>VI-005 Ichor of the Damned — Between Overlapping Carapace Plates</h3>
+      <p>Where carapace plates overlap — particularly on the head, the shoulder assembly, and any layered chitin sections — apply VI-005 Ichor of the Damned into the gap between the overlapping edges. The neutral dark brown reads as the accumulated biological fluid that lives in the interface between overlapping plates: not blood, but the same category of organic liquid that seeps in warm, moist living tissue.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#4a3a28;"></div><div class="swatch-info"><div class="swatch-name">VI-005 Ichor of the Damned</div><div class="swatch-brand">Villainy Ink (enamel)</div><div class="swatch-value">dark neutral brown — overlapping carapace plate gaps; accumulated biological fluid</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 4 · Enamel</span>
+      <h3>VI-006 Decay of Death — Carapace Spore Colonies</h3>
+      <p>Apply VI-006 Decay of Death as small irregular spots on the flat surface of the main carapace plates — not in recesses, but on the plate surface itself. These represent spore-colonies and parasitic bacterial growth that have established themselves on the external chitin during transit through the void. Small clusters of 3–5 spots scattered irregularly across the dorsal carapace reads as infestation rather than paint technique. The spots should be irregular in size — some as small as a pinpoint, some 1–2mm across.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#3a4820;"></div><div class="swatch-info"><div class="swatch-name">VI-006 Decay of Death</div><div class="swatch-brand">Villainy Ink (enamel)</div><div class="swatch-value">dark olive-green — carapace plate surface as spore/fungal colonies; applied as irregular spots</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TECHNIQUE:</strong> Load a fine brush tip and touch it to the carapace surface in a stippling motion — don't paint these as rings or blobs, just press the tip down and lift. The natural ink spread from the tip creates a convincing spot shape. Let each spot dry before adding adjacent ones to prevent them blending into a smear.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 5 · Enamel</span>
+      <h3>VI-001 Goon's Grime — Base Contact Grime</h3>
+      <p>Apply VI-001 Goon's Grime broadly to the underside of the feet and the lower leg where the model contacts the base. Tyranids moving across whatever planetary surface the Hive Fleet is consuming will accumulate ground-material on their feet — the yellow-green of Goon's Grime reads as biological slime, alien soil, or the partly-consumed organic matter of the planet's former ecosystem. Leave it broad on the foot undersides; remove it from the upper leg surfaces.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#5a5e3a;"></div><div class="swatch-info"><div class="swatch-name">VI-001 Goon's Grime</div><div class="swatch-brand">Villainy Ink (enamel)</div><div class="swatch-value">yellow-green grime — foot undersides and base contact zone; biological ground contamination</div></div></div>
+      </div>
+    </div>
+
+    <!-- PHASE 3: FINAL SEAL -->
+    <div class="phase-label">Phase 3 — Final Seal (Enamel Path)</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 6 · Spray / Spot</span>
+      <h3>Lock the Enamel Inks &amp; Restore Flesh Gloss</h3>
+      <p>Once all Villainy Ink has cured (minimum 4 hours, ideally overnight), apply MPAR-V01 Matte Varnish to lock the inks. Then — selectively — apply MPAM-003 Gloss Varnish over all flesh/skin surfaces and the eye lenses to restore the wet biological shine that is essential to the Tyranid aesthetic. Matte carapace, gloss flesh, gloss ichor joins: the finish differentiation reinforces the carapace-versus-living-tissue contrast.</p>
+      <div class="warning"><strong>⚠ TIMING:</strong> Do not varnish before the enamel is fully cured — fresh enamel under varnish can cause haziness. When in doubt, wait overnight.</div>
+    </div>
+
+    <!-- JOHN BLANCHE ACRYLIC PATH -->
+    <div class="phase-label">John Blanche Masterclass — Acrylic Path</div>
+
+    <div class="step">
+      <span class="step-number brush">Step A · Brush</span>
+      <h3>WP3164 Blood Effects — Carapace-to-Flesh Joins</h3>
+      <p>Army Painter WP3164 Blood Effects Acrylic applied into the carapace-to-flesh join lines performs the same function as VI-004 Carrion Crimson in the enamel path, without the enamel handling. It's a glossy, deep-red blood effect medium that sits in recesses and reads as haemolymph at the biological interface. Apply with a fine brush and don't remove it — the gloss finish stays as-is and reinforces the wet biological read.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#6a0810;"></div><div class="swatch-info"><div class="swatch-name">WP3164 Blood Effects</div><div class="swatch-brand">Army Painter Fanatic</div><div class="swatch-value">glossy deep red — carapace-to-flesh join lines; biological ichor, acrylic equivalent of VI-004</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step B · Brush</span>
+      <h3>WP4008 Grimdark Shadow — Overlapping Plate Gaps &amp; General Grime</h3>
+      <p>Thin WP4008 Grimdark Shadow 1:3 with water and apply into the gaps between overlapping carapace plates and into any other recesses that didn't receive the blood effect. This covers the biological fluid accumulation between plate layers (equivalent to VI-005 Ichor of the Damned) and any general grime accumulation in tight recesses.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#1a1a18;"></div><div class="swatch-info"><div class="swatch-name">WP4008 Grimdark Shadow</div><div class="swatch-brand">John Blanche Masterclass</div><div class="swatch-value">near-black grimdark glaze — overlapping plate gaps and recess grime; 1:3 with water</div></div></div>
+      </div>
+      <div class="ratio-box">Mix: 1:3 WP4008 Grimdark Shadow : water — targeted glaze, fine brush, recess application only</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step C · Brush</span>
+      <h3>WP4005 Grime Wash — Base Contact &amp; Foot Undersides</h3>
+      <p>WP4005 Grime Wash applied broadly to the foot undersides and lower leg contact zone. The warm dark brown reads as ground-contamination at the feet — the acrylic equivalent of VI-001 Goon's Grime. Combine with a small amount of WP4008 Grimdark Shadow for a darker, more saturated effect if the base theme is particularly dark or alien-biology-rich.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2a2218;"></div><div class="swatch-info"><div class="swatch-name">WP4005 Grime Wash</div><div class="swatch-brand">John Blanche Masterclass</div><div class="swatch-value">warm dark grime — foot undersides and lower leg contact zone; ground contamination</div></div></div>
+      </div>
+    </div>
+
+    <!-- TROUBLE CARDS -->
+    <div class="phase-label">Trouble Shooting</div>
+    <div class="trouble-grid">
+
+      <div class="trouble-card">
+        <div class="trouble-title">Enamel lifted the carapace or flesh paint</div>
+        <div class="trouble-fix"><strong>Cause:</strong> Applied Villainy Ink to an unsealed surface.<br><strong>Fix:</strong> Let the enamel dry fully (4–12 hours). Touch up the carapace with Violet 010 / Ultramarine Blue equivalent; touch up flesh with the original flesh base colours. Seal thoroughly before any further enamel work. The seal step is not optional.</div>
+      </div>
+
+      <div class="trouble-card">
+        <div class="trouble-title">Carrion Crimson flooded onto the carapace plate, not just the join</div>
+        <div class="trouble-fix"><strong>Cause:</strong> Applied too much ink, or didn't remove it from the plate surface quickly enough.<br><strong>Fix:</strong> Re-wet with a cotton swab barely dampened with enamel thinner and drag it across the carapace plate face — the ink lifts off flat surfaces and stays in the join groove. If the enamel has dried, re-wet the surface, wait 30 seconds, then wipe with a clean swab. The join line effect only works if the plate surface itself is clean.</div>
+      </div>
+
+      <div class="trouble-card">
+        <div class="trouble-title">Decay of Death spore spots look like painted dots, not organic</div>
+        <div class="trouble-fix"><strong>Cause:</strong> Applied with a brush stroke rather than a stipple press, or made the spots too uniform in size.<br><strong>Fix:</strong> Vary the spot sizes — some as small as a pinpoint, some 1–2mm, placed in irregular clusters of 3–5. Between spots, add one or two smaller satellite marks nearby. Real fungal/bacterial colonies are never perfectly uniform. The irregularity is what reads as biological rather than decorative.</div>
+      </div>
+
+      <div class="trouble-card">
+        <div class="trouble-title">Gloss flesh finish was dulled by the matte varnish seal coat</div>
+        <div class="trouble-fix"><strong>Cause:</strong> Applied matte varnish over the whole model before restoring the flesh gloss.<br><strong>Fix:</strong> This is expected — the varnish seal step intentionally flattens everything. After the enamel inks are fully cured and the matte seal coat is dry, apply MPAM-003 Gloss Varnish with a fine brush specifically over all flesh surfaces and the eye lenses. The gloss finish on the flesh against matte carapace is a critical visual contrast — restore it last.</div>
+      </div>
+
+    </div><!-- end .trouble-grid -->
+
+  </div><!-- end #grimdark -->
+
+</div><!-- end .container -->
+
+
+<footer class="guide-footer">
+  Guide by
+  <a href="https://www.youtube.com/@brent_the_programmer9108" target="_blank">brent_the_programmer</a>
+  &middot;
+  <a href="https://instagram.com/stephenson913" target="_blank">@stephenson913</a>
+</footer>
+
+<button class="back-to-top" id="backToTop" title="Back to top"
+        onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<div class="ref-modal" id="refModal" onclick="if(event.target===this)closeRefModal()">
+  <div class="ref-modal-inner">
+    <button class="ref-modal-close" onclick="closeRefModal()" title="Close">✕</button>
+    <img class="ref-modal-img" id="refModalImg" src="" alt="">
+    <div class="ref-modal-caption" id="refModalCaption"></div>
+  </div>
+</div>
+
+<script>
+window.GUIDE_THINNING = {
+  airbrushRows: [
+    { technique: 'Carapace shadow (Dark Purple 035)',    nozzle: '0.3mm', ratio: '1:2.5', behavior: 'Semi-transparent; tints zenithal without replacing it. Wide cone, loose pass over all carapace.' },
+    { technique: 'Carapace body (Purple 010)',           nozzle: '0.3mm', ratio: '1:2',   behavior: 'Build in 2 thin passes; covers zenithal-lit surfaces, leaves shadow zones intact.' },
+    { technique: 'Crown pre-highlight (Magenta 011)',    nozzle: '0.3mm', ratio: '1:3',   behavior: 'Very targeted — top-down only, 50% trigger. Small cone strictly on plate crowns.' },
+    { technique: 'Flesh base (Ivory 023)',               nozzle: '0.3mm', ratio: '1:2',   behavior: 'Semi-transparent; 2 passes, lets wash shadow show through in recesses.' },
+    { technique: 'Flesh zenithal (Bright Ivory 022)',    nozzle: '0.3mm', ratio: '1:3',   behavior: 'Thin and floaty; top-down only. Brightens the peaks without covering mid-tones.' },
+  ],
+  brushRows: [],
+  thinningCards: []
+};
+</script>
+
+<script src="../../assets/guide.js"></script>
+<script src="../../assets/skills-reference.js"></script>
+<script>
+  function openRefModal(src, alt) {
+    var modal = document.getElementById('refModal');
+    document.getElementById('refModalImg').src = src;
+    document.getElementById('refModalImg').alt = alt;
+    document.getElementById('refModalCaption').textContent = alt;
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeRefModal() {
+    document.getElementById('refModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeRefModal();
+  });
+
+  function showSubTab(parentId, contentId, btn) {
+    const parent = document.getElementById(parentId);
+    if (!parent) return;
+    parent.querySelectorAll('.sub-content').forEach(c => c.classList.remove('active'));
+    parent.querySelectorAll('.sub-tab').forEach(b => b.classList.remove('active'));
+    const el = document.getElementById(contentId);
+    if (el) el.classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+  (function() {
+    const btn = document.getElementById('backToTop');
+    if (!btn) return;
+    window.addEventListener('scroll', function() {
+      btn.classList.toggle('visible', window.scrollY > 300);
+    }, { passive: true });
+  })();
+</script>
+
+</body>
+</html>

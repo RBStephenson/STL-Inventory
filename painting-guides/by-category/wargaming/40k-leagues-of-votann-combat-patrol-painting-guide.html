@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leagues of Votann Combat Patrol — Wargaming Painting Guide</title>
+
+  <link rel="stylesheet" href="../../assets/guide.css">
+  <link rel="stylesheet" href="../../assets/print.css" media="print">
+
+  <style>
+    /* ═══════════════════════════════════════════════════════════
+       PER-GUIDE THEME — :root vars + .hero gradient only.
+       ALL other styles live in guide.css.
+       ═══════════════════════════════════════════════════════════ */
+
+    :root {
+      /* Page & panel backgrounds — deep purple-black */
+      --bg:       #0d0b14;
+      --surface:  #17131f;
+      --surface2: #1f1a2c;
+      --surface3: #282039;
+
+      /* Borders & text */
+      --border:      #3a3050;
+      --text:        #e8e4f0;
+      --text-muted:  #a89fc0;
+      --text-dim:    #6a5f80;
+
+      /* Accent — Leagues of Votann teal-purple */
+      --accent: #8B5FBF;
+
+      /* Step badge colors */
+      --tag-airbrush: #2266aa;
+      --tag-brush:    #226622;
+      --tag-wash:     #884422;
+      --tag-drybrush: #aa5500;
+      --tag-finish:   #555555;
+      --tag-effects:  #882244;
+      --tag-filter:   #446688;
+
+      /* Quality tier colors */
+      --tier1-color: #4a8a4a;
+      --tier2-color: #4a6a9a;
+      --tier3-color: #8a5aaa;
+
+      /* Callout colors */
+      --tip-bg:      rgba(120, 60, 200, 0.08);
+      --tip-border:  #5a3a80;
+      --warn-bg:     rgba(200, 50, 50, 0.08);
+      --warn-border: #882222;
+    }
+
+    /* ── HERO — deep royal purple gradient ─────────────────── */
+    .hero {
+      background: linear-gradient(135deg, #0e0820 0%, #2a1255 35%, #3a1a70 60%, #0e0820 100%);
+      border-bottom: 2px solid var(--accent);
+    }
+
+    /* ── WARGAMING-SPECIFIC STYLES ──────────────────────────── */
+
+    .tier-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 3px;
+      margin-right: 6px;
+      margin-top: 6px;
+    }
+    .tier-badge.tier-1 { background: var(--tier1-color); color: #fff; }
+    .tier-badge.tier-2 { background: var(--tier2-color); color: #fff; }
+    .tier-badge.tier-3 { background: var(--tier3-color); color: #fff; }
+
+    .batch-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 3px;
+      margin-left: 8px;
+    }
+
+    .cohesion-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 16px 0 8px;
+    }
+    .cohesion-swatch {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .cohesion-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.15);
+      flex-shrink: 0;
+    }
+
+    .tier-card {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      background: var(--surface2);
+    }
+    .tier-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .tier-card h3 { margin: 0; font-size: 1rem; }
+    .tier-card .tier-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+    .tier-card ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    .batch-stage {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .batch-stage:last-child { border-bottom: none; }
+    .batch-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .batch-stage-body strong { color: var(--text); font-size: 0.95rem; }
+    .batch-stage-body p { margin: 4px 0 0; color: var(--text-muted); font-size: 0.875rem; line-height: 1.5; }
+
+    .step-number.drybrush { background: var(--tag-drybrush); }
+    .base-step { border-left: 3px solid var(--accent); }
+  </style>
+</head>
+<body>
+
+<nav class="guide-nav">
+  <a href="../../index.html">← All Guides</a>
+</nav>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     HERO
+     ═══════════════════════════════════════════════════════════ -->
+<div class="hero">
+  <div class="category">Warhammer 40,000 · Leagues of Votann</div>
+
+  <h1><span>Combat Patrol:</span> Leagues of Votann</h1>
+
+  <div class="subtitle">
+    28mm · Royal Purple Custom Scheme
+    <span class="tier-badge tier-1">Tabletop Ready</span>
+    <span class="tier-badge tier-2">Battle Ready</span>
+    <span class="tier-badge tier-3">Display</span>
+    <span class="batch-badge">Combat Patrol Box</span>
+  </div>
+
+  <div class="series-badge">
+    <span class="active">Combat Patrol</span>
+  </div>
+
+  <div class="creator-credit">
+    Models by <strong>Games Workshop</strong>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAINT BAR
+     ═══════════════════════════════════════════════════════════ -->
+<div class="paint-bar">
+  <span class="paint-bar-label">Paint Lines Used</span>
+  <span class="paint-pill">
+    <span class="pill-dot" style="background:#cc4444;"></span>Pro Acryl
+  </span>
+  <span class="paint-pill">
+    <span class="pill-dot" style="background:#4488cc;"></span>Army Painter Warpaints Fanatic
+  </span>
+  <span class="paint-pill">
+    <span class="pill-dot" style="background:#e07820;"></span>Army Painter Speedpaint 2.0
+  </span>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     MAIN CONTAINER
+     ═══════════════════════════════════════════════════════════ -->
+<div class="container">
+
+  <!-- ARMY BRIEF ──────────────────────────────────────────── -->
+  <div class="char-brief">
+    <strong>Your Kin — Royal Purple Custom Scheme</strong> —
+    These Kin march in deep ancestral purple, their armour colour declaring lineage older than most inhabited star systems. Aged brass trim speaks to generations of maintained equipment, while teal ancestor-light pulses from core displays, helmet optics, and weapon cells — the living breath of the Ancestor Cores themselves. Light source: zenithal top-down. Palette follows the 60/30/10 rule: deep purple dominates all armour; aged brass occupies trim, runes, and equipment housings; teal ancestor glow serves as the pure accent that ties the army's identity together. Tundra basing reinforces the cold, alien world feel while making the warm purple-brass pop.
+
+    <div class="cohesion-strip">
+      <div class="cohesion-swatch">
+        <div class="cohesion-dot" style="background:#27224C;"></div>
+        <span>Deep Purple Armour · 60% — Dark Purple 035</span>
+      </div>
+      <div class="cohesion-swatch">
+        <div class="cohesion-dot" style="background:#BF9868;"></div>
+        <span>Aged Brass Trim · 20% — Rich Gold 028</span>
+      </div>
+      <div class="cohesion-swatch">
+        <div class="cohesion-dot" style="background:#54443F;"></div>
+        <span>Dark Leather &amp; Cloth · 10% — Dark Umber 019</span>
+      </div>
+      <div class="cohesion-swatch">
+        <div class="cohesion-dot" style="background:#0EA1B2;"></div>
+        <span>Ancestor Teal · 10% — Turquoise 054</span>
+      </div>
+      <div class="cohesion-swatch">
+        <div class="cohesion-dot" style="background:#8f9295;"></div>
+        <span>Frozen Tundra Base</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB NAV
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tabs">
+    <div class="tab tab-btn active"   onclick="showTab('batch',        this)">Batch Workflow</div>
+    <div class="tab tab-btn"          onclick="showTab('primary',      this)">Purple Armour</div>
+    <div class="tab tab-btn"          onclick="showTab('secondary',    this)">Brass &amp; Leather</div>
+    <div class="tab tab-btn"          onclick="showTab('skin',         this)">Skin &amp; Faces</div>
+    <div class="tab tab-btn"          onclick="showTab('ancestorglow', this)">Ancestor Glow</div>
+    <div class="tab tab-btn"          onclick="showTab('metals',       this)">Metals</div>
+    <div class="tab tab-btn"          onclick="showTab('basing',       this)">Basing</div>
+    <div class="tab tab-btn"          onclick="showTab('tiers',        this)">Quality Tiers</div>
+    <div class="tab tab-btn"          onclick="showTab('brush-skills', this)">Brush Skills</div>
+    <div class="tab tab-btn"          onclick="showTab('thinning-ref', this)">Thinning Ref</div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: BATCH WORKFLOW
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content active" id="batch">
+
+    <div class="section-header">
+      <h2>Batch Painting Workflow</h2>
+      <p>The Combat Patrol box contains Hearthkyn Warriors, an Einhyr Champion, Hernkyn Pioneers, and a Sagitaur — a healthy mix of infantry, character, and vehicle. Treat the Champions and Pioneers as Tier 2 models and the rank Hearthkyn as your Tier 1 batch.</p>
+    </div>
+
+    <div class="phase-label">Recommended Batch Sizes</div>
+    <div class="tip"><strong>✦ ARMY COHESION:</strong> Lock in your base recipe before touching the first model. The tundra base theme must be consistent across everything — infantry, vehicle, and character alike. A unified base is the single biggest factor in making a mixed box look like a deliberate army.</div>
+
+    <div class="phase-label">Tier 1 — Speedpaint Shortcut (Hearthkyn Warriors)</div>
+    <div class="tip"><strong>✦ PURPLE PRIMER TRICK:</strong> Prime with <strong>MPAP-023 Dark Purple</strong> airbrush primer instead of grey. Then apply Speedpaint 2.0 Purple Swarm directly over it — the dark purple primer reads through recesses as a deeper shadow, giving you a richer, more saturated result in one pass with zero extra effort.</div>
+
+    <div class="phase-label">Assembly-Line Sequence</div>
+    <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:16px;">Complete each stage across ALL models before moving to the next. Never finish one model before touching the others.</p>
+
+    <div class="batch-stage">
+      <div class="batch-num">1</div>
+      <div class="batch-stage-body">
+        <strong>Prep &amp; Prime — All Models</strong>
+        <p>Clean mold lines. Prime all infantry with MPAP-023 Dark Purple via airbrush (0.5mm, 28 PSI, full coverage). Prime the Sagitaur with MPAR-P02 Matte Black spray as a base for its larger surfaces. Allow 30 min dry time before proceeding.</p>
+      </div>
+    </div>
+
+    <div class="batch-stage">
+      <div class="batch-num">2</div>
+      <div class="batch-stage-body">
+        <strong>Purple Armour — All Infantry</strong>
+        <p><em>Tier 1 (fast):</em> Speedpaint 2.0 Purple Swarm over all armour — one pass, no reworking while wet. Let flow into recesses and leave it. <em>Tier 2+ (airbrushed):</em> See the Purple Armour tab for the full zenithal workflow. Do whichever you've chosen across the entire batch before moving on.</p>
+      </div>
+    </div>
+
+    <div class="batch-stage">
+      <div class="batch-num">3</div>
+      <div class="batch-stage-body">
+        <strong>Brass Trim — All Models</strong>
+        <p>Apply Dark Bronze S24 as a base coat over all brass trim, runes, and armour borders — all models. Then Rich Gold 028 over raised trim — all models. Then Brown Wash 201 targeted into brass recesses — all models. Do not move to the next colour until all models have had the full brass sequence.</p>
+      </div>
+    </div>
+
+    <div class="batch-stage">
+      <div class="batch-num">4</div>
+      <div class="batch-stage-body">
+        <strong>Leather, Cloth &amp; Bodysuit — All Infantry</strong>
+        <p>Dark Umber 019 on all leather straps and pouches → all models. Dark Grey Blue 014 on bodysuit under-armour sections → all models. One colour at a time across the entire batch.</p>
+      </div>
+    </div>
+
+    <div class="batch-stage">
+      <div class="batch-num">5</div>
+      <div class="batch-stage-body">
+        <strong>Highlight Pass — All Models</strong>
+        <p>Drybrush Faded Plum 063 over all raised armour surfaces and edges — all models. This is the Tier 1 stopping point for the armour. Drybrush Bright Gold 031 over raised brass edges — all models. Tier 2 edge highlights come after this, still across the batch.</p>
+      </div>
+    </div>
+
+    <div class="batch-stage">
+      <div class="batch-num">6</div>
+      <div class="batch-stage-body">
+        <strong>Details &amp; Ancestor Glow — All Models</strong>
+        <p>Ancestor glow (helmet optics, core ports, weapon cells) — all models in sequence: dark teal base → mid teal → bright Turquoise 054 hot spot → all models. Then eyes → all models. Then weapon steel accents → all models. One detail type at a time, always across the full batch.</p>
+      </div>
+    </div>
+
+    <div class="batch-stage">
+      <div class="batch-num">7</div>
+      <div class="batch-stage-body">
+        <strong>Basing — All Models Together</strong>
+        <p>Apply texture paste to all bases. Prime, colour, shade, drybrush, frost — all models at each stage. Never base one model while others are mid-paint. See the Basing tab for the complete tundra recipe.</p>
+      </div>
+    </div>
+
+    <div class="batch-stage">
+      <div class="batch-num">8</div>
+      <div class="batch-stage-body">
+        <strong>Varnish — All Models at Once</strong>
+        <p>Matte varnish overall (MPAR-V01 Matte Varnish spray or brush-on equivalent). Then targeted gloss on ancestor glow areas, eye lenses, and any gem surfaces. The glow needs that gloss to read correctly — don't skip it.</p>
+      </div>
+    </div>
+
+    <div class="phase-label">Sagitaur Vehicle Notes</div>
+    <div class="tip"><strong>✦ SAGITAUR:</strong> Same colour recipe scales directly to the vehicle. Key differences: highlight passes are more aggressive on large flat panels (bigger drybrush strokes, more passes); add weathering streaks using Brown Wash 201 drawn downward from vents and panel gaps; the ancestor core housing on the vehicle is a great opportunity for a strong OSL glow effect — see the Ancestor Glow tab for the approach.</div>
+
+    <div class="phase-label">Wet Palette Protocol</div>
+    <div class="tip"><strong>✦ WET PALETTE:</strong> When brush-painting across a batch, a wet palette is non-negotiable. Mix enough of each colour to cover the entire batch in one session — err on the side of too much. The same pool = the same colour on every model. Never mix "just enough" for one model.</div>
+
+  </div><!-- end #batch -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: PURPLE ARMOUR (PRIMARY)
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="primary">
+
+    <div class="section-header">
+      <h2>Purple Armour</h2>
+      <p>The dominant surface — dense Votann combat armour in deep royal purple. The goal is a rich, saturated purple that holds darkness in the recesses while catching teal ancestor-light on the edges at Tier 2+. Values should read as 20–25% in shadows, 50–55% on mid panels, with edge highlights pushing to 70–75%.</p>
+    </div>
+
+    <div class="phase-label">Tier 1 — Speedpaint Fast Track</div>
+    <div class="tip"><strong>✦ TIER 1 START HERE:</strong> Prime with MPAP-023 Dark Purple (full coverage, let cure 30 min). Apply Speedpaint 2.0 Purple Swarm in a single flowing pass — work from top to bottom, guide the paint into recesses with the brush tip, then leave it. Do NOT rework while wet. Let dry completely (20 min minimum). Follow with Step 5 (drybrush) to complete Tier 1.</div>
+
+    <div class="phase-label">Foundation — Full Airbrush Workflow (Tier 2+)</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 · Airbrush</span>
+      <h3>Grey Prime Base</h3>
+      <p>Full coverage prime in neutral grey. This establishes a clean, consistent surface and ensures the zenithal reads correctly. 0.5mm nozzle, 28–32 PSI, two passes for full coverage.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#46484C"></div><div class="swatch-info"><div class="swatch-name">Dark Neutral Grey Primer — MPAP-005</div><div class="swatch-brand">Pro Acryl Primer</div><div class="swatch-value">~22% value — neutral grey prime</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 2 · Airbrush</span>
+      <h3>White Zenithal Sketch</h3>
+      <p>Thin White primer 1:4 with distilled water. Spray from 45° above at medium distance — hit only the uppermost surfaces and raised edges. This is not full coverage. You want a gradation from bright top to dark underside. 0.3mm nozzle, 22–25 PSI.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#F8F8F8"></div><div class="swatch-info"><div class="swatch-name">White Primer — MPAP-003</div><div class="swatch-brand">Pro Acryl Primer</div><div class="swatch-value">~90% value — zenithal sketch</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> The zenithal value sketch should be roughly 40% lit / 60% grey before you add any colour. If it's too bright you'll lose saturation. If too dim the highlights won't pop through.</div>
+    </div>
+
+    <div class="phase-label">Purple Base Coat</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 3 · Airbrush</span>
+      <h3>Deep Purple Foundation</h3>
+      <p>Thin 1:3 to 1:4 with distilled water. 0.3mm nozzle, 25 PSI. Apply at medium distance in two to three thin passes — full body coverage. The zenithal will still faintly show through, giving you a built-in value gradient. This should read as approximately 20–25% value across the whole model at this stage.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#27224C"></div><div class="swatch-info"><div class="swatch-name">Dark Purple 035</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~18% value — deep shadow purple</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 4 · Airbrush</span>
+      <h3>Purple Midtone Zenithal</h3>
+      <p>Thin 1:4 with distilled water. 0.3mm nozzle, 22 PSI. Apply from 45° above — hit raised armour panels and top surfaces. Leave undercuts, recesses, and lower body dark. This should lift the upper panels to approximately 40% value.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#7F517D"></div><div class="swatch-info"><div class="swatch-name">Purple 010</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~38% value — purple midtone</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 5 · Airbrush</span>
+      <h3>Highlight Zenithal — Top Panels</h3>
+      <p>Mix Purple 010 + Faded Plum 063 at 2:1. Thin 1:5. Spray from directly above (90°), close distance (12–15cm). Hit only the topmost armour panels and shoulders — not armour edges or sides. Should read approximately 52–55% value on the very top surfaces.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#7F517D"></div><div class="swatch-info"><div class="swatch-name">Purple 010</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">base of mix</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#9F8CB3"></div><div class="swatch-info"><div class="swatch-name">Faded Plum 063</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~58% value — highlight zenithal mix</div></div></div>
+      </div>
+      <div class="ratio-box">Mix: 2:1 Purple 010 + Faded Plum 063 — thin 1:5 with distilled water</div>
+    </div>
+
+    <div class="phase-label">Shading</div>
+
+    <div class="step">
+      <span class="step-number wash">Step 6 · Wash</span>
+      <h3>Recess Shade</h3>
+      <p>Thin Purple Tone WP3212 (Army Painter Fanatic) 1:1 with water. Use a fine brush — apply targeted into panel gaps, armour joints, collar recesses, and around rivet lines. Do not flood the panels. Let dry completely — minimum 30 min — before highlighting.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#4a3a60"></div><div class="swatch-info"><div class="swatch-name">Purple Tone — WP3212</div><div class="swatch-brand">Army Painter Warpaints Fanatic</div><div class="swatch-value">~8% value — purple recess shade</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> Purple Tone keeps the shadows warm and purple — using Black Wash here would make the recesses read grey/neutral and break the army's colour identity. Stick with Purple Tone for shadows in the purple zones.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number filter">Step 7 · Filter</span>
+      <h3>Transparent Purple Unifying Glaze (Optional)</h3>
+      <p>Thin Transparent Purple 051 at 1:5 with water or Glaze &amp; Wash Medium MPAM-001. Apply a single thin pass over the entire armour surface with a wide flat brush. This blends the zenithal layers together and adds richness to the hue. Let dry fully before proceeding.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#594E6B"></div><div class="swatch-info"><div class="swatch-name">Transparent Purple 051</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~25% value — unifying glaze</div></div></div>
+      </div>
+    </div>
+
+    <div class="phase-label">Highlighting</div>
+
+    <div class="step">
+      <span class="step-number drybrush">Step 8 · Drybrush — Tier 1 Stopping Point</span>
+      <h3>Broad Armour Highlight</h3>
+      <p>Load a medium stiff brush with Faded Plum 063, wipe on tissue until almost no paint transfers, then use quick multi-directional strokes over all raised armour edges, rivets, armour panel corners, and raised detail. This should read as approximately 60–65% value on the peaks. At arm's length on the table, this is a solid, finished Tier 1 model.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#9F8CB3"></div><div class="swatch-info"><div class="swatch-name">Faded Plum 063</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~60% value — drybrush highlight</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIER 1 STOP:</strong> If you're painting Hearthkyn Warriors to Tier 1, stop here. This reads at arm's length as a fully painted, cohesive miniature. Proceed to Steps 9–11 only for Battle Ready and Display quality — or for the Einhyr Champion.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 9 · Brush — Tier 2+</span>
+      <h3>Edge Highlight</h3>
+      <p>Thin Faded Plum 063 at 1:2. Size 1 or size 0 brush. Drag the tip steadily along sharp armour panel edges, plate corners, and rim edges. Aim for a consistent 1-pixel-wide line. This highlight should read as approximately 68–72% value — bright enough to be clearly visible at 50cm distance.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#9F8CB3"></div><div class="swatch-info"><div class="swatch-name">Faded Plum 063</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~68% value — edge highlight</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 10 · Brush — Tier 3</span>
+      <h3>Bright Edge &amp; Specular</h3>
+      <p>Mix Violet Coven (Army Painter Fanatic) + Heavy Warm White S18 at 5:1. Thin 1:2. Apply to the sharpest armour corners and topmost edges only — the places where the eye lands first. Keep to 1-pixel width maximum. Then add a single dot of Heavy Warm White S18 alone to the apex of each major panel corner for the specular catch.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#AB96C2"></div><div class="swatch-info"><div class="swatch-name">Violet Coven</div><div class="swatch-brand">Army Painter Warpaints Fanatic</div><div class="swatch-value">base of mix</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#F4EDE0"></div><div class="swatch-info"><div class="swatch-name">Heavy Warm White S18</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~88% value — specular catch</div></div></div>
+      </div>
+      <div class="ratio-box">Edge mix: 5:1 Violet Coven + Heavy Warm White S18 · Specular: Heavy Warm White S18 alone</div>
+    </div>
+
+  </div><!-- end #primary -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: BRASS & LEATHER
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="secondary">
+
+    <div class="section-header">
+      <h2>Brass, Leather &amp; Cloth</h2>
+      <p>The secondary materials carry the 30% of the scheme not covered by purple armour. Aged brass dominates trim and equipment housings; dark leather handles straps and pouches; a very dark blue-grey bodysuit sits beneath the armour and provides visual separation without competing with the purple.</p>
+    </div>
+
+    <div class="phase-label">Aged Brass Trim</div>
+    <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:12px;">Covers all armour border trim, rune carvings, equipment housings, buckles, and the Ancestor Core frame. The goal is old, well-maintained brass — warm and rich, not bright yellow-gold.</p>
+
+    <div class="step">
+      <span class="step-number brush">Step 1 · Brush</span>
+      <h3>Dark Brass Base</h3>
+      <p>Mix Dark Bronze S24 + Coal Black 002 at 3:1. Thin 1:2. Full coverage on all brass surfaces. This dark shadow base ensures the brass will look aged and deep rather than bright. Let dry fully.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#74665E"></div><div class="swatch-info"><div class="swatch-name">Dark Bronze S24</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~20% value — darkest brass shadow</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#2A2A2A"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~6% value — shadow anchor</div></div></div>
+      </div>
+      <div class="ratio-box">Mix: 3:1 Dark Bronze S24 + Coal Black 002 — thin 1:2</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 2 · Brush</span>
+      <h3>Mid Brass Layer</h3>
+      <p>Bronze 032 thinned 1:2. Apply over the raised brass surfaces, leaving the darkest recesses untouched. You're building up from dark to light — this middle tone covers most of the visible brass surface.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#857668"></div><div class="swatch-info"><div class="swatch-name">Bronze 032</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~32% value — mid brass</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 3 · Brush</span>
+      <h3>Warm Gold Highlight</h3>
+      <p>Rich Gold 028 thinned 1:2. Apply to raised trim edges, rune ridges, and panel highlight lines. This gives the brass its warmth and separation from the cooler purple armour. Leave the mid-surface in Bronze 032 — the gold only catches the edges.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#BF9868"></div><div class="swatch-info"><div class="swatch-name">Rich Gold 028</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~50% value — warm gold edge</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 4 · Wash</span>
+      <h3>Brass Recess Shade</h3>
+      <p>Brown Wash 201 thinned 1:1, targeted into all brass recesses, rune inset lines, and around joins. This unifies the gold layers and deepens the crevices with a warm sepia tone. Use a fine brush — do not flood the surface.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#594942"></div><div class="swatch-info"><div class="swatch-name">Brown Wash 201</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~12% value — warm brass shadow</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 5 · Brush — Tier 2+</span>
+      <h3>Bright Gold Edge</h3>
+      <p>Bright Gold 031 thinned 1:2 on the sharpest brass corners and trim apex edges. This is the "pop" that makes the brass read clearly across the table. Keep to thin lines — 1-pixel width max on armour trim.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#D1B18A"></div><div class="swatch-info"><div class="swatch-name">Bright Gold 031</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~64% value — bright gold edge</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 6 · Brush — Tier 3</span>
+      <h3>Pale Gold Specular</h3>
+      <p>Mix White Gold 029 + Heavy Warm White S18 at 4:1. Tiny touch on the absolute apex corners of major brass trim elements only. This suggests a high-polish surface on a Kin heirloom piece.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#B2AC9F"></div><div class="swatch-info"><div class="swatch-name">White Gold 029</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~72% value — pale gold specular</div></div></div>
+      </div>
+    </div>
+
+    <div class="phase-label">Leather Straps &amp; Pouches</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 7 · Brush</span>
+      <h3>Leather Base</h3>
+      <p>Dark Umber 019 thinned 1:2. Full coverage on all leather elements — straps, pouches, holsters, boot sections. This very dark warm brown reads as rich leather without competing with the armour.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#54443F"></div><div class="swatch-info"><div class="swatch-name">Dark Umber 019</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~20% value — dark leather base</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 8 · Wash</span>
+      <h3>Leather Shade</h3>
+      <p>Brown Wash 201 thinned 1:1, into leather fold lines, strap edges, and under buckle hardware. Deepens the leather's natural shadow shapes.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 9 · Brush — Tier 2+</span>
+      <h3>Leather Highlight</h3>
+      <p>Light Umber 018 thinned 1:2 on raised strap edges, fold peaks, and buckle surrounds. Then a final edge mix of Light Umber 018 + Tan Flesh 024 at 2:1 on the sharpest strap corners. Keep it subtle — leather should be secondary to brass.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#70584B"></div><div class="swatch-info"><div class="swatch-name">Light Umber 018</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~32% value — leather highlight</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#DDB3A3"></div><div class="swatch-info"><div class="swatch-name">Tan Flesh 024</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~64% value — leather edge mix</div></div></div>
+      </div>
+    </div>
+
+    <div class="phase-label">Undersuit / Bodysuit</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 10 · Brush</span>
+      <h3>Dark Bodysuit Base</h3>
+      <p>Dark Grey Blue 014 thinned 1:2. Full coverage on all visible undersuit sections — limb joints, collar, exposed cloth. Very dark — barely distinguishable from black at Tier 1, but with a cool blue-navy undertone that reads as hi-tech fabric and complements the purple armour.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#1C3E62"></div><div class="swatch-info"><div class="swatch-name">Dark Grey Blue 014</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~15% value — very dark bodysuit</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 11 · Wash</span>
+      <h3>Bodysuit Shade</h3>
+      <p>Black Wash 200 thinned 1:2 into bodysuit fold lines and recesses. Keeps the undersuit visually receded — you don't want it competing for attention.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 12 · Brush — Tier 2+</span>
+      <h3>Bodysuit Highlight</h3>
+      <p>Grey Blue 055 thinned 1:2 on raised cloth folds and the topmost edges of fabric sections. Thin lines only — this is supporting material, not a hero surface.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#80A0BD"></div><div class="swatch-info"><div class="swatch-name">Grey Blue 055</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~45% value — bodysuit highlight</div></div></div>
+      </div>
+    </div>
+
+  </div><!-- end #secondary -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: SKIN & FACES
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="skin">
+
+    <div class="section-header">
+      <h2>Skin &amp; Faces</h2>
+      <p>Kin faces are small at 28mm scale — but they're the first thing a viewer looks at. For rank Hearthkyn, Tier 1 Speedpaint skin is fast and solid. For the Einhyr Champion, spend the time on Tier 2+ layered skin — a well-painted face elevates the whole model.</p>
+    </div>
+
+    <div class="phase-label">Tier 1 — Speedpaint One-Pass</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 1 · Brush</span>
+      <h3>One-Pass Skin (Hearthkyn Warriors)</h3>
+      <p>Over the grey prime, apply Speedpaint 2.0 Crusader Skin WP2004 to all face and hand areas in a single pass. Let it flow into eye sockets and chin recesses — don't rework while wet. For deeper/darker skin tones, use Noble Skin WP2063 or Warrior Skin WP2 instead. Let dry completely before adding any details.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#DA9E7A"></div><div class="swatch-info"><div class="swatch-name">Crusader Skin — WP2004</div><div class="swatch-brand">Speedpaint 2.0</div><div class="swatch-value">~52% value — one-pass skin</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#504B3D"></div><div class="swatch-info"><div class="swatch-name">Noble Skin — WP2063</div><div class="swatch-brand">Speedpaint 2.0</div><div class="swatch-value">~22% value — darker skin tone option</div></div></div>
+      </div>
+    </div>
+
+    <div class="phase-label">Tier 2 — Layered Skin (Einhyr Champion &amp; Hero Models)</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 2 · Brush</span>
+      <h3>Shadow Base</h3>
+      <p>Shadow Flesh 042 thinned 1:2. Cover the entire face. This dark warm shadow sets the deepest value — eye sockets will be re-deepened later but the whole face starts here.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#9F645B"></div><div class="swatch-info"><div class="swatch-name">Shadow Flesh 042</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~28% value — skin shadow base</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 3 · Wash</span>
+      <h3>Facial Shade</h3>
+      <p>Flesh Wash 202 thinned 1:1, targeted into eye sockets, the hollow beneath the nose, the chin crease, and around the ears. Keep it off the cheekbones and brow ridge — those stay lit. Agrax Earthshade works as an alternative for warmer skin tones.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#906962"></div><div class="swatch-info"><div class="swatch-name">Flesh Wash 202</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~22% value — warm facial shade</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 4 · Brush</span>
+      <h3>Midtone Skin</h3>
+      <p>Warm Flesh 073 thinned 1:2. Apply to all mid-face areas — the cheeks, the nose bridge, the forehead, the chin. Leave eye sockets and the recesses from Step 3 dark. This is the main readable skin tone.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#F9C884"></div><div class="swatch-info"><div class="swatch-name">Warm Flesh 073</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~72% value — main skin midtone</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 5 · Brush — Tier 2+</span>
+      <h3>Highlight — Lit Planes</h3>
+      <p>Mix Warm Flesh 073 + Heavy Warm White S18 at 3:1. Thin 1:2. Apply to the nose tip, cheekbone peaks, the centre of the brow ridge, and the upper lip. These are the planes that catch light from above. Should read approximately 80–82% value.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#F9C884"></div><div class="swatch-info"><div class="swatch-name">Warm Flesh 073 (base of mix)</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">base</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#F4EDE0"></div><div class="swatch-info"><div class="swatch-name">Heavy Warm White S18</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~80% value — lit plane highlight</div></div></div>
+      </div>
+      <div class="ratio-box">Mix: 3:1 Warm Flesh 073 + Heavy Warm White S18 — thin 1:2</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 6 · Brush</span>
+      <h3>Eyes</h3>
+      <p>Coal Black 002 to fill the eye socket completely. Then a tiny fleck of Dark Turquoise S34 for the iris — echoing the ancestor glow makes the Kin look connected to the Ancestor Cores. For Tier 2+: add a tiny dot of Heavy Warm White S18 in the upper corner of the iris as a catchlight reflection. A round size 10/0 or 000 brush is essential here.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2A2A2A"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~6% value — eye socket</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#237F95"></div><div class="swatch-info"><div class="swatch-name">Dark Turquoise S34</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~35% value — teal iris (echoes ancestor glow)</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> Teal irises are a powerful army cohesion detail. It ties the Kin's eyes to the ancestor glow on their armour, making the army feel visually unified at a subconscious level.</div>
+    </div>
+
+  </div><!-- end #skin -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: ANCESTOR GLOW
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="ancestorglow">
+
+    <div class="section-header">
+      <h2>Ancestor Glow</h2>
+      <p>The teal ancestor-light is the defining accent of the Leagues of Votann. It appears on helmet optics, core port indicators, weapon power cells, and Kin marker runes. At Tier 1 it's a simple two-step basecoat; at Tier 2+ it becomes the miniature's most striking feature with layered OSL. This is worth the effort — teal against deep purple is a textbook split-complement contrast.</p>
+    </div>
+
+    <div class="phase-label">Key Glow Locations</div>
+    <div class="tip"><strong>✦ INVENTORY:</strong> Identify all ancestor glow areas before painting anything. Common locations: helmet visor displays, core port rings on chestplate, weapon power lines, markings on wrist-bracer displays, and Ancestor Core housing on the Sagitaur. Painting them all to a consistent brightness ties the army together.</div>
+
+    <div class="phase-label">Tier 1 — Fast Glow (All Infantry)</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 1 · Brush</span>
+      <h3>Dark Base</h3>
+      <p>Coal Black 002 thinned 1:2. Fill all glow area recesses. This ensures the teal will pop against a pure dark base rather than sitting on grey primer.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2A2A2A"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~6% value — glow undercoat</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 2 · Brush — Tier 1</span>
+      <h3>Speedpaint Glow — One Pass</h3>
+      <p>Speedpaint 2.0 Plasmatic Bolt over the dark base in a single pass. It flows into the recess and deposits a vivid teal with a built-in gradient. Do NOT rework while wet. At Tier 1, this alone is a convincing ancestor glow. After drying, add a single dot of Heavy Warm White S18 at the centre if desired.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#44AEA4"></div><div class="swatch-info"><div class="swatch-name">Plasmatic Bolt</div><div class="swatch-brand">Speedpaint 2.0</div><div class="swatch-value">~55% value — one-pass ancestor glow</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIER 1 STOP (GLOW):</strong> Plasmatic Bolt + dark base is a complete Tier 1 ancestor glow. Apply spot gloss varnish after matte coat to make it gleam on the finished model.</div>
+    </div>
+
+    <div class="phase-label">Tier 2+ — Layered Glow</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 3 · Brush</span>
+      <h3>Deep Teal Anchor</h3>
+      <p>Dark Jade S01 thinned 1:2. Fill the entire glow area. This very dark teal anchors the shadow zones of the glow — the edges away from the light source.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2F444A"></div><div class="swatch-info"><div class="swatch-name">Dark Jade S01</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~15% value — deepest glow shadow</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 4 · Brush</span>
+      <h3>Mid Teal Layer</h3>
+      <p>Dark Turquoise S34 thinned 1:2. Apply over the upper 60–70% of each glow area, leaving the outer edge in Dark Jade. You're building a gradient from the outer dark toward the central light source.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#237F95"></div><div class="swatch-info"><div class="swatch-name">Dark Turquoise S34</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~30% value — mid glow</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 5 · Brush</span>
+      <h3>Bright Teal — Core Light</h3>
+      <p>Turquoise 054 thinned 1:2. Apply to the inner 40% of the glow area — the centre of the lens, the brightest part of the port indicator, the core of the power cell. This should read approximately 60–65% value and be clearly the brightest teal on the model.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#0EA1B2"></div><div class="swatch-info"><div class="swatch-name">Turquoise 054</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~60% value — bright core teal</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 6 · Brush — Tier 2+</span>
+      <h3>OSL Glow on Adjacent Purple Armour</h3>
+      <p>Thin Turquoise 054 at 1:5 with Glaze &amp; Wash Medium MPAM-001. Apply a single thin glaze to the armour surfaces immediately adjacent to each glow source — within 3–4mm of the light. This simulates the teal light washing onto the surrounding purple armour. It should be barely perceptible — a cool teal tint, not a strong colour change. Wipe back any pooling with a damp flat brush.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#0EA1B2"></div><div class="swatch-info"><div class="swatch-name">Turquoise 054 — thinned 1:5</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~25% value — OSL glaze (very thin)</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ OSL TIP:</strong> The OSL must be applied over a fully dried and sealed (matte varnish) surface for clean glaze control. Apply the matte varnish halfway through painting, glaze the OSL, then continue. Never glaze over soft or unvarnished layers — it will lift.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 7 · Brush</span>
+      <h3>Inner Light &amp; Hot Tip</h3>
+      <p>Bright Jade 067 thinned 1:2 — a single small stroke or dot at the absolute centre of each glow source. Then Heavy Warm White S18 alone: a single tiny dot at the very heart of each glow, and a thin edge-catch line on the brightest side of helmet optics. This is the final element — the impression that light is genuinely radiating outward.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#3F9F8B"></div><div class="swatch-info"><div class="swatch-name">Bright Jade 067</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~72% value — inner glow</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#F4EDE0"></div><div class="swatch-info"><div class="swatch-name">Heavy Warm White S18</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~88% value — light source centre</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ FINISH:</strong> After matte varnish overall, apply spot gloss varnish directly over every glow surface. The gloss creates a wet, energised look that reads as living light. Matte glow is dead glow.</div>
+    </div>
+
+  </div><!-- end #ancestorglow -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: METALS
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="metals">
+
+    <div class="section-header">
+      <h2>Metals</h2>
+      <p>LoV weapons are well-maintained Votann-tech — dark steel with precise machined edges. Autoch-pattern bolters, concussion gauntlets, and blade-type weapons use dark cool steel. Brass and gold trim is handled in the Brass &amp; Leather tab. This tab covers weapon steel and dark iron hardware.</p>
+    </div>
+
+    <div class="sub-tabs">
+      <div class="sub-tab active" onclick="showSubTab('metals', 'tmm', this)">TMM — Standard</div>
+    </div>
+
+    <div class="sub-content active" id="tmm">
+
+      <div class="phase-label">Weapon Steel — Dark Cool Metal</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Dark Metallic Base</h3>
+        <p>Mix Coal Black 002 + Dark Silver 030 at 3:1. Thin 1:2. Full coverage on all weapon bodies, mechanical components, and dark iron hardware. The mix reads as a very dark steel — almost black, but with metallic shimmer in the recesses.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#2A2A2A"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~6% value — shadow anchor</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#797A7A"></div><div class="swatch-info"><div class="swatch-name">Dark Silver 030</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~38% value — dark metallic</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 3:1 Coal Black 002 + Dark Silver 030 — thin 1:2</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number drybrush">Step 2 · Drybrush</span>
+        <h3>Mid Steel — Zenithal Drybrush</h3>
+        <p>Steel 010 undiluted, loaded and wiped nearly dry on tissue. Drybrush from above at 45° — catches barrel ridges, barrel ends, blade flats, mechanical component edges. Leave recesses in the dark base mix. Builds up quickly — use light passes.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#8B8C8C"></div><div class="swatch-info"><div class="swatch-name">Steel 010</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~52% value — mid steel drybrush</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> Load brush → wipe on tissue until zero colour streaks → light directional strokes from 45° above. Multiple light passes build more convincingly than one heavy pass.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number wash">Step 3 · Wash</span>
+        <h3>Recess Shade</h3>
+        <p>Black Wash 200 thinned 1:2, targeted with a fine brush into deepest mechanical recesses — bolt housings, barrel chambers, seams, and mechanical joins. Do not flood the surface — control is key here.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#3E3B3B"></div><div class="swatch-info"><div class="swatch-name">Black Wash 200</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~5% value — deep recess</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush — Tier 2+</span>
+        <h3>Bright Steel Edge</h3>
+        <p>Magnesium S42 thinned 1:2 on the sharpest metal edges — barrel crown, blade apex, the leading edge of any mechanical component. Keep it to a 1-pixel line. Brightens the metal significantly and makes the weapon read as precision Votann engineering.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#7C766D"></div><div class="swatch-info"><div class="swatch-name">Magnesium S42</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~80% value — bright steel edge</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIER 1 NOTE:</strong> For Tier 1, stop after Step 3. The drybrush + wash reads convincingly at arm's length. The Magnesium edge highlight is a Tier 2 addition only.</div>
+      </div>
+
+    </div><!-- end #tmm -->
+
+  </div><!-- end #metals -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: BASING
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="basing">
+
+    <div class="section-header">
+      <h2>Basing</h2>
+      <p>Frozen tundra — cracked grey earth with frost accumulation on raised surfaces and sparse dead vegetation. The cold grey-white basing temperature contrasts against the warm purple armour and brass trim, making both pop. Build and paint all bases before starting the figures.</p>
+    </div>
+
+    <div class="tip"><strong>✦ ARMY RULE:</strong> Base all models together before painting figures. Every base must match — infantry, character, and Sagitaur alike. Lock in this recipe before touching paint on the first Hearthkyn.</div>
+
+    <div class="phase-label">Base Theme: Frozen Tundra</div>
+
+    <div class="step base-step">
+      <span class="step-number brush">Step 1 · Base Texture</span>
+      <h3>Apply Concrete Texture</h3>
+      <p>Apply MPA-T05 Concrete texture paste with an old stiff brush — cover 70–80% of the base surface, leaving a few small flat spots near the model's feet for stability. Push the texture into edges. While still wet, press in one or two small pieces of gravel or sprue nub for rock variety. Let cure 2+ hours before priming. Do not rush this dry time — inadequately cured texture flakes when primed.</p>
+      <div class="tip"><strong>✦ TIP:</strong> Build the texture up in the centre and thin it toward the rim — this prevents pooling paint at the edges and gives a natural terrain appearance.</div>
+    </div>
+
+    <div class="step base-step">
+      <span class="step-number airbrush">Step 2 · Prime / Seal</span>
+      <h3>Lock the Texture — Dark Grey Prime</h3>
+      <p>MPAP-005 Dark Neutral Grey via airbrush (0.5mm, 28 PSI) or MPAR-P02 Matte Black spray over all bases. Full coverage — this seals the texture paste, prevents flaking, and establishes the deepest value in the crevices. All bases at once.</p>
+    </div>
+
+    <div class="step base-step">
+      <span class="step-number brush">Step 3 · Base Colour</span>
+      <h3>Cold Ground Colour</h3>
+      <p>Dark Warm Grey 016 thinned 1:2. Brush over all texture surfaces, leaving the primer colour in the deepest crevices. This cool-warm mid-grey reads as frozen, rocky earth — neither warm brown nor pure cool grey. Apply to all bases before proceeding.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#4E5154"></div><div class="swatch-info"><div class="swatch-name">Dark Warm Grey 016</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~22% value — frozen ground colour</div></div></div>
+      </div>
+    </div>
+
+    <div class="step base-step">
+      <span class="step-number wash">Step 4 · Shade</span>
+      <h3>Deepen the Crevices</h3>
+      <p>Black Wash 200 thinned 1:2, worked into all texture crevices, rock shadows, and the base perimeter edge. Ties the texture together and pushes the shadows deeper. Allow to dry completely before drybrushing.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#3E3B3B"></div><div class="swatch-info"><div class="swatch-name">Black Wash 200</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~5% value — deep crevice shade</div></div></div>
+      </div>
+    </div>
+
+    <div class="step base-step">
+      <span class="step-number drybrush">Step 5 · Drybrush</span>
+      <h3>Cold Surface Highlight — Two Passes</h3>
+      <p><strong>Pass 1 (mid highlight):</strong> Bright Warm Grey 015 thinned slightly or used undiluted — wipe brush dry, random multi-directional strokes over all raised texture peaks and gravel surfaces. Builds the primary surface colour. Should reach approximately 55% value on the highest points. <strong>Pass 2 (frost edge):</strong> Mix Bright Warm Grey 015 + Heavy Warm White S18 at 2:1, very light touch, catching only the absolute topmost peaks. Reads as frost accumulation on exposed edges.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#ABB2A1"></div><div class="swatch-info"><div class="swatch-name">Bright Warm Grey 015</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~55% value — mid surface highlight</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#F4EDE0"></div><div class="swatch-info"><div class="swatch-name">Heavy Warm White S18</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~85% value — frost peak highlight</div></div></div>
+      </div>
+      <div class="ratio-box">Frost mix: 2:1 Bright Warm Grey 015 + Heavy Warm White S18</div>
+      <div class="tip"><strong>✦ TIP:</strong> Drybrush in random strokes for natural rock texture — not directional. The frost pass should be extremely light: just a whisper of near-white on the sharpest texture peaks. If it looks like paint rather than frost, the brush wasn't dry enough.</div>
+    </div>
+
+    <div class="step base-step">
+      <span class="step-number finish">Step 6 · Detail Elements</span>
+      <h3>Frost Texture &amp; Tufts</h3>
+      <p>Optional frost accumulation effect: mix PVA glue with a small amount of Heavy Warm White S18 and Bright Ivory 022 (3:1:1 PVA to each paint). Stipple sparingly onto exposed rock edges, the windward side of gravel, and around base perimeter edges — simulating blown frost settling on surfaces. For tufts: press sparse dead-grass or frost tufts into a small dot of PVA glue. Place one or two per base maximum — tundra is sparse, not overgrown.</p>
+    </div>
+
+    <div class="step base-step">
+      <span class="step-number finish">Step 7 · Rim Colour</span>
+      <h3>Base Rim — Coal Black</h3>
+      <p>Coal Black 002 undiluted, painted around the full circumference of every base rim. A consistent black rim frames the model and keeps the eye on the figure. This is non-negotiable across every model in the army — no exceptions, no variations.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2A2A2A"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~6% value — base rim</div></div></div>
+      </div>
+      <div class="warning"><strong>⚠ NOTE:</strong> Rim colour must match across every single model — infantry, character, vehicle base. This is the cohesion detail that ties the whole army together at a glance.</div>
+    </div>
+
+  </div><!-- end #basing -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: QUALITY TIERS
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="tiers">
+
+    <div class="section-header">
+      <h2>Quality Tiers</h2>
+      <p>Three tracks — same base recipe, different stopping points. For the Combat Patrol, consider painting Hearthkyn Warriors to Tier 1, Hernkyn Pioneers to Tier 2, and your Einhyr Champion to Tier 3.</p>
+    </div>
+
+    <div class="tier-card">
+      <div class="tier-card-header">
+        <span class="tier-badge tier-1">Tier 1</span>
+        <h3>Tabletop Ready</h3>
+        <span class="tier-time">~25–35 min/model at pace</span>
+      </div>
+      <ul>
+        <li>Prime MPAP-023 Dark Purple → Speedpaint Purple Swarm one-pass over all armour</li>
+        <li>Speedpaint Golden Armour over brass trim (one-pass)</li>
+        <li>Dark Umber 019 on leather, Dark Grey Blue 014 on bodysuit</li>
+        <li>Drybrush Faded Plum 063 over all armour edges</li>
+        <li>Speedpaint Plasmatic Bolt over all ancestor glow areas (one-pass over Coal Black base)</li>
+        <li>Crusader Skin one-pass on exposed skin</li>
+        <li>Weapon steel: Coal Black 002 + Dark Silver 030 base → Steel 010 drybrush</li>
+        <li>Full basing recipe; matte varnish; spot gloss on glow areas</li>
+        <li><strong>Stop point:</strong> After drybrush and ancestor glow — reads as a complete, cohesive army model at arm's length.</li>
+      </ul>
+    </div>
+
+    <div class="tier-card">
+      <div class="tier-card-header">
+        <span class="tier-badge tier-2">Tier 2</span>
+        <h3>Battle Ready</h3>
+        <span class="tier-time">~55–80 min/model</span>
+      </div>
+      <ul>
+        <li>Everything in Tier 1, plus:</li>
+        <li>Full airbrushed purple zenithal workflow (Steps 1–8 in Purple Armour tab)</li>
+        <li>Edge highlights on all armour panels (Faded Plum 063 thin lines)</li>
+        <li>Full brass workflow through Step 5 (Bright Gold 031 edge)</li>
+        <li>Leather highlighted through Tier 2 steps</li>
+        <li>Layered ancestor glow through Step 6 (OSL glaze on adjacent armour)</li>
+        <li>Layered skin on Einhyr Champion face; teal iris eyes on all Kin</li>
+        <li>Magnesium S42 edge highlight on weapon steel</li>
+        <li>Second wash pass deepening armour recesses with Purple Tone WP3212</li>
+        <li><strong>Stop point:</strong> After edge highlights and OSL — looks intentional and crafted at close range.</li>
+      </ul>
+    </div>
+
+    <div class="tier-card">
+      <div class="tier-card-header">
+        <span class="tier-badge tier-3">Tier 3</span>
+        <h3>Display Quality</h3>
+        <span class="tier-time">~3–6+ hrs/model</span>
+      </div>
+      <ul>
+        <li>Everything in Tier 2, plus:</li>
+        <li>Smooth blending on large armour panels — feathered glazes with Transparent Purple 051</li>
+        <li>Full OSL consistency: every glow source on the model casts teal light on adjacent surfaces</li>
+        <li>Multiple Transparent Purple 051 glaze passes for richness and depth in armour</li>
+        <li>Brass NMM option: swap metallic paints for non-metallic value painting (ask before committing)</li>
+        <li>Full Pinkle or Wash Tinting skin method on the Einhyr Champion face</li>
+        <li>High-polish base with frost detail, environmental scatter, and storytelling</li>
+        <li>Ancestor glow hot-tip specular White S18 applied as final layer after varnish</li>
+        <li>Spot gloss varnish on all glow surfaces, lenses, and wet elements; satin on leather</li>
+        <li><strong>Stop point:</strong> When you're satisfied. There is no ceiling on display quality.</li>
+      </ul>
+    </div>
+
+    <div class="tip"><strong>✦ ARMY STRATEGY:</strong> For the full Combat Patrol, the most efficient approach: paint all Hearthkyn Warriors to Tier 1 as a batch of 10. Bring Hernkyn Pioneers to Tier 2 (smaller batch of 3). Give the Einhyr Champion the full Tier 3 treatment as your centrepiece model. The contrast between the carefully painted Champion and the cohesive rank-and-file makes the whole box look like a deliberate, professional army.</div>
+
+  </div><!-- end #tiers -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: BRUSH SKILLS
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="brush-skills">
+
+    <div class="section-header">
+      <h2>Brush Skills</h2>
+      <p>Techniques used in this guide — practical notes for the workbench.</p>
+    </div>
+
+    <div class="phase-label">Edge Highlighting</div>
+    <div class="step">
+      <span class="step-number brush">Technique</span>
+      <h3>Edge Highlighting on Votann Armour</h3>
+      <p>Thin your highlight paint to 1:2 — it should flow off the brush with minimal pressure. Load a size 1 or size 0 round brush and barely touch the tip to a sharp armour edge, then draw steadily along its length. The paint deposits by capillary action along the edge. The Votann armour panels are well-defined with clear borders — follow these edges rather than the sculpt texture. Practice the steadiness on a Hearthkyn sprue offcut before committing to the champion. If the line is too wide, the paint is too thin; if it skips, it's too thick.</p>
+    </div>
+
+    <div class="phase-label">Drybrushing</div>
+    <div class="step">
+      <span class="step-number drybrush">Technique</span>
+      <h3>Drybrushing for Armour &amp; Basing</h3>
+      <p>Load your brush with undiluted paint, then wipe aggressively on tissue until almost no colour transfers — test on the back of your hand, you should see only the faintest trace. Then use quick multi-directional strokes over raised surfaces. For Votann armour: light pressure, broad strokes across all panels at once. For basing: random strokes in all directions to simulate frost depositing uniformly on rocks. A stiff, splayed brush is ideal. Multiple very light passes give more control than one heavy stroke. The goal on armour is caught edges; on basing it is uniformly frosted peaks.</p>
+    </div>
+
+    <div class="phase-label">Speedpaint 2.0 One-Pass</div>
+    <div class="step">
+      <span class="step-number brush">Technique</span>
+      <h3>Using Speedpaint Correctly</h3>
+      <p>Speedpaint 2.0 is a one-pass product. Load your brush, apply to the surface, and use the brush tip to guide the paint into recesses. Then set the brush down and walk away. The paint self-levels into recesses as it dries — this is the entire point. Any reworking while wet causes streaks, patchiness, and loss of the recess shading. If you made a mistake, let it dry completely, then correct over the top. Thin only with Speedpaint Medium — not water. Water breaks the reactivation chemistry.</p>
+    </div>
+
+    <div class="phase-label">OSL Glazing</div>
+    <div class="step">
+      <span class="step-number filter">Technique</span>
+      <h3>Applying the Ancestor Glow OSL</h3>
+      <p>OSL (Object Source Lighting) glazing works best over a fully dried and sealed surface — apply a mid-session matte varnish before you glaze. Thin Turquoise 054 at 1:5 with Glaze &amp; Wash Medium MPAM-001 for the smoothest result. Load a soft flat brush and apply with very light pressure — you're depositing a tint, not painting over. Work in a small radius around the glow source: the glaze should be strongest right at the edge of the glow area and fade to nothing within 3–4mm. Wipe back any pooling immediately with a barely damp flat brush. Build up two thin passes rather than one thick one. The result should read as a suggestion of teal light, not an obvious paint application.</p>
+    </div>
+
+    <div class="phase-label">Wet Palette — Batch Consistency</div>
+    <div class="step">
+      <span class="step-number brush">Technique</span>
+      <h3>Wet Palette for a 10-Model Batch</h3>
+      <p>Mix at least 50% more of each colour than you think you need — mixes on a wet palette thin slightly over a long session. Keep all active mixes on the palette simultaneously so you can switch between models fluidly. Between picking up paint for a new model, check the consistency — if the mix has thinned on the palette, remix from fresh paint to restore it. Same consistency = same colour across all ten models. Never mix "just enough" for one model and remix fresh for the next. The slight inconsistency between mixes is where army cohesion dies.</p>
+    </div>
+
+    <div class="phase-label">Common Challenges</div>
+    <div class="trouble-grid">
+      <div class="trouble-card">
+        <div class="trouble-q">Purple wash pooling on flat armour panels</div>
+        <div class="trouble-a">Thin the wash further (try 1:2 with water) and apply targeted with a fine brush rather than flooding the surface. For large flat areas, wick excess away immediately with a dry brush tip before it pools.</div>
+      </div>
+      <div class="trouble-card">
+        <div class="trouble-q">Brass trim looks too bright yellow, not aged</div>
+        <div class="trouble-a">The Brown Wash 201 is doing the ageing — if it looks too yellow, apply a second targeted pass of Brown Wash into the recesses and as a thin glaze over the broad surfaces. Then re-apply Bright Gold 031 edges only after drying.</div>
+      </div>
+      <div class="trouble-card">
+        <div class="trouble-q">Ancestor glow looks flat and painted-on, not glowing</div>
+        <div class="trouble-a">Value contrast is the issue — the dark base needs to be darker (Coal Black 002, not grey), and the centre needs to be brighter (push to Bright Jade 067 + Heavy Warm White S18 at the hot tip). The glow reads best when the dark-to-light range spans at least 10% to 70% value. Also ensure you've applied spot gloss varnish over the glow after matte varnishing.</div>
+      </div>
+      <div class="trouble-card">
+        <div class="trouble-q">Speedpaint Purple Swarm looks streaky after drying</div>
+        <div class="trouble-a">This happens when the paint was reworked while wet. Speedpaint cannot be corrected while drying — let it dry fully, then apply a thin glaze of Transparent Purple 051 thinned 1:4 to unify the surface. Follow with the drybrush step to visually break up any remaining unevenness.</div>
+      </div>
+    </div>
+
+    <div id="brush-skills"></div>
+
+  </div><!-- end #brush-skills -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: THINNING REFERENCE — ALWAYS LAST
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="thinning-ref">
+    <div id="thinning-ref"></div>
+  </div>
+
+
+  <!-- FOOTER -->
+  <div class="guide-footer">
+    <div class="footer-links">
+      <a href="https://www.youtube.com/@brent_the_programmer9108" target="_blank">brent_the_programmer</a>
+      <span class="sep">·</span>
+      <a href="https://instagram.com/stephenson913" target="_blank">@stephenson913</a>
+    </div>
+  </div>
+
+</div><!-- end .container -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     REFERENCE IMAGE MODAL
+     ═══════════════════════════════════════════════════════════ -->
+<div class="ref-modal-overlay" id="refModal" onclick="closeRefModal()">
+  <div class="ref-modal-inner" onclick="event.stopPropagation()">
+    <button class="ref-modal-close" onclick="closeRefModal()">✕</button>
+    <img class="ref-modal-img" id="refModalImg" src="" alt="">
+    <div class="ref-modal-caption" id="refModalCaption"></div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCRIPTS
+     ═══════════════════════════════════════════════════════════ -->
+<script>
+  window.GUIDE_THINNING = {
+    airbrushRows: [
+      { technique: 'Dark purple primer (base)',   nozzle: '0.5mm', ratio: '1:1',       behavior: 'Full coverage in 1–2 passes. Pre-thins slightly to prevent orange-peel texture.' },
+      { technique: 'White zenithal sketch',        nozzle: '0.3mm', ratio: '1:4',       behavior: 'Very thin; top-down partial coverage. Builds pre-shading gradient.' },
+      { technique: 'Deep purple base coat',        nozzle: '0.3mm', ratio: '1:3 to 1:4', behavior: 'Semi-transparent; 2–3 passes. Retains zenithal gradient beneath.' },
+      { technique: 'Purple midtone zenithal',      nozzle: '0.3mm', ratio: '1:4 to 1:5', behavior: 'Thin; apply from 45° above. Top panels and raised surfaces only.' },
+      { technique: 'Purple highlight zenithal',    nozzle: '0.3mm', ratio: '1:5',       behavior: 'Very thin; 90° above, close distance. Top panels only — 3–4 passes maximum.' },
+    ],
+    brushRows:    [],
+    thinningCards:[]
+  };
+</script>
+
+<script src="../../assets/guide.js"></script>
+<script src="../../assets/skills-reference.js"></script>
+
+<script>
+  function showSubTab(group, id, el) {
+    const parent = el.closest('.tab-content') || document.body;
+    parent.querySelectorAll('.sub-content').forEach(c => c.classList.remove('active'));
+    parent.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+    const target = document.getElementById(id);
+    if (target) target.classList.add('active');
+    el.classList.add('active');
+  }
+
+  function openRefModal(src, caption) {
+    document.getElementById('refModalImg').src = src;
+    document.getElementById('refModalCaption').textContent = caption;
+    document.getElementById('refModal').style.display = 'flex';
+  }
+  function closeRefModal() {
+    document.getElementById('refModal').style.display = 'none';
+  }
+
+  window.addEventListener('scroll', () => {
+    const btn = document.getElementById('backToTop');
+    if (btn) btn.style.display = window.scrollY > 400 ? 'block' : 'none';
+  });
+</script>
+
+</body>
+</html>
