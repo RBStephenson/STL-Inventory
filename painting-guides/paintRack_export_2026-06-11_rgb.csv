@@ -1,0 +1,736 @@
+Brand,SKU,Paint Name,Paint Class,Size,Count,Color
+AMMO,A.MIG-0618,Chipping,DIO Drybrush,40 ml,1,#B0B0A0
+AMMO,A.MIG-0621,Light Metal,DIO Drybrush,40 ml,1,#C8D0D4
+AMMO,A.MIG-0622,Gun Metal,DIO Drybrush,40 ml,1,#505860
+AMMO,A.MIG-0623,Brass,DIO Drybrush,40 ml,1,#C09040
+Army Painter,AW1101,Matt Black,Air,18 ml,1,#101010
+Army Painter,AW1102,Matt White,Air,18 ml,1,#F5F5F5
+Army Painter,AW1104,Pure Red,Air,18 ml,1,#CC1010
+Army Painter,AW1105,Dragon Red,Air,18 ml,1,#A01818
+Army Painter,AW1106,Lava Orange,Air,18 ml,1,#E06000
+Army Painter,AW1107,Daemonic Yellow,Air,18 ml,1,#E8B800
+Army Painter,AW1108,Necrotic Flesh,Air,18 ml,1,#9EA87A
+Army Painter,AW1111,Greenskin,Air,18 ml,1,#177135
+Army Painter,AW1112,Angel Green,Air,18 ml,1,#3AAA50
+Army Painter,AW1114,Crystal Blue,Air,18 ml,1,#0070B8
+Army Painter,AW1115,Ultramarine Blue,Air,18 ml,1,#2050A0
+Army Painter,AW1118,Uniform Grey,Air,18 ml,1,#6A7080
+Army Painter,AW1122,Fur Brown,Air,18 ml,1,#8A5040
+Army Painter,AW1123,Leather Brown,Air,18 ml,1,#7A4838
+Army Painter,AW1124,Oak Brown,Air,18 ml,1,#5A3828
+Army Painter,AW1125,Skeleton Bone,Air,18 ml,1,#C0B090
+Army Painter,AW1126,Barbarian Flesh,Air,18 ml,1,#E89878
+Army Painter,AW1128,Alien Purple,Air,18 ml,1,#6050A0
+Army Painter,AW1129,Shining Silver,Air Metallics,18 ml,1,#C8D0D4
+Army Painter,AW1130,Plate Mail Metal,Air Metallics,18 ml,1,#9098A4
+Army Painter,AW1132,Greedy Gold,Air Metallics,18 ml,1,#C09040
+Army Painter,AW1142,Chaotic Red,Air,18 ml,1,#B01010
+Army Painter,AW1419,Elemental Bolt,Air,18 ml,1,#8090E0
+Army Painter,AW1421,Elven Flesh,Air,18 ml,1,#F0A880
+Army Painter,AW1433,Jungle Green,Air,18 ml,1,#208040
+Army Painter,AW1438,Moon Dust,Air,18 ml,1,#A0A8B0
+Army Painter,AW1447,Pixie Pink,Air,18 ml,1,#E070B0
+Army Painter,AW1467,True Copper,Air Metallics,18 ml,1,#C07030
+Army Painter,AW1468,Rough Iron,Air Metallics,18 ml,1,#585050
+Army Painter,AW1482,Tainted Gold,Air Metallics,18 ml,1,#988030
+Army Painter,AW1483,Elven Armor,Air Metallics,18 ml,1,#A0A8B8
+Army Painter,AW1484,Glitter Green,Air Metallics,18 ml,1,#60A860
+Army Painter,AW1487,Gemstone,Air Metallics,18 ml,1,#8820C0
+Army Painter,AW2001,Airbrush Medium,Air,100 ml,2,#E8E8E8
+Army Painter,AW2002,Airbrush Cleaner,Air,100 ml,1,#E8E8E8
+Army Painter,AW2003,Matt Varnish,Air,100 ml,2,#E8E8E8
+Army Painter,AW2004,Satin Varnish,Air,100 ml,1,#E8E8E8
+Army Painter,AW2005,Gloss Varnish,Air,100 ml,2,#E8E8E8
+Army Painter,AW2010,Matt Grey,Air Primer,100 ml,2,#808080
+Army Painter,AW2011,Matt Black,Air Primer,100 ml,1,#141414
+Army Painter,AW2012,Matt White,Air Primer,100 ml,2,#E8E8E8
+Army Painter,AW3101,Raven Black,Air,18 ml,1,#0A0808
+Army Painter,AW3102,Shark White,Air,18 ml,1,#F0F0F0
+Army Painter,AW3104,Encarmine Red,Air,18 ml,1,#B80808
+Army Painter,AW3105,Chimera Red,Air,18 ml,1,#980810
+Army Painter,AW3106,Molten Orange,Air,18 ml,1,#D85000
+Army Painter,AW3107,Incursion Orange,Air,18 ml,1,#D07000
+Army Painter,AW3108,Pestilent Flesh,Air,18 ml,1,#8A9868
+Army Painter,AW3111,Savage Green,Air,18 ml,1,#108028
+Army Painter,AW3112,Unforgiven Green,Air,18 ml,1,#289848
+Army Painter,AW3114,Sapphire Gem,Air,18 ml,1,#0060A8
+Army Painter,AW3115,Omega Blue,Air,18 ml,1,#1840A0
+Army Painter,AW3118,Regiment Grey,Air,18 ml,1,#606870
+Army Painter,AW3122,Husk Brown,Air,18 ml,1,#784838
+Army Painter,AW3123,Rawhide Brown,Air,18 ml,1,#6A4030
+Army Painter,AW3124,Magnolia Brown,Air,18 ml,1,#503020
+Army Painter,AW3125,Charred Bone,Air,18 ml,1,#B0A080
+Army Painter,AW3126,Nomad Flesh,Air,18 ml,1,#D88868
+Army Painter,AW3128,Broodmother Purple,Air,18 ml,1,#504090
+Army Painter,AW3142,Traitor Red,Air,18 ml,1,#A00808
+Army Painter,AW3419,Majestic Fortress,Air,18 ml,1,#707888
+Army Painter,AW3421,Brethil Blush,Air,18 ml,1,#E8A090
+Army Painter,AW3433,Undergrowth Green,Air,18 ml,1,#188038
+Army Painter,AW3438,Meteor Rock,Air,18 ml,1,#909098
+Army Painter,AW3447,Fairy Pink,Air,18 ml,1,#D860A0
+Army Painter,AW4101,Crow Hue,Air,18 ml,1,#181410
+Army Painter,AW4102,Yeti White,Air,18 ml,1,#FAFAFA
+Army Painter,AW4104,Archangel Red,Air,18 ml,1,#D01010
+Army Painter,AW4105,Wyrmling Red,Air,18 ml,1,#B01010
+Army Painter,AW4106,Orange Magma,Air,18 ml,1,#F07000
+Army Painter,AW4107,Imp Yellow,Air,18 ml,1,#F0C000
+Army Painter,AW4108,Zombie Flesh,Air,18 ml,1,#AABA88
+Army Painter,AW4111,Feral Green,Air,18 ml,1,#209030
+Army Painter,AW4112,Exile Green,Air,18 ml,1,#48B860
+Army Painter,AW4114,Ionic Blue,Air,18 ml,1,#0080C8
+Army Painter,AW4115,Consul Blue,Air,18 ml,1,#2860B0
+Army Painter,AW4118,Cadre Grey,Air,18 ml,1,#787888
+Army Painter,AW4122,Viper Brown,Air,18 ml,1,#986050
+Army Painter,AW4123,Bullwhack Brown,Air,18 ml,1,#885848
+Army Painter,AW4124,Cypress Brown,Air,18 ml,1,#684838
+Army Painter,AW4125,Bleached Bone,Air,18 ml,1,#D0C0A0
+Army Painter,AW4126,Wildling Flesh,Air,18 ml,1,#F0A880
+Army Painter,AW4128,Coven Purple,Air,18 ml,1,#6858A8
+Army Painter,AW4142,Rebel Red,Air,18 ml,1,#C81010
+Army Painter,AW4419,Psychic Shock,Air,18 ml,1,#9080E8
+Army Painter,AW4421,Feywild Glow,Air,18 ml,1,#F8B8A0
+Army Painter,AW4433,Canopy Green,Air,18 ml,1,#30A850
+Army Painter,AW4438,Cosmic Dust,Air,18 ml,1,#B0B8C8
+Army Painter,AW4447,Fey Pink,Air,18 ml,1,#F080C0
+Army Painter,CP3001,Matt Black Undercoat,Colour Primers,400 ml,1,#101010
+Army Painter,CP3002,Matt White Undercoat,Colour Primers,400 ml,1,#F5F5F5
+Army Painter,CP3029,Ash Grey,Colour Primers,400 ml,1,#8F9095
+Army Painter,CP3031,Brainmatter Beige,Colour Primers,400 ml,1,#DDDBCD
+Army Painter,WP2000,Speedpaint Medium,Speedpaint,18 ml,2,#CACACA
+Army Painter,WP2001,Grim Black,Speedpaint,18 ml,1,#21201D
+Army Painter,WP2002,Gravelord Grey,Speedpaint,18 ml,1,#575A5D
+Army Painter,WP2003,Holy White,Speedpaint,18 ml,1,#C6C8C8
+Army Painter,WP2004,Crusader Skin,Speedpaint,18 ml,1,#DA9E7A
+Army Painter,WP2005,Dark Wood,Speedpaint,18 ml,1,#523A1F
+Army Painter,WP2006,Pallid Bone,Speedpaint,18 ml,1,#D7C392
+Army Painter,WP2007,Absolution Green,Speedpaint,18 ml,1,#294F2D
+Army Painter,WP2008,Camo Cloak,Speedpaint,18 ml,1,#607646
+Army Painter,WP2009,Orc Skin,Speedpaint,18 ml,1,#157F23
+Army Painter,WP2010,Blood Red,Speedpaint,18 ml,1,#D3381B
+Army Painter,WP2011,Malignant Green,Speedpaint,18 ml,1,#B6BF4B
+Army Painter,WP2012,Slaughter Red,Speedpaint,18 ml,1,#95292C
+Army Painter,WP2013,Zealot Yellow,Speedpaint,18 ml,1,#E6A91D
+Army Painter,WP2014,Magic Blue,Speedpaint,18 ml,1,#1B7AAA
+Army Painter,WP2015,Highlord Blue,Speedpaint,18 ml,1,#276192
+Army Painter,WP2016,Runic Grey,Speedpaint,18 ml,1,#627F8E
+Army Painter,WP2017,Fire Giant Orange,Speedpaint,18 ml,1,#CC6B23
+Army Painter,WP2018,Hive Dweller Purple,Speedpaint,18 ml,1,#644A7B
+Army Painter,WP2019,Plasmatic Bolt,Speedpaint,18 ml,1,#44AEA4
+Army Painter,WP2020,Sand Golem,Speedpaint,18 ml,1,#BB9015
+Army Painter,WP2021,Purple Alchemy,Speedpaint,18 ml,1,#AF577A
+Army Painter,WP2022,Cloudburst Blue,Speedpaint,18 ml,1,#4D5368
+Army Painter,WP2023,Hardened Leather,Speedpaint,18 ml,1,#956227
+Army Painter,WP2024,Battleship Grey,Speedpaint,18 ml,1,#9EB5BF
+Army Painter,WP2025,Ashen Stone,Speedpaint,18 ml,1,#A1ADB4
+Army Painter,WP2026,Burnt Moss,Speedpaint,18 ml,1,#526257
+Army Painter,WP2027,Occultist Cloak,Speedpaint,18 ml,1,#45464F
+Army Painter,WP2028,Hoplite Gold,Speedpaint,18 ml,1,#977801
+Army Painter,WP2029,Talos Bronze,Speedpaint,18 ml,1,#8E533D
+Army Painter,WP2030,Broadsword Silver,Speedpaint,18 ml,1,#6A6C6C
+Army Painter,WP2031,Purple Swarm,Speedpaint,18 ml,1,#664486
+Army Painter,WP2032,Moody Mauve,Speedpaint,18 ml,1,#92597C
+Army Painter,WP2033,Familiar Pink,Speedpaint,18 ml,1,#CD3F87
+Army Painter,WP2034,Moonlake Coral,Speedpaint,18 ml,1,#9F4D73
+Army Painter,WP2035,Periwinkle Purple,Speedpaint,18 ml,1,#67649E
+Army Painter,WP2036,Aged Hide,Speedpaint,18 ml,1,#CE6B4F
+Army Painter,WP2037,Peachy Flesh,Speedpaint,18 ml,1,#E09A63
+Army Painter,WP2038,Goddess Glow,Speedpaint,18 ml,1,#8E554F
+Army Painter,WP2039,Bony Matter,Speedpaint,18 ml,1,#AC8E6F
+Army Painter,WP2040,Desolate Brown,Speedpaint,18 ml,1,#7D763A
+Army Painter,WP2041,Shamrock Green,Speedpaint,18 ml,1,#4B9E36
+Army Painter,WP2042,Ghillie Dew,Speedpaint,18 ml,1,#81A617
+Army Painter,WP2043,Gunner Camo,Speedpaint,18 ml,1,#3B5848
+Army Painter,WP2044,Forest Sprite,Speedpaint,18 ml,1,#6B9746
+Army Painter,WP2045,Algae Green,Speedpaint,18 ml,1,#84984F
+Army Painter,WP2046,Caribbean Ocean,Speedpaint,18 ml,1,#209CAD
+Army Painter,WP2047,Ghoul Green,Speedpaint,18 ml,1,#4AA366
+Army Painter,WP2048,Charming Chartreuse,Speedpaint,18 ml,1,#AEB330
+Army Painter,WP2049,Beowulf Blue,Speedpaint,18 ml,1,#234786
+Army Painter,WP2050,Royal Robes,Speedpaint,18 ml,1,#496FB1
+Army Painter,WP2051,Tyrian Navy,Speedpaint,18 ml,1,#465760
+Army Painter,WP2052,Tidal Wave,Speedpaint,18 ml,1,#267AB4
+Army Painter,WP2053,Raging Sea,Speedpaint,18 ml,1,#138B97
+Army Painter,WP2054,Dusk Red,Speedpaint,18 ml,1,#71413C
+Army Painter,WP2055,Carmine Dragon,Speedpaint,18 ml,1,#CE3353
+Army Painter,WP2056,Poppy Red,Speedpaint,18 ml,1,#C54840
+Army Painter,WP2057,Murder Scene,Speedpaint,18 ml,1,#743345
+Army Painter,WP2058,Bright Red,Speedpaint,18 ml,1,#D5684A
+Army Painter,WP2059,Maize Yellow,Speedpaint,18 ml,1,#F4D12C
+Army Painter,WP2060,Ancient Honey,Speedpaint,18 ml,1,#E2B52A
+Army Painter,WP2061,Nuclear Sunrise,Speedpaint,18 ml,1,#D4641F
+Army Painter,WP2062,Fire Drake,Speedpaint,18 ml,1,#B86338
+Army Painter,WP2063,Noble Skin,Speedpaint,18 ml,1,#504B3D
+Army Painter,WP2064,Warrior Skin,Speedpaint,18 ml,1,#966B52
+Army Painter,WP2065,Ruddy Fur,Speedpaint,18 ml,1,#945532
+Army Painter,WP2066,Ochre Clay,Speedpaint,18 ml,1,#A09023
+Army Painter,WP2067,Brownish Decay,Speedpaint,18 ml,1,#726431
+Army Painter,WP2068,Satchel Brown,Speedpaint,18 ml,1,#664538
+Army Painter,WP2069,Golden Armour,Speedpaint,18 ml,1,#82580F
+Army Painter,WP2070,Glittering Loot,Speedpaint,18 ml,1,#856700
+Army Painter,WP2071,Polished Silver,Speedpaint,18 ml,1,#8C8D8D
+Army Painter,WP2072,Enchanted Steel,Speedpaint,18 ml,1,#5E6A70
+Army Painter,WP2073,Brazen Copper,Speedpaint,18 ml,1,#784C43
+Army Painter,WP2074,Hoard Bronze,Speedpaint,18 ml,1,#887540
+Army Painter,WP2075,Aztec Gold,Speedpaint,18 ml,1,#81872A
+Army Painter,WP2076,Blinding Light,Speedpaint,18 ml,1,#D1D2D2
+Army Painter,WP2077,Howling Sand,Speedpaint,18 ml,1,#BBBDA0
+Army Painter,WP2078,Mummified Grime,Speedpaint,18 ml,1,#716B54
+Army Painter,WP2079,Maggot Skin,Speedpaint,18 ml,1,#B8BD64
+Army Painter,WP2080,Rigor Mortis,Speedpaint,18 ml,1,#A4A770
+Army Painter,WP2081,Thunderbird Blue,Speedpaint,18 ml,1,#5DAA90
+Army Painter,WP2082,Lizardfolk Cyan,Speedpaint,18 ml,1,#3E8D92
+Army Painter,WP2083,Burnished Red,Speedpaint,18 ml,1,#704636
+Army Painter,WP2084,Pastel Yellow,Speedpaint,18 ml,1,#F1DF74
+Army Painter,WP2085,Pastel Salmon,Speedpaint,18 ml,1,#EBBD95
+Army Painter,WP2086,Princess Pink,Speedpaint,18 ml,1,#E099AD
+Army Painter,WP2087,Pastel Lavender,Speedpaint,18 ml,1,#BAA7C6
+Army Painter,WP2088,Pastel Indigo,Speedpaint,18 ml,1,#88AAD0
+Army Painter,WP2089,Pastel Seafoam,Speedpaint,18 ml,1,#A3CDBE
+Army Painter,WP3001,Matt Black,Warpaints Fanatic,18 ml,1,#0B0602
+Army Painter,WP3002,Deep Grey,Warpaints Fanatic,18 ml,1,#5A5F66
+Army Painter,WP3003,Uniform Grey,Warpaints Fanatic,18 ml,1,#747980
+Army Painter,WP3004,Ash Grey,Warpaints Fanatic,18 ml,1,#8F9095
+Army Painter,WP3005,Company Grey,Warpaints Fanatic,18 ml,1,#BABBBE
+Army Painter,WP3006,Brigade Grey,Warpaints Fanatic,18 ml,1,#CFD0D1
+Army Painter,WP3007,Grey Castle,Warpaints Fanatic,18 ml,1,#98978D
+Army Painter,WP3008,Gargoyle Grey,Warpaints Fanatic,18 ml,1,#AAA694
+Army Painter,WP3009,Great Hall Grey,Warpaints Fanatic,18 ml,1,#BEB5A7
+Army Painter,WP3010,Worn Stone,Warpaints Fanatic,18 ml,1,#C9C5B4
+Army Painter,WP3011,Brainmatter Beige,Warpaints Fanatic,18 ml,1,#DDDBCD
+Army Painter,WP3012,Matt White,Warpaints Fanatic,18 ml,1,#FAFAFA
+Army Painter,WP3013,Night Sky,Warpaints Fanatic,18 ml,1,#3C4A5A
+Army Painter,WP3014,Thunderous Blue,Warpaints Fanatic,18 ml,1,#405D7F
+Army Painter,WP3015,Stratos Blue,Warpaints Fanatic,18 ml,1,#37658F
+Army Painter,WP3016,Wolf Grey,Warpaints Fanatic,18 ml,1,#547DA3
+Army Painter,WP3017,Runic Cobalt,Warpaints Fanatic,18 ml,1,#7793AC
+Army Painter,WP3018,Frost Blue,Warpaints Fanatic,18 ml,1,#A3BFDB
+Army Painter,WP3019,Triumphant Navy,Warpaints Fanatic,18 ml,1,#26365B
+Army Painter,WP3020,Gothic Blue,Warpaints Fanatic,18 ml,1,#2B3B74
+Army Painter,WP3021,Ultramarine Blue,Warpaints Fanatic,18 ml,1,#314E8D
+Army Painter,WP3022,Alpha Blue,Warpaints Fanatic,18 ml,1,#6678B3
+Army Painter,WP3023,Baron Blue,Warpaints Fanatic,18 ml,1,#8393C4
+Army Painter,WP3024,Augur Blue,Warpaints Fanatic,18 ml,1,#B0BFDF
+Army Painter,WP3025,Imperial Navy,Warpaints Fanatic,18 ml,1,#0A3A65
+Army Painter,WP3026,Regal Blue,Warpaints Fanatic,18 ml,1,#024D86
+Army Painter,WP3027,Royal Blue,Warpaints Fanatic,18 ml,1,#035BA8
+Army Painter,WP3028,Crystal Blue,Warpaints Fanatic,18 ml,1,#0069B0
+Army Painter,WP3029,Arctic Gem,Warpaints Fanatic,18 ml,1,#008CCA
+Army Painter,WP3030,Bright Sapphire,Warpaints Fanatic,18 ml,1,#8BC2E0
+Army Painter,WP3031,Deep Ocean Blue,Warpaints Fanatic,18 ml,1,#2E3D4C
+Army Painter,WP3032,Abyssal Blue,Warpaints Fanatic,18 ml,1,#06536E
+Army Painter,WP3033,Tidal Blue,Warpaints Fanatic,18 ml,1,#026D94
+Army Painter,WP3034,Phalanx Blue,Warpaints Fanatic,18 ml,1,#0082A8
+Army Painter,WP3035,Shieldwall Blue,Warpaints Fanatic,18 ml,1,#0196BD
+Army Painter,WP3036,Aegis Aqua,Warpaints Fanatic,18 ml,1,#3EADCD
+Army Painter,WP3037,Deep Azure,Warpaints Fanatic,18 ml,1,#036A7A
+Army Painter,WP3038,Hydra Turquoise,Warpaints Fanatic,18 ml,1,#0F9399
+Army Painter,WP3039,Turquoise Siren,Warpaints Fanatic,18 ml,1,#21A3A9
+Army Painter,WP3040,Aquamarine,Warpaints Fanatic,18 ml,1,#5AB5BB
+Army Painter,WP3041,Neptune Glow,Warpaints Fanatic,18 ml,1,#7DC3C6
+Army Painter,WP3042,Marine Mist,Warpaints Fanatic,18 ml,1,#98CFCA
+Army Painter,WP3043,Scarab Green,Warpaints Fanatic,18 ml,1,#234245
+Army Painter,WP3044,Temple Gate Teal,Warpaints Fanatic,18 ml,1,#0E6558
+Army Painter,WP3045,Pharaoh Guard,Warpaints Fanatic,18 ml,1,#0D7C62
+Army Painter,WP3046,Talisman Teal,Warpaints Fanatic,18 ml,1,#00A182
+Army Painter,WP3047,Aqua Alchemy,Warpaints Fanatic,18 ml,1,#26AC93
+Army Painter,WP3048,Amulet Aqua,Warpaints Fanatic,18 ml,1,#67BCA9
+Army Painter,WP3049,Angel Green,Warpaints Fanatic,18 ml,1,#24412F
+Army Painter,WP3050,Guardian Green,Warpaints Fanatic,18 ml,1,#2C674B
+Army Painter,WP3051,Greenskin,Warpaints Fanatic,18 ml,1,#177135
+Army Painter,WP3052,Eternal Hunt,Warpaints Fanatic,18 ml,1,#2E8B35
+Army Painter,WP3053,Wild Green,Warpaints Fanatic,18 ml,1,#43A044
+Army Painter,WP3054,Ferocious Green,Warpaints Fanatic,18 ml,1,#6EB362
+Army Painter,WP3055,Emerald Forest,Warpaints Fanatic,18 ml,1,#4EA732
+Army Painter,WP3056,Leafy Green,Warpaints Fanatic,18 ml,1,#77B316
+Army Painter,WP3057,Rainforest,Warpaints Fanatic,18 ml,1,#86B50A
+Army Painter,WP3058,Electric Lime,Warpaints Fanatic,18 ml,1,#ABC300
+Army Painter,WP3059,Vivid Volt,Warpaints Fanatic,18 ml,1,#CED838
+Army Painter,WP3060,Afterglow,Warpaints Fanatic,18 ml,1,#DDE083
+Army Painter,WP3061,Evergreen Fog,Warpaints Fanatic,18 ml,1,#446D63
+Army Painter,WP3062,Medieval Forest,Warpaints Fanatic,18 ml,1,#4D8272
+Army Painter,WP3063,Patagon Pine,Warpaints Fanatic,18 ml,1,#638E79
+Army Painter,WP3064,Autumn Sage,Warpaints Fanatic,18 ml,1,#72A68F
+Army Painter,WP3065,Forest Faun,Warpaints Fanatic,18 ml,1,#A0C6A6
+Army Painter,WP3066,Mossy Green,Warpaints Fanatic,18 ml,1,#B1D4B6
+Army Painter,WP3067,Woodland Camo,Warpaints Fanatic,18 ml,1,#48543E
+Army Painter,WP3068,Army Green,Warpaints Fanatic,18 ml,1,#50613A
+Army Painter,WP3069,Camouflage Green,Warpaints Fanatic,18 ml,1,#6A7951
+Army Painter,WP3070,Olive Drab,Warpaints Fanatic,18 ml,1,#718250
+Army Painter,WP3071,Necrotic Flesh,Warpaints Fanatic,18 ml,1,#9EA77F
+Army Painter,WP3072,Grotesque Green,Warpaints Fanatic,18 ml,1,#AEB893
+Army Painter,WP3073,Brigandine Brown,Warpaints Fanatic,18 ml,1,#3A332C
+Army Painter,WP3074,Bootstrap Brown,Warpaints Fanatic,18 ml,1,#583E38
+Army Painter,WP3075,Leather Brown,Warpaints Fanatic,18 ml,1,#6E4B3B
+Army Painter,WP3076,Paratrooper Tan,Warpaints Fanatic,18 ml,1,#947666
+Army Painter,WP3077,Command Khaki,Warpaints Fanatic,18 ml,1,#B09281
+Army Painter,WP3078,Urban Buff,Warpaints Fanatic,18 ml,1,#D5B2A3
+Army Painter,WP3079,Tundra Taupe,Warpaints Fanatic,18 ml,1,#565940
+Army Painter,WP3080,Prairie Ochre,Warpaints Fanatic,18 ml,1,#726C45
+Army Painter,WP3081,Desert Yellow,Warpaints Fanatic,18 ml,1,#8B7845
+Army Painter,WP3082,Wasteland Clay,Warpaints Fanatic,18 ml,1,#A28549
+Army Painter,WP3083,Burnt Turf,Warpaints Fanatic,18 ml,1,#BF994D
+Army Painter,WP3084,Barren Dune,Warpaints Fanatic,18 ml,1,#D5B768
+Army Painter,WP3085,Dusty Skull,Warpaints Fanatic,18 ml,1,#8F846E
+Army Painter,WP3086,Tomb King Tan,Warpaints Fanatic,18 ml,1,#A39278
+Army Painter,WP3087,Skeleton Bone,Warpaints Fanatic,18 ml,1,#BDB091
+Army Painter,WP3088,Ancient Stone,Warpaints Fanatic,18 ml,1,#CDC5A2
+Army Painter,WP3089,Bony Spikes,Warpaints Fanatic,18 ml,1,#E5D5BC
+Army Painter,WP3090,Pale Sand,Warpaints Fanatic,18 ml,1,#F2ECD7
+Army Painter,WP3091,Demigod Flames,Warpaints Fanatic,18 ml,1,#C67330
+Army Painter,WP3092,Fiendish Yellow,Warpaints Fanatic,18 ml,1,#D99611
+Army Painter,WP3093,Daemonic Yellow,Warpaints Fanatic,18 ml,1,#EFC000
+Army Painter,WP3094,Warped Yellow,Warpaints Fanatic,18 ml,1,#EEC930
+Army Painter,WP3095,Space Dust,Warpaints Fanatic,18 ml,1,#F4DD7C
+Army Painter,WP3096,Ice Yellow,Warpaints Fanatic,18 ml,1,#F9E8A9
+Army Painter,WP3097,Molten Lava,Warpaints Fanatic,18 ml,1,#E53D1F
+Army Painter,WP3098,Burning Ore,Warpaints Fanatic,18 ml,1,#E5560B
+Army Painter,WP3099,Lava Orange,Warpaints Fanatic,18 ml,1,#EA6B00
+Army Painter,WP3100,Flickering Flame,Warpaints Fanatic,18 ml,1,#E37C24
+Army Painter,WP3101,Glowing Inferno,Warpaints Fanatic,18 ml,1,#E68F2C
+Army Painter,WP3102,Inner Light,Warpaints Fanatic,18 ml,1,#F7C54D
+Army Painter,WP3103,Resplendent Red,Warpaints Fanatic,18 ml,1,#9D2E31
+Army Painter,WP3104,Angelic Red,Warpaints Fanatic,18 ml,1,#CC373F
+Army Painter,WP3105,Legendary Red,Warpaints Fanatic,18 ml,1,#EA4137
+Army Painter,WP3106,Sacred Scarlet,Warpaints Fanatic,18 ml,1,#E4513A
+Army Painter,WP3107,Violent Vermilion,Warpaints Fanatic,18 ml,1,#DF6E53
+Army Painter,WP3108,Raging Rouge,Warpaints Fanatic,18 ml,1,#E9887A
+Army Painter,WP3109,Oak Brown,Warpaints Fanatic,18 ml,1,#42312D
+Army Painter,WP3110,Tree Ancient,Warpaints Fanatic,18 ml,1,#594138
+Army Painter,WP3111,Dryad Brown,Warpaints Fanatic,18 ml,1,#6A4438
+Army Painter,WP3112,Fur Brown,Warpaints Fanatic,18 ml,1,#804B46
+Army Painter,WP3113,Ruddy Umber,Warpaints Fanatic,18 ml,1,#965848
+Army Painter,WP3114,Buffed Hide,Warpaints Fanatic,18 ml,1,#C78A80
+Army Painter,WP3115,Basilisk Red,Warpaints Fanatic,18 ml,1,#742D3C
+Army Painter,WP3116,Wyvern Fury,Warpaints Fanatic,18 ml,1,#9C3343
+Army Painter,WP3117,Dragon Red,Warpaints Fanatic,18 ml,1,#C12835
+Army Painter,WP3118,Pure Red,Warpaints Fanatic,18 ml,1,#C7030D
+Army Painter,WP3119,Blood Chalice,Warpaints Fanatic,18 ml,1,#D24042
+Army Painter,WP3120,Raging Rose,Warpaints Fanatic,18 ml,1,#DB5B59
+Army Painter,WP3121,Wicked Pink,Warpaints Fanatic,18 ml,1,#C70073
+Army Painter,WP3122,Impish Rouge,Warpaints Fanatic,18 ml,1,#D2488E
+Army Painter,WP3123,Pixie Pink,Warpaints Fanatic,18 ml,1,#D768A2
+Army Painter,WP3124,Weird Elixir,Warpaints Fanatic,18 ml,1,#DB91BA
+Army Painter,WP3125,Pink Potion,Warpaints Fanatic,18 ml,1,#EEB6D2
+Army Painter,WP3126,Doomfire Drab,Warpaints Fanatic,18 ml,1,#EED1DF
+Army Painter,WP3127,Terrestrial Titan,Warpaints Fanatic,18 ml,1,#403C50
+Army Painter,WP3128,Alien Purple,Warpaints Fanatic,18 ml,1,#614A98
+Army Painter,WP3129,Cultist Purple,Warpaints Fanatic,18 ml,1,#705FA5
+Army Painter,WP3130,Hexed Violet,Warpaints Fanatic,18 ml,1,#8F7EB3
+Army Painter,WP3131,Violet Coven,Warpaints Fanatic,18 ml,1,#AB96C2
+Army Painter,WP3132,Kraken Lavender,Warpaints Fanatic,18 ml,1,#CEC3D9
+Army Painter,WP3133,Diabolic Plum,Warpaints Fanatic,18 ml,1,#59306F
+Army Painter,WP3134,Magecast Magenta,Warpaints Fanatic,18 ml,1,#7C4191
+Army Painter,WP3135,Warlock Magenta,Warpaints Fanatic,18 ml,1,#8C4C98
+Army Painter,WP3136,Spellbound Fuchsia,Warpaints Fanatic,18 ml,1,#B35097
+Army Painter,WP3137,Enchanted Pink,Warpaints Fanatic,18 ml,1,#AD639C
+Army Painter,WP3138,Diviner Light,Warpaints Fanatic,18 ml,1,#D09CC1
+Army Painter,WP3139,Mulled Berry,Warpaints Fanatic,18 ml,1,#6A3050
+Army Painter,WP3140,Moldy Wine,Warpaints Fanatic,18 ml,1,#843752
+Army Painter,WP3141,Elder Flower,Warpaints Fanatic,18 ml,1,#AB5A7B
+Army Painter,WP3142,Forbidden Fruit,Warpaints Fanatic,18 ml,1,#CB88A2
+Army Painter,WP3143,Figgy Pink,Warpaints Fanatic,18 ml,1,#E2B0C5
+Army Painter,WP3144,Wilted Rose,Warpaints Fanatic,18 ml,1,#E7C4D6
+Army Painter,WP3145,Moonstone Skin,Warpaints Fanatic,18 ml,1,#BE756C
+Army Painter,WP3146,Agate Skin,Warpaints Fanatic,18 ml,1,#D78578
+Army Painter,WP3147,Barbarian Flesh,Warpaints Fanatic,18 ml,1,#EA9379
+Army Painter,WP3148,Ruby Skin,Warpaints Fanatic,18 ml,1,#F0B79D
+Army Painter,WP3149,Opal Skin,Warpaints Fanatic,18 ml,1,#FAD4C6
+Army Painter,WP3150,Pearl Skin,Warpaints Fanatic,18 ml,1,#F9E3D9
+Army Painter,WP3151,Carnelian Skin,Warpaints Fanatic,18 ml,1,#6A484B
+Army Painter,WP3152,Tiger's Eye Skin,Warpaints Fanatic,18 ml,1,#985756
+Army Painter,WP3153,Topaz Skin,Warpaints Fanatic,18 ml,1,#B7574E
+Army Painter,WP3154,Jasper Skin,Warpaints Fanatic,18 ml,1,#BB7671
+Army Painter,WP3155,Tourmaline Skin,Warpaints Fanatic,18 ml,1,#D69483
+Army Painter,WP3156,Leopard Stone Skin,Warpaints Fanatic,18 ml,1,#DBABA7
+Army Painter,WP3157,Obsidian Skin,Warpaints Fanatic,18 ml,1,#544B4B
+Army Painter,WP3158,Onyx Skin,Warpaints Fanatic,18 ml,1,#6D5149
+Army Painter,WP3159,Mocca Skin,Warpaints Fanatic,18 ml,1,#8B6D5E
+Army Painter,WP3160,Amber Skin,Warpaints Fanatic,18 ml,1,#C2A080
+Army Painter,WP3161,Dorado Skin,Warpaints Fanatic,18 ml,1,#E9C49B
+Army Painter,WP3162,Quartz Skin,Warpaints Fanatic,18 ml,1,#EBD0B0
+Army Painter,WP3164,Dry Blood,Warpaints Fanatic,18 ml,1,#6A2020
+Army Painter,WP3165,True Blood,Warpaints Fanatic,18 ml,1,#9A1010
+Army Painter,WP3166,Dark Rust,Warpaints Fanatic,18 ml,1,#7A3818
+Army Painter,WP3167,Fresh Rust,Warpaints Fanatic,18 ml,1,#B85020
+Army Painter,WP3168,Verdigris,Warpaints Fanatic,18 ml,1,#3A9070
+Army Painter,WP3169,Oil Stains,Warpaints Fanatic,18 ml,1,#2A2820
+Army Painter,WP3170,Oozing Vomit,Warpaints Fanatic,18 ml,1,#98A830
+Army Painter,WP3171,Warpaints Stabilizer,Warpaints Fanatic,18 ml,1,#E8E8E8
+Army Painter,WP3172,Warpaints Retarder,Warpaints Fanatic,18 ml,1,#E8E8E8
+Army Painter,WP3173,Gloss Varnish,Warpaints Fanatic,18 ml,1,#F0F0F0
+Army Painter,WP3174,Matt Varnish,Warpaints Fanatic,18 ml,1,#F0F0F0
+Army Painter,WP3176,Plasma Coil Glow,Warpaints Fanatic,18 ml,1,#6060FF
+Army Painter,WP3177,Data System Glow,Warpaints Fanatic,18 ml,1,#00FF80
+Army Painter,WP3178,Lens Flare Glow,Warpaints Fanatic,18 ml,1,#FFFF00
+Army Painter,WP3179,Radiation Glow,Warpaints Fanatic,18 ml,1,#80FF00
+Army Painter,WP3180,Power Node Glow,Warpaints Fanatic,18 ml,1,#FF8000
+Army Painter,WP3181,Rough Iron,Warpaints Fanatic,18 ml,1,#4A4844
+Army Painter,WP3182,Red Copper,Warpaints Fanatic,18 ml,1,#8C4830
+Army Painter,WP3183,Weapon Bronze,Warpaints Fanatic,18 ml,1,#8A7040
+Army Painter,WP3184,True Copper,Warpaints Fanatic,18 ml,1,#B86830
+Army Painter,WP3185,Evil Chrome,Warpaints Fanatic,18 ml,1,#B0B8C0
+Army Painter,WP3186,True Brass,Warpaints Fanatic,18 ml,1,#A89040
+Army Painter,WP3187,Tainted Gold,Warpaints Fanatic,18 ml,1,#887028
+Army Painter,WP3188,Greedy Gold,Warpaints Fanatic,18 ml,1,#B89040
+Army Painter,WP3189,Bright Gold,Warpaints Fanatic,18 ml,1,#D4A830
+Army Painter,WP3190,Mithril,Warpaints Fanatic,18 ml,1,#C8CCCE
+Army Painter,WP3191,Shining Silver,Warpaints Fanatic,18 ml,1,#D0D2D4
+Army Painter,WP3192,Plate Mail Metal,Warpaints Fanatic,18 ml,1,#A0A4A8
+Army Painter,WP3193,Gun Metal,Warpaints Fanatic,18 ml,1,#505860
+Army Painter,WP3194,Cobalt Metal,Warpaints Fanatic,18 ml,1,#4A5880
+Army Painter,WP3195,Death Metal,Warpaints Fanatic,18 ml,1,#303438
+Army Painter,WP3196,Dark Emerald,Warpaints Fanatic,18 ml,1,#286858
+Army Painter,WP3197,Glittering Green,Warpaints Fanatic,18 ml,1,#407840
+Army Painter,WP3198,Gemstone Red,Warpaints Fanatic,18 ml,1,#881828
+Army Painter,WP3199,Dark Tone,Warpaints Fanatic,18 ml,1,#201818
+Army Painter,WP3200,Strong Tone,Warpaints Fanatic,18 ml,1,#2A2018
+Army Painter,WP3201,Soft Tone,Warpaints Fanatic,18 ml,1,#483828
+Army Painter,WP3202,Light Tone,Warpaints Fanatic,18 ml,1,#806850
+Army Painter,WP3204,Rust Tone,Warpaints Fanatic,18 ml,1,#603820
+Army Painter,WP3205,Dark Red Tone,Warpaints Fanatic,18 ml,1,#501820
+Army Painter,WP3206,Red Tone,Warpaints Fanatic,18 ml,1,#702828
+Army Painter,WP3207,Orange Tone,Warpaints Fanatic,18 ml,1,#804020
+Army Painter,WP3208,Green Tone,Warpaints Fanatic,18 ml,1,#204828
+Army Painter,WP3209,Military Shade,Warpaints Fanatic,18 ml,1,#304028
+Army Painter,WP3210,Blue Tone,Warpaints Fanatic,18 ml,1,#182848
+Army Painter,WP3211,Dark Blue Tone,Warpaints Fanatic,18 ml,1,#101828
+Army Painter,WP3212,Purple Tone,Warpaints Fanatic,18 ml,1,#281840
+Army Painter,WP3213,Magenta Tone,Warpaints Fanatic,18 ml,1,#401828
+Army Painter,WP3214,Strong Skin Shade,Warpaints Fanatic,18 ml,1,#604030
+Army Painter,WP3216,Wash Medium,Warpaints Fanatic,18 ml,1,#F0F0F0
+Army Painter,WP4000,The Darkness,John Blanche,18 ml,1,#1A1410
+Army Painter,WP4001,Ivory White,John Blanche,18 ml,1,#E8E0C8
+Army Painter,WP4002,Ironclad Grey,John Blanche,18 ml,1,#707880
+Army Painter,WP4003,Moonbeam Yellow,John Blanche,18 ml,1,#E8D880
+Army Painter,WP4004,Blighted Green,John Blanche,18 ml,1,#809040
+Army Painter,WP4005,Banshee Brown,John Blanche,18 ml,1,#B8B098
+Army Painter,WP4006,Bloodmoon Red,John Blanche,18 ml,1,#8A2020
+Army Painter,WP4007,Warm Skin Shade,John Blanche,18 ml,1,#C07858
+Army Painter,WP4008,Grimdark Shadow,John Blanche,18 ml,1,#3A2828
+Army Painter,WP4009,Emperor Gold,John Blanche,18 ml,1,#B89030
+Army Painter,WP4010,Fiery Vermilion,John Blanche,18 ml,1,#E84020
+Army Painter,WP4011,Sunburst Ochre,John Blanche,18 ml,1,#D09020
+Army Painter,WP4012,Midnight Olive,John Blanche,18 ml,1,#405030
+Army Painter,WP4013,Tainted Garden,John Blanche,18 ml,1,#507060
+Army Painter,WP4014,Blanched Berry,John Blanche,18 ml,1,#D0A8B8
+Army Painter,WP4015,Ruddy Terra,John Blanche,18 ml,1,#B05030
+Army Painter,WP4016,Turnbull Turquoise,John Blanche,18 ml,1,#507880
+Army Painter,WP4017,Voodoo Shade,John Blanche,18 ml,1,#402858
+Army Painter,WP4018,Grim Rust,John Blanche,18 ml,1,#A05020
+Army Painter,WP4019,Heavy Metal,John Blanche,18 ml,1,#505860
+Citadel,24-14,Nuln Oil,Shade,18 ml,1,#201A18
+Citadel,24-15,Agrax Earthshade,Shade,18 ml,1,#3A2A18
+DecoArt,DCA01,White,Crafter's Acrylic,2 oz,1,#F8F8F8
+DecoArt,DCA03,Antique White,Crafter's Acrylic,2 oz,1,#F0E8D0
+DecoArt,DCA05,Antique Gold,Crafter's Acrylic,2 oz,1,#C89820
+DecoArt,DCA08,Pure Pumpkin,Crafter's Acrylic,2 oz,1,#F06820
+DecoArt,DCA09,Natural Beige / Flesh,Crafter's Acrylic,2 oz,1,#E8C0A0
+DecoArt,DCA102,Tropical Blue,Crafter's Acrylic,2 oz,1,#2090D0
+DecoArt,DCA104,Holiday Green,Crafter's Acrylic,2 oz,1,#208040
+DecoArt,DCA11,Burnt Sienna,Crafter's Acrylic,2 oz,1,#A04818
+DecoArt,DCA15,Tan,Crafter's Acrylic,2 oz,1,#D0A870
+DecoArt,DCA158,Teal Blue,Crafter's Acrylic,2 oz,1,#108090
+DecoArt,DCA16,Burnt Umber,Crafter's Acrylic,2 oz,1,#603018
+DecoArt,DCA20,Christmas Red,Crafter's Acrylic,2 oz,1,#CC1010
+DecoArt,DCA26,Lavender,Crafter's Acrylic,2 oz,1,#C0A0D8
+DecoArt,DCA29,Navy Blue,Crafter's Acrylic,2 oz,1,#102060
+DecoArt,DCA41,Hunter Green,Crafter's Acrylic,2 oz,1,#1A5020
+DecoArt,DCA42,Turquoise,Crafter's Acrylic,2 oz,1,#20A8B8
+DecoArt,DCA47,Black,Crafter's Acrylic,2 oz,1,#0A0A0A
+DecoArt,DCA49,Bright Yellow,Crafter's Acrylic,2 oz,1,#FFE020
+DecoArt,DCA69,Wild Rose Pink,Crafter's Acrylic,2 oz,1,#E880A0
+DecoArt,DCA73,Regal Purple,Crafter's Acrylic,2 oz,1,#6020A0
+DecoArt,DCA79,Truly Blue,Crafter's Acrylic,2 oz,1,#2040C0
+DecoArt,DCA85,Wild Green,Crafter's Acrylic,2 oz,1,#50A840
+DecoArt,DCA94,Storm Cloud Grey,Crafter's Acrylic,2 oz,1,#808898
+DecoArt,DCA99,Fun Fuchsia,Crafter's Acrylic,2 oz,1,#E830A8
+Dirty Down,,Moss,,25 ml,1,#4A6A40
+Dirty Down,,Rust,,25 ml,1,#9A4820
+Dirty Down,,Verdigris,,25 ml,1,#3A9070
+FW Inks,011,White,Acrylic,1 oz,1,#F5F5F5
+FW Inks,028,Black (India),Acrylic,1 oz,1,#111111
+FW Inks,065,Payne's Grey,Acrylic,1 oz,1,#2B3040
+FW Inks,120,Process Cyan,Acrylic,1 oz,1,#00AAEE
+FW Inks,223,Burnt Umber,Acrylic,1 oz,1,#4E2F1D
+FW Inks,251,Sepia,Acrylic,6 oz,1,#4A3728
+FW Inks,412,Process Magenta,Acrylic,1 oz,1,#EE0088
+FW Inks,513,Crimson,Acrylic,1 oz,1,#AA0022
+FW Inks,517,Flame Red,Acrylic,1 oz,1,#EE2200
+FW Inks,53,Cool Grey,Acrylic,1 oz,1,#888888
+FW Inks,675,Process Yellow,Acrylic,1 oz,1,#FFDD00
+FolkArt,2554,Classic Green,Acrylic Colors,2 oz,1,#407040
+FolkArt,2560,Bark Brown,Acrylic Colors,2 oz,1,#6A4020
+FolkArt,36223,Shimmering Steel,Metallics,2 oz,1,#A0A8B0
+FolkArt,36255,Canyon Sunset,Acrylic Colors,2 oz,1,#D08050
+FolkArt,36260,Roasted Pecan,Acrylic Colors,2 oz,1,#8A5830
+FolkArt,6448,Daybreak,Acrylic Colors,2 oz,1,#F0C8A0
+FolkArt,6456,Mossy Meadow,Acrylic Colors,2 oz,1,#508050
+FolkArt,JA406,Hunter Green,Acrylic Colors,2 oz,1,#1A5020
+FolkArt,JA481,Aqua,Acrylic Colors,2 oz,1,#40C0A0
+FolkArt,JA627,Tangerine,Acrylic Colors,2 oz,1,#F08020
+FolkArt,JA936,Barn Wood,Acrylic Colors,2 oz,1,#807060
+FolkArt,JA953,Camel,Acrylic Colors,2 oz,1,#C09860
+FolkArt,K420,Linen,Acrylic Colors,2 oz,1,#E8E0C8
+FolkArt,K425,Medium Gray,Acrylic Colors,2 oz,1,#909090
+FolkArt,K452,Raw Sienna,Acrylic Colors,2 oz,1,#C07030
+FolkArt,K479,Pure Black,Acrylic Colors,2 oz,1,#0A0A0A
+FolkArt,K515,Vintage White,Acrylic Colors,2 oz,1,#F0EAD6
+FolkArt,K660,Pure Gold,Metallics,2 oz,1,#D4A020
+FolkArt,K917,Yellow Ochre,Acrylic Colors,2 oz,1,#C09030
+FolkArt,K940,Coffee Bean,Acrylic Colors,2 oz,1,#3A2010
+Golden,3535,Airbrush Medium,Fluid Mediums,16 oz,1,#E8E8E8
+Green Stuff World,1818,Badlands,Crackle Paint,60 ml,1,#7A6048
+Kaleido ColorWorks,KP201,White Matt,Primer,210 ml,1,#F0F0F0
+Kaleido ColorWorks,KP202,Gray Matt,Primer,210 ml,1,#909090
+Kaleido ColorWorks,KP203,Black Matt,Primer,210 ml,1,#141414
+Kaleido ColorWorks,KP204,Black Gloss,Primer,210 ml,1,#0A0A0A
+Mr. Hobby,P-119,Mr. Dissolved Putty,Putty/Cement,40 ml,1,#E8C890
+Mr. Hobby,SF-248,Mr. Surfacer 1000,Mr. Surfacer,40 ml,1,#C0C0C0
+Pro Acryl,AMP-002,Cool Grey,AMP Colors,22 ml,1,#858788
+Pro Acryl,AMP-004,Black Red,AMP Colors,22 ml,1,#66342E
+Pro Acryl,AMP-005,Dark Navy Blue,AMP Colors,22 ml,1,#2C2D43
+Pro Acryl,AMP-006,Beige Grey,AMP Colors,22 ml,1,#C8BFA8
+Pro Acryl,AMP-007,Orange Yellow,AMP Colors,22 ml,1,#E8A830
+Pro Acryl,AMP-008,Peach Flesh,AMP Colors,22 ml,1,#F0C0A0
+Pro Acryl,AMP-009,Bright Green Blue,AMP Colors,22 ml,1,#40C0E0
+Pro Acryl,AMP-010,Steel,AMP Colors,22 ml,1,#8B8C8C
+Pro Acryl,AMP-011,Magenta Wash,AMP Colors,22 ml,1,#D2547F
+Pro Acryl,AMP-012,Petroleum Brown Wash,AMP Colors,22 ml,1,#8A7255
+Pro Acryl,AMP-013,Slate Grey,AMP Colors,22 ml,1,#494950
+Pro Acryl,AMP-017,Red Orange,AMP Colors,22 ml,1,#E64C2D
+Pro Acryl,AMP-018,Burnt Umber,AMP Colors,22 ml,1,#7A5038
+Pro Acryl,AMP-020,Green Brown,AMP Colors,22 ml,1,#6A6040
+Pro Acryl,AMP-021,Bright Brown Grey,AMP Colors,22 ml,1,#B8A888
+Pro Acryl,AMP-022,Grey Green,AMP Colors,22 ml,1,#8A9878
+Pro Acryl,AMP-023,Brown Grey Wash,AMP Colors,22 ml,1,#807872
+Pro Acryl,AMP-024,Payne's Grey Wash,AMP Colors,22 ml,1,#69717B
+Pro Acryl,MEA-001,Titanium White,Expert Acrylics,30 ml,1,#F5F5F5
+Pro Acryl,MEA-002,Carbon Black,Expert Acrylics,30 ml,1,#1A1A1A
+Pro Acryl,MEA-003,Pyrrole Red,Expert Acrylics,30 ml,1,#C82030
+Pro Acryl,MEA-004,Permanent Green Light,Expert Acrylics,30 ml,1,#40B830
+Pro Acryl,MEA-005,Prussian Blue,Expert Acrylics,30 ml,1,#1A3060
+Pro Acryl,MEA-006,Pyrrole Orange,Expert Acrylics,30 ml,1,#F06010
+Pro Acryl,MEA-007,Burnt Umber,Expert Acrylics,30 ml,1,#5A3018
+Pro Acryl,MEA-008,Dioxazine Violet,Expert Acrylics,30 ml,1,#3A1860
+Pro Acryl,MEA-009,Sap Green,Expert Acrylics,30 ml,1,#2A6020
+Pro Acryl,MEA-010,Burnt Sienna,Expert Acrylics,30 ml,1,#8A4818
+Pro Acryl,MEA-011,Nickel Azo Yellow,Expert Acrylics,30 ml,1,#C8A820
+Pro Acryl,MEA-012,Sepia,Expert Acrylics,30 ml,1,#4A3020
+Pro Acryl,MEA-013,Payne's Grey,Expert Acrylics,30 ml,1,#2B3040
+Pro Acryl,MEA-014,Primary Cyan,Expert Acrylics,30 ml,1,#00A8E8
+Pro Acryl,MEA-015,Primary Magenta,Expert Acrylics,30 ml,1,#E80080
+Pro Acryl,MEA-016,Primary Yellow,Expert Acrylics,30 ml,1,#FFD800
+Pro Acryl,MPA-001,Bold Titanium White,,22 ml,1,#F8F8F8
+Pro Acryl,MPA-002,Coal Black,,22 ml,1,#2A2A2A
+Pro Acryl,MPA-003,Bold Pyrrole Red,,22 ml,1,#CB2535
+Pro Acryl,MPA-004,Green,,22 ml,1,#06834A
+Pro Acryl,MPA-005,Blue,,22 ml,1,#1061AB
+Pro Acryl,MPA-006,Golden Yellow,,22 ml,1,#F7D308
+Pro Acryl,MPA-007,Orange,,22 ml,1,#F0792D
+Pro Acryl,MPA-008,Burnt Red,,22 ml,1,#803939
+Pro Acryl,MPA-009,Mahogany,,22 ml,1,#574644
+Pro Acryl,MPA-010,Purple,,22 ml,1,#7F517D
+Pro Acryl,MPA-011,Magenta,,22 ml,1,#BB4D73
+Pro Acryl,MPA-012,Sky Blue,,22 ml,1,#349ED6
+Pro Acryl,MPA-013,Faded Ultramarine,,22 ml,1,#6D8CC1
+Pro Acryl,MPA-014,Dark Grey Blue,,22 ml,1,#1C3E62
+Pro Acryl,MPA-015,Bright Warm Grey,,22 ml,1,#ABB2A1
+Pro Acryl,MPA-016,Dark Warm Grey,,22 ml,1,#4E5154
+Pro Acryl,MPA-017,Golden Brown,,22 ml,1,#D2AC6D
+Pro Acryl,MPA-018,Light Umber,,22 ml,1,#70584B
+Pro Acryl,MPA-019,Dark Umber,,22 ml,1,#54443F
+Pro Acryl,MPA-020,Camo Green,,22 ml,1,#53614D
+Pro Acryl,MPA-021,Jade,,22 ml,1,#056262
+Pro Acryl,MPA-022,Bright Ivory,,22 ml,1,#F6F2DE
+Pro Acryl,MPA-023,Ivory,,22 ml,1,#E1D7C8
+Pro Acryl,MPA-024,Tan Flesh,,22 ml,1,#DDB3A3
+Pro Acryl,MPA-025,Silver,,22 ml,1,#ACAEAE
+Pro Acryl,MPA-026,Light Bronze,,22 ml,1,#B4A893
+Pro Acryl,MPA-027,Copper,,22 ml,1,#AB836A
+Pro Acryl,MPA-028,Rich Gold,,22 ml,1,#BF9868
+Pro Acryl,MPA-029,White Gold,,22 ml,1,#B2AC9F
+Pro Acryl,MPA-030,Dark Silver,,22 ml,1,#797A7A
+Pro Acryl,MPA-031,Bright Gold,,22 ml,1,#D1B18A
+Pro Acryl,MPA-032,Bronze,,22 ml,1,#857668
+Pro Acryl,MPA-033,Metal Medium,,22 ml,1,#B1B8B4
+Pro Acryl,MPA-034,Dark Blue,,22 ml,1,#182449
+Pro Acryl,MPA-035,Dark Purple,,22 ml,1,#27224C
+Pro Acryl,MPA-036,Dark Camo Green,,22 ml,1,#53564C
+Pro Acryl,MPA-037,Burnt Orange,,22 ml,1,#9C493D
+Pro Acryl,MPA-038,Yellow Ochre,,22 ml,1,#CB9A4C
+Pro Acryl,MPA-039,Bright Yellow Green,,22 ml,1,#96B842
+Pro Acryl,MPA-040,Black Brown,,22 ml,1,#4B4645
+Pro Acryl,MPA-041,Olive Flesh,,22 ml,1,#C4B29D
+Pro Acryl,MPA-042,Shadow Flesh,,22 ml,1,#9F645B
+Pro Acryl,MPA-043,Pale Pink,,22 ml,1,#F5D4D2
+Pro Acryl,MPA-044,Dark Neutral Grey,,22 ml,1,#46484C
+Pro Acryl,MPA-045,Bright Neutral Grey,,22 ml,1,#D5D5D4
+Pro Acryl,MPA-046,Transparent Blue,Transparent,22 ml,1,#515A87
+Pro Acryl,MPA-047,Transparent Red,Transparent,22 ml,1,#A0514A
+Pro Acryl,MPA-048,Transparent Green,Transparent,22 ml,1,#406857
+Pro Acryl,MPA-049,Transparent Yellow,Transparent,22 ml,1,#A8A354
+Pro Acryl,MPA-050,Transparent Orange,Transparent,22 ml,1,#AD8655
+Pro Acryl,MPA-051,Transparent Purple,Transparent,22 ml,1,#594E6B
+Pro Acryl,MPA-052,Transparent Brown,Transparent,22 ml,1,#615750
+Pro Acryl,MPA-053,Transparent Black,Transparent,22 ml,1,#393A3A
+Pro Acryl,MPA-054,Turquoise,,22 ml,1,#0EA1B2
+Pro Acryl,MPA-055,Grey Blue,,22 ml,1,#80A0BD
+Pro Acryl,MPA-056,Blue Black,,22 ml,1,#444A52
+Pro Acryl,MPA-057,Black Green,,22 ml,1,#3B443E
+Pro Acryl,MPA-058,Bright Pale Green,,22 ml,1,#C8E8C0
+Pro Acryl,MPA-059,Burnt Sienna,,22 ml,1,#763829
+Pro Acryl,MPA-060,Pale Yellow,,22 ml,1,#FBEAAF
+Pro Acryl,MPA-061,Khaki,,22 ml,1,#CFC39B
+Pro Acryl,MPA-062,Dark Golden Brown,,22 ml,1,#614B22
+Pro Acryl,MPA-063,Faded Plum,,22 ml,1,#9F8CB3
+Pro Acryl,MPA-064,Transparent White,Transparent,22 ml,1,#C1BFBD
+Pro Acryl,MPA-065,Yellow Green,,22 ml,1,#6E7849
+Pro Acryl,MPA-066,Faded Green,,22 ml,1,#97A68F
+Pro Acryl,MPA-067,Bright Jade,,22 ml,1,#3F9F8B
+Pro Acryl,MPA-068,Dark Flesh,,22 ml,1,#63403C
+Pro Acryl,MPA-069,Burgundy,,22 ml,1,#7B3B45
+Pro Acryl,MPA-070,Plum,,22 ml,1,#89528B
+Pro Acryl,MPA-071,Pink,,22 ml,1,#EB9DAB
+Pro Acryl,MPA-072,Warm Yellow,,22 ml,1,#F8BE14
+Pro Acryl,MPA-073,Warm Flesh,,22 ml,1,#F9C884
+Pro Acryl,MPA-074,Warm Grey,,22 ml,1,#63696A
+Pro Acryl,MPA-075,Neutral Grey,,22 ml,1,#5B6067
+Pro Acryl,MPA-200,Black,Washes,22 ml,1,#3E3B3B
+Pro Acryl,MPA-201,Brown,Washes,22 ml,1,#594942
+Pro Acryl,MPA-202,Flesh,Washes,22 ml,1,#906962
+Pro Acryl,MPA-F01,Fluorescent Red,Fluorescent,22 ml,1,#FF2040
+Pro Acryl,MPA-F02,Fluorescent Orange,Fluorescent,22 ml,1,#FF6000
+Pro Acryl,MPA-F03,Fluorescent Yellow,Fluorescent,22 ml,1,#FFEE00
+Pro Acryl,MPA-F04,Fluorescent Green,Fluorescent,22 ml,1,#00FF60
+Pro Acryl,MPA-F05,Fluorescent Purple,Fluorescent,22 ml,1,#CC00FF
+Pro Acryl,MPA-F06,Fluorescent Pink,Fluorescent,22 ml,1,#FF40B0
+Pro Acryl,MPA-S01,Dark Jade,Signature Series,22 ml,1,#2F444A
+Pro Acryl,MPA-S02,Payne's Grey,Signature Series,22 ml,1,#383E54
+Pro Acryl,MPA-S03,Royal Purple,Signature Series,22 ml,1,#543A62
+Pro Acryl,MPA-S04,White Blue,Signature Series,22 ml,1,#C2E4E8
+Pro Acryl,MPA-S05,Beige Red,Signature Series,22 ml,1,#C4938A
+Pro Acryl,MPA-S06,Dark Yellow Green,Signature Series,22 ml,1,#6B7040
+Pro Acryl,MPA-S07,Dark Ivory,Signature Series,22 ml,1,#CBBF99
+Pro Acryl,MPA-S08,Dark Warm Flesh,Signature Series,22 ml,1,#DBAF71
+Pro Acryl,MPA-S09,Warm Brown,Signature Series,22 ml,1,#9E6E45
+Pro Acryl,MPA-S10,Dark Magenta,Signature Series,22 ml,1,#841D37
+Pro Acryl,MPA-S11,Dark Plum,Signature Series,22 ml,1,#442430
+Pro Acryl,MPA-S12,Red Grey,Signature Series,22 ml,1,#9A8B87
+Pro Acryl,MPA-S13,Dark Sea Ben,Signature Series,22 ml,1,#254451
+Pro Acryl,MPA-S15,Dark Burgandy,Signature Series,22 ml,1,#574645
+Pro Acryl,MPA-S16,Green Oxide,Signature Series,22 ml,1,#6B7A4E
+Pro Acryl,MPA-S17,Advanced Flesh Tone,Signature Series,22 ml,1,#A88071
+Pro Acryl,MPA-S18,Heavy Warm White,Signature Series,22 ml,1,#F4EDE0
+Pro Acryl,MPA-S19,Dark Crimson,Signature Series,22 ml,1,#623F3C
+Pro Acryl,MPA-S20,Dark Emerald,Signature Series,22 ml,1,#386467
+Pro Acryl,MPA-S22,Brown Grey,Signature Series,22 ml,1,#555350
+Pro Acryl,MPA-S23,Bone,Signature Series,22 ml,1,#ACA39D
+Pro Acryl,MPA-S24,Dark Bronze,Signature Series,22 ml,1,#74665E
+Pro Acryl,MPA-S25,Dark Green Brown,Signature Series,22 ml,1,#4B3F2E
+Pro Acryl,MPA-S26,Dark Orange Brown,Signature Series,22 ml,1,#7A4E2A
+Pro Acryl,MPA-S27,Orange Brown,Signature Series,22 ml,1,#A8673A
+Pro Acryl,MPA-S28,Caramel Brown,Signature Series,22 ml,1,#C98F52
+Pro Acryl,MPA-S29,Bright Yellow Ochre,Signature Series,22 ml,1,#D4A835
+Pro Acryl,MPA-S30,Bright Pale Yellow,Signature Series,22 ml,1,#F2E680
+Pro Acryl,MPA-S31,Orange Red,Signature Series,22 ml,1,#E13B44
+Pro Acryl,MPA-S32,Dark Hot Pink,Signature Series,22 ml,1,#BF315D
+Pro Acryl,MPA-S33,Bright Green,Signature Series,22 ml,1,#17A162
+Pro Acryl,MPA-S34,Dark Turquoise,Signature Series,22 ml,1,#237F95
+Pro Acryl,MPA-S35,Ultramarine,Signature Series,22 ml,1,#4B68AA
+Pro Acryl,MPA-S36,Bismuth Yellow,Signature Series,22 ml,1,#E8D020
+Pro Acryl,MPA-S37,Red Oxide,Adepticon,22 ml,1,#853834
+Pro Acryl,MPA-S38,Orange Oxide,Adepticon,22 ml,1,#B86030
+Pro Acryl,MPA-S39,Satin Black,Adepticon,22 ml,1,#363535
+Pro Acryl,MPA-S40,Drab Brown,Adepticon,22 ml,1,#51422D
+Pro Acryl,MPA-S41,Bright Shadow Flesh,Adepticon,22 ml,1,#EA9D82
+Pro Acryl,MPA-S42,Magnesium,Adepticon,22 ml,1,#7C766D
+Pro Acryl,MPA-S49,NOVA Orange,Signature Series,22 ml,1,#EF732E
+Pro Acryl,MPA-T05,Concrete,Basing Textures,120 ml,1,#909090
+Pro Acryl,MPA-T07,Brown Earth Fine,Basing Textures,120 ml,1,#7A5030
+Pro Acryl,MPA-T08,Brown Earth Coarse,Basing Textures,120 ml,1,#6A4020
+Pro Acryl,MPAM-001,Glaze & Wash Medium,,120 ml,1,#E8E8E8
+Pro Acryl,MPAM-003,Gloss Varnish,,120 ml,1,#E8E8E8
+Pro Acryl,MPAM-004,Newsh Acrylic Weathering Medium,,120 ml,1,#E8E8E8
+Pro Acryl,MPAP-002,Black,PRIME,120 ml,2,#1A1A1A
+Pro Acryl,MPAP-003,White,PRIME,120 ml,1,#F5F5F5
+Pro Acryl,MPAP-005,Dark Neutral Grey,PRIME,120 ml,1,#46484C
+Pro Acryl,MPAP-007,Dark Camo Green,PRIME,120 ml,1,#53564C
+Pro Acryl,MPAP-011,Black Brown,PRIME,120 ml,1,#4B4645
+Pro Acryl,MPAP-017,Brush-On Primer Black,PRIME,22 ml,1,#1A1A1A
+Pro Acryl,MPAP-019,Red Oxide,PRIME,120 ml,1,#853834
+Pro Acryl,MPAP-023,Dark Purple,PRIME,120 ml,1,#27224C
+Pro Acryl,MPAP-029,Taupe,PRIME,120 ml,1,#B0A090
+Pro Acryl,MPAR-P02,Matte Black Primer,Spray Primers,500 ml,2,#141414
+Pro Acryl,MPAR-P03,Matte White Primer,Spray Primers,500 ml,2,#F0F0F0
+Pro Acryl,MPAR-V01,Matte Varnish,Spray Primers,500 ml,1,#E8E8E8
+Pro Acryl,MWP-01,Titanium White,Weathering Pigments,37 ml,1,#F5F5F5
+Pro Acryl,MWP-02,Black Iron Oxide,Weathering Pigments,37 ml,1,#1A1A1A
+Pro Acryl,MWP-03,Red Iron Oxide,Weathering Pigments,37 ml,1,#8A3018
+Pro Acryl,MWP-04,Yellow Iron Oxide,Weathering Pigments,37 ml,1,#D09020
+Pro Acryl,MWP-05,Unbleached Titanium,Weathering Pigments,37 ml,1,#E8D8B8
+Pro Acryl,MWP-06,Raw Sienna,Weathering Pigments,37 ml,1,#C07030
+Pro Acryl,MWP-07,Burnt Umber,Weathering Pigments,37 ml,1,#5A3018
+Pro Acryl,MWP-08,Raw Umber,Weathering Pigments,37 ml,1,#4A3820
+Tamiya,81527,X27 Clear Red,Acrylic Gloss,10 ml,1,#CC1010
+Tamiya,87131,Black,Panel Line Accent Color,40 ml,1,#101010
+Turbo Dork,TD4DGCSA20,4D Glasses,Turboshift,20 ml,1,#E060B0
+Turbo Dork,TDITNCSA20,Ice To Never,Turboshift,20 ml,1,#3060B0
+Turbo Dork,TDK015069,4D Glasses,Turboshift,22 ml,1,#E060B0
+Turbo Dork,TDK015359,Galaxia,Turboshift,22 ml,1,#6050C0
+Turbo Dork,TDK055878,Thinning Medium,,120 ml,1,#E8E8E8
+Vallejo,26.517,Gloss Varnish,,60 ml,1,#E8E8E8
+Vallejo,26.518,Matt Acrylic Varnish,,60 ml,1,#E8E8E8
+Vallejo,26.519,Satin Varnish,,60 ml,1,#E8E8E8
+Vallejo,70.603,Ger. Panzer Grey,Surface Primer,17 ml,1,#404858
+Vallejo,70.861,Glossy Black,Model Color,17|18 ml,1,#0A0A0A
+Vallejo,71.062,Aluminium,Model Air,17 ml,1,#A8B0B4
+Vallejo,71.063,Silver RLM01,Model Air,17 ml,1,#C0C8CC
+Vallejo,71.064,Chrome,Model Air,17 ml,1,#D0D4D6
+Vallejo,71.065,Steel,Model Air,17 ml,1,#707880
+Vallejo,71.066,Gold,Model Air,17 ml,1,#C09030
+Vallejo,71.067,Bright Brass,Model Air,17 ml,1,#C0A030
+Vallejo,71.068,Copper,Model Air,17 ml,1,#B06030
+Vallejo,71.069,Rust,Model Air,17 ml,1,#A04820
+Vallejo,71.070,Signal Red,Model Air,17 ml,1,#CC1010
+Vallejo,71.071,Arctic Blue,Model Air,17 ml,1,#5090C0
+Vallejo,71.072,Gungrey / Gun Metal,Model Air,17 ml,1,#505860
+Vallejo,71.073,Black,Model Air,17 ml,1,#141414
+Vallejo,71.077,Wood,Model Air,17 ml,1,#806040
+Vallejo,71.080,Rust,Model Air,17 ml,1,#804020
+Vallejo,71.082,Fluorescent Red,Model Air,17 ml,1,#FF1030
+Vallejo,71.097,Base Grey / Medium Gunship Gray,Model Air,17 ml,1,#808890
+Vallejo,72.001,Dead White,Game Color,17|18 ml,1,#FAFAFA
+Vallejo,72.006,Sun Yellow,Game Color,17|18 ml,1,#FFD800
+Vallejo,72.008,Orange Fire,Game Color,17|18 ml,1,#FF6600
+Vallejo,72.010,Bloody Red,Game Color,17|18 ml,1,#CC1010
+Vallejo,72.022,Ultramarine Blue,Game Color,17|18 ml,1,#1A3090
+Vallejo,72.028,Dark Green,Game Color,17|18 ml,1,#1A5020
+Vallejo,72.030,Goblin Green,Game Color,17|18 ml,1,#40A040
+Vallejo,72.034,Bonewhite,Game Color,17|18 ml,1,#E0D8A0
+Vallejo,72.036,Bronze Brown / Bronze Fleshtone,Game Color,17|18 ml,1,#A06840
+Vallejo,72.040,Leather Brown,Game Color,17|18 ml,1,#7A4830
+Vallejo,72.043,Beasty Brown,Game Color,17|18 ml,1,#6A3820
+Vallejo,72.049,Stonewall Grey,Game Color,17|18 ml,1,#888890
+Vallejo,72.051,Black,Game Color,17|18 ml,1,#0A0A0A
+Vallejo,72.052,Silver,Game Color Metallic,17|18 ml,1,#C0C8D0
+Vallejo,72.054,Dark Gunmetal,Game Color Metallic,17|18 ml,1,#404850
+Vallejo,73.605,Ger. Red Brown,Surface Primer,60 ml,1,#7A3820
+Vallejo,77.657,Metal Varnish,,32 ml,1,#E8E8E8
+Vallejo,77.701,Aluminium,Metal Color,32 ml,1,#A8ADAF
+Vallejo,77.702,Duraluminium,Metal Color,32 ml,1,#8C9196
+Vallejo,77.704,Pale Burnt Metal,Metal Color,32 ml,1,#958476
+Vallejo,77.707,Chrome,Metal Color,32 ml,1,#C6C8C9
+Vallejo,77.710,Copper,Metal Color,32 ml,1,#B5775D
+Vallejo,77.711,Magnesium,Metal Color,32 ml,1,#C0B3AF
+Vallejo,77.713,Jet Exhaust,Metal Color,32 ml,1,#4B4340
+Vallejo,77.720,Gunmetal Grey,Metal Color,32 ml,1,#58606A
+Vallejo,77.723,Exhaust Manifold,Metal Color,32 ml,1,#282221
+Vallejo,77.724,Silver,Metal Color,32 ml,1,#C8CACB
+Vallejo,77.725,Gold,Metal Color,32 ml,1,#AE8738
+Villainy Ink,VI-001,Goon's Grime,,3 oz,1,#3A3020
+Villainy Ink,VI-002,Sector Rust,,3 oz,1,#702810
+Villainy Ink,VI-003,Coelia Green,,3 oz,1,#307060
+Villainy Ink,VI-004,Carrion Crimson,,3 oz,1,#601018
+Villainy Ink,VI-005,Ichor of the Damned,,3 oz,1,#151510
+Villainy Ink,VI-006,Decay of Death,,3 oz,1,#486050
+Villainy Ink,VI-007,Dystopian Brown,,3 oz,1,#604028

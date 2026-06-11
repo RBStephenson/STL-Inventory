@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Brent's Painting Guides — Index</title>
+  <style>
+    :root { color-scheme: dark; }
+    html, body { background:#141414; color:#e6e6e6; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; margin:0; padding:0; line-height:1.55; }
+    .wrap { max-width:1080px; margin:0 auto; padding:48px 28px 80px; }
+    h1 { font-size:2.1em; margin:0 0 8px; letter-spacing:0.5px; }
+    .sub { color:#888; font-size:0.95em; margin-bottom:36px; }
+    .cat { margin-top:36px; }
+
+    /* ── Collapsible category headers ─────────────────────────── */
+    .cat h2 {
+      font-size:1.1em; text-transform:uppercase; letter-spacing:1.4px;
+      color:#aaa; border-bottom:1px solid #2a2a2a; padding-bottom:10px;
+      margin-bottom:18px; cursor:pointer; display:flex;
+      align-items:center; user-select:none;
+    }
+    .cat h2 .cat-name { flex:1; }
+    .cat h2:hover { color:#ccc; }
+    .cat h2 .chevron {
+      font-size:0.85em; color:#555; transition:transform 0.25s ease;
+      flex-shrink:0; margin-left:12px;
+    }
+    .cat.collapsed h2 .chevron { transform:rotate(-90deg); }
+    .cat h2 .cat-count {
+      font-size:0.72em; color:#555; font-weight:normal;
+      letter-spacing:0; margin-left:8px; text-transform:none;
+    }
+
+    /* ── Grid collapse animation ──────────────────────────────── */
+    .cat .grid {
+      overflow:hidden;
+      transition:max-height 0.3s ease, opacity 0.25s ease;
+      opacity:1;
+    }
+    .cat.collapsed .grid { opacity:0; }
+
+    /* ── Cards ────────────────────────────────────────────────── */
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; }
+    .card { background:#1d1d1d; border:1px solid #303030; border-radius:10px; padding:16px 18px; transition:all 0.15s ease; }
+    .card:hover { border-color:#5a5a5a; background:#232323; }
+    .card a { color:#f0f0f0; font-weight:600; text-decoration:none; display:block; font-size:1.02em; }
+    .card a:hover { color:#fff; }
+    .card .meta { color:#7a7a7a; font-size:0.84em; margin-top:6px; }
+    .card .tag { display:inline-block; background:#2a2a3a; color:#aaa; padding:2px 8px; border-radius:4px; font-size:0.74em; margin-right:6px; }
+    .card .tag.mini { background:#192413; color:#6ab870; }
+
+    /* ── Footer ───────────────────────────────────────────────── */
+    .footer { margin-top:60px; color:#555; font-size:0.85em; border-top:1px solid #2a2a2a; padding-top:20px; }
+    code { background:#222; color:#cfa; padding:1px 6px; border-radius:3px; font-size:0.88em; }
+
+    /* ── Audit callout ────────────────────────────────────────── */
+    .audit-callout { background:#0e1a14; border:1px solid #2a4a3a; border-left:4px solid #4aaa7a; padding:14px 20px; border-radius:8px; margin:24px 0 0; }
+    .audit-callout strong { color:#88dda9; }
+    .audit-callout small { color:#8aa; }
+    .audit-callout .audit-detail { margin-top:6px; }
+    .audit-summary-line { cursor:pointer; user-select:none; }
+    .audit-summary-line:hover { opacity:0.85; }
+    .audit-age { color:#6aaa88; font-size:0.88em; font-weight:normal; margin-left:8px; }
+    .audit-stale { background:#1a1a14; border-color:#3a3a2a; border-left-color:#7a7a4a; }
+    .audit-stale strong { color:#b0b080; }
+    .audit-stale .audit-age { color:#888; }
+
+    /* ── Index tabs ───────────────────────────────────────────── */
+    .index-tabs { display:flex; gap:0; margin:28px 0 0; border-bottom:2px solid #2a2a2a; }
+    .index-tab { background:none; border:none; border-bottom:3px solid transparent; padding:12px 26px 11px; color:#888; font-size:0.97em; font-weight:600; cursor:pointer; margin-bottom:-2px; transition:color 0.15s, border-color 0.15s; font-family:inherit; letter-spacing:0.4px; }
+    .index-tab:hover { color:#ccc; }
+    .index-tab.active { color:#e6e6e6; border-bottom-color:#4a9a5a; }
+    .index-tab-content { display:none; }
+    .index-tab-content.active { display:block; }
+
+    /* ── Collapse-all toolbar ─────────────────────────────────── */
+    .cat-toolbar {
+      display:flex; justify-content:flex-end; gap:12px;
+      margin-top:20px; margin-bottom:-8px;
+    }
+    .cat-toolbar button {
+      background:none; border:none; color:#555; font-size:0.82em;
+      cursor:pointer; padding:4px 0; font-family:inherit;
+      transition:color 0.15s;
+    }
+    .cat-toolbar button:hover { color:#aaa; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Brent's Painting Guides</h1>
+    <div class="sub">Interactive HTML guides — open any in a browser to use at the workbench.</div>
+
+    <div class="audit-callout" id="auditCallout">
+      <div class="audit-summary-line" onclick="toggleAudit()">
+        <strong>Paint inventory audited <span id="auditDateDisplay">2026-05-19</span>.</strong>
+        <span class="audit-age" id="auditAge"></span>
+        <span id="auditToggleHint" style="color:#6a9a7a;font-size:0.8em;margin-left:10px;">▾ details</span>
+      </div>
+      <div class="audit-detail" id="auditDetail">
+        Every paint code in every guide has been cross-checked against your Pro Acryl Hues chart, Set Lists,
+        Speedpaint 2.0 chart, and Warpaints Fanatic conversion chart. Fixed:
+        <code>Transparent White 064</code> (was 054) in Uni ·
+        <code>Dark Umber 019</code> (was 018) in Drax ·
+        <code>Dark Silver 030</code> (was M26) in Drax ·
+        <code>White Gold 029</code> (was M28/M29) in Drax ·
+        <code>Dark Sea Ben S13</code> (was Den) in Drax ·
+        <code>Bright Ivory 022</code> (was S22) in Faye ·
+        <code>Black Primer P-002</code> / <code>White Primer P-003</code> (was P-001/P-002) in Drax.
+        <br><small>All Speedpaint 2.0 colors, Fanatic Tones, Fanatic Triad colors, and your confirmed Turbo Dork inventory (Ice to Never, 4D Glasses, Galaxia) verified clean.</small>
+        <br><br>
+        <strong>2026-05-19 — The Joker (1966) added.</strong>
+        All codes verified clean. Key validation decisions:
+        avoided ambiguous code 017 (Standard <em>Red Orange</em> vs. AMP <em>Red Orange</em> overlap) — used <code>Orange 007</code> for lip highlight instead ·
+        <code>Burnt Umber</code> referenced as Expert Acrylics tube paint throughout to sidestep Standard/AMP 018 code ambiguity ·
+        Signature line: <code>Dark Magenta S10</code> · <code>Payne's Grey S02</code> · <code>Dark Yellow Green S06</code> · <code>Heavy Warm White S18</code> · <code>Heavy Titanium White S21</code> · <code>Bright Pale Yellow S30</code> · <code>Royal Purple S03</code> — all confirmed against Set Lists.
+        Hero section bugs caught and corrected: accent <code>&lt;span&gt;</code> was on "The" instead of "Joker" · series-badge had a raw text node in a flex container.
+        Color accuracy note embedded in guide: canonical costume is hot pink/magenta suit + lime green shirt, verified against Heritage Auctions lot #89172.
+      </div>
+    </div>
+
+    <!-- ═══ INDEX TAB NAV ══════════════════════════════════════ -->
+    <div class="index-tabs">
+      <button class="index-tab active" onclick="showIndexTab('scale16', this)">1:6 Scale Figures</button>
+      <button class="index-tab" onclick="showIndexTab('minis', this)">Wargaming Miniatures</button>
+    </div>
+
+
+    <!-- ═══ TAB 1: 1:6 SCALE FIGURES ═════════════════════════ -->
+    <div class="index-tab-content active" id="tab-scale16">
+
+      <div class="cat-toolbar">
+        <button onclick="expandAll('tab-scale16')">expand all</button>
+        <button onclick="collapseAll('tab-scale16')">collapse all</button>
+      </div>
+
+      <div class="cat">
+        <h2><span class="cat-name">Film · TV</span><span class="cat-count">5 guides</span><span class="chevron">▾</span></h2>
+        <div class="grid">
+          <div class="card"><a href="by-category/film-tv/superman-1978-painting-guide.html">Superman (1978) — Christopher Reeve</a><div class="meta"><span class="tag">1:6</span> Display piece · warm fair skin · Pinkle Method</div></div>
+          <div class="card"><a href="by-category/film-tv/robocop-1987-painting-guide.html">RoboCop (1987) — CA3D Studios Diorama</a><div class="meta"><span class="tag">1:6</span> Turbo Dork color-shift armor · cinematic OSL · punk gore base</div></div>
+          <div class="card"><a href="by-category/film-tv/drax-destroyer-painting-guide.html">Drax the Destroyer</a><div class="meta"><span class="tag">1:6</span> Slate-grey skin · scarification tattoos · dragon base · optional Turbo Dork</div></div>
+          <div class="card"><a href="by-category/film-tv/freddy-krueger-painting-guide.html">Freddy Krueger</a><div class="meta"><span class="tag">1:6</span> Burned skin · stripe sweater · razor glove</div></div>
+          <div class="card"><a href="by-category/film-tv/peacemaker-painting-guide.html">Peacemaker — The Suicide Squad</a><div class="meta"><span class="tag">1:6</span> Chrome dome TMM · blood effects · Eagly feathers · ZEZ Studios</div></div>
+          <div class="card"><a href="by-category/film-tv/vigilante-painting-guide.html">Vigilante — New Era Trooper</a><div class="meta"><span class="tag">1:6</span> Matte tactical armor · cyan accents · chrome blade TMM · light blood · ZEZ Studios</div></div>
+        </div>
+      </div>
+
+      <div class="cat">
+        <h2><span class="cat-name">The Boys</span><span class="cat-count">2 guides</span><span class="chevron">▾</span></h2>
+        <div class="grid">
+          <div class="card"><a href="by-category/the-boys/homelander-painting-guide.html">Homelander</a><div class="meta"><span class="tag">1:6</span> Periwinkle suit texture · gold chain TMM · OSL laser eyes · 3 heads</div></div>
+          <div class="card"><a href="by-category/the-boys/soldier-boy-painting-guide.html">Soldier Boy</a><div class="meta"><span class="tag">1:6</span> Military green suit · aged bronze shield · gold star TMM · Zenith Studios</div></div>
+        </div>
+      </div>
+
+      <div class="cat">
+        <h2><span class="cat-name">Batman (1966)</span><span class="cat-count">1 guide</span><span class="chevron">▾</span></h2>
+        <div class="grid">
+          <div class="card"><a href="by-category/batman-1966/joker-1966-painting-guide.html">The Joker — Cesar Romero</a><div class="meta"><span class="tag">1:6</span> Theatrical white makeup · hot pink/magenta suit · lime green hair · B3DSERK</div></div>
+        </div>
+      </div>
+
+      <div class="cat">
+        <h2><span class="cat-name">Comics</span><span class="cat-count">3 guides</span><span class="chevron">▾</span></h2>
+        <div class="grid">
+          <div class="card"><a href="by-category/comics/spider-man-groudeffected-painting-guide.html">Spider-Man — Groudeffected</a><div class="meta"><span class="tag">1:6</span> Marvel Comics · cartoony cel-shade · red &amp; blue spandex · NYC street base</div></div>
+          <div class="card"><a href="by-category/comics/captain-america-painting-guide.html">Captain America</a><div class="meta"><span class="tag">1:6</span> Marvel Comics · scale mail metallic sheen · ruined Hydra base</div></div>
+          <div class="card"><a href="by-category/comics/cassie-hack-painting-guide.html">Cassie Hack</a><div class="meta"><span class="tag">1:6</span> Hack/Slash · slasher hunter · blood effects · chrome buckle</div></div>
+        </div>
+      </div>
+
+      <div class="cat">
+        <h2><span class="cat-name">D&amp;D Animated Series</span><span class="cat-count">6 guides</span><span class="chevron">▾</span></h2>
+        <div class="grid">
+          <div class="card"><a href="by-category/dnd-animated-series/hank-ranger-dnd-painting-guide.html">Hank the Ranger</a><div class="meta"><span class="tag">1:6</span> Fair hero skin · corduroy green · golden bow · resin tint</div></div>
+          <div class="card"><a href="by-category/dnd-animated-series/eric-cavalier-dnd-painting-guide.html">Eric the Cavalier</a><div class="meta"><span class="tag">1:6</span> Heraldry · griffon shield · NMM steel</div></div>
+          <div class="card"><a href="by-category/dnd-animated-series/diana-acrobat-dnd-painting-guide.html">Diana the Acrobat</a><div class="meta"><span class="tag">1:6</span> Deep skin pinkle · gold regalia · resin javelin</div></div>
+          <div class="card"><a href="by-category/dnd-animated-series/sheila-dd-cartoon-painting-guide.html">Sheila the Thief</a><div class="meta"><span class="tag">1:6</span> Pinkle skin · copper-auburn hair · hot pink outfit · purple cloak · autumn base</div></div>
+          <div class="card"><a href="by-category/dnd-animated-series/bobby-barbarian-dnd-painting-guide.html">Bobby the Barbarian</a><div class="meta"><span class="tag">1:6</span> Furs · club · child sculpt skin</div></div>
+          <div class="card"><a href="by-category/dnd-animated-series/uni-unicorn-dnd-painting-guide.html">Uni the Unicorn</a><div class="meta"><span class="tag">1:6</span> White-without-white · fiery orange mane · transparent resin horn</div></div>
+          <div class="card"><a href="by-category/dnd-animated-series/presto-magician-dnd-painting-guide.html">Presto the Magician</a><div class="meta"><span class="tag">1:6</span> Pinkle ginger skin · green robe folds · blue magic OSL</div></div>
+        </div>
+      </div>
+
+      <div class="cat">
+        <h2><span class="cat-name">Anime · Music</span><span class="cat-count">4 guides</span><span class="chevron">▾</span></h2>
+        <div class="grid">
+          <div class="card"><a href="by-category/anime-music/faye-valentine-painting-guide.html">Faye Valentine</a><div class="meta"><span class="tag">1:6</span> Cowboy Bebop · Pinkle skin · amber OSL base · gunmetal pistol</div></div>
+          <div class="card"><a href="by-category/anime-music/spike-spiegel-painting-guide.html">Spike Spiegel</a><div class="meta"><span class="tag">1:6</span> Cowboy Bebop · Red Zenithal skin · blued steel Jericho 941 · cigarette ember OSL · brass shell casings · CA3D Studios</div></div>
+          <div class="card"><a href="by-category/anime-music/hatsune-miku-rock-diva-painting-guide.html">Hatsune Miku — Rock Diva</a><div class="meta"><span class="tag">1:6</span> Teal twintails · rock stage costume · red SG guitar</div></div>
+          <div class="card"><a href="by-category/anime-music/kenshin-himura-painting-guide.html">Kenshin Himura</a><div class="meta"><span class="tag">1:6</span> Rurouni Kenshin · porcelain pinkle skin · lacquered sakabato · bamboo garden base</div></div>
+        </div>
+      </div>
+
+      <div class="cat">
+        <h2><span class="cat-name">Masters of the Universe</span><span class="cat-count">3 guides</span><span class="chevron">▾</span></h2>
+        <div class="grid">
+          <div class="card"><a href="by-category/masters-of-the-universe/he-man-dark-warrior-painting-guide.html">He-Man — Dark Warrior</a><div class="meta"><span class="tag">1:6</span> CA3D Studios · sun-bronzed warrior skin · dark steel &amp; bronze TMM · Power Sword</div></div>
+          <div class="card"><a href="by-category/masters-of-the-universe/trap-jaw-painting-guide.html">Trap Jaw — Dark Villain</a><div class="meta"><span class="tag">1:6</span> Blue villain skin · mechanical arm · lava base · OSL · verdigris medallion</div></div>
+          <div class="card"><a href="by-category/masters-of-the-universe/skeletor-painting-guide.html">Skeletor — Lord of Destruction</a><div class="meta"><span class="tag">1:6</span> ZEZ Studios · bone skull · blue-grey body · green OSL · dual-method transparent FX</div></div>
+        </div>
+      </div>
+
+      <div class="cat">
+        <h2><span class="cat-name">Wargaming</span><span class="cat-count">1 guide</span><span class="chevron">▾</span></h2>
+        <div class="grid">
+          <div class="card"><a href="by-category/wargaming/sister-of-battle-painting-guide.html">Sister of Battle</a><div class="meta"><span class="tag">1:6</span> Order of Our Martyred Lady · black armor · crimson vestments</div></div>
+        </div>
+      </div>
+
+      <div class="cat">
+        <h2><span class="cat-name">Original Characters</span><span class="cat-count">1 guide</span><span class="chevron">▾</span></h2>
+        <div class="grid">
+          <div class="card"><a href="by-category/original-characters/nillai-and-bblue-painting-guide.html">Nillai &amp; BBlue</a><div class="meta"><span class="tag">1:6</span> Candy teal mech armor · fire thruster OSL · companion drone · teal base ring</div></div>
+        </div>
+      </div>
+
+    </div><!-- end #tab-scale16 -->
+
+
+    <!-- ═══ TAB 2: WARGAMING MINIATURES ══════════════════════ -->
+    <div class="index-tab-content" id="tab-minis">
+
+      <div class="cat-toolbar">
+        <button onclick="expandAll('tab-minis')">expand all</button>
+        <button onclick="collapseAll('tab-minis')">collapse all</button>
+      </div>
+
+      <div class="cat">
+        <h2><span class="cat-name">Warhammer 40,000</span><span class="cat-count">9 guides</span><span class="chevron">▾</span></h2>
+        <div class="grid">
+          <div class="card"><a href="by-category/wargaming/salamanders-space-marine-painting-guide.html">Salamanders Space Marine — Primaris</a><div class="meta"><span class="tag mini">28mm</span> Dark green power armor · gold trim · Speedpaint option · volcanic base</div></div>
+          <div class="card"><a href="by-category/wargaming/termagants-hive-fleet-leviathan-painting-guide.html">Termagants — Hive Fleet Leviathan</a><div class="meta"><span class="tag mini">28mm</span> Purple carapace · bone flesh · batch painting · Speedpaint option</div></div>
+          <div class="card"><a href="by-category/wargaming/dark-angels-primaris-space-marine-painting-guide.html">Dark Angels Primaris Marine — Classic Scheme</a><div class="meta"><span class="tag mini">28mm</span> Dark forest green armor · bone robes · VMC gold trim · Classic scheme</div></div>
+          <div class="card"><a href="by-category/wargaming/dark-angels-deathwing-terminator-painting-guide.html">Deathwing Terminator — Dark Angels</a><div class="meta"><span class="tag mini">28mm</span> Bone ivory Terminator plate · red accents · inner circle iconography · Classic scheme</div></div>
+          <div class="card"><a href="by-category/wargaming/dark-angels-ravenwing-biker-painting-guide.html">Ravenwing Biker — Dark Angels</a><div class="meta"><span class="tag mini">28mm</span> Black armor &amp; robes · dark red accents · VMC bike steel · fast attack aesthetic</div></div>
+          <div class="card"><a href="by-category/wargaming/thousand-sons-rubric-marine-painting-guide.html">Thousand Sons — Rubric Marine &amp; Aspiring Sorcerer</a><div class="meta"><span class="tag mini">28mm</span> Cerulean Tzeentch blue · ancient gold trim · warp-fire lenses · Prospero rubble base</div></div>
+          <div class="card"><a href="by-category/wargaming/emperors-children-noise-marine-painting-guide.html">Emperor's Children — Noise Marine &amp; Champion</a><div class="meta"><span class="tag mini">28mm</span> Slaanesh purple plate · gold trim · sonic weapon ivory &amp; pink · pleasure world ruins</div></div>
+          <div class="card"><a href="by-category/wargaming/40k-blood-angels-intercessors-painting-guide.html">Blood Angels Intercessors — Primaris</a><div class="meta"><span class="tag mini">28mm</span> Warhammer 40,000 · Blood Angels · All Three Tiers · Baal desert ruins base</div></div>
+          <div class="card"><a href="by-category/wargaming/40k-leagues-of-votann-combat-patrol-painting-guide.html">Leagues of Votann — Combat Patrol</a><div class="meta"><span class="tag mini">28mm</span> Royal purple custom scheme · aged brass trim · teal ancestor glow OSL · frozen tundra base</div></div>
+        </div>
+      </div>
+
+      <div class="cat">
+        <h2><span class="cat-name">Horus Heresy</span><span class="cat-count">3 guides</span><span class="chevron">▾</span></h2>
+        <div class="grid">
+          <div class="card"><a href="by-category/wargaming/salamanders-mkvi-30k-painting-guide.html">Salamanders Mk VI Tactical Marine — "Beakie"</a><div class="meta"><span class="tag mini">28mm</span> Bright legion green · gold trim · Speedpaint option · volcanic &amp; ash wastes base</div></div>
+          <div class="card"><a href="by-category/wargaming/iron-hands-hh-shattered-legions-painting-guide.html">Iron Hands Tactical Marine — Shattered Legions</a><div class="meta"><span class="tag mini">28mm</span> Cold black armor · VMC steel bionics · battle weathering · Isstvan V ash wastes</div></div>
+          <div class="card"><a href="by-category/wargaming/raven-guard-hh-shattered-legions-painting-guide.html">Raven Guard Tactical Marine — Shattered Legions</a><div class="meta"><span class="tag mini">28mm</span> Warm black armor · white shoulder trim · red lenses · stealth aesthetic · Isstvan V ash wastes</div></div>
+        </div>
+      </div>
+
+    </div><!-- end #tab-minis -->
+
+
+    <div class="footer">
+      <strong>Paint lines verified against:</strong>
+      Pro Acryl Set List · Pro Acryl Hues chart · Pro Acryl Naming/Codes · Speedpaint 2.0 Practical Naming Chart · Warpaints Fanatic Practical Colour Name Chart · Warpaints Fanatic Conversion Chart · Warpaints Fanatic Flexible Triad System.
+      <br><br>
+      Convention used in guides: Pro Acryl Standard codes <code>001–075</code>, Signature codes <code>S01–S49</code>, AMP shares 3-digit codes with Standard but uses different names (e.g. AMP <code>005</code> = Dark Navy Blue · Standard <code>005</code> = Blue), Transparents <code>046–053, 064</code>, Washes <code>200–202</code>, Fluorescents <code>F01–F06</code>, Primers <code>P-002 Black, P-003 White, P-005 Dark Neutral Grey, P-007 Dark Camo Green, P-011 Black Brown</code>, Textures <code>T01–T08</code>.
+    </div>
+  </div>
+
+<script>
+/* ── Audit callout ──────────────────────────────────────────── */
+(function() {
+  var AUDIT_DATE = '2026-05-19';
+  var stored = localStorage.getItem('auditOpen');
+  var auditMs = new Date(AUDIT_DATE).getTime();
+  var days = Math.floor((Date.now() - auditMs) / 86400000);
+  var ageLabel = days === 0 ? 'today' : days === 1 ? 'yesterday' : days < 30 ? days + ' days ago' : days < 60 ? 'about a month ago' : Math.floor(days / 30) + ' months ago';
+  document.getElementById('auditAge').textContent = '(' + ageLabel + ')';
+  var callout = document.getElementById('auditCallout');
+  var detail = document.getElementById('auditDetail');
+  var hint = document.getElementById('auditToggleHint');
+  if (days >= 30) callout.classList.add('audit-stale');
+  var isOpen = stored !== null ? stored === 'true' : days < 7;
+  function applyState(open) {
+    detail.style.display = open ? '' : 'none';
+    hint.textContent = open ? '▴ hide' : '▾ details';
+  }
+  applyState(isOpen);
+  window.toggleAudit = function() {
+    isOpen = !isOpen;
+    localStorage.setItem('auditOpen', isOpen);
+    applyState(isOpen);
+  };
+})();
+
+/* ── Index tabs ─────────────────────────────────────────────── */
+function showIndexTab(tabId, btn) {
+  document.querySelectorAll('.index-tab-content').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.index-tab').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById('tab-' + tabId).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ── Collapsible categories ─────────────────────────────────── */
+function toggleCat(cat) {
+  var grid = cat.querySelector('.grid');
+  if (!grid) return;
+  if (cat.classList.contains('collapsed')) {
+    // Expand
+    cat.classList.remove('collapsed');
+    grid.style.maxHeight = grid.scrollHeight + 'px';
+    grid.addEventListener('transitionend', function handler() {
+      grid.style.maxHeight = 'none';
+      grid.removeEventListener('transitionend', handler);
+    });
+  } else {
+    // Collapse — set explicit height first, then animate to 0
+    grid.style.maxHeight = grid.scrollHeight + 'px';
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        cat.classList.add('collapsed');
+        grid.style.maxHeight = '0';
+      });
+    });
+  }
+  saveCatStates();
+}
+
+function saveCatStates() {
+  var collapsed = [];
+  document.querySelectorAll('.cat.collapsed h2').forEach(function(h2) {
+    var nameEl = h2.querySelector('.cat-name');
+    var text = nameEl ? nameEl.textContent.trim() : h2.childNodes[0].textContent.trim();
+    collapsed.push(text);
+  });
+  localStorage.setItem('collapsedCats', JSON.stringify(collapsed));
+}
+
+function expandAll(tabId) {
+  document.querySelectorAll('#' + tabId + ' .cat.collapsed').forEach(function(cat) {
+    toggleCat(cat);
+  });
+}
+
+function collapseAll(tabId) {
+  document.querySelectorAll('#' + tabId + ' .cat:not(.collapsed)').forEach(function(cat) {
+    toggleCat(cat);
+  });
+}
+
+// Wire up click handlers and restore saved state
+(function() {
+  // Restore collapsed state from localStorage
+  var stored = localStorage.getItem('collapsedCats');
+  var collapsed = stored ? JSON.parse(stored) : [];
+
+  document.querySelectorAll('.cat h2').forEach(function(h2) {
+    h2.addEventListener('click', function() {
+      toggleCat(h2.closest('.cat'));
+    });
+
+    // Restore state: check if this cat was previously collapsed
+    var nameEl = h2.querySelector('.cat-name');
+    var text = nameEl ? nameEl.textContent.trim() : h2.childNodes[0].textContent.trim();
+    if (collapsed.indexOf(text) !== -1) {
+      var cat = h2.closest('.cat');
+      var grid = cat.querySelector('.grid');
+      cat.classList.add('collapsed');
+      if (grid) grid.style.maxHeight = '0';
+    }
+  });
+})();
+</script>
+</body>
+</html>

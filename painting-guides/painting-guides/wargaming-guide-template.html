@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<!--
+╔══════════════════════════════════════════════════════════════════════╗
+║  WARGAMING PAINTING GUIDE — TEMPLATE                                 ║
+║  guide.css contains ALL shared styles. Per-guide style block        ║
+║  contains ONLY :root theme vars + .hero gradient. No exceptions.     ║
+╠══════════════════════════════════════════════════════════════════════╣
+║  HOW TO USE — QUICK START                                            ║
+║                                                                      ║
+║  1. COPY FILE                                                        ║
+║     Copy to: by-category/wargaming/system-unitname-painting-guide.html ║
+║                                                                      ║
+║  2. FIX PATHS (3 places — search "assets/")                          ║
+║     Change "assets/" → "../../assets/" in:                          ║
+║       • <link> for guide.css                                         ║
+║       • <link> for print.css                                         ║
+║       • <script src> for guide.js                                    ║
+║                                                                      ║
+║  3. SET THEME (search "[PLACEHOLDER" in <style>)                     ║
+║     • :root --accent     → faction/army signature color              ║
+║     • :root --bg/surface → army palette tones (usually dark)        ║
+║     • .hero background   → gradient matching faction theme           ║
+║                                                                      ║
+║  4. FILL HERO + TIER BADGES                                          ║
+║     • .category, h1, .subtitle, .tier-badge(s), .batch-badge        ║
+║     • One .paint-pill per brand used anywhere in guide               ║
+║     • tier-1 = green, tier-2 = blue, tier-3 = purple                ║
+║                                                                      ║
+║  5. FILL ARMY BRIEF + COHESION STRIP                                 ║
+║     • 60/30/10 scheme, light source, base theme                     ║
+║     • One .cohesion-swatch per scheme color (4–5 total)             ║
+║                                                                      ║
+║  6. BUILD TABS                                                       ║
+║     • Batch Workflow: always present (omit for MCP single models)    ║
+║     • Primary Surface: armour, carapace, cloth — hero material       ║
+║     • Secondary Materials: straps, cloth, pouches                    ║
+║     • Skin/Faces: only if model has visible skin                    ║
+║     • Metals: TMM always; NMM sub-tab only if asked                  ║
+║     • Basing: always present — full recipe                           ║
+║     • Quality Tiers: always present — all three tiers               ║
+║     • Grimdark: CONDITIONAL — uncomment for Chaos/30K/OPR/dark      ║
+║       schemes; fill conversion table rows; 7 steps pre-written       ║
+║     • Airbrush Skills: only if airbrushing; specific to user tools   ║
+║     • Thinning Ref: always last                                      ║
+║                                                                      ║
+║  7. ADD REFERENCE IMAGE                                               ║
+║     • Save image to: img/unitname-reference.jpg                     ║
+║     • Update src="img/..." and alt="..." in .ref-thumb-wrap         ║
+║     • Omit entire .ref-thumb-wrap block if no image is available    ║
+║                                                                      ║
+║  8. VALIDATE BEFORE PUBLISHING                                       ║
+║     ☐ No [PLACEHOLDER] text remaining                                ║
+║     ☐ No empty tabs or sections                                      ║
+║     ☐ Basing tab is complete with full 7-step recipe                ║
+║     ☐ Quality Tiers tab has all three tier-cards                    ║
+║     ☐ Paint codes cross-checked against paint-code-conventions.md   ║
+║     ☐ All tab nav buttons match tab-content IDs                     ║
+║     ☐ trouble-grid has even number of cards                         ║
+║     ☐ Thinning Ref is the last tab                                  ║
+║     ☐ Open in browser, click every tab and sub-tab                  ║
+║     ☐ All paints confirmed in paint-inventory.md                    ║
+║     ☐ IF GRIMDARK: conversion table has 1 row per recipe colour     ║
+║       All 7 process steps present · Tab nav button uncommented      ║
+╚══════════════════════════════════════════════════════════════════════╝
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[UNIT NAME] — Wargaming Painting Guide</title>
+
+  <link rel="stylesheet" href="assets/guide.css">
+  <link rel="stylesheet" href="assets/print.css" media="print">
+
+  <style>
+    /* ═══════════════════════════════════════════════════════════
+       PER-GUIDE THEME — customize :root vars and .hero gradient.
+       ALL other styles live in guide.css.
+       ═══════════════════════════════════════════════════════════ */
+
+    :root {
+      /* Page & panel backgrounds */
+      --bg:       #111111;
+      --surface:  #1a1a1a;
+      --surface2: #222222;
+      --surface3: #2a2a2a;
+
+      /* Borders & text */
+      --border:      #333333;
+      --text:        #e8e8e8;
+      --text-muted:  #aaaaaa;
+      --text-dim:    #666666;
+
+      /* Accent — pick the faction's signature color */
+      --accent: #888888;    /* [PLACEHOLDER: e.g. #cc1010 Chaos red, #0066cc Ultramarines, #22aa44 Salamanders] */
+
+      /* Step badge colors */
+      --tag-airbrush: #2266aa;
+      --tag-brush:    #226622;
+      --tag-wash:     #884422;
+      --tag-drybrush: #aa5500;   /* wargaming-specific */
+      --tag-finish:   #555555;
+      --tag-effects:  #882244;
+      --tag-filter:   #446688;
+
+      /* Quality tier colors */
+      --tier1-color: #4a8a4a;   /* Tabletop Ready — green */
+      --tier2-color: #4a6a9a;   /* Battle Ready — blue */
+      --tier3-color: #8a5aaa;   /* Display Quality — purple */
+
+      /* Callout colors */
+      --tip-bg:      rgba(0, 160, 0, 0.08);
+      --tip-border:  #2a6a2a;
+      --warn-bg:     rgba(200, 50, 50, 0.08);
+      --warn-border: #882222;
+    }
+
+    /* ── HERO — replace with faction-themed gradient ─────────── */
+    .hero {
+      /* [PLACEHOLDER: replace with faction-themed gradient + border] */
+      background: linear-gradient(135deg, #111111 0%, #1c1c1c 60%, #111111 100%);
+      border-bottom: 2px solid var(--accent);
+    }
+
+    /* ── WARGAMING-SPECIFIC STYLES ─────────────────────────────
+       These extend guide.css for wargaming-only elements.
+       ─────────────────────────────────────────────────────────── */
+
+    /* Tier badges in hero */
+    .tier-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 3px;
+      margin-right: 6px;
+      margin-top: 6px;
+    }
+    .tier-badge.tier-1 { background: var(--tier1-color); color: #fff; }
+    .tier-badge.tier-2 { background: var(--tier2-color); color: #fff; }
+    .tier-badge.tier-3 { background: var(--tier3-color); color: #fff; }
+
+    /* Batch count badge */
+    .batch-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 3px;
+      margin-left: 8px;
+    }
+
+    /* Army cohesion strip */
+    .cohesion-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 16px 0 8px;
+    }
+    .cohesion-swatch {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .cohesion-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.15);
+      flex-shrink: 0;
+    }
+
+    /* Quality tier cards */
+    .tier-card {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      background: var(--surface2);
+    }
+    .tier-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .tier-card h3 { margin: 0; font-size: 1rem; }
+    .tier-card .tier-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+    .tier-card ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    /* Batch workflow stages */
+    .batch-stage {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .batch-stage:last-child { border-bottom: none; }
+    .batch-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .batch-stage-body strong { color: var(--text); font-size: 0.95rem; }
+    .batch-stage-body p { margin: 4px 0 0; color: var(--text-muted); font-size: 0.875rem; line-height: 1.5; }
+
+    /* Drybrush step tag */
+    .step-number.drybrush { background: var(--tag-drybrush); }
+
+    /* Base recipe steps use the same .step structure but labeled clearly */
+    .base-step { border-left: 3px solid var(--accent); }
+
+    /* ── GRIMDARK COLOUR CONVERSION TABLE ─────────────────────
+       Used in the optional Grimdark tab.
+       ─────────────────────────────────────────────────────────── */
+    .gd-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+      margin: 16px 0 24px;
+    }
+    .gd-table th {
+      background: var(--surface3);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 2px solid var(--border);
+    }
+    .gd-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    .gd-table tr:last-child td { border-bottom: none; }
+    .gd-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .gd-original {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-style: italic;
+      margin-top: 2px;
+    }
+    .gd-method {
+      color: #aa8844;
+      font-size: 0.85rem;
+    }
+    /* Grimdark process steps get a rust-brown left accent */
+    .step.gd-step { border-left-color: #7a3a1a; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     BACK NAV
+     ═══════════════════════════════════════════════════════════ -->
+<nav class="guide-nav">
+  <a href="../../index.html">← All Guides</a>
+</nav>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     HERO
+     Pattern: .category → h1 → .subtitle + tier badges → .series-badge
+     NO character quote — wargaming guides use army lore note instead
+     ═══════════════════════════════════════════════════════════ -->
+<div class="hero">
+  <div class="category">[PLACEHOLDER: Game System · Faction — e.g. "Warhammer 40,000 · Space Marines"]</div>
+
+  <h1><span>[PLACEHOLDER:</span> Unit Name]</h1>
+  <!-- Example: <h1><span>Dark Angels</span> Deathwing Terminators</h1> -->
+
+  <div class="subtitle">
+    [PLACEHOLDER: scale · quality tier · e.g. "28mm · Batch of 10"]
+    <!-- Tier badge(s) — include only the tiers this guide covers -->
+    <span class="tier-badge tier-1">Tabletop Ready</span>
+    <span class="tier-badge tier-2">Battle Ready</span>
+    <span class="tier-badge tier-3">Display</span>
+    <span class="batch-badge">Batch of [N]</span>
+  </div>
+
+  <div class="series-badge">
+    <span class="active">[PLACEHOLDER: This Guide — short name]</span>
+    <!-- Other guides in the same army/series use <a href="filename.html">Name</a> -->
+  </div>
+
+  <div class="creator-credit">
+    Models by <strong>[PLACEHOLDER: Manufacturer — e.g. "Games Workshop", "Atomic Mass Games"]</strong>
+  </div>
+
+  <!-- REFERENCE IMAGE THUMBNAIL — omit block if no image available -->
+  <div class="ref-thumb-wrap">
+    <img class="ref-thumb"
+         src="img/[PLACEHOLDER: unitname-reference.jpg]"
+         alt="[PLACEHOLDER: Unit Name] — reference"
+         onclick="openRefModal(this.src, this.alt)"
+         title="Click to view full reference image">
+    <div class="ref-thumb-label">Reference</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAINT BAR
+     ═══════════════════════════════════════════════════════════ -->
+<div class="paint-bar">
+  <span class="paint-bar-label">Paint Lines Used</span>
+  <!-- [PLACEHOLDER: one .paint-pill per brand used in this guide] -->
+  <span class="paint-pill">
+    <span class="pill-dot" style="background:#cc4444;"></span>Pro Acryl
+  </span>
+  <span class="paint-pill">
+    <span class="pill-dot" style="background:#4488cc;"></span>Army Painter Fanatic
+  </span>
+  <span class="paint-pill">
+    <span class="pill-dot" style="background:#44aa66;"></span>Speedpaint 2.0
+  </span>
+  <!-- Common additions: VMC, Pro Acryl Expert Acrylics, Citadel (Agrax/Nuln only) -->
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     MAIN CONTAINER
+     ═══════════════════════════════════════════════════════════ -->
+<div class="container">
+
+  <!-- ARMY BRIEF
+       Below paint bar, before tabs.
+       Include: 60/30/10 scheme breakdown, light source, base theme,
+       and cohesion strip showing all scheme colors at a glance.
+       ─────────────────────────────────────────────────────── -->
+  <div class="char-brief">
+    <strong>[PLACEHOLDER: Unit/Army Name]</strong> —
+    [PLACEHOLDER: 2–3 sentences. Include:
+    (1) faction identity / visual archetype,
+    (2) light source direction (usually zenithal top-down for wargaming),
+    (3) 60/30/10 scheme summary — primary / secondary / accent colors,
+    (4) base theme and why it suits the faction.]
+
+    <!-- ARMY COHESION STRIP — all 4–5 scheme colors at a glance -->
+    <div class="cohesion-strip">
+      <div class="cohesion-swatch">
+        <div class="cohesion-dot" style="background:#[PLACEHOLDER];"></div>
+        <span>[PLACEHOLDER: Primary — e.g. Dark Angels Green · 60%]</span>
+      </div>
+      <div class="cohesion-swatch">
+        <div class="cohesion-dot" style="background:#[PLACEHOLDER];"></div>
+        <span>[PLACEHOLDER: Secondary — e.g. Bone White · 30%]</span>
+      </div>
+      <div class="cohesion-swatch">
+        <div class="cohesion-dot" style="background:#[PLACEHOLDER];"></div>
+        <span>[PLACEHOLDER: Accent — e.g. Blood Red · 10%]</span>
+      </div>
+      <div class="cohesion-swatch">
+        <div class="cohesion-dot" style="background:#888888;"></div>
+        <span>[PLACEHOLDER: Metals — Steel/Gold]</span>
+      </div>
+      <div class="cohesion-swatch">
+        <div class="cohesion-dot" style="background:#3a2a1a;"></div>
+        <span>[PLACEHOLDER: Base — e.g. Ash Wastes]</span>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB NAV
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tabs">
+    <div class="tab tab-btn active" onclick="showTab('batch', this)">Batch Workflow</div>
+    <div class="tab tab-btn" onclick="showTab('primary', this)">[PLACEHOLDER: Primary Surface]</div>
+    <!-- Example primary tab names: Armour, Carapace, Cloth, Power Armour -->
+    <div class="tab tab-btn" onclick="showTab('secondary', this)">[PLACEHOLDER: Secondary Materials]</div>
+    <!-- Example secondary tab names: Straps &amp; Cloth, Details, Pouches &amp; Leather -->
+    <!-- Optional tabs — uncomment as needed:
+    <div class="tab tab-btn" onclick="showTab('skin', this)">Skin &amp; Faces</div>
+    -->
+    <div class="tab tab-btn" onclick="showTab('metals', this)">Metals</div>
+    <div class="tab tab-btn" onclick="showTab('basing', this)">Basing</div>
+    <div class="tab tab-btn" onclick="showTab('tiers', this)">Quality Tiers</div>
+    <!-- GRIMDARK TAB — uncomment for: Chaos, Horus Heresy 30K, OPR, traitor legions, any grimdark/weathered scheme
+         Omit for: clean parade schemes, MCP, SW:L movie-accurate, AoS Order/Stormcast
+    <div class="tab tab-btn" onclick="showTab('grimdark', this)">Grimdark</div>
+    -->
+    <!-- Optional: <div class="tab tab-btn" onclick="showTab('airbrush-skills', this)">Airbrush Skills</div> -->
+    <div class="tab tab-btn" onclick="showTab('brush-skills', this)">Brush Skills</div>
+    <div class="tab tab-btn" onclick="showTab('thinning-ref', this)">Thinning Ref</div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: BATCH WORKFLOW
+       Always present. Omit for MCP single-model guides.
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content active" id="batch">
+
+    <div class="section-header">
+      <h2>Batch Painting Workflow</h2>
+      <p>[PLACEHOLDER: 1–2 sentences — batch size, tier goal, estimated time per model.]</p>
+    </div>
+
+    <div class="phase-label">Recommended Batch Sizes</div>
+    <div class="tip"><strong>✦ ARMY COHESION:</strong> Always establish your base recipe before painting the first model. Every model in the army must match. A unified base ties even a mediocre paint job together.</div>
+
+    <div class="phase-label">Assembly-Line Sequence</div>
+    <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:16px;">Complete each stage across ALL models before moving to the next. Never finish one model completely before touching the others.</p>
+
+    <div class="batch-stage">
+      <div class="batch-num">1</div>
+      <div class="batch-stage-body">
+        <strong>Prep &amp; Prime</strong>
+        <p>[PLACEHOLDER: Clean mold lines, base prime color, prime all models the same. E.g. "P-005 Dark Neutral Gray via airbrush, 30+ PSI, 0.5mm. Full coverage. Allow 30 min dry time."]</p>
+      </div>
+    </div>
+
+    <div class="batch-stage">
+      <div class="batch-num">2</div>
+      <div class="batch-stage-body">
+        <strong>Main Body Base Coat</strong>
+        <p>[PLACEHOLDER: Largest color area, all models. E.g. "Speedpaint 2.0 [color] over entire armour — one pass, no reworking while wet." Or airbrush base coat recipe.]</p>
+      </div>
+    </div>
+
+    <div class="batch-stage">
+      <div class="batch-num">3</div>
+      <div class="batch-stage-body">
+        <strong>Shade Pass</strong>
+        <p>[PLACEHOLDER: Wash all models. E.g. "Strong Tone or Nuln Oil into all recesses. Let dry fully — minimum 30 min — before touching."]</p>
+      </div>
+    </div>
+
+    <div class="batch-stage">
+      <div class="batch-num">4</div>
+      <div class="batch-stage-body">
+        <strong>Secondary Colours</strong>
+        <p>[PLACEHOLDER: Paint each secondary color in turn across ALL models. E.g. "Pauldron bone trim → all 10 models. Then parchment scrolls → all 10. Then leather pouches → all 10."]</p>
+      </div>
+    </div>
+
+    <div class="batch-stage">
+      <div class="batch-num">5</div>
+      <div class="batch-stage-body">
+        <strong>Highlight Pass</strong>
+        <p>[PLACEHOLDER: Drybrush or edge highlight, all models same pass. E.g. "Light drybrush of [highlight color] over all armour edges — all models at once."]</p>
+      </div>
+    </div>
+
+    <div class="batch-stage">
+      <div class="batch-num">6</div>
+      <div class="batch-stage-body">
+        <strong>Details Round</strong>
+        <p>[PLACEHOLDER: Eyes, gems, faction icons, scrollwork — one detail type at a time across all. E.g. "Eyes → all 10. Then lenses → all 10. Then chapter markings → all 10."]</p>
+      </div>
+    </div>
+
+    <div class="batch-stage">
+      <div class="batch-num">7</div>
+      <div class="batch-stage-body">
+        <strong>Basing</strong>
+        <p>All models together. Never base one model while others are mid-paint — the base must be consistent across the unit. See Basing tab for full recipe.</p>
+      </div>
+    </div>
+
+    <div class="batch-stage">
+      <div class="batch-num">8</div>
+      <div class="batch-stage-body">
+        <strong>Varnish</strong>
+        <p>All models at once. Matt varnish overall → spot gloss on gems, eyes, liquids → satin on leather/skin if applicable.</p>
+      </div>
+    </div>
+
+    <div class="phase-label">Wet Palette Protocol</div>
+    <div class="tip"><strong>✦ WET PALETTE:</strong> When brush-painting a batch, a wet palette is mandatory. Mixes stay workable for an entire session — guaranteeing the same color on model #10 as model #1. Never mix "just enough" for one model.</div>
+
+  </div><!-- end #batch -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: PRIMARY SURFACE
+       Rename this tab to match the main material: Armour, Carapace, etc.
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="primary">
+
+    <div class="section-header">
+      <h2>[PLACEHOLDER: Primary Surface — e.g. "Power Armour"]</h2>
+      <p>[PLACEHOLDER: 1 sentence — colour, finish goal, dominant visual role.]</p>
+    </div>
+
+    <div class="phase-label">Foundation</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 · Airbrush</span>
+      <h3>[PLACEHOLDER: e.g. "Grey Primer Base"]</h3>
+      <p>[PLACEHOLDER: primer, PSI, nozzle, coverage goal.]</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#555555"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Paint Name + Code]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">~30% value — grey prime</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 2 · Airbrush</span>
+      <h3>[PLACEHOLDER: e.g. "Base Colour"]</h3>
+      <p>[PLACEHOLDER: main colour application. Thin ratio, PSI, coverage. For Speedpaint 2.0: "one pass, no reworking while wet."]</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#334455"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Paint Name + Code]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">~35% value — main body colour</div></div></div>
+      </div>
+    </div>
+
+    <div class="phase-label">Shading</div>
+
+    <div class="step">
+      <span class="step-number wash">Step 3 · Wash</span>
+      <h3>[PLACEHOLDER: e.g. "Recess Shade"]</h3>
+      <p>[PLACEHOLDER: wash choice, thinning, application. Which recesses to target. Dry time.]</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#1a1a1a"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: e.g. Strong Tone / Dark Tone / Nuln Oil]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">~10% value — recess shade</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> Let wash dry completely before highlighting — minimum 30 min. Rushing lifts the wash out of recesses.</div>
+    </div>
+
+    <div class="phase-label">Highlighting</div>
+
+    <div class="step">
+      <span class="step-number drybrush">Step 4 · Drybrush</span>
+      <h3>[PLACEHOLDER: e.g. "Broad Drybrush Highlight — Tier 1 stopping point"]</h3>
+      <p>[PLACEHOLDER: load brush, wipe until nearly dry, light passes over raised surfaces — edges, rivets, panel corners. Direction of brush strokes.]</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#5577aa"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Paint Name + Code]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">~55% value — drybrush highlight</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> For Tier 1 (Tabletop Ready), stop here. The drybrush is sufficient at arm's length. Proceed below for Tier 2+.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 5 · Brush — Tier 2+</span>
+      <h3>[PLACEHOLDER: e.g. "Edge Highlight"]</h3>
+      <p>[PLACEHOLDER: thin to 1:2, fine brush, drag along sharp armour edges and corners only. Keep it tight — 1–2 pixel width.]</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#7799cc"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Paint Name + Code]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">~70% value — edge highlight</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 6 · Brush — Tier 3</span>
+      <h3>[PLACEHOLDER: e.g. "Specular Edge / Blending"]</h3>
+      <p>[PLACEHOLDER: Tier 3 only. Fine specular on the sharpest corners. Or blend step if using wetblend or glazing approach.]</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#bbccee"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Paint Name + Code]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">~85% value — specular edge</div></div></div>
+      </div>
+    </div>
+
+  </div><!-- end #primary -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: SECONDARY MATERIALS
+       Straps, cloth, pouches, leather, parchment, etc.
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="secondary">
+
+    <div class="section-header">
+      <h2>[PLACEHOLDER: Secondary Materials — e.g. "Straps, Cloth &amp; Details"]</h2>
+      <p>[PLACEHOLDER: brief — what secondary materials appear and what finish they need.]</p>
+    </div>
+
+    <!-- [PLACEHOLDER: one phase-label + step sequence per secondary material type]
+         Example materials: leather pouches, parchment/scrolls, fabric, rope, wood, bone -->
+
+    <div class="phase-label">[PLACEHOLDER: Material Type — e.g. Leather Pouches]</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 1 · Brush</span>
+      <h3>[PLACEHOLDER: Base Coat]</h3>
+      <p>[PLACEHOLDER: base colour, thin ratio, coverage goal.]</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#4a2a10"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Paint Name + Code]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">~20% value — leather shadow base</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 2 · Wash</span>
+      <h3>[PLACEHOLDER: Shade]</h3>
+      <p>[PLACEHOLDER: wash into recesses, stitch lines, folds.]</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 3 · Brush</span>
+      <h3>[PLACEHOLDER: Highlight]</h3>
+      <p>[PLACEHOLDER: raised surfaces — strap edges, buckle highlights, fold peaks.]</p>
+    </div>
+
+    <!-- Duplicate the phase-label + steps block for each additional material -->
+
+  </div><!-- end #secondary -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: SKIN & FACES (optional — include only if model has visible skin)
+       ═══════════════════════════════════════════════════════ -->
+  <!--
+  <div class="tab-content" id="skin">
+
+    <div class="section-header">
+      <h2>Skin &amp; Faces</h2>
+      <p>[PLACEHOLDER: complexion, scale, tier approach — e.g. "Tier 1: Speedpaint one-pass. Tier 2+: layered approach."]</p>
+    </div>
+
+    <div class="phase-label">Tier 1 — Quick Skin (Speedpaint 2.0)</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 1 · Brush</span>
+      <h3>One-Pass Speedpaint Skin</h3>
+      <p>Over grey or white prime. Apply Speedpaint 2.0 in one pass — flow into recesses, leave it. Do NOT rework while wet.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#d4906a"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: e.g. Peachy Flesh SP2.0]</div><div class="swatch-brand">Speedpaint 2.0</div><div class="swatch-value">~55% value — one-pass skin</div></div></div>
+      </div>
+    </div>
+
+    <div class="phase-label">Tier 2+ — Layered Skin</div>
+
+    [PLACEHOLDER: Full layered skin steps — see skin-painting-methods.md for character/hero models]
+
+  </div>
+  -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: METALS
+       28mm Standard TMM — always present.
+       NMM sub-tab only if Brent requests it or Tier 3 centrepiece.
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="metals">
+
+    <div class="section-header">
+      <h2>Metals</h2>
+      <p>[PLACEHOLDER: what metals appear — e.g. "Steel bolter casings, gold shoulder trim, bronze details."]</p>
+    </div>
+
+    <div class="sub-tabs">
+      <div class="sub-tab active" onclick="showSubTab('metals', 'tmm', this)">TMM — Standard</div>
+      <!-- Uncomment NMM sub-tab only if requested:
+      <div class="sub-tab" onclick="showSubTab('metals', 'nmm', this)">NMM</div>
+      -->
+    </div>
+
+    <div class="sub-content active" id="tmm">
+
+      <div class="phase-label">Silver / Steel</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Dark Metallic Base</h3>
+        <p>Cover entire metal surface. Apply thinned 1:2 — full coverage, thin enough to flow without obscuring sculpted detail.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#2a2a2a"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~10% value — darkest metallic base</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#606060"></div><div class="swatch-info"><div class="swatch-name">Dark Silver 030</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~35% value — metallic base</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 3:1 Coal Black 002 + Dark Silver 030 — thin to 1:2 with water</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number drybrush">Step 2 · Drybrush</span>
+        <h3>Mid Metallic — Zenithal Drybrush</h3>
+        <p>Drybrush from above — catches raised edges, rivet heads, panel corners. Leave the recesses dark.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#909090"></div><div class="swatch-info"><div class="swatch-name">Steel 010</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~55% value — mid metallic</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> Load brush → wipe on tissue until no colour streaks → light strokes from above at 45°. Less is more — build up slowly.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number wash">Step 3 · Wash</span>
+        <h3>Recess Shade</h3>
+        <p>Targeted into deepest recesses, mechanical detail, bolt holes, seams. Use a fine brush — do not flood the surface.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#111111"></div><div class="swatch-info"><div class="swatch-name">Black Wash 200</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~5% value — recess shade</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush — Tier 2+</span>
+        <h3>Edge Highlight</h3>
+        <p>Sharpest corners and apex edges only. Keep it thin — 1 pixel width maximum.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#c8c8c8"></div><div class="swatch-info"><div class="swatch-name">Magnesium S42</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~80% value — bright edge highlight</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> For Tier 1 (Tabletop Ready), stop after Step 3. The drybrush reads well at arm's length. Edge highlights are a Tier 2+ addition.</div>
+      </div>
+
+      <div class="phase-label">Coloured Metallics — [PLACEHOLDER: Gold / Bronze / Copper]</div>
+      <!-- [PLACEHOLDER: Repeat the 4-step pattern for gold trim, bronze details, etc.]
+           Shadow: Dark Bronze S24 or Rich Gold 028 + Carbon Black 2:1
+           Mid:    Rich Gold 028 or Bronze 032
+           Wash:   Brown Wash 201 or Agrax Earthshade
+           Highlight: White Gold 029 or Bronze 032 + Heavy Warm White S18 -->
+
+    </div><!-- end #tmm -->
+
+    <!-- NMM sub-tab — uncomment only if requested
+    <div class="sub-content" id="nmm">
+      [PLACEHOLDER: NMM recipe — no metallic paint; extreme value contrast + smooth gradient.
+      Near-black in recesses, smooth grey gradient up, near-white specular on apex edges.
+      Cold steel: neutral white highlights. Warm gold: warm cream highlights.]
+    </div>
+    -->
+
+  </div><!-- end #metals -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: BASING
+       Always present. Full 7-step recipe.
+       Establish base theme before painting any models.
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="basing">
+
+    <div class="section-header">
+      <h2>Basing</h2>
+      <p>[PLACEHOLDER: base theme — e.g. "Ash wastes rubble — dark grey urban debris matching a hive world setting."]</p>
+    </div>
+
+    <div class="tip"><strong>✦ ARMY RULE:</strong> Build and paint all bases before starting the rest of the figure. Every model in the army must match. Lock in this recipe before touching paint on the first model.</div>
+
+    <div class="phase-label">Base Theme: [PLACEHOLDER: e.g. Ash Wastes / Jungle / Urban Rubble]</div>
+
+    <div class="step base-step">
+      <span class="step-number brush">Step 1 · Base Texture</span>
+      <h3>[PLACEHOLDER: e.g. "Apply Texture Paste"]</h3>
+      <p>[PLACEHOLDER: texture material, application tool, coverage — e.g. "Apply Agrellan Earth with an old brush to the base. Push into corners. Leave a rough, cracked surface. Some gravel pushed in while wet for variety."]</p>
+      <div class="tip"><strong>✦ TIP:</strong> [PLACEHOLDER: texture tips — thickness, curing time, coverage of base rim]</div>
+    </div>
+
+    <div class="step base-step">
+      <span class="step-number airbrush">Step 2 · Prime / Seal</span>
+      <h3>[PLACEHOLDER: e.g. "Black Prime Over Texture"]</h3>
+      <p>[PLACEHOLDER: seal the texture material before painting — prevents flaking. Prime all bases at once.]</p>
+    </div>
+
+    <div class="step base-step">
+      <span class="step-number brush">Step 3 · Base Colour</span>
+      <h3>[PLACEHOLDER: e.g. "Main Ground Colour"]</h3>
+      <p>[PLACEHOLDER: primary earth/ground colour — thin 1:2, brush over texture leaving black in deepest recesses.]</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#3a3a3a"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Paint Name + Code]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">~25% value — ground colour</div></div></div>
+      </div>
+    </div>
+
+    <div class="step base-step">
+      <span class="step-number wash">Step 4 · Shade</span>
+      <h3>[PLACEHOLDER: e.g. "Wash Into Crevices"]</h3>
+      <p>[PLACEHOLDER: wash into the texture crevices, edges of debris, shadow areas. Tie the texture together.]</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#111111"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Wash name]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">~5% value — crevice shade</div></div></div>
+      </div>
+    </div>
+
+    <div class="step base-step">
+      <span class="step-number drybrush">Step 5 · Drybrush Highlight</span>
+      <h3>[PLACEHOLDER: e.g. "Raised Texture Highlight"]</h3>
+      <p>[PLACEHOLDER: light drybrush over all raised texture peaks — catches gravel, rubble edges, crack ridges.]</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#888888"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Paint Name + Code]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">~60% value — drybrush highlight</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> [PLACEHOLDER: drybrush direction tip — usually random for organic texture, directional for stone/masonry]</div>
+    </div>
+
+    <div class="step base-step">
+      <span class="step-number finish">Step 6 · Detail Elements</span>
+      <h3>[PLACEHOLDER: e.g. "Tufts, Debris, Scatter"]</h3>
+      <p>[PLACEHOLDER: apply tufts, static grass, rocks, bones, spent casings, or other details. Use PVA glue. Describe placement: sparse vs. dense, clustering approach.]</p>
+    </div>
+
+    <div class="step base-step">
+      <span class="step-number finish">Step 7 · Rim Colour</span>
+      <h3>Base Rim — [PLACEHOLDER: e.g. "Black" or "Dark Brown"]</h3>
+      <p>Paint the base rim a consistent colour across the entire army. [PLACEHOLDER: colour choice and why — e.g. "Black keeps the eye on the model; dark brown softens the transition for natural environments."]</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#111111"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: e.g. Coal Black 002 / Carbon Black]</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~5% value — base rim</div></div></div>
+      </div>
+      <div class="warning"><strong>⚠ NOTE:</strong> Rim colour must match across every model in the army — no exceptions. This is what makes the army look cohesive on the table.</div>
+    </div>
+
+  </div><!-- end #basing -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: QUALITY TIERS
+       Always present. Shows all three tiers with clear
+       stopping points and what each tier adds.
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="tiers">
+
+    <div class="section-header">
+      <h2>Quality Tiers</h2>
+      <p>Three tracks — same base recipe, different stopping points. Choose based on your time budget and the role of this unit in your army.</p>
+    </div>
+
+    <div class="tier-card">
+      <div class="tier-card-header">
+        <span class="tier-badge tier-1">Tier 1</span>
+        <h3>Tabletop Ready</h3>
+        <span class="tier-time">[PLACEHOLDER: ~20–40 min/model at pace]</span>
+      </div>
+      <ul>
+        <li>Prime + base colour + wash + drybrush highlight</li>
+        <li>Key details only: eyes (if very visible), faction icon, main weapon accent</li>
+        <li>Basing complete</li>
+        <li>Matte varnish</li>
+        <li>[PLACEHOLDER: Speedpaint 2.0 fits perfectly here — one-pass basecoat + shade]</li>
+        <li><strong>Stop point:</strong> After the drybrush highlight — looks solid at arm's length.</li>
+      </ul>
+    </div>
+
+    <div class="tier-card">
+      <div class="tier-card-header">
+        <span class="tier-badge tier-2">Tier 2</span>
+        <h3>Battle Ready</h3>
+        <span class="tier-time">[PLACEHOLDER: ~45–90 min/model]</span>
+      </div>
+      <ul>
+        <li>Everything in Tier 1, plus:</li>
+        <li>Edge highlights on primary surfaces (armour panels, blade edges)</li>
+        <li>Second wash pass in deepest recesses for sharper contrast</li>
+        <li>Faces and eyes painted carefully (if visible at scale)</li>
+        <li>Small distinguishing details: purity seals, scrollwork, trophies</li>
+        <li>Tidy lining on major colour separations</li>
+        <li>[PLACEHOLDER: any tier-specific step for this unit]</li>
+        <li><strong>Stop point:</strong> After edge highlights — looks intentional and finished up close.</li>
+      </ul>
+    </div>
+
+    <div class="tier-card">
+      <div class="tier-card-header">
+        <span class="tier-badge tier-3">Tier 3</span>
+        <h3>Display Quality</h3>
+        <span class="tier-time">[PLACEHOLDER: ~2–8+ hours/model]</span>
+      </div>
+      <ul>
+        <li>Everything in Tier 2, plus:</li>
+        <li>Smooth blending on key surfaces (wetblend, feathering, or glazing)</li>
+        <li>OSL if a light-emitting source is present</li>
+        <li>NMM for metallic surfaces (ask before committing)</li>
+        <li>Multiple glaze passes for colour richness and depth</li>
+        <li>Object source lighting consistency across the entire model</li>
+        <li>High-polish base with environmental storytelling</li>
+        <li>Spot gloss on gems, lenses, wet effects</li>
+        <li>[PLACEHOLDER: any display-specific technique for this unit]</li>
+        <li><strong>Stop point:</strong> When you're happy with it. There is no ceiling.</li>
+      </ul>
+    </div>
+
+    <div class="tip"><strong>✦ ARMY ADVICE:</strong> For large units (10+), paint to Tier 1 and add Tier 2 finishing to any character models or unit champions. Your time is better spent getting an entire army to Tier 1 than having 3 perfect models and 20 unfinished ones.</div>
+
+  </div><!-- end #tiers -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: GRIMDARK (conditional)
+       Include for: Chaos, Horus Heresy 30K, OPR, traitor legions,
+       any grimdark/weathered/dark-industrial scheme.
+       Omit for: clean parade schemes, MCP, SW:L movie-accurate, AoS Order.
+       When uncertain — include it. It can be ignored; a missing tab can't.
+
+       HOW TO USE:
+       1. Uncomment this entire block AND the tab nav button above.
+       2. Fill in one <tr> per base colour from the guide's recipe.
+       3. The 7 process steps are pre-written — review for accuracy and
+          adjust any paint references to match this guide's recipe.
+       ═══════════════════════════════════════════════════════ -->
+  <!--
+  <div class="tab-content" id="grimdark">
+
+    <div class="section-header">
+      <h2>Grimdark Aesthetics</h2>
+      <p>Desaturation and weathering modifier — applied over a sealed, completed base paint job. Run the full recipe first, seal with matte varnish, then start here.</p>
+    </div>
+
+    <div class="warning"><strong>⚠ SEAL FIRST:</strong> All grimdark steps require a fully dried and sealed model. Apply matte varnish and let dry completely before starting Step 1. Skipping this will lift soft acrylic layers.</div>
+
+
+    <div class="phase-label">Colour Conversion Table</div>
+    <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:12px;">For each base colour in the recipe, the grimdark equivalent — mix ratios keep the original colour family intact but drain the chroma and warmth.</p>
+
+    <table class="gd-table">
+      <thead>
+        <tr>
+          <th>Recipe Colour</th>
+          <th>Grimdark Mix</th>
+          <th>Desaturation Agent</th>
+          <th>Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        [PLACEHOLDER: one <tr> per base colour in this guide's recipe]
+        Example rows — replace with this guide's actual paints:
+
+        <tr>
+          <td><strong>[PLACEHOLDER: Paint Name + Code]</strong><span class="gd-original">[Brand]</span></td>
+          <td class="gd-method">[PLACEHOLDER: e.g. "4:1 Ultramarine Blue 005 + Dark Neutral Gray 005"]</td>
+          <td>[PLACEHOLDER: e.g. Dark Neutral Gray 005]</td>
+          <td>[PLACEHOLDER: e.g. Muted steel blue — reads as blue but drained of vibrancy]</td>
+        </tr>
+
+        Blues example:
+        <tr>
+          <td><strong>Ultramarine Blue 005</strong><span class="gd-original">Pro Acryl Standard</span></td>
+          <td class="gd-method">4:1 Ultramarine Blue 005 + Dark Neutral Gray 005</td>
+          <td>Dark Neutral Gray 005</td>
+          <td>Muted steel blue — reads as blue but drained of vibrancy</td>
+        </tr>
+
+        Greens example:
+        <tr>
+          <td><strong>Camo Green 020</strong><span class="gd-original">Pro Acryl Standard</span></td>
+          <td class="gd-method">4:1 Camo Green 020 + Dark Neutral Gray 005</td>
+          <td>Dark Neutral Gray 005</td>
+          <td>Drab olive — military-green with no bright chroma</td>
+        </tr>
+
+        Reds example:
+        <tr>
+          <td><strong>Red 007</strong><span class="gd-original">Pro Acryl Standard</span></td>
+          <td class="gd-method">4:1 Red 007 + Payne's Grey (Expert Acrylics)</td>
+          <td>Payne's Grey (Expert Acrylics)</td>
+          <td>Grimy crimson — dark, cooled red with temperature shift toward purple-grey</td>
+        </tr>
+
+        Golds example:
+        <tr>
+          <td><strong>Rich Gold 028</strong><span class="gd-original">Pro Acryl Standard</span></td>
+          <td class="gd-method">Apply Brown Wash 201 as 1:4 glaze over dried gold</td>
+          <td>Brown Wash 201</td>
+          <td>Antique tarnished gold — aged and worn, not gleaming</td>
+        </tr>
+
+        Whites / lights example:
+        <tr>
+          <td><strong>Heavy Warm White S18</strong><span class="gd-original">Pro Acryl Expert Acrylics</span></td>
+          <td class="gd-method">5:1 Heavy Warm White S18 + Payne's Grey (Expert Acrylics)</td>
+          <td>Payne's Grey (Expert Acrylics)</td>
+          <td>Battle-worn dirty ivory — still reads as a highlight, not as grey</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="tip"><strong>✦ DESATURATION RULE:</strong> Never push desaturation past the point where the original colour family is lost. A blue should still read as blue — just dirty, drained, and worn, not grey.</div>
+
+
+    <div class="phase-label">Grimdark Process — 7 Steps</div>
+    <div class="tip"><strong>✦ ORDER MATTERS:</strong> Complete all seven steps in sequence. Steps build on each other — jumping ahead produces inconsistent results across a batch.</div>
+
+    <div class="step gd-step">
+      <span class="step-number brush">Step 1 · Brush</span>
+      <h3>Desaturate Base Colours</h3>
+      <p>Re-mix each base colour from the recipe using the conversion table above. Repaint raised mid-tones and highlights only — leave the original wash sitting in the recesses untouched. Work colour-by-colour across all models (batch discipline applies here too).</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#555566"></div><div class="swatch-info"><div class="swatch-name">Dark Neutral Gray 005</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">Primary desaturation agent — mix into blues and greens</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#3a3a4a"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey (Expert Acrylics)</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">Desaturation agent for reds, lights, and warm tones</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> Keep all desaturation mixes on a wet palette — you will return to each colour multiple times across the batch. Consistency on model #1 and model #10 is the goal.</div>
+    </div>
+
+    <div class="step gd-step">
+      <span class="step-number wash">Step 2 · Filter</span>
+      <h3>Grime Wash Filter</h3>
+      <p>Thin Brown Wash 201 to 1:8 with Speedpaint Medium. Apply over the entire model with a broad flat brush. Let pool lightly in recesses. This is a filter — not a shade pass. Do not flood flat surfaces. Wipe back from raised areas with a clean damp brush while still wet if needed.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#4a2a10"></div><div class="swatch-info"><div class="swatch-name">Brown Wash 201</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">1:8 with Speedpaint Medium — warm grime filter</div></div></div>
+      </div>
+    </div>
+
+    <div class="step gd-step">
+      <span class="step-number brush">Step 3 · Sponge</span>
+      <h3>Battle Damage — Chipping</h3>
+      <p>Tear a small piece of blister foam or sponge. Stipple a 2:1 mix of Dark Silver 030 + Coal Black 002 onto armour edges, impact points, and high-wear corners. 5–10 chip marks per armour panel — no more. Chipping tells a story; it shouldn't look like surface texture.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#606060"></div><div class="swatch-info"><div class="swatch-name">Dark Silver 030</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">2:1 with Coal Black 002 — paint chip metal reveal</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#1a1a1a"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">Mixed into chips to simulate shadow beneath chipped paint</div></div></div>
+      </div>
+      <div class="ratio-box">Chip mix: 2:1 Dark Silver 030 + Coal Black 002 — undiluted on sponge</div>
+    </div>
+
+    <div class="step gd-step">
+      <span class="step-number brush">Step 4 · Brush</span>
+      <h3>Rust Streaks</h3>
+      <p>From chipped areas and rivet heads, draw thin downward streaks with a rust tone. Mix Brown Wash 201 with a small drop of orange to hit a dried-blood rust colour. Size 0 brush. All streaks follow gravity — downward only. Start at a chip or rivet; taper off before the lower edge of the panel. Never start a streak mid-panel with no source point.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#6a2a0a"></div><div class="swatch-info"><div class="swatch-name">Brown Wash 201 + orange drop</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">Rust tone — adjust orange to taste; aim for dried blood</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> Vary streak lengths across the model — some short, some longer. Uniform streaks look mechanical rather than organic.</div>
+    </div>
+
+    <div class="step gd-step">
+      <span class="step-number brush">Step 5 · Brush</span>
+      <h3>Soot and Exhaust Streaking</h3>
+      <p>From weapon barrels, exhaust ports, vents, and impact burns: thin Coal Black 002 to 1:6 with water and apply narrow downward streaks with a nearly-dry size 0 brush. Two or three streaks per source, varied in length. Taper each streak to nothing. Do not loop or curve — straight down, following gravity.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#1a1a1a"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">1:6 with water — near-dry soot streaking</div></div></div>
+      </div>
+    </div>
+
+    <div class="step gd-step">
+      <span class="step-number wash">Step 6 · Glaze</span>
+      <h3>Unifying Grime Glaze</h3>
+      <p>Thin Agrax Earthshade to 1:10 with water or medium. Apply over the entire model as a final warm-grime pass. Wipe back from raised surfaces with a clean damp brush while still wet. This marries all the weathering elements — chipping, rust, soot — into one tonal family without significantly darkening the model.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#3a2a10"></div><div class="swatch-info"><div class="swatch-name">Agrax Earthshade</div><div class="swatch-brand">Citadel</div><div class="swatch-value">1:10 with water — unifying warm grime glaze</div></div></div>
+      </div>
+    </div>
+
+    <div class="step gd-step">
+      <span class="step-number finish">Step 7 · Finish</span>
+      <h3>Dead Matte Varnish</h3>
+      <p>Final coat of flat/ultra-matte varnish over everything. Grimdark has no sheen — the matte varnish is the step that completes the aesthetic. Apply to all models at once. After drying, add spot gloss brush-on only to: weapon optics, eyes, and any liquid effects. Nothing else.</p>
+      <div class="warning"><strong>⚠ NOTE:</strong> Models varnished satin or gloss will not read as grimdark regardless of the painting underneath. The matte coat is not optional.</div>
+    </div>
+
+  </div>
+  --><!-- end #grimdark (uncomment entire block to activate) -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: AIRBRUSH SKILLS (optional — include only if airbrushing)
+       ═══════════════════════════════════════════════════════ -->
+  <!--
+  <div class="tab-content" id="airbrush-skills">
+
+    <div class="section-header">
+      <h2>Airbrush Skills</h2>
+      <p>[PLACEHOLDER: airbrush-specific techniques used in this guide only.]</p>
+    </div>
+
+    [PLACEHOLDER: nozzle assignments table, PSI table, troubleshooting grid]
+    [Zenithal sequence injected by skills-reference.js — place anchor divs:
+      <div id="ab-zenithal-anchor"></div> after zenithal phase-label
+      <div id="ab-greyscale-anchor"></div> after PSI table
+    ]
+
+  </div>
+  -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: BRUSH SKILLS
+       Only techniques actually used in this guide.
+       Greyscale check tip injected automatically at end by skills-reference.js
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="brush-skills">
+
+    <div class="section-header">
+      <h2>Brush Skills</h2>
+      <p>Techniques used in this guide — practical notes for the workbench.</p>
+    </div>
+
+    <!-- [PLACEHOLDER: Include only techniques actually used in this guide.
+         Common wargaming brush skills to include:
+         - Edge Highlighting
+         - Drybrushing
+         - Wet Palette use for batch painting
+         - Wash application and control
+         - One-pass Speedpaint technique
+         - Base detail work (tufts, texture)
+    ] -->
+
+    <div class="phase-label">Edge Highlighting</div>
+    <div class="step">
+      <span class="step-number brush">Technique</span>
+      <h3>Edge Highlighting</h3>
+      <p>[PLACEHOLDER: thin your highlight paint to 1:2. Load a fine brush (size 1 or 0). Touch the tip to a sharp armour edge and draw along it steadily. The paint should flow off the brush with minimal pressure. Aim for a consistent 1-pixel-wide line. Practice on a spare model first — steadiness comes with repetition, not rushing.]</p>
+    </div>
+
+    <div class="phase-label">Drybrushing</div>
+    <div class="step">
+      <span class="step-number drybrush">Technique</span>
+      <h3>Drybrushing</h3>
+      <p>[PLACEHOLDER: load your brush with undiluted paint, then wipe on tissue paper until almost no colour transfers. Brush lightly over raised surfaces with quick, multi-directional strokes. The paint deposits only on peaks — recesses stay dark. The key is patience: multiple light passes are better than one heavy stroke. A stiff, splayed brush (old rounds work great) gives more control than a flat.]</p>
+    </div>
+
+    <div class="phase-label">Wet Palette for Batches</div>
+    <div class="step">
+      <span class="step-number brush">Technique</span>
+      <h3>Wet Palette — Batch Consistency</h3>
+      <p>[PLACEHOLDER: mix enough of each colour to cover the entire batch in one go — err on the side of too much. Place mixed colours on the wet palette to keep them workable for the full session. Between models, remix if the consistency shifts (palette will thin slightly over time). The same mix on every model is the foundation of army cohesion.]</p>
+    </div>
+
+    <!-- Greyscale check tip injected automatically by skills-reference.js -->
+    <div id="brush-skills"></div>
+
+  </div><!-- end #brush-skills -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: THINNING REFERENCE — ALWAYS LAST
+       Empty div — content fully injected by skills-reference.js
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="thinning-ref">
+    <div id="thinning-ref"></div>
+  </div>
+
+
+  <!-- FOOTER -->
+  <div class="guide-footer">
+    <div class="footer-links">
+      <a href="https://www.youtube.com/@brent_the_programmer9108" target="_blank">brent_the_programmer</a>
+      <span class="sep">·</span>
+      <a href="https://instagram.com/stephenson913" target="_blank">@stephenson913</a>
+    </div>
+  </div>
+
+</div><!-- end .container -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     REFERENCE IMAGE MODAL (required if ref-thumb-wrap is used)
+     ═══════════════════════════════════════════════════════════ -->
+<div class="ref-modal-overlay" id="refModal" onclick="closeRefModal()">
+  <div class="ref-modal-inner" onclick="event.stopPropagation()">
+    <button class="ref-modal-close" onclick="closeRefModal()">✕</button>
+    <img class="ref-modal-img" id="refModalImg" src="" alt="">
+    <div class="ref-modal-caption" id="refModalCaption"></div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCRIPTS — load order matters
+     1. window.GUIDE_THINNING config
+     2. guide.js
+     3. skills-reference.js
+     4. inline showSubTab() + modal + back-to-top
+     ═══════════════════════════════════════════════════════════ -->
+<script>
+  /* ── GUIDE-SPECIFIC THINNING ROWS ─────────────────────────
+     skills-reference.js reads this to build the Thinning Ref tab.
+     Add rows for each airbrush technique used in THIS guide.
+     Static rows (primer, zenithal, transparent/glaze, Speedpaint,
+     freckling) are injected automatically — do not duplicate them.
+     ─────────────────────────────────────────────────────────── */
+  window.GUIDE_THINNING = {
+    airbrushRows: [
+      /* [PLACEHOLDER: add rows for each airbrush technique in this guide]
+         Example:
+         { technique: 'Base coat (armour)',  nozzle: '0.3mm', ratio: '1:3 to 1:4', behavior: 'Semi-transparent; builds in passes without obscuring zenithal.' },
+         { technique: 'Metallic zenithal',   nozzle: '0.2mm', ratio: '1:4 to 1:5', behavior: 'Very thin; catches raised edges only.' },
+      */
+    ],
+    brushRows:    [],
+    thinningCards:[]
+  };
+</script>
+
+<script src="assets/guide.js"></script>
+<script src="assets/skills-reference.js"></script>
+
+<script>
+  /* ── SUB-TAB HANDLER ──────────────────────────────────────── */
+  function showSubTab(group, id, el) {
+    const parent = el.closest('.tab-content') || document.body;
+    parent.querySelectorAll('.sub-content').forEach(c => c.classList.remove('active'));
+    parent.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+    const target = document.getElementById(id);
+    if (target) target.classList.add('active');
+    el.classList.add('active');
+  }
+
+  /* ── REFERENCE IMAGE MODAL ───────────────────────────────── */
+  function openRefModal(src, caption) {
+    document.getElementById('refModalImg').src = src;
+    document.getElementById('refModalCaption').textContent = caption;
+    document.getElementById('refModal').style.display = 'flex';
+  }
+  function closeRefModal() {
+    document.getElementById('refModal').style.display = 'none';
+  }
+
+  /* ── BACK TO TOP ─────────────────────────────────────────── */
+  window.addEventListener('scroll', () => {
+    const btn = document.getElementById('backToTop');
+    if (btn) btn.style.display = window.scrollY > 400 ? 'block' : 'none';
+  });
+</script>
+
+</body>
+</html>

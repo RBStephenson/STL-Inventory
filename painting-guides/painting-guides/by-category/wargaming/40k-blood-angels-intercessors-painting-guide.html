@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blood Angels Intercessors — Warhammer 40,000 Painting Guide</title>
+
+  <link rel="stylesheet" href="../../assets/guide.css">
+  <link rel="stylesheet" href="../../assets/print.css" media="print">
+
+  <style>
+    :root {
+      --bg:       #0f0808;
+      --surface:  #1a0d0d;
+      --surface2: #221515;
+      --surface3: #2a1a1a;
+      --border:      #3d1a1a;
+      --text:        #ece4e4;
+      --text-muted:  #b09090;
+      --text-dim:    #6a4545;
+      --accent: #cc1111;
+      --tag-airbrush: #2266aa;
+      --tag-brush:    #226622;
+      --tag-wash:     #884422;
+      --tag-drybrush: #aa5500;
+      --tag-finish:   #555555;
+      --tag-effects:  #882244;
+      --tag-filter:   #446688;
+      --tier1-color: #4a8a4a;
+      --tier2-color: #4a6a9a;
+      --tier3-color: #8a5aaa;
+      --tip-bg:      rgba(0, 160, 0, 0.08);
+      --tip-border:  #2a6a2a;
+      --warn-bg:     rgba(200, 50, 50, 0.08);
+      --warn-border: #882222;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #1a0000 0%, #2d0808 45%, #1a0000 100%);
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .tier-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 3px;
+      margin-right: 6px;
+      margin-top: 6px;
+    }
+    .tier-badge.tier-1 { background: var(--tier1-color); color: #fff; }
+    .tier-badge.tier-2 { background: var(--tier2-color); color: #fff; }
+    .tier-badge.tier-3 { background: var(--tier3-color); color: #fff; }
+
+    .batch-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 3px;
+      margin-left: 8px;
+    }
+
+    .cohesion-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 16px 0 8px;
+    }
+    .cohesion-swatch {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .cohesion-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.15);
+      flex-shrink: 0;
+    }
+
+    .tier-card {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      background: var(--surface2);
+    }
+    .tier-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .tier-card h3 { margin: 0; font-size: 1rem; }
+    .tier-card .tier-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+    .tier-card ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+
+    .batch-stage {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .batch-stage:last-child { border-bottom: none; }
+    .batch-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .batch-stage-body strong { color: var(--text); font-size: 0.95rem; }
+    .batch-stage-body p { margin: 4px 0 0; color: var(--text-muted); font-size: 0.875rem; line-height: 1.5; }
+
+    .step-number.drybrush { background: var(--tag-drybrush); }
+  </style>
+</head>
+<body>
+
+<nav class="guide-nav">
+  <a href="../../index.html">← All Guides</a>
+</nav>
+
+<div class="hero">
+  <div class="category">Warhammer 40,000 · Blood Angels · Space Marines</div>
+  <h1><span>Blood Angels</span> Intercessors</h1>
+  <div class="subtitle">
+    28mm Primaris Infantry
+    <span class="tier-badge tier-1">Tabletop Ready</span>
+    <span class="tier-badge tier-2">Battle Ready</span>
+    <span class="tier-badge tier-3">Display</span>
+    <span class="batch-badge">Batch of 5</span>
+  </div>
+
+  <div class="series-badge">
+    <span class="active">Intercessors</span>
+  </div>
+
+  <div class="creator-credit">
+    Models by <strong>Games Workshop</strong>
+  </div>
+</div>
+
+<div class="paint-bar">
+  <span class="paint-bar-label">Paint Lines Used</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#cc4444;"></span>Pro Acryl</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#4488cc;"></span>Army Painter Fanatic</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#44aa66;"></span>Speedpaint 2.0</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#886622;"></span>Citadel</span>
+</div>
+
+<div class="container">
+
+  <div class="char-brief">
+    <strong>Blood Angels Intercessors</strong> — The sons of Sanguinius wear their red as a mark of both nobility and barely-contained fury. Deep blood-red power armour sits against black weapons and gold trim in a classic warm/cool contrast — the gold lifts the palette into something regal; the black grounds it. Light source is zenithal (top-down), pushing strong contrast so the red reads clearly at arm's length across a gaming table. The Baal desert base — warm ochre cracked earth — reinforces the warm palette and gives the whole army an arid, battle-worn feel.<br><br>
+    <strong>60/30/10 Rule:</strong> 60% blood-red armour · 30% black weapons and backpack · 10% gold trim and purity seals.
+
+    <div class="cohesion-strip">
+      <div class="cohesion-swatch">
+        <div class="cohesion-dot" style="background:#cc1010;"></div>
+        <span>Blood Red · 60% — Armour</span>
+      </div>
+      <div class="cohesion-swatch">
+        <div class="cohesion-dot" style="background:#1a1a1a;"></div>
+        <span>Black · 30% — Weapons &amp; Pack</span>
+      </div>
+      <div class="cohesion-swatch">
+        <div class="cohesion-dot" style="background:#c8922a;"></div>
+        <span>Gold · 10% — Trim &amp; Icons</span>
+      </div>
+      <div class="cohesion-swatch">
+        <div class="cohesion-dot" style="background:#888888;"></div>
+        <span>Steel — Bolter mechanisms</span>
+      </div>
+      <div class="cohesion-swatch">
+        <div class="cohesion-dot" style="background:#8a7040;"></div>
+        <span>Desert Ochre — Basing</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab tab-btn active" onclick="showTab('batch', this)">Batch Workflow</div>
+    <div class="tab tab-btn" onclick="showTab('armour', this)">Power Armour</div>
+    <div class="tab tab-btn" onclick="showTab('details', this)">Details &amp; Trim</div>
+    <div class="tab tab-btn" onclick="showTab('metals', this)">Metals</div>
+    <div class="tab tab-btn" onclick="showTab('basing', this)">Basing</div>
+    <div class="tab tab-btn" onclick="showTab('tiers', this)">Quality Tiers</div>
+    <div class="tab tab-btn" onclick="showTab('brush-skills', this)">Brush Skills</div>
+    <div class="tab tab-btn" onclick="showTab('thinning-ref', this)">Thinning Ref</div>
+  </div>
+
+
+  <!-- ═══ TAB: BATCH WORKFLOW ═══ -->
+  <div class="tab-content active" id="batch">
+    <div class="section-header">
+      <h2>Batch Painting Workflow</h2>
+      <p>5 Intercessors · Brush-focused · Target time: 30 min/model (Tier 1) · 75 min/model (Tier 2)</p>
+    </div>
+
+    <div class="tip"><strong>✦ ARMY COHESION:</strong> Build and undercoat all five bases before touching any paint on the models. Your Baal desert recipe locks in now — every future Blood Angels model must match.</div>
+
+    <div class="phase-label">Assembly-Line Sequence</div>
+    <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:16px;">Complete each stage across all 5 models before moving on. The temptation to finish one fully before the others is real — resist it.</p>
+
+    <div class="batch-stage">
+      <div class="batch-num">1</div>
+      <div class="batch-stage-body">
+        <strong>Prep &amp; Prime — All 5 Models</strong>
+        <p>Clean any mold lines (Intercessors have some on the pauldrons — worth catching now). Apply basing texture to all bases. Prime all models: <strong>P-005 Dark Neutral Gray</strong> for the Speedpaint route (Tier 1), or <strong>P-002 Black</strong> for the layered route (Tier 2+). 30+ PSI, 0.5mm nozzle if airbrushing. Allow 30 min minimum before painting.</p>
+      </div>
+    </div>
+
+    <div class="batch-stage">
+      <div class="batch-num">2</div>
+      <div class="batch-stage-body">
+        <strong>Main Body — Red Armour, All 5</strong>
+        <p><em>Tier 1:</em> Apply Blood Red Speedpaint 2.0 to all red armour panels — one pass, no reworking while wet. Let dry fully (30 min). <em>Tier 2+:</em> Burgundy 069 base coat, then Bold Pyrrole Red 003 over all armour — both passes across all 5 before moving on.</p>
+      </div>
+    </div>
+
+    <div class="batch-stage">
+      <div class="batch-num">3</div>
+      <div class="batch-stage-body">
+        <strong>Shade Pass — All 5</strong>
+        <p>Wash red armour recesses and any gold areas on all 5 models. Let dry completely — minimum 30 min. Do not rush this; wet wash = smeared highlights.</p>
+      </div>
+    </div>
+
+    <div class="batch-stage">
+      <div class="batch-num">4</div>
+      <div class="batch-stage-body">
+        <strong>Secondary Colours — One Type at a Time, All 5</strong>
+        <p>Paint each colour in turn across the whole batch: black backpacks → all 5 · black bolter casings → all 5 · gold trim → all 5 · purity seal parchment → all 5. Do not switch models mid-colour.</p>
+      </div>
+    </div>
+
+    <div class="batch-stage">
+      <div class="batch-num">5</div>
+      <div class="batch-stage-body">
+        <strong>Highlight Pass — All 5</strong>
+        <p>Drybrush red armour edges on all 5 (Tier 1 stopping point). Then edge highlight red panels on all 5 (Tier 2+). One highlight type across all models before moving to the next.</p>
+      </div>
+    </div>
+
+    <div class="batch-stage">
+      <div class="batch-num">6</div>
+      <div class="batch-stage-body">
+        <strong>Details Round — One Detail Type, All 5</strong>
+        <p>Eyes → all 5 · Blood drop icons → all 5 · purity seal script → all 5 · helmet trim if any → all 5. Wet palette is essential here — load enough for the full batch.</p>
+      </div>
+    </div>
+
+    <div class="batch-stage">
+      <div class="batch-num">7</div>
+      <div class="batch-stage-body">
+        <strong>Basing — All 5 Together</strong>
+        <p>Complete all basing steps across all 5 models simultaneously. See Basing tab. Never base one model while others are mid-paint.</p>
+      </div>
+    </div>
+
+    <div class="batch-stage">
+      <div class="batch-num">8</div>
+      <div class="batch-stage-body">
+        <strong>Varnish — All 5 at Once</strong>
+        <p>Matt varnish over entire model. Then targeted brush-on gloss on lenses, eyes, any blood effects. Satin on bare skin if present.</p>
+      </div>
+    </div>
+
+    <div class="phase-label">Wet Palette Protocol</div>
+    <div class="tip"><strong>✦ WET PALETTE:</strong> For a batch of 5, all your mixes go on the wet palette — especially the red highlight mix. Load enough for the full batch before starting any model. The same pool on all five models is what gives an army its cohesion.</div>
+  </div>
+
+
+  <!-- ═══ TAB: POWER ARMOUR ═══ -->
+  <div class="tab-content" id="armour">
+    <div class="section-header">
+      <h2>Power Armour — Blood Angels Red</h2>
+      <p>The hero surface. Deep burgundy shadows transition to vivid mid-red to punchy orange-red on panel edges. At 28mm the value range should feel wider than comfortable — push it.</p>
+    </div>
+
+    <div class="phase-label">Value Structure</div>
+    <div class="value-map">
+      <div class="value-chip"><div class="chip-swatch" style="background:#200808;"></div><div class="chip-val">~8%</div><div class="chip-label">Deep Shadow</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#5a1020;"></div><div class="chip-val">~22%</div><div class="chip-label">Shadow</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#cc1010;"></div><div class="chip-val">~48%</div><div class="chip-label">Mid-Tone</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#dd3308;"></div><div class="chip-val">~62%</div><div class="chip-label">Highlight</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#ee5500;"></div><div class="chip-val">~75%</div><div class="chip-label">Edge</div></div>
+    </div>
+
+    <div class="phase-label">Foundation — Prime (Both Routes)</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 · Airbrush / Brush</span>
+      <h3>Prime</h3>
+      <p><strong>Tier 1 (Speedpaint route):</strong> P-005 Dark Neutral Gray — even grey coverage, all surfaces. The grey gives Speedpaint 2.0 the mid-value ground it needs to flow correctly.<br>
+      <strong>Tier 2+ (layered route):</strong> P-002 Black — full coverage. Every crevice catches the black and becomes your deepest shadow for free.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#555555"></div><div class="swatch-info"><div class="swatch-name">P-005 Dark Neutral Gray</div><div class="swatch-brand">Pro Acryl Primer</div><div class="swatch-value">~30% value — Tier 1 prime</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#0f0f0f"></div><div class="swatch-info"><div class="swatch-name">P-002 Black</div><div class="swatch-brand">Pro Acryl Primer</div><div class="swatch-value">~3% value — Tier 2+ prime</div></div></div>
+      </div>
+      <div class="warning"><strong>⚠ NOTE:</strong> Never thin primer. Undiluted only. 30+ PSI at 20–25cm if airbrushing. Brush application is fine — self-levels well.</div>
+    </div>
+
+    <div class="phase-label">Tier 1 — Tabletop Ready (Speedpaint Route)</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 2T1 · Brush</span>
+      <h3>Blood Red — One-Pass Speedpaint</h3>
+      <p>Over the grey prime, apply Blood Red Speedpaint 2.0 to all red armour surfaces. Flow it on with a loaded brush — let it settle into recesses naturally. One pass: guide it, then leave it. Overworking while wet activates the self-leveling agent and ruins the blend. This single step gives you base colour + shade + depth simultaneously.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#bb1010"></div><div class="swatch-info"><div class="swatch-name">Blood Red</div><div class="swatch-brand">Speedpaint 2.0</div><div class="swatch-value">~45% value — one-pass armour</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> Apply to one panel area at a time — large areas left open too long before you touch them can dry-streak. Work panel by panel down the model.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number drybrush">Step 3T1 · Drybrush</span>
+      <h3>Broad Edge Highlight — Tier 1 Stopping Point</h3>
+      <p>Once Blood Red is fully dry (minimum 30 min), lightly drybrush all raised edges and panel corners. Load brush, wipe until barely any colour transfers, then quick multi-directional strokes across panel edges, pauldron rims, and helmet ridges. This reads as highlighted armour at arm's length on the tabletop.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#dd3308"></div><div class="swatch-info"><div class="swatch-name">AMP 017 Red Orange</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~62% value — drybrush highlight</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIER 1 STOP:</strong> After this step, your armour is done for Tabletop Ready. Complete details and basing, then varnish. It reads solidly at arm's length. Proceed below only for Tier 2+.</div>
+    </div>
+
+    <div class="phase-label">Tier 2+ — Layered Red (Over Black Prime)</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 2T2 · Brush</span>
+      <h3>Deep Shadow Base — Burgundy</h3>
+      <p>Over black prime, apply Burgundy 069 thinned to 1:2 across all armour surfaces. The black prime will show through in the deepest recesses — that's correct. This establishes the warm shadow tone across all panels. 2–3 thin passes to build solid coverage without obscuring the recess shadows. Do not cover the black completely.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#5a1020"></div><div class="swatch-info"><div class="swatch-name">Burgundy 069</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~22% value — warm shadow base</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> This step should read as a very dark red at arm's length — darker than finished armour, and that's right. The value will climb with each subsequent step.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 3T2 · Brush</span>
+      <h3>Mid-Red Layer</h3>
+      <p>Bold Pyrrole Red 003 thinned 1:2. Apply to the upper two-thirds of each armour panel, leaving Burgundy visible in the lower thirds and recesses. Build in 2–3 passes rather than flooding it on — this preserves the value gradient. Apply to all raised planes: pauldron faces, chest plate faces, helmet crown, knee caps.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#cc1010"></div><div class="swatch-info"><div class="swatch-name">Bold Pyrrole Red 003</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~48% value — main armour colour</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 4T2 · Wash</span>
+      <h3>Recess Shade</h3>
+      <p>Thin AP Fanatic Red Tone (or Dark Red Tone for colder recesses) to 1:1 with water. Carefully apply into recesses, panel seams, and armour joints using a small brush — don't flood the surfaces. The wash should settle into the crevices, not pool on the faces. Let dry 30 min completely.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#3a0a0a"></div><div class="swatch-info"><div class="swatch-name">Red Tone</div><div class="swatch-brand">Army Painter Fanatic</div><div class="swatch-value">~10% value — warm recess shade</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> If Red Tone pools unnaturally on a flat surface, wick it back immediately with a barely-damp brush tip. Once dry it's much harder to fix.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 5T2 · Brush</span>
+      <h3>Highlight Layer — Red Orange</h3>
+      <p>AMP 017 Red Orange thinned 1:2. Apply to the upper third of each panel face — the area that would catch the most zenithal light. Pauldron upper surface, chest plate upper area, helmet crown. Keep it away from recesses. This shifts the value up and adds the warm orange-red that gives Blood Angels their characteristic luminous quality.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#dd3308"></div><div class="swatch-info"><div class="swatch-name">AMP 017 Red Orange</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~62% value — highlight layer</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 6T2 · Brush</span>
+      <h3>Edge Highlight — Tier 2 Stopping Point</h3>
+      <p>Orange Red S31 thinned 1:2, fine brush. Drag along the sharpest armour edges — pauldron rims, chest plate corners, knee cap ridge, helmet brow ridge, boot toe. Keep the line 1–2 pixels wide. This is the step that makes Battle Ready look intentional. At arm's length it reads as crisp, deliberate, well-executed.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#ee4400"></div><div class="swatch-info"><div class="swatch-name">Orange Red S31</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~74% value — sharp edge highlight</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIER 2 STOP:</strong> After edge highlights, your armour is Battle Ready. Continue below for Display quality only.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number filter">Step 7T3 · Filter — Tier 3 Only</span>
+      <h3>Glaze for Depth &amp; Richness</h3>
+      <p>Thin Burgundy 069 heavily (1:5 with water) and glaze back into the lower third of each panel to deepen the shadow gradient. This pushes the value range wider and gives the armour a richer, more three-dimensional quality. Apply 2–3 very thin passes — each pass should be barely visible individually. Build cumulative depth.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#5a1020"></div><div class="swatch-info"><div class="swatch-name">Burgundy 069</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~22% value — shadow glaze</div></div></div>
+      </div>
+      <div class="warning"><strong>⚠ NOTE:</strong> If you want to add a unifying warm glaze — a touch of Transparent Red 047 (1:8 with water) over the mid-red planes — use FW Crimson Ink instead if thinning significantly. Transparent Red 047 shifts magenta when heavily thinned and will push the armour purple.</div>
+    </div>
+  </div>
+
+
+  <!-- ═══ TAB: DETAILS & TRIM ═══ -->
+  <div class="tab-content" id="details">
+    <div class="section-header">
+      <h2>Details &amp; Trim</h2>
+      <p>Black weapons and backpack ground the palette; gold trim adds nobility. Purity seals and lenses are the finishing touches that read as completed detail work at arm's length.</p>
+    </div>
+
+    <div class="phase-label">Black Armour — Backpack &amp; Bolt Rifle Casing</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 1 · Brush</span>
+      <h3>Black Base Coat</h3>
+      <p>Coal Black 002 thinned 1:2, two passes over backpack and bolt rifle casing. Aim for solid, even coverage — no patchiness.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#1a1a1a"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~8% value — black base</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 2 · Wash</span>
+      <h3>Recess Shade</h3>
+      <p>Pro Acryl Black Wash 200 carefully into all panel lines, vents, and mechanical detail on the backpack. Keeps the black readable while adding depth to recesses.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#0a0a0a"></div><div class="swatch-info"><div class="swatch-name">Black Wash 200</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~3% value — recess shade</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 3 · Brush — Tier 2+</span>
+      <h3>Edge Highlight — Black</h3>
+      <p>Dark Neutral Grey 044 thinned 1:2, fine brush along the sharpest edges of the backpack vents, exhaust nozzles, and bolt rifle barrel edges. Thin, crisp lines — the black should still feel very dark with just the edge catching light.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#4a4a4a"></div><div class="swatch-info"><div class="swatch-name">Dark Neutral Grey 044</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~30% value — dark grey edge highlight</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> For Tier 3, add a second, finer edge highlight of Bright Neutral Grey 045 on the sharpest corner only — one pixel wide at most. Makes the black read as polished rather than flat.</div>
+    </div>
+
+    <div class="phase-label">Gold Trim — Shoulder Edges, Chapter Icons, Purity Seal Wax</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 4 · Brush</span>
+      <h3>Shadow Base — Dark Bronze</h3>
+      <p>Dark Bronze S24 thinned 1:2 over all gold areas — shoulder rims, chapter icon, purity seal wax, any belt buckles. This becomes the shadow colour in recesses and sets the depth.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#5a3a18"></div><div class="swatch-info"><div class="swatch-name">Dark Bronze S24</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~25% value — gold shadow base</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 5 · Brush</span>
+      <h3>Mid Gold Layer</h3>
+      <p>Rich Gold 028 thinned 1:2 over all gold surfaces, leaving Dark Bronze in the deepest recesses. 2 passes for solid coverage. This is the primary gold colour — warm, rich, slightly orange-leaning.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#c8922a"></div><div class="swatch-info"><div class="swatch-name">Rich Gold 028</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~55% value — mid gold</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 6 · Wash</span>
+      <h3>Gold Shade</h3>
+      <p>Agrax Earthshade applied carefully into recesses of the gold trim — where the shoulder rim meets the pauldron face, around chapter icons, into the relief of any ornamentation. Keep it targeted — don't flood the gold faces or it'll look muddy.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#5a3a18"></div><div class="swatch-info"><div class="swatch-name">Agrax Earthshade</div><div class="swatch-brand">Citadel</div><div class="swatch-value">~20% value — warm gold shade</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 7 · Brush — Tier 2+</span>
+      <h3>Gold Edge Highlight</h3>
+      <p>White Gold 029 thinned 1:2 on the sharpest raised edges of the shoulder rim and any relief icon. This brightens the trim and makes it read as polished metal rather than dull gold — a significant quality upgrade for minimal effort.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#e8d080"></div><div class="swatch-info"><div class="swatch-name">White Gold 029</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~80% value — bright gold edge</div></div></div>
+      </div>
+    </div>
+
+    <div class="phase-label">Purity Seals</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 8 · Brush</span>
+      <h3>Parchment</h3>
+      <p>Khaki 061 thinned 1:2 as the parchment base — warm, aged paper colour. Then a light wash of Brown Wash 201 into the fold creases. Highlight the raised areas with Bright Ivory 022 (Tier 2+). These are small enough at 28mm that three steps is sufficient even for display quality.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#8a7240"></div><div class="swatch-info"><div class="swatch-name">Khaki 061</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~50% value — parchment base</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#e8dab0"></div><div class="swatch-info"><div class="swatch-name">Bright Ivory 022</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~85% value — parchment highlight</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> The script on purity seals can be suggested rather than painted — a few thin Coal Black 002 lines at odd angles reads as text at arm's length. Fine detail work that rewards patience at Tier 3.</div>
+    </div>
+
+    <div class="phase-label">Lenses &amp; Eyes</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 9 · Brush</span>
+      <h3>Helmet Lenses</h3>
+      <p><strong>Tier 1:</strong> A dot of Bright Jade 067 or AMP 017 Red Orange in the centre of each lens — quick and reads as a glowing lens at arm's length.<br>
+      <strong>Tier 2+:</strong> Base the lens Coal Black 002 → apply Bright Jade 067 leaving a black shadow at the bottom → highlight the upper portion with a 1:1 Bright Jade + Bright Ivory 022 mix → tiny white dot specular at top. Spot gloss varnish after sealing.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#228844"></div><div class="swatch-info"><div class="swatch-name">Bright Jade 067</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~55% value — lens mid</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> Red lenses are canonically valid for Blood Angels experiencing the Red Thirst. Use AMP 017 Red Orange as the lens base instead of green for a more menacing, lore-appropriate look.</div>
+    </div>
+  </div>
+
+
+  <!-- ═══ TAB: METALS ═══ -->
+  <div class="tab-content" id="metals">
+    <div class="section-header">
+      <h2>Metals</h2>
+      <p>Steel bolt rifle mechanisms and muzzle, gold trim (cross-reference Details tab). 28mm Standard TMM — contrast-driven, no blending required.</p>
+    </div>
+
+    <div class="sub-tabs">
+      <div class="sub-tab active" onclick="showSubTab('metals', 'tmm', this)">TMM — Standard</div>
+    </div>
+
+    <div class="sub-content active" id="tmm">
+
+      <div class="phase-label">Steel — Bolt Rifle Mechanism &amp; Barrel</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Dark Metallic Base</h3>
+        <p>Dark Silver 030 thinned 1:2 over all steel areas — the bolt rifle mechanism, muzzle, magazine, and any bare blade edges. Full coverage — this is the shadow value for the metal.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#505050"></div><div class="swatch-info"><div class="swatch-name">Dark Silver 030</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~32% value — dark metallic base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number drybrush">Step 2 · Drybrush</span>
+        <h3>Mid Metallic — Zenithal Drybrush</h3>
+        <p>AMP 010 Steel, barely loaded on the brush (wipe until nearly clean), light strokes across the tops of the mechanism. Catches raised screw heads, ejector port edges, barrel top. Leaves the Dark Silver in shadow areas. This is the fastest way to suggest metal with convincing light on it.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#909090"></div><div class="swatch-info"><div class="swatch-name">AMP 010 Steel</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~56% value — mid metallic</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> Load brush → wipe on tissue × 5 strokes until almost nothing transfers → lightly brush over the raised metal. The dry drybrush deposits a whisper of metal — that's exactly right.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number wash">Step 3 · Wash</span>
+        <h3>Recess Shade</h3>
+        <p>Pro Acryl Black Wash 200 carefully applied into the deepest mechanical recesses — panel lines on the mechanism, around the magazine well, under the barrel shroud. Use a fine brush; do not flood.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#0a0a0a"></div><div class="swatch-info"><div class="swatch-name">Black Wash 200</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~3% value — recess shade</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush — Tier 2+</span>
+        <h3>Edge Highlight — Steel</h3>
+        <p>Magnesium S42 on the sharpest metal edges only — barrel muzzle face, magazine bottom edge, mechanism corner angles. Keep it fine. At 28mm this reads as polished, well-maintained wargear.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#c8c8c8"></div><div class="swatch-info"><div class="swatch-name">Magnesium S42</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~80% value — bright edge highlight</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> For Tier 1, stop after Step 3 — the drybrush reads as metal at arm's length. Edge highlights are a Tier 2 upgrade.</div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ═══ TAB: BASING ═══ -->
+  <div class="tab-content" id="basing">
+    <div class="section-header">
+      <h2>Basing — Baal Desert Ruins</h2>
+      <p>Cracked ochre earth with sparse dead grass and rubble fragments — the arid surface of Baal Secundus. Warm sandy tones reinforce the army's hot palette.</p>
+    </div>
+
+    <div class="tip"><strong>✦ ARMY RULE:</strong> Build all five bases before painting any armour. This recipe must match every Blood Angels model you paint from this point forward — establish it now and keep a note of the colours used.</div>
+
+    <div class="phase-label">Base Theme: Cracked Desert Earth</div>
+
+    <div class="step">
+      <span class="step-number finish">Step 1 · Finish</span>
+      <h3>Apply Sand &amp; Grit Texture</h3>
+      <p>Coat the base with undiluted PVA glue. Press in a mix of fine hobby sand and a few small grit pieces (3–4 per base) for natural variation. Let cure fully — at least 2 hours, ideally overnight. No bare plastic showing.</p>
+      <div class="tip"><strong>✦ TIP:</strong> A mix of fine sand (dominant) and medium grit (sparse) gives better visual texture than either alone. Push a few larger pieces against the model's feet for anchor points.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 2 · Airbrush / Brush</span>
+      <h3>Prime Black Over Texture</h3>
+      <p>P-002 Black over all base texture and the base rim. This seals the sand (prevents flaking) and creates the shadow baseline for the basing colour. Allow 20 min dry time.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#0f0f0f"></div><div class="swatch-info"><div class="swatch-name">P-002 Black</div><div class="swatch-brand">Pro Acryl Primer</div><div class="swatch-value">~3% value — prime and seal</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 3 · Brush</span>
+      <h3>Base Ground Colour — Ochre Earth</h3>
+      <p>Khaki 061 thinned 1:2, stippled over all base texture. Leave black in the deepest crevices between sand grains — that's your shadow depth. Two passes for solid coverage on raised areas. The warm tan is the foundation of the Baal look.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#8a7240"></div><div class="swatch-info"><div class="swatch-name">Khaki 061</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~50% value — desert ground</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 4 · Wash</span>
+      <h3>Shade — Warm Ochre Wash</h3>
+      <p>Brown Wash 201 thinned 1:1 with water, washed across the entire base surface. Flows into sand crevices, deepens shadows between grit pieces, unifies the texture. Let dry 20 min.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#5a3a10"></div><div class="swatch-info"><div class="swatch-name">Brown Wash 201</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~18% value — warm crevice shade</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number drybrush">Step 5 · Drybrush</span>
+      <h3>Drybrush — Bone Highlight</h3>
+      <p>Bone S23, barely loaded brush, light strokes over all raised texture peaks — sand grain tips, grit surfaces, rubble edges. This is what makes the basing look sun-bleached and arid. Build slowly with 2 passes — don't overdo it into uniformity.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#c8b07a"></div><div class="swatch-info"><div class="swatch-name">Bone S23</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~72% value — drybrush highlight</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number drybrush">Step 5b · Drybrush</span>
+      <h3>Second Drybrush — Pale Highlight</h3>
+      <p>Bright Ivory 022, very lightly loaded, over only the very topmost texture peaks. Optional but pushes the sense of strong sunlight beating down — very effective against the dark blood-red armour.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#e8dab0"></div><div class="swatch-info"><div class="swatch-name">Bright Ivory 022</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~87% value — pale sunlight peak</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number finish">Step 6 · Finish</span>
+      <h3>Detail Elements — Rubble &amp; Tufts</h3>
+      <p>A few sparse tufts of dead/dry grass (warm brown-ochre coloured, not green — Baal is arid, not temperate). 1–2 tufts per base, clustered near grit pieces. Optional: a small stone or broken masonry piece painted Dark Neutral Grey 044 → drybrush Bright Neutral Grey 045, suggests ruined structures.</p>
+      <div class="tip"><strong>✦ TIP:</strong> Resist the urge to cover the base in tufts. Sparse is more realistic for desert. The sand texture is the feature — tufts are accents only.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number finish">Step 7 · Finish</span>
+      <h3>Base Rim — Black</h3>
+      <p>Coal Black 002, undiluted, around the entire base rim. Every model in the army — same coal black rim. No exceptions. This is the signature that reads as a unified force on the table.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#1a1a1a"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~8% value — base rim, always</div></div></div>
+      </div>
+      <div class="warning"><strong>⚠ NOTE:</strong> Base rim colour must match across the entire Blood Angels army. Set it now, note it, and never deviate.</div>
+    </div>
+  </div>
+
+
+  <!-- ═══ TAB: QUALITY TIERS ═══ -->
+  <div class="tab-content" id="tiers">
+    <div class="section-header">
+      <h2>Quality Tiers</h2>
+      <p>Three tracks — same foundation recipe, different stopping points. Choose based on how many models you're painting and where this unit sits in your army.</p>
+    </div>
+
+    <div class="tier-card">
+      <div class="tier-card-header">
+        <span class="tier-badge tier-1">Tier 1</span>
+        <h3>Tabletop Ready</h3>
+        <span class="tier-time">~25–35 min per model</span>
+      </div>
+      <ul>
+        <li>P-005 Dark Neutral Gray prime</li>
+        <li>Blood Red Speedpaint 2.0 — one-pass red armour</li>
+        <li>AMP 017 Red Orange drybrush highlight on armour edges</li>
+        <li>Coal Black 002 backpack and bolt rifle</li>
+        <li>Rich Gold 028 shoulder trim and icons (Agrax shade)</li>
+        <li>Khaki 061 purity seal parchment</li>
+        <li>One dot of Bright Jade 067 per lens</li>
+        <li>Basing complete (all 7 steps)</li>
+        <li>Matte varnish over all</li>
+        <li><strong>Stop point:</strong> After the armour drybrush — reads solidly at arm's length from the table.</li>
+      </ul>
+    </div>
+
+    <div class="tier-card">
+      <div class="tier-card-header">
+        <span class="tier-badge tier-2">Tier 2</span>
+        <h3>Battle Ready</h3>
+        <span class="tier-time">~60–90 min per model</span>
+      </div>
+      <ul>
+        <li>P-002 Black prime + Burgundy 069 shadow → Bold Pyrrole Red 003 → Red Tone wash → AMP 017 Red Orange highlight → Orange Red S31 edge highlight</li>
+        <li>Black weapons: Dark Neutral Grey 044 edge highlight</li>
+        <li>White Gold 029 edge highlight on gold trim</li>
+        <li>Full purity seal: Khaki → Brown Wash 201 → Bright Ivory 022 highlight + Coal Black 002 script suggestion</li>
+        <li>Full lens: Coal Black base → Bright Jade 067 → highlight → white specular dot + spot gloss</li>
+        <li>Basing complete</li>
+        <li>Matt varnish + spot gloss on lenses</li>
+        <li><strong>Stop point:</strong> After edge highlights — looks deliberate and finished up close.</li>
+      </ul>
+    </div>
+
+    <div class="tier-card">
+      <div class="tier-card-header">
+        <span class="tier-badge tier-3">Tier 3</span>
+        <h3>Display Quality</h3>
+        <span class="tier-time">~3–6 hours per model</span>
+      </div>
+      <ul>
+        <li>Everything in Tier 2, plus:</li>
+        <li>Shadow glaze pass — Burgundy 069 at 1:5 into lower panel thirds for deeper gradient</li>
+        <li>Consider OSL if any energy source is present (e.g. modded plasma weapons)</li>
+        <li>Black armour: second edge of Bright Neutral Grey 045 on apex corners</li>
+        <li>Wet blending on largest armour panels for smoother value transitions</li>
+        <li>Individual chapter icon detail: pick out relief sculpting on blood drop</li>
+        <li>Purity seal script: actual readable text strokes</li>
+        <li>Enhanced basing: second tuft type, cracked earth detail, environmental storytelling</li>
+        <li>Matt + targeted gloss on lenses, eyes, any blood/fluid effects</li>
+        <li><strong>Stop point:</strong> When you're satisfied — there is no ceiling.</li>
+      </ul>
+    </div>
+
+    <div class="tip"><strong>✦ ARMY ADVICE:</strong> For a 5-man squad, paint 4 to Tier 1 and your Sergeant or heaviest-posed model to Tier 2. The consistency across 4 models plus one standout reads better on the table than 5 models in different states of completion.</div>
+  </div>
+
+
+  <!-- ═══ TAB: BRUSH SKILLS ═══ -->
+  <div class="tab-content" id="brush-skills">
+    <div class="section-header">
+      <h2>Brush Skills</h2>
+      <p>Techniques used in this guide — practical workbench notes.</p>
+    </div>
+
+    <div class="phase-label">Edge Highlighting — Power Armour</div>
+    <div class="step">
+      <span class="step-number brush">Technique</span>
+      <h3>Edge Highlighting Red Armour</h3>
+      <p>Thin Orange Red S31 to 1:2 with water — it should flow off the brush tip with minimal pressure. Load a size 1 or 0 round, then wipe most of the paint off on a damp cloth until the brush holds only a trace. Touch the tip to a sharp armour edge and drag steadily. The paint follows the edge without pooling. Consistency comes from consistent brush pressure — light and even throughout the stroke. If it beads, thin slightly more. If it disappears, add slightly less water.</p>
+    </div>
+
+    <div class="phase-label">Drybrushing — Armour &amp; Base</div>
+    <div class="step">
+      <span class="step-number drybrush">Technique</span>
+      <h3>Drybrushing for Wargaming</h3>
+      <p>Load your brush fully with AMP 017 Red Orange, then wipe firmly on a tissue or palette paper 8–10 strokes until almost no colour transfers. Test on your hand — a faint ghost of colour should appear, not a clear smear. Then lightly brush over armour edges and raised surfaces with quick multi-directional strokes. At 28mm, drybrushing is the single most efficient technique — it highlights every raised surface simultaneously in seconds. The key is a nearly-dry brush; too much paint and it reads muddy rather than highlighted.</p>
+    </div>
+
+    <div class="phase-label">Speedpaint 2.0 — One-Pass Application</div>
+    <div class="step">
+      <span class="step-number brush">Technique</span>
+      <h3>Speedpaint One-Pass Rule</h3>
+      <p>Load a medium round (size 2) with Blood Red Speedpaint 2.0 — no thinning, straight from the pot. Apply to a panel area, guiding the paint with the brush tip to cover the surface. The paint self-levels — let it flow into recesses naturally. Once you've covered an area, leave it. Do not go back and touch a wet area you've already applied. The self-leveling agent activates when the paint is disturbed while drying, causing streaks and tide lines. One deliberate pass per area is the discipline.</p>
+    </div>
+
+    <div class="phase-label">Wet Palette for Batch Consistency</div>
+    <div class="step">
+      <span class="step-number brush">Technique</span>
+      <h3>Wet Palette — Batch of 5</h3>
+      <p>Before starting any step that uses a mixed or thinned colour, load more paint onto the wet palette than you think you need — probably 3× more. Red Orange S31 edge highlighting across 5 models uses more paint than you'd expect per model. Using the same mix pool on all models means identical temperature and value across the batch. Between models, the palette keeps the mix workable. If the palette thins the mix over a long session, add a fresh drop of paint and re-blend rather than starting an entirely new mix.</p>
+    </div>
+  </div>
+
+
+  <!-- ═══ TAB: THINNING REF ═══ -->
+  <div class="tab-content" id="thinning-ref">
+    <div id="thinning-ref"></div>
+  </div>
+
+
+  <div class="guide-footer">
+    <div class="footer-links">
+      <a href="https://www.youtube.com/@brent_the_programmer9108" target="_blank">brent_the_programmer</a>
+      <span class="sep">·</span>
+      <a href="https://instagram.com/stephenson913" target="_blank">@stephenson913</a>
+    </div>
+  </div>
+
+</div><!-- end .container -->
+
+<script>
+  window.GUIDE_THINNING = {
+    airbrushRows: [
+      { technique: 'Prime — all models',      nozzle: '0.5mm', ratio: 'Undiluted',  behavior: 'Full even coverage. Never thin primer.' },
+      { technique: 'Base coat (if airbrushing armour)', nozzle: '0.3mm', ratio: '1:3 to 1:4', behavior: 'Semi-transparent; builds in 2–3 passes. Retain zenithal depth.' },
+    ],
+    brushRows: [],
+    thinningCards: []
+  };
+</script>
+
+<script src="../../assets/guide.js"></script>
+<script src="../../assets/skills-reference.js"></script>
+
+<script>
+  function showSubTab(group, id, el) {
+    const parent = el.closest('.tab-content') || document.body;
+    parent.querySelectorAll('.sub-content').forEach(c => c.classList.remove('active'));
+    parent.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+    const target = document.getElementById(id);
+    if (target) target.classList.add('active');
+    el.classList.add('active');
+  }
+  function openRefModal(src, caption) {
+    document.getElementById('refModalImg').src = src;
+    document.getElementById('refModalCaption').textContent = caption;
+    document.getElementById('refModal').style.display = 'flex';
+  }
+  function closeRefModal() {
+    document.getElementById('refModal').style.display = 'none';
+  }
+  window.addEventListener('scroll', () => {
+    const btn = document.getElementById('backToTop');
+    if (btn) btn.style.display = window.scrollY > 400 ? 'block' : 'none';
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vigilante — 1:6 Scale Painting Guide</title>
+
+  <link rel="stylesheet" href="../../assets/guide.css">
+  <link rel="stylesheet" href="../../assets/print.css" media="print">
+
+  <style>
+    :root {
+      --bg:       #0e0f12;
+      --surface:  #16181c;
+      --surface2: #1f2227;
+      --surface3: #272b31;
+
+      --border:      #313640;
+      --text:        #e8e8e8;
+      --text-muted:  #aab0b8;
+      --text-dim:    #5e6671;
+
+      /* Accent — Vigilante cyan armor stripe */
+      --accent: #14b3c9;
+
+      --tag-airbrush: #2266aa;
+      --tag-brush:    #226622;
+      --tag-wash:     #884422;
+      --tag-finish:   #555555;
+      --tag-effects:  #882244;
+      --tag-filter:   #446688;
+
+      --tip-bg:      rgba(0, 160, 0, 0.08);
+      --tip-border:  #2a6a2a;
+      --warn-bg:     rgba(200, 50, 50, 0.08);
+      --warn-border: #882222;
+    }
+
+    .sub-tab.folk-art-tab.active { border-color:#7a9a3a; color:#a8cc66; }
+    .sub-tab.effects-tab.active  { border-color:#b87030; color:#e8a050; }
+
+    .hero {
+      background:
+        radial-gradient(circle at 70% 25%, rgba(180,30,30,0.18) 0%, transparent 45%),
+        linear-gradient(135deg, #0a0b0d 0%, #15181d 55%, #0a0b0d 100%);
+      border-bottom: 2px solid var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+<nav class="guide-nav">
+  <a href="../../index.html">← All Guides</a>
+</nav>
+
+<div class="hero">
+  <div class="category">Film · TV · DC Universe</div>
+
+  <h1><span>Vigilante</span> — New Era Trooper</h1>
+
+  <div class="subtitle">1:6 Scale · matte tactical armor · cyan accents · TMM blade · light blood FX</div>
+
+  <div class="film-ref">
+    <em>"Peacemaker's my best friend. We're basically brothers. He just doesn't always say it back."</em>
+  </div>
+
+  <div class="series-badge">
+    <span class="active">Vigilante</span>
+    <a href="peacemaker-painting-guide.html">Peacemaker</a>
+  </div>
+
+  <div class="creator-credit">
+    Figure by <strong>ZEZ Studios</strong> &middot; <a href="https://www.patreon.com/zezstudios" target="_blank">ZEZ New Era — Patreon</a>
+  </div>
+
+  <div class="ref-thumb-wrap">
+    <img class="ref-thumb"
+         src="img/vigilante-reference.jpg"
+         alt="Vigilante — ZEZ New Era trooper — reference"
+         onclick="openRefModal(this.src, this.alt)"
+         title="Click to view full reference image">
+    <div class="ref-thumb-label">Reference</div>
+  </div>
+</div>
+
+<div class="paint-bar">
+  <span class="paint-bar-label">Paint Lines Used</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#14b3c9;"></span>Pro Acryl</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#8855cc;"></span>Pro Acryl Expert Acrylics</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#c0c4c8;"></span>Vallejo Metal Color</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#cc3333;"></span>Tamiya</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#b05030;"></span>Army Painter Speedpaint 2.0</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#4488cc;"></span>FW Acrylic Ink</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#7a9a3a;"></span>Folk Art</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#b87030;"></span>Dirty Down</span>
+</div>
+
+<div class="container">
+
+  <div class="char-brief">
+    <strong>Vigilante</strong> — Adrian Chase channeled through ZEZ Studios' "New Era" trooper: a battle-worn
+    tactical operator in matte black armor cut with electric cyan panels and crisp white chevrons. This is a
+    <em>hybrid</em> build — the render's silhouette and cyan accents stay intact, but the helmet is pushed toward
+    show-accurate Vigilante: a white crest over a cyan visor band and a hot red eye strip. Light source is
+    <strong>zenithal from above</strong> with a faint warm bounce from the rubble below.
+    Values first: the armor is mostly low-value, so contrast lives in the white chevrons, the cyan panels, and
+    the chrome blade. Keep the gore restrained — a little blood on the blade edge and a few rubble spatters tells
+    the story without tipping into camp.
+  </div>
+
+  <div class="tabs">
+    <div class="tab tab-btn active" onclick="showTab('helmet', this)">Helmet &amp; Visor</div>
+    <div class="tab tab-btn" onclick="showTab('armor', this)">Hard Armor</div>
+    <div class="tab tab-btn" onclick="showTab('accents', this)">Cyan &amp; White Accents</div>
+    <div class="tab tab-btn" onclick="showTab('fabric', this)">Tactical Fabric</div>
+    <div class="tab tab-btn" onclick="showTab('metals', this)">Metals</div>
+    <div class="tab tab-btn" onclick="showTab('damage', this)">Battle Damage &amp; Blood</div>
+    <div class="tab tab-btn" onclick="showTab('base', this)">Base</div>
+    <div class="tab tab-btn" onclick="showTab('airbrush-skills', this)">Airbrush Skills</div>
+    <div class="tab tab-btn" onclick="showTab('brush-skills', this)">Brush Skills</div>
+    <div class="tab tab-btn" onclick="showTab('thinning-ref', this)">Thinning Ref</div>
+  </div>
+
+
+  <!-- ═══════════════ HELMET & VISOR ═══════════════ -->
+  <div class="tab-content active" id="helmet">
+
+    <div class="section-header">
+      <h2>Helmet &amp; Visor</h2>
+      <p>The hero of the figure: a black helmet shell with a white crest, a cyan visor band, and a glowing red eye strip — three stacked stripes that echo Vigilante's mask in both the show and the render.</p>
+    </div>
+
+    <div class="phase-label">Value Structure — White Crest (top stripe)</div>
+    <div class="value-map">
+      <div class="value-chip"><div class="chip-swatch" style="background:#3a3d42;"></div><div class="chip-val">~25%</div><div class="chip-label">Shadow Edge</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#8a8f95;"></div><div class="chip-val">~55%</div><div class="chip-label">Core Grey</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#c7cacd;"></div><div class="chip-val">~78%</div><div class="chip-label">Mid White</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#eef0f0;"></div><div class="chip-val">~92%</div><div class="chip-label">Highlight</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#ffffff;"></div><div class="chip-val">100%</div><div class="chip-label">Specular</div></div>
+    </div>
+    <div class="tip"><strong>✦ TIP:</strong> White is a value range, not a single color. If you base the face plate in pure white you have nowhere left to highlight. Start at a mid grey and reserve pure Titanium White for one final edge hit.</div>
+
+    <div class="phase-label">Black Helmet Shell</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 · Airbrush</span>
+      <h3>Zenithal Prime</h3>
+      <p>Prime the whole helmet P-002 Black undiluted (30+ PSI, 0.5mm), then a soft white zenithal from straight above. This pre-shades the shell so the black reads with form instead of flat.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#111111"></div><div class="swatch-info"><div class="swatch-name">P-002 Black Primer</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~5% value — undiluted, never thinned</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#d8d8d8"></div><div class="swatch-info"><div class="swatch-name">P-003 White Primer</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">zenithal pre-shade from above</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 2 · Brush</span>
+      <h3>Shell Base &amp; Edge Highlight</h3>
+      <p>Glaze the shell with Coal Black 002 thinned 2:1, letting zenithal grey survive on the crown. Edge-highlight the helmet ridges and the brow crest with Dark Neutral Grey 044, then a sliver of Bright Neutral Grey 045 on the sharpest crest only.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2a2a2a"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~8% value — shell base</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#46484c"></div><div class="swatch-info"><div class="swatch-name">Dark Neutral Grey 044</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~28% value — edge highlight</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#d5d5d4"></div><div class="swatch-info"><div class="swatch-name">Bright Neutral Grey 045</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~82% value — sharpest crest only</div></div></div>
+      </div>
+      <div class="warning"><strong>⚠ NOTE:</strong> Keep the shell matte/satin so the white face plate and red visor read as the focal point. A glossy black helmet competes with them.</div>
+    </div>
+
+    <div class="phase-label">White Face Plate</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 3 · Brush</span>
+      <h3>White Crest — Grey Underpaint</h3>
+      <p>The white lives on the upper crest / brow of the mask (the top stripe of the three). Block just that area in Bright Neutral Grey 045 — your ~55% anchor. Do not start white. Keep the lower cut crisp where the white will meet the cyan band.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#a6a8a8"></div><div class="swatch-info"><div class="swatch-name">Bright Neutral Grey 045</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~55% value — crest anchor</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 4 · Brush</span>
+      <h3>Build the White</h3>
+      <p>Layer Heavy Warm White S18 over the grey crest, thinned 1:1, pulling up from the lower edge and leaving grey in the recess. Two to three thin coats — let each dry. The slight warmth keeps it from looking like printer paper. Finish with a single fine line of pure Bold Titanium White 001 on the topmost edge / brow apex — one hit only.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#ece7dc"></div><div class="swatch-info"><div class="swatch-name">Heavy Warm White S18</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~90% value — working white</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#ffffff"></div><div class="swatch-info"><div class="swatch-name">Bold Titanium White 001</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">100% — specular edge, sparingly</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> Warm light source means a warm white. If your light were cool/neutral you'd tint toward Cool Grey instead — but here the rubble bounce is warm, so S18 is the right call.</div>
+    </div>
+
+    <div class="phase-label">Cyan Visor Band</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 5 · Brush</span>
+      <h3>Cyan Band — Match the Armor Accents</h3>
+      <p>The middle stripe is the same electric cyan as the armor panels — this is what ties the helmet to the rest of the figure. Lay a small spot of Bright Neutral Grey 045 as a light ground, let it dry, then base the band Turquoise 054. Shade the lower edge with Dark Turquoise S34 and pop the upper edge with White Blue S04 so the band has its own mini value structure.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#237f95"></div><div class="swatch-info"><div class="swatch-name">Dark Turquoise S34</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~38% value — band lower edge</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#0ea1b2"></div><div class="swatch-info"><div class="swatch-name">Turquoise 054</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~58% value — band base</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#c2e4e8"></div><div class="swatch-info"><div class="swatch-name">White Blue S04</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~90% value — band upper edge light</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> Use the exact same Turquoise 054 recipe as the Cyan &amp; White Accents tab — colour cohesion between helmet and armor is what makes the scheme feel designed rather than assembled.</div>
+      <div class="warning"><strong>⚠ NOTE:</strong> The cyan band's top highlight (White Blue S04, ~88% value) sits almost exactly at the white crest's value (~91%) — they will blur together in a greyscale read. Keep a crisp, slightly darker cut line right at the white/cyan seam (a hair of Dark Turquoise S34 or the black shell showing through) so the boundary holds. Don't let the two near-whites bleed into each other.</div>
+    </div>
+
+    <div class="phase-label">Red Eye Strip</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 6 · Brush</span>
+      <h3>Visor Base &amp; Value</h3>
+      <p>The bottom stripe — the eye strip — reads as a hot, almost glowing red. Base it Black Red 004, then build the mid with Bold Pyrrole Red 003 across the center, leaving Black Red at the top and bottom edges for depth.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#4a1518"></div><div class="swatch-info"><div class="swatch-name">Black Red 004</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~15% value — strip shadow edges</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#c0202a"></div><div class="swatch-info"><div class="swatch-name">Bold Pyrrole Red 003</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~45% value — strip core</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 7 · Brush</span>
+      <h3>Glow Highlight + Gloss</h3>
+      <p>Add a thin streak of Orange 007 mixed 3:1 into Bold Pyrrole Red along the center for a "lit" core. Finish the strip — and only the strip — with gloss varnish so it reads as a glowing lens against the matte mask. Keep the cyan band and white crest matte for contrast.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#e8662a"></div><div class="swatch-info"><div class="swatch-name">Orange 007</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~65% value — hot core streak</div></div></div>
+      </div>
+      <div class="ratio-box">Mix: 3:1 Bold Pyrrole Red 003 + Orange 007 — thin 1:1, narrow center streak only</div>
+      <div class="warning"><strong>⚠ NOTE:</strong> Do not glaze the strip with thinned PA Transparent Red — it shifts magenta when thinned. If you want a candy-glaze pass instead of the mix above, use FW Crimson Ink (see Brush Skills).</div>
+    </div>
+
+  </div><!-- end #helmet -->
+
+
+  <!-- ═══════════════ HARD ARMOR ═══════════════ -->
+  <div class="tab-content" id="armor">
+
+    <div class="section-header">
+      <h2>Hard Armor — Black &amp; Graphite Plates</h2>
+      <p>Chest rig, shoulder caps, thigh and shin plates, knee guards. Most of the figure's surface — so its value structure carries the whole model.</p>
+    </div>
+
+    <div class="phase-label">Value Structure — Black Plate</div>
+    <div class="value-map">
+      <div class="value-chip"><div class="chip-swatch" style="background:#0d0d0d;"></div><div class="chip-val">~5%</div><div class="chip-label">Occlusion</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#222428;"></div><div class="chip-val">~12%</div><div class="chip-label">Plate Base</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#3c4045;"></div><div class="chip-val">~28%</div><div class="chip-label">Plane Light</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#6a6f76;"></div><div class="chip-val">~48%</div><div class="chip-label">Edge Highlight</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#aeb2b6;"></div><div class="chip-val">~72%</div><div class="chip-label">Specular Edge</div></div>
+    </div>
+    <div class="tip"><strong>✦ VALUE FIRST:</strong> "Black" armor that's actually painted black looks like a void. Push the upper planes into clear cool greys and reserve true near-black for recesses and undercuts. The contrast is what sells the hard plastic/composite read.</div>
+
+    <div class="phase-label">Plates — Step by Step</div>
+
+    <div class="sub-tabs">
+      <div class="sub-tab active"     onclick="showSubTab('armor', 'armor-pro', this)">Pro Acryl</div>
+      <div class="sub-tab expert-tab" onclick="showSubTab('armor', 'armor-expert', this)">✦ Expert Acrylics — Brush Only</div>
+    </div>
+
+    <div class="sub-content active" id="armor-pro">
+
+      <div class="step">
+        <span class="step-number airbrush">Step 1 · Airbrush</span>
+        <h3>Black Prime + Grey Zenithal</h3>
+        <p>P-002 Black overall, then zenithal with Dark Neutral Grey 044 thinned 1:3 from above. Build a second, tighter pass of a 1:1 Dark Neutral Grey + Bright Neutral Grey mix only on the uppermost faces of the chest, shoulders, and thigh plates.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#111111"></div><div class="swatch-info"><div class="swatch-name">P-002 Black Primer</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~5% — undiluted base</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#46484c"></div><div class="swatch-info"><div class="swatch-name">Dark Neutral Grey 044</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~28% — zenithal plane light</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush</span>
+        <h3>Plate Base Glaze</h3>
+        <p>Unify the plates with Coal Black 002 thinned 2:1 as a glaze — pull it into the recesses and lower thirds, letting the grey zenithal show on top. This re-establishes the dark plate color without killing your value build.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#222428"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~12% value — plate base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush — Edge Highlight</span>
+        <h3>Plane &amp; Edge Definition</h3>
+        <p>Edge-highlight every panel border and bevel with Neutral Grey 075. Keep it thin and deliberate — only the literal edges. Then a finer, brighter line of Bright Neutral Grey 045 on the corners that catch the most light (shoulder caps, chest chevron border, knee crests).</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#6a6f76"></div><div class="swatch-info"><div class="swatch-name">Neutral Grey 075</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~48% value — edge highlight</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#aeb2b6"></div><div class="swatch-info"><div class="swatch-name">Bright Neutral Grey 045</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~72% value — specular corners</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> Load the brush, wipe almost dry, and drag the side of the tip along the edge so only the raised lip catches paint. A wet brush floods the bevel and you lose the crisp line.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number wash">Step 4 · Wash</span>
+        <h3>Recess &amp; Panel-Line Definition</h3>
+        <p>Pin-wash the deepest seams and bolt recesses with Black Wash 200 (or Nuln Oil). Touch the brush to the recess and let capillary action pull it — don't paint the whole plate. This re-darkens occlusion points after the edge work.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#0d0d0d"></div><div class="swatch-info"><div class="swatch-name">Black Wash 200</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~5% value — recess shadow</div></div></div>
+        </div>
+      </div>
+
+    </div><!-- end armor-pro -->
+
+    <div class="sub-content" id="armor-expert">
+      <div class="tip"><strong>✦ Brush-only workflow.</strong> Expert Acrylics' heavy body holds a crisp edge highlight beautifully and is excellent for controlled drybrushing on hard armor. Prime grey (P-005) and skip the airbrush zenithal.</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Plate Base — Payne's Grey + Carbon Black</h3>
+        <p>Base the plates with a 2:1 Payne's Grey + Carbon Black mix thinned 2:1. Payne's Grey gives the black a cool depth and keeps it from going dead-flat.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#2a3038"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">~15% value — cool plate base</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#141414"></div><div class="swatch-info"><div class="swatch-name">Carbon Black</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">darkening agent</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 2:1 Payne's Grey + Carbon Black — thin 2:1 with water</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush — Drybrush</span>
+        <h3>Plane Light + Edge</h3>
+        <p>Drybrush the upper planes with Payne's Grey lightened with a touch of Titanium White, near-dry. Final crisp edges with a 1:1 Payne's Grey + Titanium White on the brush corner only.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#5a6068"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey + Titanium White</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">~45% value — plane &amp; edge light</div></div></div>
+        </div>
+      </div>
+    </div><!-- end armor-expert -->
+
+  </div><!-- end #armor -->
+
+
+  <!-- ═══════════════ CYAN & WHITE ACCENTS ═══════════════ -->
+  <div class="tab-content" id="accents">
+
+    <div class="section-header">
+      <h2>Cyan &amp; White Accents</h2>
+      <p>The electric cyan panels (shoulders, elbows, forearms, knees, chest chevron) and the crisp white chevron stripes. These are the figure's color story — keep them clean and saturated against the black.</p>
+    </div>
+
+    <div class="phase-label">Value Structure — Cyan Panels</div>
+    <div class="value-map">
+      <div class="value-chip"><div class="chip-swatch" style="background:#0a3a44;"></div><div class="chip-val">~18%</div><div class="chip-label">Panel Shadow</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#0e7d8c;"></div><div class="chip-val">~40%</div><div class="chip-label">Lower Panel</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#0ea1b2;"></div><div class="chip-val">~58%</div><div class="chip-label">Mid Cyan</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#6fd0db;"></div><div class="chip-val">~78%</div><div class="chip-label">Highlight</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#c2e4e8;"></div><div class="chip-val">~90%</div><div class="chip-label">Edge Light</div></div>
+    </div>
+
+    <div class="phase-label">Cyan Panels</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 · Airbrush</span>
+      <h3>Mask &amp; Base the Cyan</h3>
+      <p>Once the black armor is sealed, mask the cyan panels (or cut in by brush if they're small). Base them with Turquoise 054 thinned 1:4, building from the black so the lower edges stay dark. A grey or white primer spot under the cyan boosts its vibrancy — cyan over pure black goes dull.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#0ea1b2"></div><div class="swatch-info"><div class="swatch-name">Turquoise 054</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~58% value — mid cyan</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> Brush-cutting instead of masking? Base each panel with a tiny spot of Bright Neutral Grey 045 first, let dry, then lay the Turquoise over it. The light ground makes the cyan pop.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 2 · Brush</span>
+      <h3>Shade the Lower Panel</h3>
+      <p>Glaze the bottom third and recessed edges of each panel with Dark Turquoise S34. This anchors them into the surrounding black armor instead of floating as flat stickers.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#237f95"></div><div class="swatch-info"><div class="swatch-name">Dark Turquoise S34</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~38% value — panel shade</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#2f444a"></div><div class="swatch-info"><div class="swatch-name">Dark Jade S01</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~22% value — deepest panel recess</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 3 · Brush</span>
+      <h3>Highlight &amp; Edge</h3>
+      <p>Highlight the upper panel faces with Turquoise 054 brightened by White Blue S04 (2:1). Finish with a thin edge line of White Blue S04 on the top lip of each panel.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#6fd0db"></div><div class="swatch-info"><div class="swatch-name">Turquoise 054 + White Blue S04</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~78% value — panel highlight</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#c2e4e8"></div><div class="swatch-info"><div class="swatch-name">White Blue S04</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~90% value — edge light</div></div></div>
+      </div>
+      <div class="ratio-box">Mix: 2:1 Turquoise 054 + White Blue S04 — thin 1:1, upper faces only</div>
+    </div>
+
+    <div class="phase-label">White Chevron Stripes</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 4 · Brush</span>
+      <h3>Crisp White Chevrons</h3>
+      <p>The chest and accent chevrons follow the same white hierarchy as the face plate: Bright Neutral Grey 045 underpaint → Heavy Warm White S18 body → one fine Bold Titanium White 001 edge on the top stroke of the chevron. Use a steady liner brush and pull each stroke in one motion.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#a6a8a8"></div><div class="swatch-info"><div class="swatch-name">Bright Neutral Grey 045</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~55% value — chevron underpaint</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#ece7dc"></div><div class="swatch-info"><div class="swatch-name">Heavy Warm White S18</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~90% value — chevron body</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#ffffff"></div><div class="swatch-info"><div class="swatch-name">Bold Titanium White 001</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">100% — single edge highlight</div></div></div>
+      </div>
+      <div class="warning"><strong>⚠ NOTE:</strong> Crisp edges beat perfect coverage. If a chevron edge gets ragged, let it dry and cut the line back straight with the black armor color rather than fighting it wet.</div>
+    </div>
+
+  </div><!-- end #accents -->
+
+
+  <!-- ═══════════════ TACTICAL FABRIC ═══════════════ -->
+  <div class="tab-content" id="fabric">
+
+    <div class="section-header">
+      <h2>Tactical Fabric &amp; Webbing</h2>
+      <p>The under-suit, knee wraps, thigh straps, pouches, and buckled webbing. These read as matte woven nylon — distinctly softer and less reflective than the hard plates.</p>
+    </div>
+
+    <div class="phase-label">Fabric — Step by Step</div>
+
+    <div class="sub-tabs">
+      <div class="sub-tab active"     onclick="showSubTab('fabric', 'fabric-pro', this)">Pro Acryl</div>
+      <div class="sub-tab expert-tab" onclick="showSubTab('fabric', 'fabric-expert', this)">✦ Expert Acrylics — Brush Only</div>
+    </div>
+
+    <div class="sub-content active" id="fabric-pro">
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Fabric Base</h3>
+        <p>Base the fabric areas with Dark Warm Grey 016 — a hair warmer and lighter than the hard-plate black, which immediately signals "different material." Thin 2:1, two coats.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#2e2b29"></div><div class="swatch-info"><div class="swatch-name">Dark Warm Grey 016</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~14% value — fabric base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush — Drybrush</span>
+        <h3>Weave Texture</h3>
+        <p>Lightly drybrush across the weave with Brown Grey S22 to catch the raised threads and the tops of folds. Keep it subtle — fabric scatters light, so the highlight is broad and soft, not a sharp edge.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#5a544d"></div><div class="swatch-info"><div class="swatch-name">Brown Grey S22</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~38% value — weave highlight</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> Drybrush <em>across</em> the direction of the weave, not along it — the texture catches the paint and reads as woven cloth rather than a smear.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number wash">Step 3 · Wash</span>
+        <h3>Fold Shadow</h3>
+        <p>Pull Brown Wash 201 into the deep folds behind the knees, under the straps, and around the pouch seams. This deepens the cloth recesses and ties the webbing into the leg.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#1c1612"></div><div class="swatch-info"><div class="swatch-name">Brown Wash 201</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~8% value — fold shadow</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 4 · Finish</span>
+        <h3>Matte Seal</h3>
+        <p>Hit the fabric areas with matte varnish (brush-on, targeted). The contrast between dead-matte cloth and satin armor is what makes both materials believable.</p>
+      </div>
+
+    </div><!-- end fabric-pro -->
+
+    <div class="sub-content" id="fabric-expert">
+      <div class="tip"><strong>✦ Brush-only workflow.</strong> Expert Acrylics earth-greys are ideal for cloth — heavy body drybrushes cleanly and the matte finish suits fabric.</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Base — Payne's Grey + Burnt Umber</h3>
+        <p>Base the fabric with a 2:1 Payne's Grey + Burnt Umber mix thinned 2:1. The umber warms the grey toward a worn-nylon tone.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#2b2722"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey + Burnt Umber</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">~14% value — warm fabric base</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 2:1 Payne's Grey + Burnt Umber — thin 2:1</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush — Drybrush</span>
+        <h3>Weave Highlight</h3>
+        <p>Drybrush the base mix lightened with a touch of Titanium White + Nickel Azo Yellow across the weave for a warm, sun-faded thread highlight.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#5c554a"></div><div class="swatch-info"><div class="swatch-name">+ Titanium White / Nickel Azo Yellow</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">~40% value — warm weave highlight</div></div></div>
+      </div>
+    </div><!-- end fabric-expert -->
+
+  </div><!-- end #fabric -->
+
+
+  <!-- ═══════════════ METALS ═══════════════ -->
+  <div class="tab-content" id="metals">
+
+    <div class="section-header">
+      <h2>Metals — Blade, Pistol &amp; Hardware</h2>
+      <p>The combat knife on the shoulder, the holstered pistol, buckle hardware, and the bladed prop on the base. TMM via the gloss-black-base method at 1:6, using Vallejo Metal Color airbrushed for the best reflectivity.</p>
+    </div>
+
+    <div class="phase-label">True Metallic Metal (TMM) — Gloss Black Base Method</div>
+    <div class="tip"><strong>✦ VALUE FIRST:</strong> You're not coating the blade in silver — you're painting the <em>light</em> that hits it and letting the gloss black be the shadow. Restraint reads as polished steel; full coverage reads as a grey toy.</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 · Airbrush</span>
+      <h3>Gloss Black Base</h3>
+      <p>Airbrush the blade and steel hardware with Vallejo 70.861 Glossy Black (or VMC over a gloss black lacquer). The glossy ground is what creates the reflective shadow layer the metallics float over.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#0a0a0a"></div><div class="swatch-info"><div class="swatch-name">70.861 Glossy Black</div><div class="swatch-brand">Vallejo</div><div class="swatch-value">~3% value — reflective shadow ground</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 2 · Airbrush — VMC</span>
+      <h3>Map the Steel — Light Planes Only</h3>
+      <p>Thin VMC 77.702 Duraluminium 1:1 and lay it only on the light-facing planes of the blade and pistol slide. Build the center of the lit planes with VMC 77.701 Aluminium. Leave the shadow-facing planes as bare gloss black — that's your shadow band.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#8c9196"></div><div class="swatch-info"><div class="swatch-name">77.702 Duraluminium</div><div class="swatch-brand">Vallejo Metal Color</div><div class="swatch-value">~50% value — mid steel, light planes</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#a8adaf"></div><div class="swatch-info"><div class="swatch-name">77.701 Aluminium</div><div class="swatch-brand">Vallejo Metal Color</div><div class="swatch-value">~65% value — lit plane centers</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 3 · Airbrush — VMC</span>
+      <h3>Chrome Edge</h3>
+      <p>VMC 77.707 Chrome on the apex edge of the blade and the slide top only — drop PSI slightly and feather. This is the specular peak; keep it to thin edges and the cutting edge.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#c6c8c9"></div><div class="swatch-info"><div class="swatch-name">77.707 Chrome</div><div class="swatch-brand">Vallejo Metal Color</div><div class="swatch-value">~82% value — specular edge</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 4 · Airbrush — Ink</span>
+      <h3>Shadow Deepening</h3>
+      <p>Lightly airbrush FW Payne's Gray Ink into the shadow-facing planes and recesses. Its satin finish preserves the metallic reflectivity that a black wash would dull. Thin minimally — it's already fluid.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2c3138"></div><div class="swatch-info"><div class="swatch-name">Payne's Gray Ink</div><div class="swatch-brand">FW Acrylic Ink</div><div class="swatch-value">~15% value — recess deepening</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 5 · Brush</span>
+      <h3>Pistol Body — Gunmetal</h3>
+      <p>The pistol frame reads darker and cooler than the blade. Base it VMC 77.720 Gunmetal Grey over the gloss black, edge-highlight with a touch of Aluminium on the slide serrations and sight. Pin-wash the frame seams with Nuln Oil.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#58606a"></div><div class="swatch-info"><div class="swatch-name">77.720 Gunmetal Grey</div><div class="swatch-brand">Vallejo Metal Color</div><div class="swatch-value">~35% value — pistol frame</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> Keep the pistol matte-to-satin and the blade glossy. A weapon that's all one finish looks molded; differing sheens read as different alloys.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number finish">Step 6 · Finish</span>
+      <h3>Seal the Blade Gloss</h3>
+      <p>Gloss-varnish the blade to lock in the chrome and set up for the blood pass (see Battle Damage tab — Tamiya X27 Clear Red pools beautifully over a glossy blade).</p>
+    </div>
+
+  </div><!-- end #metals -->
+
+
+  <!-- ═══════════════ BATTLE DAMAGE & BLOOD ═══════════════ -->
+  <div class="tab-content" id="damage">
+
+    <div class="section-header">
+      <h2>Battle Damage &amp; Blood</h2>
+      <p>The render shows chipped paint, orange rust streaks, and a battle-worn surface. We'll add restrained chipping, rust, and <em>light</em> blood accents on the blade edge and a few rubble spatters — enough to tell the story without going full slasher.</p>
+    </div>
+
+    <div class="phase-label">Paint Chipping &amp; Scratches</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 1 · Brush — Sponge</span>
+      <h3>Chipped Armor Edges</h3>
+      <p>Tear a small piece of blister-pack foam, pick up a little Dark Neutral Grey 044, blot most off on a paper towel, then stipple lightly along the armor edges and high-wear points. Follow with a few smaller, darker chips of Coal Black 002 inside the lighter ones for depth.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#46484c"></div><div class="swatch-info"><div class="swatch-name">Dark Neutral Grey 044</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~28% value — chip edges</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> Test the sponge on scrap first. The first stipple is always too heavy — the second and third dabs give the fine, scattered chips you actually want.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 2 · Brush</span>
+      <h3>Fine Scratches</h3>
+      <p>With a fine liner and Bright Neutral Grey 045, add a few deliberate scratch lines across the most exposed plates (shins, forearms, chest). Keep them sparse and directional — scratches go with the motion of wear, not random hatching.</p>
+    </div>
+
+    <div class="phase-label">Rust Streaks</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 3 · Brush</span>
+      <h3>Orange Rust Accents</h3>
+      <p>The render's orange streaks live around the lower torso, hips, and shin edges. Streak Orange Brown S27 downward from chip points and seams with a near-dry brush, then accent the freshest spots with a touch of Burnt Orange 037. Keep streaks vertical — gravity pulls rust down.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#9a4a22"></div><div class="swatch-info"><div class="swatch-name">Orange Brown S27</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~35% value — rust streak base</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#c25a1e"></div><div class="swatch-info"><div class="swatch-name">Burnt Orange 037</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~50% value — fresh rust accent</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> Optional — for a streakier, more organic rust, lightly stipple Dirty Down Rust over a sealed surface and drag it downward with a damp brush before it sets.</div>
+    </div>
+
+    <div class="phase-label">Blood — Light Accents Only</div>
+
+    <div class="tip"><strong>✦ RESTRAINT:</strong> You asked for light accents. The goal is "just finished a fight," not "crime scene." Two dimensions of blood: matte <em>dried</em> blood near the hands/blade, and a few glossy <em>fresh</em> spots on the blade edge and the rubble.</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 1 · Brush</span>
+      <h3>Dried Blood Base</h3>
+      <p>Where blood would sit and dry — the blade flat near the hilt, the cutting edge, a smear on one glove — lay a thin, irregular base of Black Red 004. Dried blood is dark, brownish, and matte; this is the foundation the fresh gloss sits on.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#4a1518"></div><div class="swatch-info"><div class="swatch-name">Black Red 004</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~12% value — dried blood base</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#7a3b1e"></div><div class="swatch-info"><div class="swatch-name">Speedpaint Dry Blood WP3164</div><div class="swatch-brand">Army Painter</div><div class="swatch-value">matte dried-blood tint (optional, over sealed)</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number effects">Step 2 · Effects</span>
+      <h3>Fresh Blood — Glossy</h3>
+      <p>Over the gloss-sealed blade edge and a few rubble spots, apply Tamiya X27 Clear Red. It's a transparent gloss red — it pools and glistens like wet blood over the chrome and stone. Build it in 2–3 thin passes for the deepest, wettest spots; one pass for thinner runs.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#b51220"></div><div class="swatch-info"><div class="swatch-name">X27 Clear Red</div><div class="swatch-brand">Tamiya</div><div class="swatch-value">transparent gloss — fresh blood</div></div></div>
+      </div>
+      <div class="warning"><strong>⚠ NOTE:</strong> X27 over a matte surface looks dull and pink. It only reads as wet blood over a gloss base — that's why the blade was gloss-sealed in the Metals tab. Confine it to glossy areas.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number effects">Step 3 · Effects</span>
+      <h3>Light Spatter</h3>
+      <p>For a couple of scattered spatters on the rubble: load an old brush with thinned X27 (or Black Red for matte droplets), hold it over the base, and flick the bristles with a toothpick to throw fine droplets. Practice the flick on scrap — aim it away from the figure's white chevrons.</p>
+      <div class="tip"><strong>✦ TIP:</strong> Mask the figure with a folded index card while flicking spatter so a stray droplet doesn't land on the white chevrons or face plate. Easier than fixing it after.</div>
+    </div>
+
+  </div><!-- end #damage -->
+
+
+  <!-- ═══════════════ BASE ═══════════════ -->
+  <div class="tab-content" id="base">
+
+    <div class="section-header">
+      <h2>Base — Urban Rubble</h2>
+      <p>Shattered concrete, broken rebar, scattered stone, and a partly buried blade. A cool desaturated rubble field lets the figure's cyan and red read loud against it.</p>
+    </div>
+
+    <div class="sub-tabs">
+      <div class="sub-tab active"       onclick="showSubTab('base','base-pro',this)">Pro Acryl</div>
+      <div class="sub-tab expert-tab"   onclick="showSubTab('base','base-expert',this)">✦ Expert Acrylics — Brush Only</div>
+      <div class="sub-tab folk-art-tab" onclick="showSubTab('base','base-folkart',this)">🎨 Craft Paints — Basing</div>
+      <div class="sub-tab effects-tab"  onclick="showSubTab('base','base-effects',this)">✦ Effects</div>
+    </div>
+
+    <!-- PRO ACRYL -->
+    <div class="sub-content active" id="base-pro">
+
+      <div class="phase-label">Concrete &amp; Stone</div>
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Rubble Base Coat</h3>
+        <p>Base all the broken concrete and stone with Dark Neutral Grey 044. This gives a cool, mid-dark ground that the drybrush layers will build form on.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#46484c"></div><div class="swatch-info"><div class="swatch-name">Dark Neutral Grey 044</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~28% value — stone base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush — Drybrush</span>
+        <h3>Stone Drybrush</h3>
+        <p>Drybrush Neutral Grey 075 over all the raised stone faces, then a lighter pass of Bright Neutral Grey 045 only on the topmost edges and broken corners to catch the zenithal light.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#6a6f76"></div><div class="swatch-info"><div class="swatch-name">Neutral Grey 075</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~48% value — stone mid drybrush</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#aeb2b6"></div><div class="swatch-info"><div class="swatch-name">Bright Neutral Grey 045</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~72% value — broken-edge highlight</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-label">Dirt &amp; Recesses</div>
+      <div class="step">
+        <span class="step-number wash">Step 3 · Wash</span>
+        <h3>Earth Wash</h3>
+        <p>Pull Brown Wash 201 into all the recesses between stones and the low ground to add dirt and depth. Let it pool naturally in the gaps; this unifies the scattered rubble into one ground.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#1c1612"></div><div class="swatch-info"><div class="swatch-name">Brown Wash 201</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~8% value — dirt &amp; recess wash</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush</span>
+        <h3>Rebar &amp; Buried Blade</h3>
+        <p>Paint exposed rebar with a rust treatment: Mahogany 009 base, stippled Orange Brown S27, fresh-rust dots of Burnt Orange 037. The half-buried blade follows the Metals TMM steps — gloss black, VMC steel on the exposed flat, Chrome edge.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#5a2820"></div><div class="swatch-info"><div class="swatch-name">Mahogany 009</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~18% value — rebar rust base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 5 · Finish</span>
+        <h3>Base Seal</h3>
+        <p>Matte varnish the entire base. Add small patches of fine sand/static debris in the recesses with PVA if you want extra texture. Attach the figure only after the base is fully sealed.</p>
+        <div class="warning"><strong>⚠ NOTE:</strong> Seal the base BEFORE attaching the figure. Boot pegs go in after all groundwork is matte-varnished.</div>
+      </div>
+
+    </div><!-- end base-pro -->
+
+    <!-- EXPERT ACRYLICS -->
+    <div class="sub-content" id="base-expert">
+      <div class="tip"><strong>✦ Brush-only base alternative.</strong> Payne's Grey and Burnt Umber make excellent cool concrete; heavy body drybrushes stone edges crisply.</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Concrete Base — Payne's Grey</h3>
+        <p>Base the stone with Payne's Grey thinned 2:1 for a cool concrete ground. Add Burnt Umber into the dirt/low areas for earthy variation.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#3a4050"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">~20% value — cool concrete</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: Payne's Grey base; Burnt Umber glazed into low/dirt zones</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush — Dry Brush</span>
+        <h3>Stone Edge Drybrush</h3>
+        <p>Drybrush Payne's Grey lightened with Titanium White over raised stone, near-dry, building to a near-white on the broken corners.</p>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span>
+        <h3>Rust &amp; Earth Tints</h3>
+        <p>Glaze Burnt Sienna and Red Oxide Tint onto rebar and dirt patches for warm rust and soil. Sepia into the deepest recesses for grime.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#7a3a22"></div><div class="swatch-info"><div class="swatch-name">Burnt Sienna</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">warm rust / earth glaze</div></div></div>
+      </div>
+    </div><!-- end base-expert -->
+
+    <!-- FOLK ART -->
+    <div class="sub-content" id="base-folkart">
+      <div class="tip"><strong>🎨 Craft Paints — Budget Basing Palette.</strong> Folk Art craft acrylics are great for terrain — solid coverage, matte finish, and cheap enough to use freely on rubble. Save the Pro Acryl and VMC for the figure.</div>
+
+      <div class="phase-label">Concrete &amp; Stone</div>
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Stone Shadow Base</h3>
+        <p>Base the rubble in Pure Black K479, then block-paint the larger stone faces with a medium grey to set up the drybrush.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#111111"></div><div class="swatch-info"><div class="swatch-name">Pure Black K479</div><div class="swatch-brand">Folk Art</div><div class="swatch-value">~5% value — shadow base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush — Drybrush</span>
+        <h3>Grey Stone Drybrush</h3>
+        <p>Drybrush up through a medium grey to a light grey-white on the broken edges. Two drybrush passes, lighter and more focused each time.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#8a8d90"></div><div class="swatch-info"><div class="swatch-name">Medium Grey (basing)</div><div class="swatch-brand">Folk Art</div><div class="swatch-value">~50% value — stone drybrush</div></div></div>
+      </div>
+
+      <div class="phase-label">Soil &amp; Dirt</div>
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush + Drybrush</span>
+        <h3>Dirt Base &amp; Highlight</h3>
+        <p>Base low dirt areas Coffee Bean K940, drybrush up with Bark Brown 2560 for a dusty, dry soil read between the stones.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#3a2820"></div><div class="swatch-info"><div class="swatch-name">Coffee Bean K940</div><div class="swatch-brand">Folk Art</div><div class="swatch-value">~12% — soil shadow base</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#6a4030"></div><div class="swatch-info"><div class="swatch-name">Bark Brown 2560</div><div class="swatch-brand">Folk Art</div><div class="swatch-value">~40% — soil mid-tone</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 4 · Finish</span>
+        <h3>Base Seal</h3>
+        <p>Matte varnish the whole base. Attach the figure after all groundwork is sealed.</p>
+        <div class="warning"><strong>⚠ NOTE:</strong> Seal the base BEFORE attaching the figure.</div>
+      </div>
+    </div><!-- end base-folkart -->
+
+    <!-- EFFECTS -->
+    <div class="sub-content" id="base-effects">
+      <div class="phase-label">Effects Products — Apply Over Sealed Paint</div>
+      <div class="tip"><strong>💡 Timing Rule:</strong> Dirty Down goes on after paint is fully cured and before the final matte varnish. Apply over a sealed surface for best adhesion.</div>
+
+      <h3>Dirty Down Rust — Rebar &amp; Metal Debris</h3>
+      <p>Use Dirty Down Rust to add streaky, organic rust to the exposed rebar and any metal debris on the base — more natural than brushwork alone.</p>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span> <span class="tag tag-effects">Effects</span>
+        <h3>Surface Prep</h3>
+        <p>Make sure the rebar/metal is sealed (satin or matte). A mid rust-brown undercoat helps the effect read.</p>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush</span> <span class="tag tag-effects">Effects</span>
+        <h3>Apply Dirty Down Rust</h3>
+        <p>Stipple and drag Dirty Down Rust down the rebar, following gravity. Concentrate it at joints and low points where moisture collects.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#8a4a26"></div><div class="swatch-info"><div class="swatch-name">Dirty Down Rust</div><div class="swatch-brand">Dirty Down</div><div class="swatch-value">water-based rust effect — over sealed surface</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span> <span class="tag tag-effects">Effects</span>
+        <h3>Shape While Wet</h3>
+        <p>It stays workable for a few minutes — pull excess downward with a damp brush, leave heavier deposits in recesses. Less is more; bare metal should still show on wear edges.</p>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 4 · Finish</span>
+        <h3>Cure, Then Matte Varnish</h3>
+        <p>Let it cure 2–3 hours (overnight ideal) before final matte varnish, or varnishing can reactivate and streak it.</p>
+      </div>
+
+      <div class="warning"><strong>⚠ Seal last:</strong> Matte varnish the whole base after curing to lock everything in and unify the finish.</div>
+    </div><!-- end base-effects -->
+
+  </div><!-- end #base -->
+
+
+  <!-- ═══════════════ AIRBRUSH SKILLS ═══════════════ -->
+  <div class="tab-content" id="airbrush-skills">
+
+    <div class="section-header">
+      <h2>Airbrush Skills</h2>
+      <p>This guide leans on zenithal priming, controlled black/grey gradients, VMC metallic layering over gloss black, and a fine spatter pass for blood. Tuned to your Bambu-adjacent bench setup and dual-action airbrushes.</p>
+    </div>
+
+    <div class="phase-label">Nozzle Assignments</div>
+    <table class="thin-table">
+      <thead>
+        <tr><th>Task</th><th>Nozzle</th><th>Why</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Priming (undiluted — do not thin)</td><td>0.5mm</td><td>High flow for primer viscosity; 30+ PSI</td></tr>
+        <tr><td>Grey zenithal / armor base coats</td><td>0.3mm</td><td>Controlled coverage and smooth black-to-grey gradients</td></tr>
+        <tr><td>Cyan panels / VMC metallics / edge work</td><td>0.2mm</td><td>Fine control on small panels and tight metallic edges</td></tr>
+      </tbody>
+    </table>
+
+    <div class="phase-label">Zenithal Sequence</div>
+    <div id="ab-zenithal-anchor"></div>
+
+    <div class="phase-label">PSI &amp; Distance Reference</div>
+    <table class="psi-table">
+      <thead>
+        <tr><th>Task</th><th>PSI</th><th>Distance</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Priming (undiluted)</td><td>30+</td><td>20–25cm</td><td>0.5mm nozzle; do NOT thin primer</td></tr>
+        <tr><td>Zenithal — black</td><td>30+</td><td>20–25cm</td><td>0.5mm nozzle; undiluted</td></tr>
+        <tr><td>Zenithal — white</td><td>30+</td><td>20–25cm</td><td>0.5mm nozzle; undiluted</td></tr>
+        <tr><td>Armor grey zenithal</td><td>15–18</td><td>10–15cm</td><td>0.3mm; thinned 1:3, build in passes from above</td></tr>
+        <tr><td>Cyan panel base</td><td>14–16</td><td>8–12cm</td><td>0.2mm; thinned 1:4, over a light ground spot</td></tr>
+        <tr><td>VMC steel (Duralum/Alum)</td><td>15–20</td><td>8–12cm</td><td>0.2mm; thinned ~1:1 distilled water, light planes only</td></tr>
+        <tr><td>VMC Chrome edge</td><td>12–15</td><td>6–10cm</td><td>0.2mm; drop PSI, feather apex edges only</td></tr>
+      </tbody>
+    </table>
+
+    <div id="ab-greyscale-anchor"></div>
+
+    <div class="phase-label">Troubleshooting</div>
+    <div class="trouble-grid">
+      <div class="trouble-card">
+        <h4>Blowback / Bubbling</h4>
+        <p>Air pushing back through the paint cup — usually a loose nozzle or a clogged tip. Bubbling froths the paint and spatters on the next trigger pull. Check the nozzle is seated, clear the tip, and don't cap the air outlet with a finger to "test."</p>
+      </div>
+      <div class="trouble-card">
+        <h4>Cyan Going Dull Over Black</h4>
+        <p>Turquoise sprayed straight over black armor reads muddy and dark. Lay a light ground (Bright Neutral Grey or white) under the cyan first, then build the Turquoise in thin passes — the light base is what makes the color sing.</p>
+      </div>
+      <div class="trouble-card">
+        <h4>VMC Metallic Looks Grainy</h4>
+        <p>Over-thinned or sprayed too far away, metallic pigment dries before it hits and lands rough. Move in to 8–10cm, thin closer to 1:1, and keep passes light and wet-looking. A gloss black ground also smooths the read.</p>
+      </div>
+      <div class="trouble-card">
+        <h4>Spatter Too Coarse</h4>
+        <p>Blood spatter via airbrush blobs instead of fine dots when PSI is too high or paint too thick. Drop to 8–12 PSI, thin the X27/red well, and pull back so droplets are fine. Always test on scrap and mask the white chevrons first.</p>
+      </div>
+    </div>
+
+  </div><!-- end #airbrush-skills -->
+
+
+  <!-- ═══════════════ BRUSH SKILLS ═══════════════ -->
+  <div class="tab-content" id="brush-skills">
+
+    <div class="section-header">
+      <h2>Brush Skills</h2>
+      <p>The brush carries the edge highlights, the white chevrons, the chipping, and the blood — the details that make this figure read as battle-worn rather than freshly molded.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Edge Highlighting</span>
+      <h3>Crisp Plate Edges</h3>
+      <p>The single most important brush technique on this figure. Load the brush, wipe it to near-dry on a towel, and drag the side of the tip along each armor edge so only the raised lip takes paint. Work in thin successive passes — Neutral Grey 075, then a finer Bright Neutral Grey 045 on the sharpest corners. A wet brush floods the bevel; a near-dry one gives the clean line that defines every plate.</p>
+      <div class="tip"><strong>✦ TIP:</strong> Brace your painting hand against your other hand or the bench edge. Edge lines live or die on a steady, supported stroke.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Liner Stripes</span>
+      <h3>White Chevrons &amp; Stripes</h3>
+      <p>Use a quality liner brush with a fine point and slightly thinned paint (it should flow but hold a line). Pull each chevron stroke in one confident motion rather than scrubbing — start at one end and lift off at the other. Build coverage with the grey→warm-white→specular hierarchy; never start at pure white.</p>
+      <div class="tip"><strong>✦ TIP:</strong> If an edge wobbles, let it dry fully, then re-cut the boundary with the black armor color. Correcting from the dark side is far easier than chasing a ragged white edge while wet.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Sponge Chipping</span>
+      <h3>Scattered Paint Chips</h3>
+      <p>Tear a nub of blister-pack foam, pick up a little paint, blot almost all of it off, then stipple lightly. The first dab is always too heavy — it's the second and third that leave the fine, irregular chips. Layer a smaller, darker chip inside the lighter ones for the illusion of depth into the armor.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Candy Glaze (FW Crimson Ink)</span>
+      <h3>Glowing Red Without the Magenta Trap</h3>
+      <p>For a richer glaze on the visor band or fresh-blood tint, reach for FW Crimson Ink rather than thinned PA Transparent Red, which shifts toward magenta when diluted. Glaze Crimson Ink in thin layers over a sealed red base to deepen and unify it while keeping it transparent and luminous.</p>
+      <div class="warning"><strong>⚠ NOTE:</strong> Never thin PA Transparent Red for a glaze on this figure — it turns magenta. FW Crimson Ink is the substitute for any thinned/glazed transparent red.</div>
+    </div>
+
+  </div><!-- end #brush-skills -->
+
+
+  <!-- ═══════════════ THINNING REF (always last) ═══════════════ -->
+  <div class="tab-content" id="thinning-ref">
+    <!-- Content injected by skills-reference.js -->
+  </div><!-- end #thinning-ref -->
+
+</div><!-- end .container -->
+
+
+<footer class="guide-footer">
+  Guide by
+  <a href="https://www.youtube.com/@brent_the_programmer9108" target="_blank">brent_the_programmer</a>
+  &middot;
+  <a href="https://instagram.com/stephenson913" target="_blank">@stephenson913</a>
+</footer>
+
+<button class="back-to-top" id="backToTop" title="Back to top"
+        onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<div class="ref-modal" id="refModal" onclick="if(event.target===this)closeRefModal()">
+  <div class="ref-modal-inner">
+    <button class="ref-modal-close" onclick="closeRefModal()" title="Close">✕</button>
+    <img class="ref-modal-img" id="refModalImg" src="" alt="">
+    <div class="ref-modal-caption" id="refModalCaption"></div>
+  </div>
+</div>
+
+<script>
+window.GUIDE_THINNING = {
+  airbrushRows: [
+    { technique: 'Armor grey zenithal', nozzle: '0.3mm', ratio: '1:3',        behavior: 'Semi-transparent; builds plane light from above without burying the black.' },
+    { technique: 'Cyan panel base',     nozzle: '0.2mm', ratio: '1:4',        behavior: 'Thin, saturated passes over a light ground spot for vibrancy.' },
+    { technique: 'VMC steel (light planes)', nozzle: '0.2mm', ratio: '~1:1 distilled water', behavior: 'Fluid metallic; lay only on light-facing planes, leave gloss black as shadow.' },
+    { technique: 'VMC Chrome edge',      nozzle: '0.2mm', ratio: 'ready / barely thinned', behavior: 'Feathered apex edges only at low PSI; the specular peak.' },
+    { technique: 'Blood spatter (X27)',  nozzle: '0.2mm', ratio: '1:2 to 1:3', behavior: 'Low PSI fine droplets; mask white areas, test on scrap first.' }
+  ],
+  brushRows: [],
+  thinningCards: []
+};
+</script>
+
+<script src="../../assets/guide.js"></script>
+<script src="../../assets/skills-reference.js"></script>
+<script>
+  function openRefModal(src, alt) {
+    var modal = document.getElementById('refModal');
+    document.getElementById('refModalImg').src = src;
+    document.getElementById('refModalImg').alt = alt;
+    document.getElementById('refModalCaption').textContent = alt;
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeRefModal() {
+    document.getElementById('refModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeRefModal();
+  });
+
+  function showSubTab(parentId, contentId, btn) {
+    const parent = document.getElementById(parentId);
+    if (!parent) return;
+    parent.querySelectorAll('.sub-content').forEach(c => c.classList.remove('active'));
+    parent.querySelectorAll('.sub-tab').forEach(b => b.classList.remove('active'));
+    const el = document.getElementById(contentId);
+    if (el) el.classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+  (function() {
+    const btn = document.getElementById('backToTop');
+    if (!btn) return;
+    window.addEventListener('scroll', function() {
+      btn.classList.toggle('visible', window.scrollY > 300);
+    }, { passive: true });
+  })();
+</script>
+
+</body>
+</html>

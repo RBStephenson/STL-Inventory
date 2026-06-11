@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salamanders Mk VI Marine — 30k Horus Heresy Painting Guide</title>
+
+  <link rel="stylesheet" href="../../assets/guide.css">
+  <link rel="stylesheet" href="../../assets/print.css" media="print">
+
+  <style>
+    :root {
+      --bg:       #091408;
+      --surface:  #0f1c0b;
+      --surface2: #162512;
+      --surface3: #1d301a;
+
+      --border:      #28401e;
+      --text:        #e2ead6;
+      --text-muted:  #86a270;
+      --text-dim:    #486030;
+
+      --accent: #56c468;
+
+      --tag-airbrush: #2266aa;
+      --tag-brush:    #226622;
+      --tag-wash:     #884422;
+      --tag-finish:   #555555;
+      --tag-effects:  #882244;
+      --tag-filter:   #446688;
+
+      --tip-bg:      rgba(70, 160, 70, 0.10);
+      --tip-border:  #2a6a2a;
+      --warn-bg:     rgba(200, 50, 50, 0.08);
+      --warn-border: #882222;
+    }
+
+    .hero {
+      background: linear-gradient(150deg, #050e04 0%, #0d1c09 25%, #1a3212 55%, #0a1608 80%, #060c05 100%);
+      border-bottom: 2px solid var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+<nav class="guide-nav">
+  <a href="../../index.html">← All Guides</a>
+</nav>
+
+
+<!-- ═══ HERO ═══════════════════════════════════════════════════ -->
+<div class="hero">
+  <div class="category">Horus Heresy · XVIII Legion Salamanders</div>
+
+  <h1><span>Salamanders</span> Mk VI Marine</h1>
+
+  <div class="subtitle">28mm Horus Heresy · Legion Green · Mk VI Crusade Armor · Children of Vulkan</div>
+
+  <div class="film-ref">
+    <em>"Vulkan lives. His sons walk in fire and do not burn."</em>
+  </div>
+
+  <div class="series-badge">
+    <a href="salamanders-space-marine-painting-guide.html">40k</a>
+    <span class="active">HH Salamanders</span>
+    <a href="iron-hands-hh-shattered-legions-painting-guide.html">Iron Hands</a>
+    <a href="raven-guard-hh-shattered-legions-painting-guide.html">Raven Guard</a>
+  </div>
+
+  <div class="creator-credit">
+    Figure by <strong>Games Workshop / Citadel Miniatures</strong>
+    · Horus Heresy Range
+  </div>
+</div>
+
+
+<!-- ═══ PAINT BAR ═══════════════════════════════════════════════ -->
+<div class="paint-bar">
+  <span class="paint-bar-label">Paint Lines Used</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#cc4444;"></span>Pro Acryl</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#4488cc;"></span>Army Painter Fanatic</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#44aacc;"></span>Army Painter Speedpaint 2.0</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#886600;"></span>Pro Acryl Expert Acrylics</span>
+</div>
+
+
+<!-- ═══ MAIN CONTAINER ══════════════════════════════════════════ -->
+<div class="container">
+
+  <div class="char-brief">
+    <strong>Salamanders Mk VI Marine — Horus Heresy</strong> — The 30k Salamanders scheme is meaningfully different from their 40k counterparts: this is the Legion in the crucible of the Great Crusade and early Heresy, wearing a <em>brighter, more vibrant forest green</em> — not the near-black grimdark shade of the 41st Millennium. The armor should read as rich, saturated green with deep fire-lit shadows, not dark green with highlights. The iconic Mk VI "Beakie" has one of the most satisfying silhouettes in the game — the extended beak visor, ribbed backpack, and distinctive shoulder proportions reward clean edge work. Light source: zenithal from above. Priority: get the armor saturation right and honor every Beakie edge.
+  </div>
+
+  <div class="tip" style="margin:0 0 8px;"><strong>✦ 30k vs 40k DIFFERENCE:</strong> In the 40k guide, <code>Black Green 057</code> is the main body color with Green 004 as a highlight layer. Here the relationship flips — <code>Green 004</code> is the primary armor color and the dark base mix stays in recesses only. This single change is what makes the 30k scheme read as brighter and more vibrant.</div>
+
+  <div class="tip" style="margin:0 0 16px;"><strong>✦ BATCH PAINTING:</strong> Same principle as the 40k guide — prime all models, paint one step across the whole batch, then move to the next. The speed track sub-tabs use white primer for a brighter Speedpaint result than the 40k dark-grey version.</div>
+
+
+  <!-- ═══ TAB NAV ══════════════════════════════════════════════ -->
+  <div class="tabs">
+    <div class="tab tab-btn active" onclick="showTab('armor', this)">Armor</div>
+    <div class="tab tab-btn" onclick="showTab('details', this)">Details &amp; Trim</div>
+    <div class="tab tab-btn" onclick="showTab('weapons', this)">Weapons</div>
+    <div class="tab tab-btn" onclick="showTab('face', this)">Face &amp; Eyes</div>
+    <div class="tab tab-btn" onclick="showTab('base', this)">Base</div>
+    <div class="tab tab-btn" onclick="showTab('metals', this)">Metals</div>
+    <div class="tab tab-btn" onclick="showTab('airbrush-skills', this)">Airbrush Skills</div>
+    <div class="tab tab-btn" onclick="showTab('brush-skills', this)">Brush Skills</div>
+    <div class="tab tab-btn" onclick="showTab('thinning-ref', this)">Thinning Ref</div>
+  </div>
+
+
+  <!-- ═══ TAB: ARMOR ══════════════════════════════════════════ -->
+  <div class="tab-content active" id="armor">
+
+    <div class="section-header">
+      <h2>Power Armor — 30k Legion Green</h2>
+      <p>Brighter and more saturated than the 40k scheme. Green 004 is your primary color, Black Green your shadow, Bright Green S33 your highlight. The armor should look like vibrant emerald-tinted steel, not a dark forest canopy.</p>
+    </div>
+
+    <div class="phase-label">Value Structure — 30k Brighter Scheme</div>
+    <div class="value-map">
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#141e0f;"></div>
+        <div class="chip-val">~10%</div>
+        <div class="chip-label">Deep Shadow</div>
+      </div>
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#1e3818;"></div>
+        <div class="chip-val">~18%</div>
+        <div class="chip-label">Shadow</div>
+      </div>
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#1e6830;"></div>
+        <div class="chip-val">~37%</div>
+        <div class="chip-label">Mid-Tone</div>
+      </div>
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#30a050;"></div>
+        <div class="chip-val">~54%</div>
+        <div class="chip-label">Highlight</div>
+      </div>
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#60c87a;"></div>
+        <div class="chip-val">~70%</div>
+        <div class="chip-label">Edge</div>
+      </div>
+    </div>
+
+    <div class="tip"><strong>✦ COMPARE TO 40k:</strong> The 40k scheme's mid-tone (~35%) sits at roughly Black Green territory. The 30k mid-tone (~37%) uses Green 004 — a noticeably more saturated green. Both have similar shadow depth, but the 30k scheme reads 15–20% brighter on the main body. That difference is everything.</div>
+
+    <div class="phase-label">Step-by-Step</div>
+
+    <div class="sub-tabs">
+      <div class="sub-tab active"  onclick="showSubTab('armor', 'armor-trad', this)">Traditional — Pro Acryl</div>
+      <div class="sub-tab"         onclick="showSubTab('armor', 'armor-speed', this)">⚡ Speedpaint — Speed Track</div>
+    </div>
+
+    <!-- TRADITIONAL SUB-TAB -->
+    <div class="sub-content active" id="armor-trad">
+
+      <div class="phase-label">Foundation</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 1 · Airbrush</span>
+        <h3>Black Prime</h3>
+        <p>P-002 Black Primer, full coverage over all surfaces. No thinning. The black base stays only in the deepest recesses of armor panel joints and undercuts — the Beakie's beak visor slot, the ribbed backpack piping gaps, the undersides of pauldrons. Everything else gets covered by subsequent steps. This is a lighter application of the base shadow compared to 40k, because you're building to a brighter mid-tone.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#141414"></div><div class="swatch-info"><div class="swatch-name">Black Primer P-002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~5% value — zenithal black base</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> Do NOT thin primer. 30+ PSI, 0.5mm nozzle, 20–25cm. Prime the whole Saturnine batch at once if you can.</div>
+      </div>
+
+      <div class="phase-label">Shadow Recesses</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 2 · Airbrush</span>
+        <h3>Recess Shadow — Dark Green Mix</h3>
+        <p>Black Green 057 thinned 1:2, applied ONLY to recesses, panel line areas, undersides of armor plates, and any surfaces facing strongly downward. This is a much more targeted application than in the 40k guide — you want this dark mix to pool in the deep recesses but leave most of the armor plate surface uncovered. Think of it as defining the shadow gradient, not basecoating. 50% of the armor surface or less should get this color.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#3B443E"></div><div class="swatch-info"><div class="swatch-name">Black Green 057</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~22% value — shadow recess only</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ KEY DIFFERENCE FROM 40k:</strong> In the 40k guide, Black Green 057 was the full-coverage base coat. Here it's a targeted recess shadow only. If you apply it too broadly, the armor will look like the darker 40k scheme. Less is more on this step.</div>
+      </div>
+
+      <div class="phase-label">Primary Armor Color</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 3 · Airbrush</span>
+        <h3>Legion Green — Main Body (The Key Step)</h3>
+        <p>Green 004 thinned 1:2.5, applied broadly from a zenithal angle to all upper and outward-facing armor surfaces. This is your main Legion color — the color a viewer sees when they look at this marine. Apply with enough coverage that the armor reads as clearly green, not dark green. Leave only the Black Green recess shadows visible in panel lines and deep undercuts. Two to three thin passes. This step is what the 30k scheme lives or dies on.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#06834A"></div><div class="swatch-info"><div class="swatch-name">Green 004</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~38% value — primary 30k Legion green</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ COVERAGE CHECK:</strong> Step back from the model and squint. Does it read as a clearly green Space Marine? If the answer is "dark green with a bit of lighter green," you haven't applied enough Green 004. The 30k scheme requires confident, opaque coverage on the main body. Flood the upper plates — the shadows do their job naturally.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 4 · Airbrush</span>
+        <h3>Raised-Plate Pre-Highlight</h3>
+        <p>S33 Bright Green thinned 1:4, concentrated on the very crown of each armor plate — top of shoulder pads, top of chest plate, upper greaves, top of Beakie helmet crest. This is the airbrush step that sets up where your brush highlights will go. The transition from Green 004 into S33 Bright Green should be gradual — 3–5 passes building up slowly from the center of each raised plate outward.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#17A162"></div><div class="swatch-info"><div class="swatch-name">Bright Green S33</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~52% value — pre-edge highlight on raised plates</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-label">Edge Highlights — Mk VI Panel Work</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 5 · Brush</span>
+        <h3>Primary Edge — All Plate Edges</h3>
+        <p>Bright Green S33 thinned 1:1 on a size 0 or 1 detail brush. Edge highlight every raised plate edge across the model — chest, shoulder pads, greaves, boots, backpack, pauldrons. The Mk VI has distinctive panel edges worth dwelling on: the long horizontal ridge of the Beakie helmet itself, the edge of the beak visor opening, the collar ring, the ribbed backpack generator flanges. Clean, consistent lines. The 30k brighter scheme means these highlights are even more prominent — let them be. They're not a problem; they're the point.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#17A162"></div><div class="swatch-info"><div class="swatch-name">Bright Green S33</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~52% value — primary edge highlight</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ MK VI SPECIFICS:</strong> The Beakie helmet has more edge-highlight real estate than Mk VII — the top ridge of the beak is a long clean line that benefits from a careful highlight pass. The visor slot opening gets a highlight along its upper rim. The collar ring where the helmet meets the gorget gets a highlight line. These small areas add up to a distinctive silhouette.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 6 · Brush</span>
+        <h3>Specular Edge — Corners &amp; Apex Points</h3>
+        <p>A mix of S33 Bright Green with a touch of Bright Yellow Green 039, applied on the sharpest corners, highest ridges, and uppermost edge intersections. In the 30k scheme this can be applied slightly more liberally than in 40k — the brighter mid-tone means this specular edge still reads as a highlight rather than an overpowering contrast. Corner of shoulder pad shoulder meeting rim, top of helmet beak ridge, front facing edges of greave panels.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#17A162"></div><div class="swatch-info"><div class="swatch-name">Bright Green S33</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">base of mix</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#96B842"></div><div class="swatch-info"><div class="swatch-name">Bright Yellow Green 039</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~65% value — bright corner specular</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 3:1 Bright Green S33 + Bright Yellow Green 039 — thinned 1:1 with water.</div>
+      </div>
+
+      <div class="phase-label">Optional — Green Glaze Unifier</div>
+
+      <div class="step">
+        <span class="step-number filter">Step 7 · Filter</span>
+        <h3>Transparent Green Unifying Glaze (Optional)</h3>
+        <p>If any transitions look slightly harsh or the Green 004 and S33 Bright Green reads as distinct bands rather than a smooth gradient, apply a thin glaze of Transparent Green 048 thinned 1:6 with MPAM-001 Glaze &amp; Wash Medium across the whole armor surface. This smooths transitions, boosts green saturation, and gives the armor a cohesive depth without adding value or obscuring highlights. Let dry completely before final edge work if any cleanup is needed.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#406857"></div><div class="swatch-info"><div class="swatch-name">Transparent Green 048</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~32% value — unifying green glaze</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#2a3a2a"></div><div class="swatch-info"><div class="swatch-name">Glaze &amp; Wash Medium MPAM-001</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">extender / medium</div></div></div>
+        </div>
+        <div class="ratio-box">Thin: 1 drop Transparent Green 048 + 6 drops MPAM-001. Apply over fully dried armor, brush lightly. Do NOT apply in recesses — it will pool and darken them further.</div>
+        <div class="tip"><strong>✦ TIP:</strong> This glaze is a refinement step, not a required one. If the straight layering already looks good, skip it. Use it when transitions feel chunky or when the armor color reads as slightly inconsistent across a squad.</div>
+      </div>
+
+    </div><!-- end #armor-trad -->
+
+    <!-- SPEEDPAINT SUB-TAB -->
+    <div class="sub-content" id="armor-speed">
+
+      <div class="tip"><strong>⚡ 30k Speed Track.</strong> The key difference from the 40k speed track: <strong>white primer instead of dark grey</strong>. Absolution Green Speedpaint over white primer produces a significantly brighter, more vibrant result — exactly what the 30k scheme needs. Over dark grey it goes darker (that's the 40k result). Over white it stays rich and saturated.</div>
+
+      <div class="phase-label">Foundation</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 1 · Airbrush</span>
+        <h3>White Prime — The Critical Difference</h3>
+        <p>P-003 White Primer, full coverage over all surfaces. Undiluted, 30+ PSI, 0.5mm nozzle. Full opacity — no dark grey or black showing through. The white primer is the foundation for a bright Speedpaint result. If coverage is partial, the Speedpaint will read unevenly. Two passes at 90° to each other ensures even coverage on Mk VI's ribbed backpack and under-visor areas.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#f8f8f8"></div><div class="swatch-info"><div class="swatch-name">White Primer P-003</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~95% value — bright prime base for vibrant Speedpaint result</div></div></div>
+        </div>
+        <div class="warning"><strong>⚠ NOTE:</strong> If you used black or dark grey primer on these models already, the Speedpaint approach produces a darker result — which is the 40k scheme. To get the brighter 30k result, you need white prime. Re-prime in white is the solution.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush</span>
+        <h3>Absolution Green — Over White</h3>
+        <p>Absolution Green (Speedpaint 2.0) applied undiluted or with a single drop of Speedpaint Medium over all armor. Over white primer, this Speedpaint produces a rich, vibrant forest green — considerably brighter than the dark grey primer version. Apply and leave it. No re-brushing while wet. The paint self-levels and naturally pools in recesses (the small amount of shadow you get for free). Work one panel group at a time, let gravity pull the excess into joints and recesses.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#294F2D"></div><div class="swatch-info"><div class="swatch-name">Absolution Green (Speedpaint 2.0)</div><div class="swatch-brand">Army Painter</div><div class="swatch-value">over white: bright vibrant green ~40% on raised areas, deeper in recesses</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> Over white primer, Absolution Green may appear slightly transparent with one coat on very flat surfaces. A second thin coat (fully dry first) on flat armor panels only builds opacity. Recesses need only one coat.</div>
+      </div>
+
+      <div class="phase-label">Edge Highlights — Same as Traditional Track</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span>
+        <h3>Edge Highlight — Green 004</h3>
+        <p>Green 004 thinned 1:1, edge highlighted along all plate edges. Over the Speedpaint result (which is already well into the vibrant green territory), Green 004 reads as a slight mid-tone brightening on edges — exactly what you want. Consistent line on every plate edge including all the Mk VI-specific features: beak ridge, visor rim, collar ring, backpack flanges.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#06834A"></div><div class="swatch-info"><div class="swatch-name">Green 004</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~38% value — first edge pass</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush</span>
+        <h3>Specular Edge — Bright Green</h3>
+        <p>S33 Bright Green thinned 1:1, applied as a secondary edge line inside the Green 004 edge on the sharpest corners and apex points. Two-pass edge highlighting on the brighter 30k scheme produces a noticeable visual "pop" on the table that single-edge highlighting doesn't achieve. Corner of shoulder pad rim, helmet crest ridge, front greave edges, toe caps.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#17A162"></div><div class="swatch-info"><div class="swatch-name">Bright Green S33</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~52% value — bright corner edge</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ SPEED TRACK RESULT:</strong> White prime + Absolution Green + Green 004 edge + S33 edge = a solid 30k Salamander that looks good at gaming distance and holds up in photos. Total extra brush time over pure Speedpaint: about 20 minutes per 5-man squad.</div>
+      </div>
+
+    </div><!-- end #armor-speed -->
+
+  </div><!-- end #armor -->
+
+
+  <!-- ═══ TAB: DETAILS & TRIM ═════════════════════════════════ -->
+  <div class="tab-content" id="details">
+
+    <div class="section-header">
+      <h2>Details &amp; Trim</h2>
+      <p>Gold Legion trim, Legion markings, purity seals, and the small details that read as "Salamanders" and not just "green Space Marine."</p>
+    </div>
+
+    <div class="phase-label">Gold Legion Trim</div>
+    <div class="tip"><strong>✦ 30k vs 40k GOLD:</strong> The gold recipe is identical to the 40k guide. The proportions may differ slightly — some HH Mk VI models have more extensive gold trim areas (decorative studs along the shoulderpad edges, knee boss rings, more elaborate collar detailing). Apply the same approach but expect more trim surface to cover.</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 1 · Brush</span>
+      <h3>Gold Shadow Base</h3>
+      <p>Dark Umber 019 thinned 1:1, applied to all gold trim areas. This warm dark brown base is what gives the gold its depth and stops it reading as flat metallic. Particularly important on the decorative Mk VI elements — stud heads, trim piping, and any knurled or textured trim sections. Work tidily.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#54443F"></div><div class="swatch-info"><div class="swatch-name">Dark Umber 019</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~18% value — warm gold shadow base</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 2 · Brush</span>
+      <h3>Rich Gold — Main Layer</h3>
+      <p>Rich Gold 028 thinned 1:2, applied over all trim in 2–3 thin coats. Leave Dark Umber visible in deepest recesses of any textured or beaded trim. On the Mk VI, the shoulder pad rim, collar, knee boss, and any decorative shoulder studs all get this treatment. Allow each coat to dry before the next to avoid muddying.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#BF9868"></div><div class="swatch-info"><div class="swatch-name">Rich Gold 028</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~58% value — primary Legion gold</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 3 · Wash</span>
+      <h3>Gold Shade</h3>
+      <p>Army Painter Strong Tone WP3200, targeted into recesses of all gold trim — around studs, into textured areas, between trim sections. Fine brush, capillary action. Strong Tone gives the gold an aged, worn quality appropriate to Crusade-era equipment that's seen hard use.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#3a2e20"></div><div class="swatch-info"><div class="swatch-name">Strong Tone WP3200</div><div class="swatch-brand">Army Painter Fanatic</div><div class="swatch-value">warm recess shade</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 4 · Brush</span>
+      <h3>Gold Edge Highlight</h3>
+      <p>Bright Gold 031 thinned 1:1, on the upper and front-facing edges of trim. The top edge of the shoulder pad rim, the raised bead of a decorative stud row, the crest of a trim segment. A thin line is all it takes. At 28mm this step takes under two minutes per model but makes the difference between flat gold and polished gold.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#D1B18A"></div><div class="swatch-info"><div class="swatch-name">Bright Gold 031</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~72% value — gold edge highlight</div></div></div>
+      </div>
+    </div>
+
+    <div class="phase-label">Legion Markings &amp; Shoulder Pads</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 5 · Brush</span>
+      <h3>Legion Badge &amp; Markings — Decals</h3>
+      <p>Horus Heresy Salamanders transfer sheets include the XVIII Legion badge (the fire drake), Legion numerals, and squad/company markings. Apply over a gloss-varnished surface (MPAM-003 Gloss Varnish) to prevent silvering. In HH convention the right shoulder pad typically carries the Legion symbol, the left carries the company/squad designation. Use a setting solution to conform decals to curved surfaces. Seal with matte varnish when fully dry.</p>
+      <div class="tip"><strong>✦ 30k MARKING CONVENTION:</strong> HH uses a different marking system than 40k — check the Horus Heresy: Salamanders book or GW's legion reference for the specific company/squad color scheme for the XVIII Legion. Typically: company colour markings on the left shoulder pad tactical arrow, Legion number on the right.</div>
+    </div>
+
+    <div class="phase-label">Purity Seals &amp; Parchment</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 6 · Brush</span>
+      <h3>Parchment — Base</h3>
+      <p>Ivory 023 thinned 1:1 over all parchment areas. Two thin coats. Some HH models have more parchment detail than their 40k equivalents — scrolls, honor badges, name plates — so take your time here. The warm ivory against the vibrant green and gold creates excellent color harmony.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#E1D7C8"></div><div class="swatch-info"><div class="swatch-name">Ivory 023</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~80% value — parchment base</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 7 · Wash</span>
+      <h3>Parchment — Shade</h3>
+      <p>Brown Wash 201 thinned 1:2, applied across all parchment. Pool in folds and creases, wick off flat areas quickly before drying. Light hand — aged parchment, not mud.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#594942"></div><div class="swatch-info"><div class="swatch-name">Brown Wash 201</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">warm shade</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 8 · Brush</span>
+      <h3>Parchment Highlight &amp; Text</h3>
+      <p>Bright Ivory 022 thinned 1:1 on raised fold ridges and top surfaces only. Lettering: Coal Black 002 near-watercolor consistency, fine liner brush, short horizontal strokes in grouped rows to suggest Nocturne scripture. Impression only at 28mm.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#F6F2DE"></div><div class="swatch-info"><div class="swatch-name">Bright Ivory 022</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~88% value — parchment highlight</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 9 · Brush</span>
+      <h3>Wax Seal — Red</h3>
+      <p>Burnt Red 008 base → Bold Pyrrole Red 003 highlight. Same as the 40k recipe. Red wax seals pop strongly against the vibrant green and gold — keep them small and saturated.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#803939"></div><div class="swatch-info"><div class="swatch-name">Burnt Red 008</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~28% value — wax base</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#CB2535"></div><div class="swatch-info"><div class="swatch-name">Bold Pyrrole Red 003</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~48% value — wax highlight</div></div></div>
+      </div>
+    </div>
+
+  </div><!-- end #details -->
+
+
+  <!-- ═══ TAB: WEAPONS ════════════════════════════════════════ -->
+  <div class="tab-content" id="weapons">
+
+    <div class="section-header">
+      <h2>Boltgun &amp; Weapons</h2>
+      <p>Mk VI tacticals carry the standard boltgun — black polymer casing, steel barrel and mechanisms, and typically a bayonet lug. Identical recipe to the 40k guide; this section is a clean reference copy for convenience.</p>
+    </div>
+
+    <div class="phase-label">Boltgun Casing — Black</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 1 · Brush</span>
+      <h3>Black Base</h3>
+      <p>Coal Black 002 thinned 1:1, two coats over the entire boltgun casing. Near-black, slight cool tone — reads as synthetic polymer.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2A2A2A"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~12% value — casing base</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 2 · Brush</span>
+      <h3>First Edge Highlight — Dark Grey</h3>
+      <p>Dark Neutral Grey 044 thinned 1:1, thin line on upper and front-facing edges of the casing, grip, magazine, and foregrip. Subtle — dark grey against near-black creates depth without reading as obviously highlighted.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#46484C"></div><div class="swatch-info"><div class="swatch-name">Dark Neutral Grey 044</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~28% value — first edge</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 3 · Brush</span>
+      <h3>Specular Corner Highlight</h3>
+      <p>Bright Neutral Grey 045 very thinned (1:2), on the sharpest corners and uppermost ridges only. Tiny dots or single-stroke lines at the corners of the grip housing, magazine feed corners, front sight post base. High-contrast and intentional.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#D5D5D4"></div><div class="swatch-info"><div class="swatch-name">Bright Neutral Grey 045</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~84% value — corner specular</div></div></div>
+      </div>
+    </div>
+
+    <div class="phase-label">Barrel &amp; Steel Components</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 4 · Brush</span>
+      <h3>Steel Dark Base</h3>
+      <p>Coal Black 002 + Dark Silver 030 (2:1), thinned 1:2. Over all metal components — barrel, bayonet lug, magazine receiver, trigger and guard assembly.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2A2A2A"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">shadow component</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#797A7A"></div><div class="swatch-info"><div class="swatch-name">Dark Silver 030</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">metallic component</div></div></div>
+      </div>
+      <div class="ratio-box">Mix: 2:1 Coal Black 002 + Dark Silver 030 — thinned 1:2.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 5 · Brush</span>
+      <h3>Steel Mid-Tone Drybrush</h3>
+      <p>AMP Steel 010 dry-brushed from a top-down direction across all metal parts. Catches raised surfaces, leaves recesses dark. Light hand for controlled coverage.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#8B8C8C"></div><div class="swatch-info"><div class="swatch-name">Steel AMP-010</div><div class="swatch-brand">Pro Acryl AMP</div><div class="swatch-value">~55% value — mid steel</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 6 · Brush</span>
+      <h3>Steel Edge &amp; Wash</h3>
+      <p>Silver 025 on apex edges (barrel muzzle rim, bayonet blade edge, scope corners). Then Black Wash 200 thinned 1:2 into mechanical recesses only — panel lines, bolt heads, seam gaps. Capillary action, targeted application.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#ACAEAE"></div><div class="swatch-info"><div class="swatch-name">Silver 025</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~70% value — specular edge</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#3E3B3B"></div><div class="swatch-info"><div class="swatch-name">Black Wash 200</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">recess wash</div></div></div>
+      </div>
+    </div>
+
+  </div><!-- end #weapons -->
+
+
+  <!-- ═══ TAB: FACE & EYES ════════════════════════════════════ -->
+  <div class="tab-content" id="face">
+
+    <div class="section-header">
+      <h2>Face &amp; Eyes — Mk VI Specifics</h2>
+      <p>The Beakie helmet's eye lenses sit inside the beak visor — the small lens pods visible through the visor opening. Bare heads use the same Salamander dark-skin recipe as the 40k guide. Mk VI-specific notes called out below.</p>
+    </div>
+
+    <div class="sub-tabs">
+      <div class="sub-tab active"  onclick="showSubTab('face', 'face-helmet', this)">Helmet — Beakie Lenses</div>
+      <div class="sub-tab"         onclick="showSubTab('face', 'face-bare', this)">Bare Head — Salamander Skin</div>
+    </div>
+
+    <!-- HELMET LENSES -->
+    <div class="sub-content active" id="face-helmet">
+
+      <div class="phase-label">Mk VI Beakie Lenses — Red</div>
+      <div class="tip"><strong>✦ MK VI LENS PLACEMENT:</strong> The Beakie helmet has two small circular or oval lens pods visible through the beak slot, set back behind the visor. Paint the visor slot interior Coal Black 002 first to frame them. The lenses themselves are very small — precision matters. A size 00 brush and patience.</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Visor Interior — Black Frame</h3>
+        <p>Coal Black 002 slightly thinned (1:0.5), painted into the entire visor slot interior — the beak channel and around the lens housings. This dark surround is what makes the lenses read as illuminated from within. Take your time; getting paint on the beak exterior is easy to do and annoying to touch up.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#2A2A2A"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~12% value — visor interior frame</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush</span>
+        <h3>Lens Base — Dark Red</h3>
+        <p>Burnt Red 008 thinned to milk consistency, filled into the lens pods. Two thin coats. Leave Coal Black around the lens edges.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#803939"></div><div class="swatch-info"><div class="swatch-name">Burnt Red 008</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~28% value — lens shadow base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span>
+        <h3>Lens Gradient — Bright Red</h3>
+        <p>Bold Pyrrole Red 003 thinned 1:1, lower two-thirds of each lens. The darker red at the top edge creates a natural shadow gradient suggesting depth within the lens housing.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#CB2535"></div><div class="swatch-info"><div class="swatch-name">Bold Pyrrole Red 003</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~48% value — main lens color</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush</span>
+        <h3>Lens Hot Spot — Orange</h3>
+        <p>Orange 007 thinned 1:2, tiny spot on the lower-center of each lens. Fiery, not subtle — Salamanders' eyes glow. The orange hot spot reads even through the beak visor shadow.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#F0792D"></div><div class="swatch-info"><div class="swatch-name">Orange 007</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~60% value — center glow</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 5 · Finish</span>
+        <h3>Gloss Varnish — Lens Wet Effect</h3>
+        <p>MPAM-003 Gloss Varnish, one micro-drop into each lens with a fine brush. The gloss against the matte armor and the dark visor interior creates the impression of active optical elements. Lens only — do not varnish the visor interior or the beak exterior.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#aaccff"></div><div class="swatch-info"><div class="swatch-name">Gloss Varnish MPAM-003</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">finish — lens surface only</div></div></div>
+        </div>
+      </div>
+
+    </div><!-- end #face-helmet -->
+
+    <!-- BARE HEAD -->
+    <div class="sub-content" id="face-bare">
+
+      <div class="tip"><strong>✦ SAME RECIPE AS 40k GUIDE.</strong> Salamander skin doesn't change between the Heresy and the far future — they're still Nocturne-born with deep ebony skin and red eyes. The full recipe is in the 40k guide's Face &amp; Eyes → Bare Head sub-tab. Summary below for quick reference.</div>
+
+      <div class="phase-label">Salamander Skin — Quick Reference</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1–4 · Brush</span>
+        <h3>Layering Summary</h3>
+        <p><strong>Shadow base:</strong> Mahogany 009 (~17% value) over all skin, thinned 1:1. Leave in recesses after subsequent layers. <strong>Main layer:</strong> Dark Flesh 068 (~22%) on all raised areas — forehead, nose, cheekbones, chin. <strong>Highlight:</strong> Advanced Flesh Tone S17 (~50%) on highest planes only — forehead center, nose tip, cheekbone peaks. Shift WARM not pink. <strong>Specular (optional at 28mm):</strong> Warm Flesh 073 on nose tip only, extremely thinned.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#574644"></div><div class="swatch-info"><div class="swatch-name">Mahogany 009</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~17% — shadow anchor</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#63403C"></div><div class="swatch-info"><div class="swatch-name">Dark Flesh 068</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~22% — mid-tone anchor</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#A88071"></div><div class="swatch-info"><div class="swatch-name">Advanced Flesh Tone S17</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~50% — raised-plane highlight</div></div></div>
+        </div>
+        <div class="warning"><strong>⚠ NOTE:</strong> Highlights shift warm golden-brown, NOT pink. Dark skin highlighted in pink produces a tonally wrong result. Advanced Flesh Tone S17 shifts in the correct warm direction.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 5–6 · Brush</span>
+        <h3>Salamander Eyes — Red</h3>
+        <p>Coal Black 002 into socket. Bold Pyrrole Red 003 for iris. Tiny spot of Orange 007 at center. Micro-drop of MPAM-003 Gloss Varnish. Same as helmet lenses — Salamanders' eyes glow red regardless of helm status.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#CB2535"></div><div class="swatch-info"><div class="swatch-name">Bold Pyrrole Red 003</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~48% value — Salamander eye</div></div></div>
+        </div>
+      </div>
+
+    </div><!-- end #face-bare -->
+
+  </div><!-- end #face -->
+
+
+  <!-- ═══ TAB: BASE ════════════════════════════════════════════ -->
+  <div class="tab-content" id="base">
+
+    <div class="section-header">
+      <h2>Base — Three Options</h2>
+      <p>Pick the base scheme that fits where your Salamanders are fighting. All three options use the same first steps; they diverge in finishing details.</p>
+    </div>
+
+    <div class="sub-tabs">
+      <div class="sub-tab active"  onclick="showSubTab('base', 'base-nocturne', this)">Volcanic Nocturne</div>
+      <div class="sub-tab"         onclick="showSubTab('base', 'base-ash', this)">Ash Wastes</div>
+      <div class="sub-tab"         onclick="showSubTab('base', 'base-siege', this)">Urban Rubble</div>
+    </div>
+
+    <!-- NOCTURNE BASE -->
+    <div class="sub-content active" id="base-nocturne">
+
+      <div class="tip"><strong>✦ VOLCANIC NOCTURNE</strong> — Same approach as the 40k guide. Matches your 40k army if you want both eras on the same battlefield. Full recipe in the 40k Salamanders guide. Quick steps below.</div>
+
+      <div class="step">
+        <span class="step-number brush">Steps 1–6 · Brush</span>
+        <h3>Volcanic Nocturne — Quick Reference</h3>
+        <p><strong>1.</strong> Brown Earth Fine T07 texture, dry fully. <strong>2.</strong> Yellow Ochre 038 heavy drybrush — warm volcanic earth. <strong>3.</strong> Dark Neutral Grey 044 on rocks. <strong>4.</strong> Bright Neutral Grey 045 light drybrush for ash fall. <strong>5 (optional).</strong> Lava crack effect with Transparent Orange 050 → Orange 007 → Golden Yellow 006. <strong>6.</strong> Coal Black 002 base rim.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#CB9A4C"></div><div class="swatch-info"><div class="swatch-name">Yellow Ochre 038</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">warm earth drybrush</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#D5D5D4"></div><div class="swatch-info"><div class="swatch-name">Bright Neutral Grey 045</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">ash light drybrush</div></div></div>
+        </div>
+      </div>
+
+    </div><!-- end #base-nocturne -->
+
+    <!-- ASH WASTES BASE -->
+    <div class="sub-content" id="base-ash">
+
+      <div class="tip"><strong>✦ ASH WASTES</strong> — The classic Horus Heresy basing theme. Pale grey, ashen ground with sparse rocky outcroppings. Reads as a distant, inhospitable world or the aftermath of orbital bombardment. Very fast to execute and pairs beautifully with the vibrant green armor.</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Grey Sand Texture</h3>
+        <p>Apply Brown Earth Fine T07 texture or PVA + sand across the base, then drybrush heavily with Dark Neutral Grey 044 while wet to pre-colour the texture. Let dry fully.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#46484C"></div><div class="swatch-info"><div class="swatch-name">Dark Neutral Grey 044</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~27% value — grey ash ground</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush</span>
+        <h3>Ash Mid-Tone Drybrush</h3>
+        <p>Bright Warm Grey 015 (or Warm Grey 074) medium drybrush over the whole base surface, catching all high texture points. This builds the mid-value that reads as grey ash and dust in natural light.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#ABB2A1"></div><div class="swatch-info"><div class="swatch-name">Bright Warm Grey 015</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~67% value — ash mid drybrush</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span>
+        <h3>Pale Ash Highlight Drybrush</h3>
+        <p>Bright Neutral Grey 045 very light drybrush on the very crown of texture peaks and rock surfaces. Almost no paint on the brush. The pale highlight suggests a thin layer of settled fine ash — very evocative of a post-bombardment battlefield.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#D5D5D4"></div><div class="swatch-info"><div class="swatch-name">Bright Neutral Grey 045</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~84% value — ash peak drybrush</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> The whole ash wastes base takes about 5 minutes per model once the texture is dry. An entire 20-man tactical squad can be based in under two hours. This is the speed basing option for large HH armies.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush</span>
+        <h3>Base Rim</h3>
+        <p>Coal Black 002 thinned 1:1 on the base rim. Standard 40k/HH black rim finish.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#2A2A2A"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">base rim</div></div></div>
+        </div>
+      </div>
+
+    </div><!-- end #base-ash -->
+
+    <!-- URBAN RUBBLE BASE -->
+    <div class="sub-content" id="base-siege">
+
+      <div class="tip"><strong>✦ URBAN RUBBLE</strong> — For the Saturnine/Siege of Terra narrative setting. Shattered masonry, broken stone, and war-torn city ground. More work than ash wastes but creates a strong narrative connection to the Heresy's climax.</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Rubble Layer — Texture + Stones</h3>
+        <p>Apply Brown Earth Coarse T08 as the ground texture. Press fragments of small stones, gravel, or sprue chunks (filed flat on one side) into the wet texture to represent masonry fragments. Press a few at irregular angles. Let dry fully — 45 minutes minimum, longer if the texture is thick.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#4a3828"></div><div class="swatch-info"><div class="swatch-name">Brown Earth Coarse T08</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">rubble texture base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush</span>
+        <h3>Masonry Base Coat</h3>
+        <p>Dark Neutral Grey 044 thinned 1:1 over all rubble — ground and stone fragments. Two coats for solid coverage. This is your masonry base tone.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#46484C"></div><div class="swatch-info"><div class="swatch-name">Dark Neutral Grey 044</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~27% value — masonry base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span>
+        <h3>Masonry Highlight Drybrush</h3>
+        <p>Bright Warm Grey 015 medium drybrush across everything, then Bright Neutral Grey 045 light drybrush for the dust highlight. Optional: a thin uneven glaze of Brown Wash 201 (very diluted, 1:6) pooled in ground recesses to add a muddy, grimy quality to the lower areas of rubble — suggests that the battle was recent and the ground still carries blast and blood residue.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#ABB2A1"></div><div class="swatch-info"><div class="swatch-name">Bright Warm Grey 015</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">masonry mid drybrush</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#594942"></div><div class="swatch-info"><div class="swatch-name">Brown Wash 201</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">grime glaze — optional</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush</span>
+        <h3>Base Rim</h3>
+        <p>Coal Black 002 thinned 1:1, base rim. Standard finish.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#2A2A2A"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">base rim</div></div></div>
+        </div>
+      </div>
+
+    </div><!-- end #base-siege -->
+
+  </div><!-- end #base -->
+
+
+  <!-- ═══ TAB: METALS ══════════════════════════════════════════ -->
+  <div class="tab-content" id="metals">
+
+    <div class="section-header">
+      <h2>Metals — 28mm TMM</h2>
+      <p>Identical approach to the 40k guide. Silver for boltgun components; gold handled in the Details &amp; Trim tab. Reproduced here as a standalone reference.</p>
+    </div>
+
+    <div class="phase-label">True Metallic Metal (TMM) — Silver</div>
+    <div class="tip"><strong>✦ VALUE FIRST:</strong> Near-black in deepest recesses, metallic mid-tone on main surfaces, near-white on apex edge. The shadow → metallic → bright edge progression is what sells the illusion of metal, not the metallic paint itself.</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 1 · Brush</span>
+      <h3>Dark Metal Base</h3>
+      <p>Coal Black 002 + Dark Silver 030 (2:1), thinned 1:2, applied over all metal surface areas. Establishes the shadow value of the metal surface.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2A2A2A"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">shadow component</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#797A7A"></div><div class="swatch-info"><div class="swatch-name">Dark Silver 030</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">metallic component</div></div></div>
+      </div>
+      <div class="ratio-box">Mix: 2:1 Coal Black 002 + Dark Silver 030 — thinned 1:2.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 2 · Brush</span>
+      <h3>Mid Metallic — Zenithal Drybrush</h3>
+      <p>AMP Steel 010 dry-brushed from above. Load, wipe to near-dry, drag rapidly over metal surfaces. Catches high points, leaves recesses dark. Light hand.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#8B8C8C"></div><div class="swatch-info"><div class="swatch-name">Steel AMP-010</div><div class="swatch-brand">Pro Acryl AMP</div><div class="swatch-value">~55% value — mid metallic drybrush</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 3 · Brush</span>
+      <h3>Bright Edge + Recess Wash</h3>
+      <p>Silver 025 thinned 1:1 on apex edges (barrel muzzle, blade edge, protruding corners). Then Black Wash 200 thinned 1:2, targeted into mechanical recesses only via capillary action.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#ACAEAE"></div><div class="swatch-info"><div class="swatch-name">Silver 025</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~70% value — specular edge</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#3E3B3B"></div><div class="swatch-info"><div class="swatch-name">Black Wash 200</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">targeted recess wash</div></div></div>
+      </div>
+    </div>
+
+  </div><!-- end #metals -->
+
+
+  <!-- ═══ TAB: AIRBRUSH SKILLS ═════════════════════════════════ -->
+  <div class="tab-content" id="airbrush-skills">
+
+    <div class="section-header">
+      <h2>Airbrush Skills</h2>
+      <p>Zenithal pre-shading, targeted recess shadow, and main body color application. Identical principles to the 40k guide with different ratios for the brighter scheme.</p>
+    </div>
+
+    <div class="phase-label">Nozzle Assignments</div>
+    <table class="thin-table">
+      <thead>
+        <tr><th>Task</th><th>Nozzle</th><th>Why</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Priming (undiluted — do not thin)</td><td>0.5mm</td><td>High flow needed for primer viscosity; 30+ PSI</td></tr>
+        <tr><td>Targeted recess shadow (Black Green 057)</td><td>0.3mm</td><td>Precision required — targeted areas only, not broad coverage</td></tr>
+        <tr><td>Main Legion green (Green 004)</td><td>0.4mm</td><td>Broad coverage with controlled opacity; primary body color</td></tr>
+        <tr><td>Raised-plate pre-highlight (S33 Bright Green)</td><td>0.3mm</td><td>Focused area — restrict trigger for small plate crown zones</td></tr>
+      </tbody>
+    </table>
+
+    <div class="phase-label">Zenithal Sequence</div>
+    <div id="ab-zenithal-anchor"></div>
+
+    <div class="phase-label">PSI &amp; Distance Reference</div>
+    <table class="psi-table">
+      <thead>
+        <tr><th>Task</th><th>PSI</th><th>Distance</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Priming (undiluted)</td><td>30+</td><td>20–25cm</td><td>0.5mm nozzle; do NOT thin primer</td></tr>
+        <tr><td>Zenithal — black</td><td>30+</td><td>20–25cm</td><td>0.5mm nozzle; undiluted</td></tr>
+        <tr><td>Zenithal — white (if used)</td><td>30+</td><td>20–25cm</td><td>0.5mm nozzle; undiluted</td></tr>
+        <tr><td>Recess shadow (Black Green 057)</td><td>15–18</td><td>8–12cm</td><td>0.3mm; thin 1:2; targeted areas only — pull trigger partially</td></tr>
+        <tr><td>Main green (Green 004)</td><td>16–20</td><td>12–15cm</td><td>0.4mm; thin 1:2.5; confident coverage on body plates</td></tr>
+        <tr><td>Pre-highlight (S33 Bright Green)</td><td>12–15</td><td>8–10cm</td><td>0.3mm; thin 1:4; plate crowns only; restrict trigger</td></tr>
+      </tbody>
+    </table>
+
+    <div id="ab-greyscale-anchor"></div>
+
+    <div class="phase-label">Troubleshooting</div>
+    <div class="trouble-grid">
+      <div class="trouble-card">
+        <h4>Blowback / Bubbling</h4>
+        <p>Cause: PSI too high or nozzle cap over-tightened. Effect: paint bubbles back into the cup. Fix: Reduce PSI to 15–18. Finger-tight nozzle cap only. On Mk VI's ribbed backpack, work at lower PSI so paint doesn't blast into the rib recesses unevenly.</p>
+      </div>
+      <div class="trouble-card">
+        <h4>Armor Reading Too Dark</h4>
+        <p>Cause: Black Green 057 applied too broadly in Step 2 (should be recesses only). Effect: armor looks like the 40k scheme, not the brighter 30k. Fix: A light zenithal pass of Green 004 over the whole model to lift the mid-tone back up. The green will partially cover the Black Green on flatter surfaces.</p>
+      </div>
+      <div class="trouble-card">
+        <h4>Uneven Coverage / Banding</h4>
+        <p>Cause: Inconsistent airbrush movement speed or stopping mid-pass. Effect: visible stripes across armor plates. Fix: Keep moving at constant speed. Trigger off before you stop. Multiple thin passes at consistent distance rather than one slow heavy pass.</p>
+      </div>
+    </div>
+
+  </div><!-- end #airbrush-skills -->
+
+
+  <!-- ═══ TAB: BRUSH SKILLS ════════════════════════════════════ -->
+  <div class="tab-content" id="brush-skills">
+
+    <div class="section-header">
+      <h2>Brush Skills</h2>
+      <p>Edge highlighting, drybrushing, targeted washing. Identical techniques to the 40k guide — extra notes for Mk VI-specific geometry.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Edge Highlighting — Mk VI Specifics</span>
+      <h3>Honoring the Beakie</h3>
+      <p>The Mk VI silhouette is defined by its beak visor, ribbed backpack, and distinctive long curved surfaces. When edge highlighting, treat the following as distinct highlight targets that don't exist on Mk VII: the top ridge of the beak (one long, single confident stroke from left to right); the visor slot upper rim (follow the inner lip of the beak opening); the collar gorget ring where helmet meets chest — a visible circle of armor that benefits from a clean bright edge. The ribbed backpack pipe channels run vertically — the raised ridge of each rib gets a short highlight stroke. At 28mm, you don't need every rib — every second or third one is enough.</p>
+      <div class="tip"><strong>✦ TIP:</strong> The beak ridge line is the defining edge of the whole model. Nail that single confident stroke and the Beakie looks sharp. Hesitate and wobble on it and nothing else will save the face. Practice the motion on a scrap surface first.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Drybrushing</span>
+      <h3>Bases and Metals</h3>
+      <p>Drybrushing applies to base texture and metallic surfaces. For ash wastes or volcanic bases: heavy drybrush of the mid-tone, light drybrush of the highlight. For steel TMM: zenithal drybrush with AMP Steel 010 from above — treat the whole metal surface as one drybrush target, not individual elements. The zenithal direction is the same as your light source. Quick and produces good results at 28mm scale.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Technique · Targeted Washing</span>
+      <h3>Panel Lines and Recesses</h3>
+      <p>Apply washes to recesses only — never flood across flat armor surfaces at this scale. Fine brush, load with thinned wash, touch to the recess opening and let capillary action draw the liquid in. Remove the brush before overflow. For the Mk VI ribbed backpack, apply wash into each rib channel individually — a very fine brush is required. Two minutes of patience here produces significantly cleaner results than a flood and mop approach.</p>
+    </div>
+
+    <!-- Greyscale check tip injected here by skills-reference.js -->
+
+  </div><!-- end #brush-skills -->
+
+
+  <!-- ═══ TAB: THINNING REF (always last) ══════════════════════ -->
+  <div class="tab-content" id="thinning-ref">
+    <!-- Content injected by skills-reference.js -->
+  </div>
+
+</div><!-- end .container -->
+
+
+<footer class="guide-footer">
+  Guide by
+  <a href="https://www.youtube.com/@brent_the_programmer9108" target="_blank">brent_the_programmer</a>
+  &middot;
+  <a href="https://instagram.com/stephenson913" target="_blank">@stephenson913</a>
+</footer>
+
+<button class="back-to-top" id="backToTop" title="Back to top"
+        onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<div class="ref-modal" id="refModal" onclick="if(event.target===this)closeRefModal()">
+  <div class="ref-modal-inner">
+    <button class="ref-modal-close" onclick="closeRefModal()" title="Close">✕</button>
+    <img class="ref-modal-img" id="refModalImg" src="" alt="">
+    <div class="ref-modal-caption" id="refModalCaption"></div>
+  </div>
+</div>
+
+
+<script>
+window.GUIDE_THINNING = {
+  airbrushRows: [
+    { technique: 'Recess shadow — Black Green 057', nozzle: '0.3mm', ratio: '1:2', behavior: 'Targeted; recesses only. Do not over-apply — this stays in panel lines, not on body plates.' },
+    { technique: 'Main green — Green 004', nozzle: '0.4mm', ratio: '1:2.5', behavior: 'Broad confident coverage on all upper plates. Semi-opaque, builds in 2–3 passes.' },
+    { technique: 'Pre-highlight — S33 Bright Green', nozzle: '0.3mm', ratio: '1:4', behavior: 'Very thin; floats onto plate crown areas only. Restrict trigger for small pattern.' },
+    { technique: 'Speedpaint track: White prime', nozzle: '0.5mm', ratio: 'Undiluted', behavior: '30+ PSI, full coverage. White (not grey/black) is required for the brighter 30k Speedpaint result.' },
+  ],
+  brushRows: [],
+  thinningCards: []
+};
+</script>
+
+<script src="../../assets/guide.js"></script>
+<script src="../../assets/skills-reference.js"></script>
+<script>
+  function openRefModal(src, alt) {
+    var modal = document.getElementById('refModal');
+    document.getElementById('refModalImg').src = src;
+    document.getElementById('refModalImg').alt = alt;
+    document.getElementById('refModalCaption').textContent = alt;
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeRefModal() {
+    document.getElementById('refModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeRefModal();
+  });
+
+  function showSubTab(parentId, contentId, btn) {
+    const parent = document.getElementById(parentId);
+    if (!parent) return;
+    parent.querySelectorAll('.sub-content').forEach(c => c.classList.remove('active'));
+    parent.querySelectorAll('.sub-tab').forEach(b => b.classList.remove('active'));
+    const el = document.getElementById(contentId);
+    if (el) el.classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+  (function() {
+    const btn = document.getElementById('backToTop');
+    if (!btn) return;
+    window.addEventListener('scroll', function() {
+      btn.classList.toggle('visible', window.scrollY > 300);
+    }, { passive: true });
+  })();
+</script>
+
+</body>
+</html>

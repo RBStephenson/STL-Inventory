@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<!--
+╔══════════════════════════════════════════════════════════════════════╗
+║  FIGURE PAINTING GUIDE — TEMPLATE                                    ║
+║  guide.css contains ALL shared styles. Per-guide style block        ║
+║  contains ONLY :root theme vars + .hero gradient. No exceptions.     ║
+╠══════════════════════════════════════════════════════════════════════╣
+║  HOW TO USE — QUICK START                                            ║
+║                                                                      ║
+║  1. COPY FILE                                                        ║
+║     Copy to: by-category/CATEGORY/character-name-painting-guide.html ║
+║                                                                      ║
+║  2. FIX PATHS (3 places — search "assets/")                          ║
+║     Change "assets/" → "../../assets/" in:                          ║
+║       • <link> for guide.css                                         ║
+║       • <link> for print.css                                         ║
+║       • <script src> for guide.js                                    ║
+║                                                                      ║
+║  3. SET THEME (search "[PLACEHOLDER" in <style>)                     ║
+║     • :root --accent     → character's signature color               ║
+║     • :root --bg/surface → figure's palette tones (usually dark)     ║
+║     • .hero background   → gradient matching figure theme            ║
+║     • .method-card-badge color: override inline if needed            ║
+║       (default #000 in guide.css; override to #fff for dark accents) ║
+║                                                                      ║
+║  4. FILL HERO + PAINT BAR                                            ║
+║     • .category, h1, .subtitle, .film-ref quote, .series-badge       ║
+║     • One .paint-pill per brand used anywhere in guide               ║
+║                                                                      ║
+║  5. FILL CHARACTER BRIEF                                             ║
+║     • Philosophy, light source direction, priority materials          ║
+║                                                                      ║
+║  6. BUILD TABS                                                       ║
+║     • Skin: update value map hex, pick method, mark recommended card ║
+║     • Hair & Eyes, Outfit, Weapons, Base: fill or delete as needed   ║
+║     • Material tab: duplicate the #material-placeholder block;       ║
+║       add a matching tab button to the nav for each copy             ║
+║     • Metals: TMM tab always; NMM sub-tab when appropriate           ║
+║     • Airbrush Skills: only techniques used in THIS guide            ║
+║     • Thinning Ref: always last; nozzle callout stays at top         ║
+║                                                                      ║
+║  7. ADD REFERENCE IMAGE                                               ║
+║     • Save image to: img/character-name-reference.jpg               ║
+║       (create img/ folder alongside guide in by-category/CAT/)      ║
+║     • No user image? Web-search the character/kit, save best result  ║
+║     • Update src="img/..." and alt="..." in .ref-thumb-wrap block    ║
+║     • Omit entire .ref-thumb-wrap block if no image is available     ║
+║                                                                      ║
+║  8. VALIDATE BEFORE PUBLISHING                                       ║
+║     ☐ No [PLACEHOLDER] text remaining                                ║
+║     ☐ No empty tabs or sections                                      ║
+║     ☐ No duplicate content (quote only in hero .film-ref)            ║
+║     ☐ Paint codes cross-checked against paint-code-conventions.md    ║
+║     ☐ All tab nav buttons match tab-content IDs                      ║
+║     ☐ trouble-grid has even number of cards (2-col layout)           ║
+║     ☐ Thinning Ref is the last tab                                   ║
+║     ☐ Open in browser, click every tab and sub-tab                   ║
+║     ☐ All paints are in paint-inventory.md                           ║
+║     ☐ Reference thumbnail visible; click opens full modal            ║
+╚══════════════════════════════════════════════════════════════════════╝
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[CHARACTER NAME] — 1:6 Scale Painting Guide</title>
+
+  <!--
+    ╔══════════════════════════════════════════════════════════════╗
+    ║  PATH NOTE                                                   ║
+    ║  This template lives at: painting-guides/                    ║
+    ║  Guides live at:         painting-guides/by-category/CAT/    ║
+    ║                                                              ║
+    ║  When copying to by-category/CATEGORY/guide-name.html,       ║
+    ║  change every "assets/" reference to "../../assets/"         ║
+    ║  (3 occurrences: guide.css, print.css, guide.js script src)  ║
+    ╚══════════════════════════════════════════════════════════════╝
+  -->
+
+  <link rel="stylesheet" href="assets/guide.css">
+  <link rel="stylesheet" href="assets/print.css" media="print">
+
+  <style>
+    /* ═══════════════════════════════════════════════════════════
+       PER-GUIDE THEME — customize :root vars and .hero gradient.
+       ALL other styles live in guide.css.
+       Inline ONLY to override a guide.css rule when needed.
+       ═══════════════════════════════════════════════════════════ */
+
+    :root {
+      /* Page & panel backgrounds */
+      --bg:       #111111;        /* [PLACEHOLDER: page background — usually near-black] */
+      --surface:  #1a1a1a;        /* [PLACEHOLDER: card / panel background] */
+      --surface2: #222222;        /* [PLACEHOLDER: inset block / sub-tab background] */
+      --surface3: #2a2a2a;        /* table header background — adjust with surface2 */
+
+      /* Borders & text */
+      --border:      #333333;
+      --text:        #e8e8e8;
+      --text-muted:  #aaaaaa;
+      --text-dim:    #666666;
+
+      /* Accent — pick the character's signature color */
+      --accent: #888888;          /* [PLACEHOLDER: e.g. #cc1010 red, #00ccaa teal, #cc8800 gold] */
+
+      /* Step badge colors — adjust only if you need to match a theme */
+      --tag-airbrush: #2266aa;
+      --tag-brush:    #226622;
+      --tag-wash:     #884422;
+      --tag-finish:   #555555;
+      --tag-effects:  #882244;
+      --tag-filter:   #446688;
+
+      /* Callout colors */
+      --tip-bg:      rgba(0, 160, 0, 0.08);
+      --tip-border:  #2a6a2a;
+      --warn-bg:     rgba(200, 50, 50, 0.08);
+      --warn-border: #882222;
+    }
+
+    /* ── Sub-tab active states — Craft Paints and Effects ─── */
+    .sub-tab.folk-art-tab.active { border-color:#7a9a3a; color:#a8cc66; }
+    .sub-tab.effects-tab.active  { border-color:#b87030; color:#e8a050; }
+
+    /* ── HERO — replace with figure-themed gradient + border ─── */
+    .hero {
+      /* [PLACEHOLDER: replace with figure-themed gradient + border] */
+      background: linear-gradient(135deg, #111111 0%, #1c1c1c 60%, #111111 100%);
+      border-bottom: 2px solid var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     BACK NAV
+     [PLACEHOLDER: adjust href depth when placing in by-category/]
+     ═══════════════════════════════════════════════════════════ -->
+<nav class="guide-nav">
+  <a href="../../index.html">← All Guides</a>
+</nav>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     HERO
+     Pattern: .category → h1 → .subtitle → .film-ref → .series-badge
+     DO NOT add: hero-badge, hero-meta, or lore-note inside hero
+     ═══════════════════════════════════════════════════════════ -->
+<div class="hero">
+  <div class="category">[PLACEHOLDER: Category · Franchise]</div>
+  <!-- Example: "Film · TV · Comics" or "Anime · Music" or "Video Games" -->
+
+  <h1><span>[PLACEHOLDER:</span> Character Name]</h1>
+  <!-- Example: <h1><span>Cassie</span> Hack</h1> — wrap first word in <span> for accent color -->
+
+  <div class="subtitle">[PLACEHOLDER: tagline — scale · key themes · effect focus]</div>
+  <!-- Example: "1:6 Scale · Slasher hunter · blood effects · chrome buckle" -->
+
+  <div class="film-ref">
+    <em>"[PLACEHOLDER: notable character quote]"</em>
+    <!-- This is the ONLY place a character quote appears. Never repeat in tabs. -->
+  </div>
+
+  <div class="series-badge">
+    <span class="active">[PLACEHOLDER: This Guide — first name only]</span>
+    <!-- Other guides in the same series use <a href="filename.html">Name</a>
+         Current guide uses <span class="active">Name</span>
+         Example: <a href="cassie-hack-painting-guide.html">Cassie</a> -->
+  </div>
+
+  <div class="creator-credit">
+    Figure by <strong>[PLACEHOLDER: Manufacturer / Sculptor — e.g. "Hot Toys", "Mezco Toyz", "Sideshow Collectibles"]</strong>
+    <!-- Optional: · <a href="[url]" target="_blank">@[handle]</a> if creator has social media -->
+  </div>
+
+  <!-- REFERENCE IMAGE THUMBNAIL
+       src  → "img/character-name-reference.jpg" (place image in img/ next to this guide)
+       alt  → character name for caption in modal
+       Omit this entire block if no reference image is available.
+       ─────────────────────────────────────────────────────────── -->
+  <div class="ref-thumb-wrap">
+    <img class="ref-thumb"
+         src="img/[PLACEHOLDER: character-name-reference.jpg]"
+         alt="[PLACEHOLDER: Character Name] — reference"
+         onclick="openRefModal(this.src, this.alt)"
+         title="Click to view full reference image">
+    <div class="ref-thumb-label">Reference</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAINT BAR
+     Every brand used ANYWHERE in the guide gets a .paint-pill
+     ═══════════════════════════════════════════════════════════ -->
+<div class="paint-bar">
+  <span class="paint-bar-label">Paint Lines Used</span>
+
+  <!-- [PLACEHOLDER: one .paint-pill per brand used in this guide] -->
+  <span class="paint-pill">
+    <span class="pill-dot" style="background:#cc4444;"></span>Pro Acryl
+  </span>
+  <span class="paint-pill">
+    <span class="pill-dot" style="background:#4488cc;"></span>Army Painter Fanatic
+  </span>
+  <!-- Common additions: Speedpaint 2.0, Vallejo, Pro Acryl Expert Acrylics -->
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     MAIN CONTAINER
+     ═══════════════════════════════════════════════════════════ -->
+<div class="container">
+
+  <!-- CHARACTER BRIEF
+       Sits below paint bar, before tabs.
+       Include: painting philosophy, light source, key material focus.
+       ─────────────────────────────────────────────────────── -->
+  <div class="char-brief">
+    <strong>[PLACEHOLDER: Character Name]</strong> —
+    [PLACEHOLDER: 2–3 sentence painting philosophy. Include:
+    (1) visual archetype / character energy,
+    (2) light source direction (e.g. "zenithal from above", "OSL from weapon"),
+    (3) priority material or effect focus.]
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB NAV
+       Tab buttons use class "tab tab-btn" so guide.js showTab()
+       can target .tab-btn to toggle active state.
+       Add / remove tabs to match this figure's materials.
+       Do NOT include empty tabs.
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tabs">
+    <div class="tab tab-btn active" onclick="showTab('skin', this)">Skin</div>
+    <div class="tab tab-btn" onclick="showTab('hair-eyes', this)">Hair &amp; Eyes</div>
+    <!-- [PLACEHOLDER: add material tabs here — e.g. Outfit & Hardware, Weapons, Base, Metals] -->
+    <!-- Example:
+    <div class="tab tab-btn" onclick="showTab('outfit', this)">Outfit &amp; Hardware</div>
+    <div class="tab tab-btn" onclick="showTab('metals', this)">Metals</div>
+    <div class="tab tab-btn" onclick="showTab('weapons', this)">Weapons</div>
+    <div class="tab tab-btn" onclick="showTab('base', this)">Base</div>
+    -->
+    <div class="tab tab-btn" onclick="showTab('airbrush-skills', this)">Airbrush Skills</div>
+    <div class="tab tab-btn" onclick="showTab('brush-skills', this)">Brush Skills</div>
+    <div class="tab tab-btn" onclick="showTab('thinning-ref', this)">Thinning Ref</div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: SKIN
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content active" id="skin">
+
+    <div class="section-header">
+      <h2>Skin</h2>
+      <p>[PLACEHOLDER: 1 sentence — complexion, archetype, finish goal.]</p>
+    </div>
+
+    <!-- VALUE MAP — 5 chips: Deep Shadow / Shadow / Mid-Tone / Highlight / Specular
+         Update hex values and % to match this figure's actual skin value range. -->
+    <div class="phase-label">Value Structure</div>
+    <div class="value-map">
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#1a0e0a;"></div>
+        <div class="chip-val">~15%</div>
+        <div class="chip-label">Deep Shadow</div>
+      </div>
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#3d2318;"></div>
+        <div class="chip-val">~30%</div>
+        <div class="chip-label">Shadow</div>
+      </div>
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#7a4a30;"></div>
+        <div class="chip-val">~50%</div>
+        <div class="chip-label">Mid-Tone</div>
+      </div>
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#c08060;"></div>
+        <div class="chip-val">~75%</div>
+        <div class="chip-label">Highlight</div>
+      </div>
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#e8c8a8;"></div>
+        <div class="chip-val">~90%</div>
+        <div class="chip-label">Specular</div>
+      </div>
+    </div>
+    <!--
+      Mid-tone reference by complexion (Pro Acryl → Fanatic alternative):
+        Very fair / porcelain  → Shadow Flesh 042 or Bright Shadow Flesh S41 → Pearl Skin / Moonstone Skin
+        Fair / warm            → Warm Flesh 073 or Peach Flesh 008           → Barbarian Flesh / Ruby Skin
+        Medium / tan           → Advanced Flesh Tone S17 or Tan Flesh 024    → Opal Skin / Topaz Skin
+        Warm olive             → Olive Flesh 041 or Tan Flesh 024            → Jasper Skin / Tourmaline Skin
+        Brown / warm dark      → Dark Warm Flesh S08                         → Mocca Skin / Amber Skin
+        Deep / dark brown      → Dark Flesh 068                              → Dorado Skin / Onyx Skin
+    -->
+
+
+    <!-- METHOD RECOMMENDATION -->
+    <div class="phase-label">Method Selection</div>
+    <div class="method-rec-block">
+      <strong>[PLACEHOLDER: RECOMMENDED METHOD NAME]</strong> —
+      [PLACEHOLDER: brief character analysis justifying the method choice.]
+    </div>
+
+    <!-- METHOD CARDS GRID — all three always shown; mark recommended one -->
+    <div class="method-cards">
+
+      <div class="method-card">
+        <h4>Method 1 — Basic</h4>
+        <p>Classic layering. Prime → shadow undercoat → base coat → mid-tone → highlight → optional unifying glaze.</p>
+        <span class="mc-pros">Most predictable; straightforward to correct</span>
+        <span class="mc-cons">Can read flat without enough layers</span>
+        <span class="mc-best">Tabletop / 28mm, first-time painters, anime/cartoon (2–3 layers, no freckling)</span>
+      </div>
+
+      <div class="method-card">
+        <h4>Method 2A — Pinkle</h4>
+        <p>Black prime → white zenithal → magenta all over → Transparent Red into recesses → thin flesh layers over top.</p>
+        <span class="mc-pros">Luminous sub-surface scattering; fewer layers needed</span>
+        <span class="mc-cons">Poor zenithal = muddy result; harder to correct</span>
+        <span class="mc-best">Fair / feminine, protagonist / hero figures, display 1:6 / 75mm / busts</span>
+      </div>
+
+      <div class="method-card">
+        <h4>Method 2B — Red Zenithal</h4>
+        <p>Same as 2A but skip magenta — use Transparent Red 047 (1:2) or Flesh Wash directly over the white zenithal.</p>
+        <span class="mc-pros">Natural warmth and exertion flush; works on darker complexions</span>
+        <span class="mc-cons">Same zenithal dependency as 2A</span>
+        <span class="mc-best">Rugged male, military, survivor, weathered or world-worn figures</span>
+      </div>
+
+      <!-- Method 3 card — uncomment if this figure warrants it -->
+      <!--
+      <div class="method-card">
+        <h4>Method 3 — Wash Tinting</h4>
+        <p>Mid-tone base → satin varnish seal → yellow wash (fatty areas) → seal → blue wash (vein areas) → seal → red wash (capillary zones).</p>
+        <span class="mc-pros">Most realistic tonal mapping; three distinct undertone zones</span>
+        <span class="mc-cons">Slowest — 3 varnish layers and dry times; one wash too thick = muddy</span>
+        <span class="mc-best">Historical, portrait, display max-realism. Not suitable for 28mm or anime.</span>
+      </div>
+      -->
+    </div>
+
+    <!-- FRECKLING NOTE — choose one version, delete the other -->
+    <div class="freckle-note">
+      <!-- REALISTIC FIGURE: -->
+      <strong>Freckling / Speckling:</strong> After skin is sealed, thin Burnt Sienna 059 or Red Orange 017 to near-watercolor.
+      PSI 8–12, airbrush 3–5cm from surface, needle almost fully closed. Short trigger bursts — micro-dots, not lines.
+      Target nose, cheeks, shoulders, backs of hands. One pass → step back → assess. Easy to overdo; practice on card first.
+
+      <!-- ANIME / CARTOON — replace above with:
+      <strong>No Freckling:</strong> Smooth graphic highlight approach only. Bold value transitions.
+      No organic texture or freckling — anime skin reads as clean, graphic, and idealized.
+      -->
+    </div>
+
+
+    <!-- STEP-BY-STEP (Pro Acryl / Expert Acrylics sub-tabs) -->
+    <div class="phase-label">Step-by-Step</div>
+
+    <div class="sub-tabs">
+      <div class="sub-tab active"     onclick="showSubTab('skin', 'skin-pro', this)">Pro Acryl</div>
+      <div class="sub-tab expert-tab" onclick="showSubTab('skin', 'skin-expert', this)">✦ Expert Acrylics — Brush Only</div>
+    </div>
+
+    <!-- PRO ACRYL SUB-TAB -->
+    <div class="sub-content active" id="skin-pro">
+
+      <div class="phase-label">Foundation</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 1 · Airbrush</span>
+        <h3>[PLACEHOLDER: e.g. "Black Prime"]</h3>
+        <p>[PLACEHOLDER: P-002 Black Primer — undiluted, 30+ PSI, 0.5mm nozzle, 20–25cm. Full coverage. No bare resin showing.]</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#111111"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Paint Name + Code]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">~5% value — black prime</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> [PLACEHOLDER: actionable tip]</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 2 · Airbrush</span>
+        <h3>[PLACEHOLDER: e.g. "White Zenithal"]</h3>
+        <p>[PLACEHOLDER: Heavy from directly above, fading to nothing by the underside. 0.3mm nozzle, PSI 15, 15cm distance. Near-white on top planes, black retained in recesses.]</p>
+        <div class="tip"><strong>✦ TIP:</strong> [PLACEHOLDER: greyscale check reminder]</div>
+      </div>
+
+      <div class="phase-label">Value Build</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 3 · Airbrush</span>
+        <h3>[PLACEHOLDER: e.g. "Transparent Red / Magenta Layer"]</h3>
+        <p>[PLACEHOLDER: Method 2A/2B underpainting or Method 1 shadow undercoat.]</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#aa2222"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Paint Name + Code]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">~30% value — warm underpainting</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush</span>
+        <h3>[PLACEHOLDER: e.g. "Shadow Tone / Base Coat"]</h3>
+        <p>[PLACEHOLDER: thin ratio, application area, what should remain showing through.]</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#7a4a30"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Paint 1 Name + Code]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">shadow base tone</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#1a1a1a"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Paint 2 Name + Code]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">darkening agent</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 2:1 [Paint 1] + [Paint 2] — [PLACEHOLDER: thinning guidance]</div>
+        <div class="warning"><strong>⚠ NOTE:</strong> [PLACEHOLDER: warning text]</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 5 · Brush</span>
+        <h3>[PLACEHOLDER: e.g. "Mid-Tone Layer"]</h3>
+        <p>[PLACEHOLDER: thin 1:1 or 1:2, leave shadow recesses showing.]</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#c08060"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Paint Name + Code]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">~50% value — mid-tone base</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-label">Highlight &amp; Finish</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 6 · Brush</span>
+        <h3>[PLACEHOLDER: e.g. "Highlight 1"]</h3>
+        <p>[PLACEHOLDER: raised planes — cheekbones, nose bridge, brow ridge, chin, knuckles.]</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#c08060"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Paint 1 Name + Code]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">mid-tone base</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#e8d0b8"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Paint 2 Name + Code]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">light tone / highlight</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 1:1 [Paint 1] + [Paint 2] — [PLACEHOLDER: thinning and target area]</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 7 · Brush</span>
+        <h3>[PLACEHOLDER: e.g. "Specular Highlight"]</h3>
+        <p>[PLACEHOLDER: tiny catch-light on nose tip, cheekbone peak, center of lower lip, brow ridge.]</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#eedcc8"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Paint Name + Code]</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~90% value — specular highlight</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> [PLACEHOLDER: load brush, wipe to near-dry, feather upward from shadow edge.]</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number wash">Step 8 · Wash / Glaze</span>
+        <h3>[PLACEHOLDER: e.g. "Unifying Glaze (optional)"]</h3>
+        <p>[PLACEHOLDER: thin Transparent Red 047 at 1:8 over cheeks/nose/ears/knuckles to add warmth.]</p>
+      </div>
+
+    </div><!-- end #skin-pro -->
+
+    <!-- EXPERT ACRYLICS SUB-TAB -->
+    <div class="sub-content" id="skin-expert">
+      <div class="tip"><strong>✦ Brush-only workflow.</strong>
+        Expert Acrylics are high-pigment interactive acrylics — re-wettable for wet-blending.
+        No airbrush required. Works on grey-primed surface; skip black zenithal for this method.</div>
+
+      <div class="phase-label">Foundation</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>[PLACEHOLDER: e.g. "Grey Prime + Mid-Tone Base"]</h3>
+        <p>[PLACEHOLDER: grey primer, then apply mid-tone as base coat across all skin.]</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#c08060"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Paint Name + Code]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">~50% value — mid-tone base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush — Wet Blend</span>
+        <h3>[PLACEHOLDER: e.g. "Shadow Into Mid-Tone — Wet Blend"]</h3>
+        <p>[PLACEHOLDER: while mid-tone is still wet, pull shadow color into recesses. Expert Acrylics stay open long enough to blend edges. Use a clean damp brush to feather transitions.]</p>
+      </div>
+
+      <!-- [PLACEHOLDER: continue Expert Acrylics steps through highlight → specular] -->
+
+    </div><!-- end #skin-expert -->
+
+  </div><!-- end #skin -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: HAIR & EYES
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="hair-eyes">
+
+    <div class="section-header">
+      <h2>Hair &amp; Eyes</h2>
+      <p>[PLACEHOLDER: brief — hair style / color, eye color and finish goal.]</p>
+    </div>
+
+    <div class="phase-label">Hair</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 · Airbrush</span>
+      <h3>[PLACEHOLDER: Hair Base]</h3>
+      <p>[PLACEHOLDER: description]</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2a1a0a"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Paint Name + Code]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">~10% value — hair shadow base</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 2 · Airbrush</span>
+      <h3>[PLACEHOLDER: Hair Zenithal / Value Build]</h3>
+      <p>[PLACEHOLDER: description]</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 3 · Brush</span>
+      <h3>[PLACEHOLDER: Hair Highlight Strands]</h3>
+      <p>[PLACEHOLDER: thin liner brush, follow hair direction, focus on crown and outer edges.]</p>
+      <div class="tip"><strong>✦ TIP:</strong> [PLACEHOLDER: hair strand tip]</div>
+    </div>
+
+    <div class="phase-label">Eyes</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 4 · Brush</span>
+      <h3>[PLACEHOLDER: Eye Socket — Shadow]</h3>
+      <p>[PLACEHOLDER: dark shadow into socket to define depth before painting iris.]</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 5 · Brush</span>
+      <h3>[PLACEHOLDER: Iris + Pupil]</h3>
+      <p>[PLACEHOLDER: iris color, pupil center, white sclera, lower-left highlight dot.]</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#446688"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Iris color — Paint Name + Code]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">iris base color</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> [PLACEHOLDER: work both eyes simultaneously so they match.]</div>
+    </div>
+
+  </div><!-- end #hair-eyes -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: METALS (TMM + optional NMM sub-tab)
+       ───────────────────────────────────────────────────────
+       TMM is the default primary tab content.
+       NMM sub-tab: uncomment the sub-tab nav + content blocks below
+       when NMM is appropriate for the figure.
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="metals">
+
+    <div class="section-header">
+      <h2>Metals</h2>
+      <p>[PLACEHOLDER: brief — metal types in this figure, finish goal (matte iron, polished chrome, aged bronze, etc.).]</p>
+    </div>
+
+    <!-- Un-comment sub-tabs if NMM is appropriate for this figure:
+    <div class="sub-tabs">
+      <div class="sub-tab active"  onclick="showSubTab('metals', 'metals-tmm', this)">True Metallic (TMM)</div>
+      <div class="sub-tab"         onclick="showSubTab('metals', 'metals-nmm', this)">Non-Metallic (NMM)</div>
+    </div>
+    -->
+
+    <!-- TMM CONTENT — default (no sub-tab needed unless NMM is also present) -->
+    <!-- If using sub-tabs, wrap this in: <div class="sub-content active" id="metals-tmm"> -->
+
+    <div class="phase-label">True Metallic Metal (TMM)</div>
+    <div class="tip"><strong>✦ VALUE FIRST:</strong> Even metallic paint follows value rules. Deep recesses near-black; midtones use the metallic itself; raised edges catch near-white. Metallics read flat without strong shadow/highlight contrast.</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 · Airbrush</span>
+      <h3>[PLACEHOLDER: e.g. "Dark Metal Base"]</h3>
+      <p>[PLACEHOLDER: dark metallic or near-black base coat. Sets the shadow value for the metal surface.]</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#1a1a1a"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: e.g. Dark Silver 030 or Coal Black 002]</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~10% value — metal shadow</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 2 · Airbrush</span>
+      <h3>[PLACEHOLDER: e.g. "Mid Metallic — Zenithal"]</h3>
+      <p>[PLACEHOLDER: primary metallic tone from zenithal angle. Leave dark base in recesses and undercuts.]</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#888888"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: e.g. Steel 010 or Silver 025]</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~55% value — mid metallic</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 3 · Brush</span>
+      <h3>[PLACEHOLDER: e.g. "Edge Highlight — Bright Metallic"]</h3>
+      <p>[PLACEHOLDER: brightest metallic on uppermost edges only. Loaded brush, near-dry tip, drag along edge. Small catch-light dots on sharpest corners.]</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#dddddd"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: e.g. Magnesium S42 or add Heavy Warm White S18 to Silver 025]</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~90% value — specular edge</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number wash">Step 4 · Wash</span>
+      <h3>[PLACEHOLDER: e.g. "Recess Wash"]</h3>
+      <p>[PLACEHOLDER: targeted wash into panel lines and recesses. Pull capillary action, do not brush around.]</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#111111"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: e.g. Black Wash 200 or Nuln Oil (Citadel)]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">recess shadow</div></div></div>
+      </div>
+    </div>
+
+    <!-- If sub-tabs are being used for NMM, close TMM content here:
+    </div>
+    -->
+
+    <!-- NMM CONTENT — uncomment and activate sub-tabs above when needed
+    <div class="sub-content" id="metals-nmm">
+      <div class="phase-label">Non-Metallic Metal (NMM)</div>
+      <div class="tip"><strong>✦ NMM PRINCIPLE:</strong> No metallic paint. The illusion of metal is created entirely through extreme value contrast — deepest black in recesses, near-white on apex edges — and a smooth gradient between. The harder the edge transition, the shinier the material reads.</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 1 · Airbrush</span>
+        <h3>[PLACEHOLDER: NMM Base — Near-Black Shadow]</h3>
+        <p>[PLACEHOLDER: full coverage near-black. This is your deepest recess value.]</p>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 2 · Airbrush</span>
+        <h3>[PLACEHOLDER: NMM Mid-Tone Gradient]</h3>
+        <p>[PLACEHOLDER: grey mid-tone built up from zenithal. Key to NMM — the gradient must be smooth.]</p>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span>
+        <h3>[PLACEHOLDER: NMM Highlight — Near-White Peaks]</h3>
+        <p>[PLACEHOLDER: near-white on the absolute apex edges. For cold steel: neutral white. For warm gold: warm cream. The closer to pure white, the more polished the metal reads.]</p>
+      </div>
+    </div>
+    -->
+
+  </div><!-- end #metals -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: BASE & GROUNDWORK
+       Four sub-tabs: Pro Acryl · Expert Acrylics · Craft Paints · Effects
+       ─ base-pro      → Pro Acryl steps (active by default)
+       ─ base-expert   → Expert Acrylics brush-only alternative
+       ─ base-folkart  → Craft Paints budget palette
+       ─ base-effects  → Dirty Down or other effect products
+       Replace all [PLACEHOLDER] sections; delete unused phase-labels.
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="base">
+
+    <div class="section-header">
+      <h2>[PLACEHOLDER: Base &amp; Groundwork]</h2>
+      <p>[PLACEHOLDER: Brief description of the base theme — terrain type, mood, how it supports the figure.]</p>
+    </div>
+
+    <div class="sub-tabs">
+      <div class="sub-tab active"       onclick="showSubTab('base','base-pro',this)">Pro Acryl</div>
+      <div class="sub-tab expert-tab"   onclick="showSubTab('base','base-expert',this)">✦ Expert Acrylics — Brush Only</div>
+      <div class="sub-tab folk-art-tab" onclick="showSubTab('base','base-folkart',this)">🎨 Craft Paints — Basing</div>
+      <div class="sub-tab effects-tab"  onclick="showSubTab('base','base-effects',this)">✦ Effects</div>
+    </div>
+
+
+    <!-- ── SUB-TAB: PRO ACRYL ──────────────────────────────── -->
+    <div class="sub-content active" id="base-pro">
+
+      <div class="phase-label">[PLACEHOLDER: Material Group — e.g. Rock &amp; Stone]</div>
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>[PLACEHOLDER: Step title]</h3>
+        <p>[PLACEHOLDER: description]</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#333333"></div><div class="swatch-info"><div class="swatch-name">[Paint Name + Code]</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">[value % or role]</div></div></div>
+        </div>
+        <div class="ratio-box">Mix / thin: [PLACEHOLDER]</div>
+      </div>
+
+      <div class="phase-label">[PLACEHOLDER: Material Group — e.g. Soil &amp; Ground]</div>
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush — Dry Brush</span>
+        <h3>[PLACEHOLDER: Step title]</h3>
+        <p>[PLACEHOLDER: description]</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#888888"></div><div class="swatch-info"><div class="swatch-name">[Paint Name + Code]</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">[value %]</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 3 · Finish</span>
+        <h3>Base Seal &amp; Static Grass</h3>
+        <p>Matte varnish over the entire base. Apply PVA glue to small ground patches and press 2mm + 4mm mixed static grass in clusters — denser near edges, sparser toward center. Let dry fully before attaching the figure.</p>
+        <div class="warning"><strong>⚠ NOTE:</strong> Seal the base BEFORE attaching the figure. Boot pegs and base pins go in after all groundwork is matte-varnished.</div>
+      </div>
+
+    </div><!-- end base-pro -->
+
+
+    <!-- ── SUB-TAB: EXPERT ACRYLICS ───────────────────────── -->
+    <div class="sub-content" id="base-expert">
+
+      <div class="tip"><strong>✦ Brush-only base alternative.</strong> Expert Acrylics earth tones and Payne's Grey work beautifully for organic base materials. Chrome Oxide Green is especially good for moss drybrushing — its natural earthy pigment reads perfectly on organic surfaces.</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>[PLACEHOLDER: Rock / Soil base — Payne's Grey or Burnt Umber]</h3>
+        <p>[PLACEHOLDER: description]</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#3a4050"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">~20% value — cool grey-blue</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: [PLACEHOLDER]</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush — Dry Brush</span>
+        <h3>[PLACEHOLDER: Texture build]</h3>
+        <p>[PLACEHOLDER: description]</p>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span>
+        <h3>[PLACEHOLDER: Vegetation / Moss]</h3>
+        <p>[PLACEHOLDER: Chrome Oxide Green for moss; Sap Green + Carbon Black as shadow base. Description.]</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#5a7840"></div><div class="swatch-info"><div class="swatch-name">Chrome Oxide Green</div><div class="swatch-brand">Expert Acrylics</div></div></div>
+      </div>
+
+    </div><!-- end base-expert -->
+
+
+    <!-- ── SUB-TAB: FOLK ART — BASING ─────────────────────── -->
+    <div class="sub-content" id="base-folkart">
+
+      <div class="tip"><strong>🎨 Craft Paints — Budget Basing Palette.</strong> These are inexpensive craft acrylics (currently Folk Art brand, 2 oz bottles — more brands may join the basing palette over time). Coverage is solid and the matte finish is great for terrain. Drybrush techniques work especially well. Thin slightly more than Pro Acryl for any wash-style applications. Save your Pro Acryl and Expert Acrylics for the figure itself.</div>
+
+      <div class="phase-label">[PLACEHOLDER: Material Group — e.g. Rock &amp; Stone]</div>
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>[PLACEHOLDER: Shadow base]</h3>
+        <p>[PLACEHOLDER: description]</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#111111"></div><div class="swatch-info"><div class="swatch-name">Pure Black K479</div><div class="swatch-brand">Folk Art</div><div class="swatch-value">~5% value — shadow base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush — Drybrush</span>
+        <h3>[PLACEHOLDER: Mid-tone drybrush]</h3>
+        <p>[PLACEHOLDER: description]</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#888888"></div><div class="swatch-info"><div class="swatch-name">[Paint Name + Code]</div><div class="swatch-brand">Folk Art</div><div class="swatch-value">~50% value</div></div></div>
+      </div>
+
+      <div class="phase-label">[PLACEHOLDER: Material Group — e.g. Soil &amp; Ground]</div>
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush + Drybrush</span>
+        <h3>[PLACEHOLDER: Soil base, mid-tone &amp; highlight]</h3>
+        <p>[PLACEHOLDER: description]</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#3a2820"></div><div class="swatch-info"><div class="swatch-name">Coffee Bean K940</div><div class="swatch-brand">Folk Art</div><div class="swatch-value">~12% — soil shadow base</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#6a4030"></div><div class="swatch-info"><div class="swatch-name">Bark Brown 2560</div><div class="swatch-brand">Folk Art</div><div class="swatch-value">~40% — soil mid-tone</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 4 · Finish</span>
+        <h3>Base Seal &amp; Static Grass</h3>
+        <p>Matte varnish over the entire base. Apply PVA to small ground patches and press 2mm + 4mm mixed static grass in clusters — denser near edges, sparser toward center. Let dry fully before attaching the figure.</p>
+        <div class="warning"><strong>⚠ NOTE:</strong> Seal the base BEFORE attaching the figure. Boot pegs go in after all groundwork is matte-varnished.</div>
+      </div>
+
+    </div><!-- end base-folkart -->
+
+
+    <!-- ── SUB-TAB: EFFECTS ────────────────────────────────── -->
+    <div class="sub-content" id="base-effects">
+
+      <div class="phase-label">Effects Products — Apply Over Sealed Paint</div>
+
+      <div class="tip"><strong>💡 Timing Rule:</strong> Dirty Down products go on <em>after</em> your paint is fully cured and <em>before</em> your final matte varnish coat. Apply over a sealed (satin or matte) surface for best adhesion.</div>
+
+      <h3>[PLACEHOLDER: Effect product name — e.g. Dirty Down Moss]</h3>
+      <p>[PLACEHOLDER: What it does and where to use it on this specific base.]</p>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span> <span class="tag tag-effects">Effects</span>
+        <h3>Undercoat preparation</h3>
+        <p>[PLACEHOLDER: Describe surface prep — sealed paint, any undercoat colour that helps the effect read better.]</p>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush</span> <span class="tag tag-effects">Effects</span>
+        <h3>[PLACEHOLDER: Apply effect product]</h3>
+        <p>[PLACEHOLDER: Stipple / dab motion, area to target, what to avoid.]</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#4a7030"></div><div class="swatch-info"><div class="swatch-name">[Effect Product Name]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">effect product — [application note]</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span> <span class="tag tag-effects">Effects</span>
+        <h3>Shape while wet</h3>
+        <p>[PLACEHOLDER: How long it stays workable, how to push/thin/remove while wet.]</p>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 4 · Finish</span> <span class="tag tag-effects">Effects</span>
+        <h3>Organic / natural variation — keep it uneven</h3>
+        <p>[PLACEHOLDER: Coverage guidance — what percentage of coverage looks believable, what to leave clean.]</p>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 5 · Finish</span>
+        <h3>Cure — then matte varnish</h3>
+        <p>Allow the effect product to cure for at least 2–3 hours (overnight is ideal) before applying your final matte varnish. Varnishing too early can reactivate the product and cause streaking or cloudiness.</p>
+      </div>
+
+      <div class="warning"><strong>⚠ Seal last:</strong> Apply matte varnish over the entire base including effect areas after curing. This locks everything in place and unifies the finish.</div>
+
+    </div><!-- end base-effects -->
+
+
+  </div><!-- end #base -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: [PLACEHOLDER — MATERIAL TAB TEMPLATE]
+       Duplicate for each material group (Outfit, Weapons, Base, etc.)
+       Give each copy a unique id and add a matching tab nav button.
+       Include Expert Acrylics sub-tabs for leather/fabric/organic/wood.
+       Skip for metallics, skills tabs, thinning ref.
+       Delete this placeholder when guide is finalized.
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="material-placeholder">
+
+    <div class="section-header">
+      <h2>[PLACEHOLDER: Tab Title]</h2>
+      <p>[PLACEHOLDER: brief description of materials covered.]</p>
+    </div>
+
+    <div class="phase-label">[PLACEHOLDER: Material Group]</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 · Airbrush</span>
+      <h3>[PLACEHOLDER: Step title]</h3>
+      <p>[PLACEHOLDER: description]</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#333333"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Paint Name + Code]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">[value % or role]</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 2 · Brush</span>
+      <h3>[PLACEHOLDER: Step title]</h3>
+      <p>[PLACEHOLDER: description]</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#333333"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Paint 1 Name + Code]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">[role]</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#888888"></div><div class="swatch-info"><div class="swatch-name">[PLACEHOLDER: Paint 2 Name + Code]</div><div class="swatch-brand">[Brand]</div><div class="swatch-value">[role]</div></div></div>
+      </div>
+      <div class="ratio-box">Mix: 1:1 [Paint 1] + [Paint 2] — [PLACEHOLDER: thinning and result]</div>
+    </div>
+
+    <!-- Optional: Expert Acrylics sub-tab for organic/fabric/leather materials
+    <div class="phase-label">Step-by-Step</div>
+    <div class="sub-tabs">
+      <div class="sub-tab active"     onclick="showSubTab('material-placeholder', 'mat-pro', this)">Pro Acryl</div>
+      <div class="sub-tab expert-tab" onclick="showSubTab('material-placeholder', 'mat-expert', this)">✦ Expert Acrylics — Brush Only</div>
+    </div>
+    <div class="sub-content active" id="mat-pro">... steps ...</div>
+    <div class="sub-content" id="mat-expert">... steps ...</div>
+    -->
+
+  </div><!-- end #material-placeholder -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: AIRBRUSH SKILLS
+       Include only techniques actually used in this guide.
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="airbrush-skills">
+
+    <div class="section-header">
+      <h2>Airbrush Skills</h2>
+      <p>[PLACEHOLDER: brief — which airbrush techniques this guide uses.]</p>
+    </div>
+
+    <!-- NOZZLE ASSIGNMENTS -->
+    <div class="phase-label">Nozzle Assignments</div>
+    <table class="thin-table">
+      <thead>
+        <tr><th>Task</th><th>Nozzle</th><th>Why</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Priming (undiluted — do not thin)</td>
+          <td>0.5mm</td>
+          <td>High flow needed for primer viscosity; 30+ PSI</td>
+        </tr>
+        <tr>
+          <td>[PLACEHOLDER: e.g. Zenithal / base coats]</td>
+          <td>0.3mm</td>
+          <td>[PLACEHOLDER: controlled coverage, smooth gradients]</td>
+        </tr>
+        <tr>
+          <td>[PLACEHOLDER: e.g. Skin tones / detail work]</td>
+          <td>0.2mm</td>
+          <td>[PLACEHOLDER: fine control on flesh and small areas]</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- ZENITHAL SEQUENCE — Black Prime + White Zenithal injected by skills-reference.js -->
+    <div class="phase-label">Zenithal Sequence</div>
+    <div id="ab-zenithal-anchor"></div>
+
+    <!-- PSI / DISTANCE REFERENCE TABLE (per-guide — nozzle sizes and distances vary) -->
+    <div class="phase-label">PSI &amp; Distance Reference</div>
+    <table class="psi-table">
+      <thead>
+        <tr><th>Task</th><th>PSI</th><th>Distance</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Priming (undiluted)</td><td>30+</td><td>20–25cm</td><td>0.5mm nozzle; do NOT thin primer</td></tr>
+        <tr><td>Zenithal — black</td><td>30+</td><td>20–25cm</td><td>0.5mm nozzle; undiluted</td></tr>
+        <tr><td>Zenithal — white</td><td>30+</td><td>20–25cm</td><td>0.5mm nozzle; undiluted</td></tr>
+        <tr><td>Base coat (thinned paint)</td><td>15–18</td><td>10–15cm</td><td>[PLACEHOLDER: nozzle, notes]</td></tr>
+        <tr><td>Skin highlight</td><td>12–15</td><td>8–12cm</td><td>[PLACEHOLDER: nozzle, notes]</td></tr>
+        <tr><td>Freckling</td><td>8–12</td><td>3–5cm</td><td>Needle almost closed; micro-dots</td></tr>
+      </tbody>
+    </table>
+
+    <!-- GREYSCALE CHECK — injected by skills-reference.js -->
+    <div id="ab-greyscale-anchor"></div>
+
+    <!-- TROUBLESHOOTING
+         skills-reference.js prepends "Tip Dry / Spattering" as the first card.
+         Add 3 per-guide cards below → total 4 cards → even count required for 2-col layout. -->
+    <div class="phase-label">Troubleshooting</div>
+    <div class="trouble-grid">
+      <!-- Tip Dry card injected here by skills-reference.js -->
+      <div class="trouble-card">
+        <h4>Blowback / Bubbling</h4>
+        <p>[PLACEHOLDER: cause → effect → fix]</p>
+      </div>
+      <div class="trouble-card">
+        <h4>Uneven Coverage / Banding</h4>
+        <p>[PLACEHOLDER: cause → effect → fix]</p>
+      </div>
+      <div class="trouble-card">
+        <h4>Paint Too Thin / Runs</h4>
+        <p>[PLACEHOLDER: cause → effect → fix]</p>
+      </div>
+    </div>
+
+  </div><!-- end #airbrush-skills -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: BRUSH SKILLS
+       Only techniques actually used in this guide. No generic filler.
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="brush-skills">
+
+    <div class="section-header">
+      <h2>Brush Skills</h2>
+      <p>[PLACEHOLDER: brush techniques used in this guide.]</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · [PLACEHOLDER: Name]</span>
+      <h3>[PLACEHOLDER: Technique title]</h3>
+      <p>[PLACEHOLDER: description — what it achieves, when to use, how to apply. Practical and scenario-based.]</p>
+      <div class="tip"><strong>✦ TIP:</strong> [PLACEHOLDER: key tip]</div>
+    </div>
+
+    <!-- Greyscale check tip injected here by skills-reference.js -->
+
+  </div><!-- end #brush-skills -->
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       TAB: THINNING REF  (always last)
+       Fully built by skills-reference.js from window.GUIDE_THINNING config.
+       Define config in the <script> block before skills-reference.js loads.
+       ═══════════════════════════════════════════════════════ -->
+  <div class="tab-content" id="thinning-ref">
+    <!-- Content injected by skills-reference.js -->
+  </div><!-- end #thinning-ref -->
+
+</div><!-- end .container -->
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     GUIDE FOOTER
+     ═══════════════════════════════════════════════════════════ -->
+<footer class="guide-footer">
+  Guide by
+  <a href="https://www.youtube.com/@brent_the_programmer9108" target="_blank">brent_the_programmer</a>
+  &middot;
+  <a href="https://instagram.com/stephenson913" target="_blank">@stephenson913</a>
+</footer>
+
+<!-- BACK TO TOP -->
+<button class="back-to-top" id="backToTop" title="Back to top"
+        onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     REFERENCE IMAGE MODAL
+     Opened by clicking the .ref-thumb in the hero.
+     Backdrop click or Escape key to close.
+     ═══════════════════════════════════════════════════════════ -->
+<div class="ref-modal" id="refModal" onclick="if(event.target===this)closeRefModal()">
+  <div class="ref-modal-inner">
+    <button class="ref-modal-close" onclick="closeRefModal()" title="Close">✕</button>
+    <img class="ref-modal-img" id="refModalImg" src="" alt="">
+    <div class="ref-modal-caption" id="refModalCaption"></div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCRIPTS — update src path to ../../assets/guide.js after copy
+     ═══════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════════════════
+     GUIDE_THINNING CONFIG — figure-specific airbrush rows
+     Inserted between zenithal rows and transparent/glaze rows.
+     brushRows and thinningCards are optional.
+     ═══════════════════════════════════════════════════════════ -->
+<script>
+window.GUIDE_THINNING = {
+  airbrushRows: [
+    // { technique: 'Base coat (skin)', nozzle: '0.3mm', ratio: '1:3 to 1:4', behavior: 'Semi-transparent; builds in passes without obscuring zenithal.' },
+    // { technique: 'Skin highlight',   nozzle: '0.2mm', ratio: '1:4 to 1:5', behavior: 'Very thin; floats onto raised planes. Check with greyscale after each pass.' },
+  ],
+  brushRows: [],     // optional extra brush rows; appended after standard rows
+  thinningCards: []  // optional extra cards; appended after the 3 static cards
+};
+</script>
+
+<script src="assets/guide.js"></script>
+<script src="assets/skills-reference.js"></script>
+<script>
+  /* ── Reference image modal ─────────────────────────────── */
+  function openRefModal(src, alt) {
+    var modal = document.getElementById('refModal');
+    document.getElementById('refModalImg').src = src;
+    document.getElementById('refModalImg').alt = alt;
+    document.getElementById('refModalCaption').textContent = alt;
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeRefModal() {
+    document.getElementById('refModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeRefModal();
+  });
+
+  function showSubTab(parentId, contentId, btn) {
+    const parent = document.getElementById(parentId);
+    if (!parent) return;
+    parent.querySelectorAll('.sub-content').forEach(c => c.classList.remove('active'));
+    parent.querySelectorAll('.sub-tab').forEach(b => b.classList.remove('active'));
+    const el = document.getElementById(contentId);
+    if (el) el.classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+  (function() {
+    const btn = document.getElementById('backToTop');
+    if (!btn) return;
+    window.addEventListener('scroll', function() {
+      btn.classList.toggle('visible', window.scrollY > 300);
+    }, { passive: true });
+  })();
+</script>
+
+</body>
+</html>
