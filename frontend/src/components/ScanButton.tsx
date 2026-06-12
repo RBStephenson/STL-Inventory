@@ -42,7 +42,7 @@ export default function ScanButton({ onScanComplete }: Props) {
       const s = await api.scan.start();
       setStatus(s);
     } catch (e: any) {
-      alert(e.message);
+      toast(e?.message || "Couldn't start the scan — try again.", "error");
     }
   };
 
