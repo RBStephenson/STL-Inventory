@@ -430,6 +430,23 @@ export const api = {
     stats: () => request<ModelStats>("/models/stats"),
     creators: () => request<Creator[]>("/models/creators/list"),
     tags: () => request<{ tag: string; count: number }[]>("/models/tags/all"),
+    renameTag: (oldTag: string, newTag: string) =>
+      request<{ ok: boolean; updated: number }>("/models/tags/rename", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ old_tag: oldTag, new_tag: newTag }),
+      }),
+    mergeTag: (sourceTag: string, targetTag: string) =>
+      request<{ ok: boolean; updated: number }>("/models/tags/merge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ source_tag: sourceTag, target_tag: targetTag }),
+      }),
+    deleteTag: async (tag: string) => {
+      const res = await fetch(`${BASE}/models/tags/${encodeURIComponent(tag)}`, { method: "DELETE" });
+      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+      return res.json() as Promise<{ ok: boolean; updated: number }>;
+    },
     update: (id: number, body: Record<string, unknown>) =>
       request<{ ok: boolean }>(`/models/${id}`, {
         method: "PATCH",

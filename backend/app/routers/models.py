@@ -297,6 +297,92 @@ def rebuild_tags(db: Session = Depends(get_db)):
     return {"ok": True, "rows": count}
 
 
+@router.patch("/tags/rename")
+def rename_tag(body: dict, db: Session = Depends(get_db)):
+    """Rename a tag on all models that carry it."""
+    old = (body.get("old_tag") or "").strip().lower()
+    new = (body.get("new_tag") or "").strip().lower()
+    if not old or not new:
+        raise HTTPException(status_code=422, detail="old_tag and new_tag are required")
+    if old == new:
+        return {"ok": True, "updated": 0}
+    if db.query(ModelTag).filter(ModelTag.tag == old).count() == 0:
+        raise HTTPException(status_code=404, detail=f"Tag '{old}' not found")
+
+    affected = (
+        db.query(Model)
+        .join(ModelTag, ModelTag.model_id == Model.id)
+        .filter(ModelTag.tag == old)
+        .distinct()
+        .all()
+    )
+    for model in affected:
+        tags = list(model.tags or [])
+        if old in tags:
+            tags = [new if t == old else t for t in tags]
+            # deduplicate while preserving order
+            seen: set[str] = set()
+            tags = [t for t in tags if not (t in seen or seen.add(t))]  # type: ignore[func-returns-value]
+            model.tags = tags
+        sync_model_tags(model, db)
+    db.commit()
+    return {"ok": True, "updated": len(affected)}
+
+
+@router.post("/tags/merge")
+def merge_tags(body: dict, db: Session = Depends(get_db)):
+    """Merge source_tag into target_tag: all models get target_tag, source_tag removed."""
+    source = (body.get("source_tag") or "").strip().lower()
+    target = (body.get("target_tag") or "").strip().lower()
+    if not source or not target:
+        raise HTTPException(status_code=422, detail="source_tag and target_tag are required")
+    if source == target:
+        return {"ok": True, "updated": 0}
+    if db.query(ModelTag).filter(ModelTag.tag == source).count() == 0:
+        raise HTTPException(status_code=404, detail=f"Tag '{source}' not found")
+
+    affected = (
+        db.query(Model)
+        .join(ModelTag, ModelTag.model_id == Model.id)
+        .filter(ModelTag.tag == source)
+        .distinct()
+        .all()
+    )
+    for model in affected:
+        tags = list(model.tags or [])
+        if source in tags:
+            tags = [t for t in tags if t != source]
+            if target not in tags:
+                tags.append(target)
+            model.tags = tags
+        sync_model_tags(model, db)
+    db.commit()
+    return {"ok": True, "updated": len(affected)}
+
+
+@router.delete("/tags/{tag}")
+def delete_tag(tag: str, db: Session = Depends(get_db)):
+    """Remove a tag from all models that carry it."""
+    tag = tag.strip().lower()
+    if not tag:
+        raise HTTPException(status_code=422, detail="tag is required")
+    if db.query(ModelTag).filter(ModelTag.tag == tag).count() == 0:
+        raise HTTPException(status_code=404, detail=f"Tag '{tag}' not found")
+
+    affected = (
+        db.query(Model)
+        .join(ModelTag, ModelTag.model_id == Model.id)
+        .filter(ModelTag.tag == tag)
+        .distinct()
+        .all()
+    )
+    for model in affected:
+        model.tags = [t for t in (model.tags or []) if t != tag]
+        sync_model_tags(model, db)
+    db.commit()
+    return {"ok": True, "updated": len(affected)}
+
+
 @router.get("/characters")
 def list_characters(creator_id: int = Query(...), db: Session = Depends(get_db)):
     """Return sorted distinct character (group) names for a creator."""
