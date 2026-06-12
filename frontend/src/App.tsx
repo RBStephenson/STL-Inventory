@@ -10,6 +10,7 @@ import Triage from "./pages/Triage";
 import VariantGroup from "./pages/VariantGroup";
 import Settings from "./pages/Settings";
 import Help from "./pages/Help";
+import TagsPage from "./pages/TagsPage";
 import GuidesPage from "./pages/GuidesPage";
 import GuideReaderPage from "./pages/GuideReaderPage";
 import PaintShelfPage from "./pages/PaintShelfPage";
@@ -30,6 +31,7 @@ export default function App() {
           <Route path="/queue" element={<Queue />} />
           <Route path="/triage" element={<Triage />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/tags" element={<TagsPage />} />
           <Route path="/painting/guides" element={<GuidesPage />} />
           <Route path="/painting/guides/:id" element={<GuideReaderPage />} />
           <Route path="/painting/shelf" element={<PaintShelfPage />} />
