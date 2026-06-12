@@ -192,21 +192,20 @@ const SECTIONS: Section[] = [
     icon: Star,
     body: (
       <>
-        <p>Three independent ways to organize what you want to print — a model can be any combination.</p>
+        <p>Two ways to organize what you want to print — a model can be favorited and have a print status at the same time.</p>
         <ul>
           <li><strong>★ Favorite</strong> — bookmark models you love, and filter to them with the header chip.</li>
           <li>
-            <strong>🖨 Queue</strong> — add models to your print queue. The <strong>Queue</strong>{" "}
-            page shows everything queued; <strong>drag the handle</strong> to set your own
-            order, and favorites always float to the top.
-          </li>
-          <li>
-            <strong>✓ Printed</strong> — mark a model printed. This records the date and
-            removes it from the active queue. The Queue page keeps a <strong>Recently
-            Printed</strong> history.
+            <strong>🖨 Print status</strong> — each model moves through a single lifecycle:
+            {" "}<strong>None → Queued → Printing → Printed</strong>. Click the printer icon to
+            advance it. The <strong>Queue</strong> page shows everything queued;{" "}
+            <strong>drag the handle</strong> to set your own order, and favorites always float
+            to the top. Reaching <strong>Printed</strong> records the date, bumps the print
+            count, and drops the model from the active queue — the Queue page keeps a{" "}
+            <strong>Recently Printed</strong> history. Filter by any status from the header chips.
           </li>
         </ul>
-        <p>Toggle favorite/queue from a card's hover icons or the model header; printed is set from the model header.</p>
+        <p>Set both from a card's hover icons or the model header.</p>
       </>
     ),
   },

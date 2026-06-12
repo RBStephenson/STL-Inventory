@@ -57,7 +57,6 @@ export default function ModelCard({ model, selected = false, onSelect, backTo, o
   const isNew = isRecentlyAdded(model.created_at, settings.recent_days);
 
   const [favorite, setFavorite] = useState(model.is_favorite);
-  const [queued, setQueued] = useState(model.in_queue);
   const [printStatus, setPrintStatus] = useState<PrintStatus>(model.print_status ?? "none");
   const [localTags, setLocalTags] = useState<string[]>(model.tags ?? []);
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -102,20 +101,6 @@ export default function ModelCard({ model, selected = false, onSelect, backTo, o
     } catch {
       setFavorite(!next);  // revert on failure
       toast("Couldn't update favorite — try again.", "error");
-    }
-  };
-
-  const toggleQueue = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const next = !queued;
-    setQueued(next);
-    try {
-      await api.models.setQueue(model.id, next);
-      onMutate?.();
-    } catch {
-      setQueued(!next);  // revert on failure
-      toast("Couldn't update the print queue — try again.", "error");
     }
   };
 
@@ -275,26 +260,11 @@ export default function ModelCard({ model, selected = false, onSelect, backTo, o
               {SITE_LABELS[model.source_site] ?? model.source_site}
             </span>
           )}
-          {/* Favorite + queue toggles. On a variant group these act on the
+          {/* Print-status + favorite toggles. On a variant group these act on the
               representative variant (model.id) — flag the model for printing now,
               pick the specific variant later from the group page. The actions
               also remain available on each individual variant. */}
           <div className="flex gap-1">
-            <button
-              onClick={toggleQueue}
-              title={
-                isGroup
-                  ? queued ? "Remove model from print queue" : "Add model to print queue (pick variant later)"
-                  : queued ? "Remove from print queue" : "Add to print queue"
-              }
-              className={`p-1 rounded bg-black/60 hover:bg-black/80 transition-all ${
-                queued
-                  ? "text-sky-400 opacity-100"
-                  : "text-gray-400 hover:text-sky-300 opacity-0 group-hover:opacity-100"
-              }`}
-            >
-              <Printer size={13} />
-            </button>
             <button
               onClick={cyclePrintStatus}
               title={`Print status: ${printStatus} — click to advance`}

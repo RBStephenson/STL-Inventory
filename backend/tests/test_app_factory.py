@@ -67,11 +67,70 @@ def test_migrate_schema_upgrades_old_db(monkeypatch):
         root_cols = {r[1] for r in conn.execute(text("PRAGMA table_info(scan_roots)"))}
 
     assert {
-        "is_favorite", "in_queue", "queued_at", "printed_at",
-        "queue_position", "excluded",
+        "is_favorite", "queued_at", "printed_at",
+        "queue_position", "excluded", "print_status", "print_count",
     } <= model_cols
     assert "part_type" in file_cols
     assert "layout" in root_cols
+    engine.dispose()
+
+
+def test_migrate_schema_backfills_print_status_from_legacy_flags(monkeypatch):
+    """A DB tracked under the old in_queue/printed_at flags gets print_status
+    derived once, with queued winning over printed and the run guarded so it
+    can't re-fire and resurrect stale state."""
+    engine = create_engine(
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    with engine.connect() as conn:
+        conn.execute(text(
+            "CREATE TABLE models ("
+            "id INTEGER PRIMARY KEY, name VARCHAR, in_queue BOOLEAN DEFAULT 0, "
+            "printed_at DATETIME, print_status VARCHAR NOT NULL DEFAULT 'none', "
+            "print_count INTEGER NOT NULL DEFAULT 0)"
+        ))
+        conn.execute(text("CREATE TABLE app_settings (key VARCHAR PRIMARY KEY, value JSON NOT NULL)"))
+        # The unconditional orphan-cleanup step needs these tables to exist.
+        conn.execute(text("CREATE TABLE collections (id INTEGER PRIMARY KEY, name VARCHAR)"))
+        conn.execute(text(
+            "CREATE TABLE collection_models "
+            "(id INTEGER PRIMARY KEY, collection_id INTEGER, model_id INTEGER)"
+        ))
+        # 1: queued-only, 2: printed-only, 3: both (queued wins), 4: untouched.
+        conn.execute(text(
+            "INSERT INTO models (id, name, in_queue, printed_at) VALUES "
+            "(1, 'queued', 1, NULL), "
+            "(2, 'printed', 0, '2026-01-01'), "
+            "(3, 'both', 1, '2026-01-01'), "
+            "(4, 'idle', 0, NULL)"
+        ))
+        conn.commit()
+
+    monkeypatch.setattr(main_module, "engine", engine)
+    main_module._migrate_schema()
+
+    with engine.connect() as conn:
+        status = dict(conn.execute(text("SELECT id, print_status FROM models")).fetchall())
+        printed_count = conn.execute(text(
+            "SELECT print_count FROM models WHERE id = 2"
+        )).scalar()
+        flag = conn.execute(text(
+            "SELECT value FROM app_settings WHERE key = 'print_status_backfilled'"
+        )).scalar()
+    assert status == {1: "queued", 2: "printed", 3: "queued", 4: "none"}
+    assert printed_count == 1
+    assert flag is not None
+
+    # Second run must be a no-op even if a legacy flag still lingers: flip model 4's
+    # in_queue on and confirm the guard keeps print_status untouched.
+    with engine.connect() as conn:
+        conn.execute(text("UPDATE models SET in_queue = 1 WHERE id = 4"))
+        conn.commit()
+    main_module._migrate_schema()
+    with engine.connect() as conn:
+        assert conn.execute(text("SELECT print_status FROM models WHERE id = 4")).scalar() == "none"
     engine.dispose()
 
 

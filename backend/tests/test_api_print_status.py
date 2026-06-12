@@ -22,8 +22,8 @@ def test_set_status_to_queued(client, db):
     assert body["print_status"] == "queued"
     db.refresh(m)
     assert m.print_status == "queued"
-    assert m.in_queue is True
     assert m.queued_at is not None
+    assert m.queue_position is not None
 
 
 def test_set_status_to_printing(client, db):
@@ -33,7 +33,8 @@ def test_set_status_to_printing(client, db):
     assert r.status_code == 200
     db.refresh(m)
     assert m.print_status == "printing"
-    assert m.in_queue is False
+    assert m.queued_at is None
+    assert m.queue_position is None
 
 
 def test_set_status_to_printed_increments_count(client, db):
@@ -47,7 +48,7 @@ def test_set_status_to_printed_increments_count(client, db):
     assert m.print_status == "printed"
     assert m.print_count == 1
     assert m.printed_at is not None
-    assert m.in_queue is False
+    assert m.queue_position is None
 
 
 def test_set_status_to_printed_twice_increments_count_twice(client, db):
@@ -68,7 +69,7 @@ def test_set_status_to_none_clears_queue(client, db):
     assert r.status_code == 200
     db.refresh(m)
     assert m.print_status == "none"
-    assert m.in_queue is False
+    assert m.queued_at is None
 
 
 def test_invalid_status_returns_422(client, db):

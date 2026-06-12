@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { Search, SlidersHorizontal, AlertCircle, Tag, X, Bookmark, BookmarkPlus, Star, Printer, Check, FolderPlus, ArrowRight, EyeOff, Package, GripVertical, Layers, Sparkles } from "lucide-react";
+import { Search, SlidersHorizontal, AlertCircle, Tag, X, Bookmark, BookmarkPlus, Star, Printer, FolderPlus, ArrowRight, EyeOff, Package, GripVertical, Layers, Sparkles } from "lucide-react";
 import {
   DndContext, DragOverlay, PointerSensor, useSensor, useSensors,
   useDraggable, useDroppable, pointerWithin,
@@ -144,8 +144,6 @@ export default function Library() {
   const nsfwParam    = searchParams.get("nsfw") ?? "";        // "" | "1" | "0"
   const thumbParam   = searchParams.get("has_thumbnail") ?? ""; // "" | "1" | "0"
   const favParam     = searchParams.get("is_favorite") === "1";
-  const queueParam      = searchParams.get("in_queue") === "1";
-  const printedParam    = searchParams.get("printed") === "1";
   const printStatusParam = searchParams.get("print_status") ?? "";
   const excludedParam = searchParams.get("excluded") === "1";
   const minRating    = searchParams.get("min_rating") ?? "";  // "" | "1".."5" (#167)
@@ -275,8 +273,6 @@ export default function Library() {
       if (nsfwParam)   params.nsfw          = nsfwParam === "1";
       if (thumbParam)  params.has_thumbnail = thumbParam === "1";
       if (favParam)    params.is_favorite   = true;
-      if (queueParam)       params.in_queue      = true;
-      if (printedParam)     params.printed       = true;
       if (printStatusParam) params.print_status  = printStatusParam;
       if (excludedParam) params.excluded    = true;
       if (minRating)   params.min_rating   = minRating;
@@ -501,32 +497,8 @@ export default function Library() {
                 {stats.favorites} favorites
               </button>
             )}
-            {stats && stats.queued > 0 && (
-              <button
-                onClick={() => setParam("in_queue", queueParam ? "" : "1")}
-                className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded transition-colors ${
-                  queueParam
-                    ? "bg-sky-500 text-sky-950 font-medium"
-                    : "bg-sky-950/50 text-sky-400 hover:bg-sky-900/50"
-                }`}
-              >
-                <Printer size={11} />
-                {stats.queued} queued
-              </button>
-            )}
-            {stats && stats.printed > 0 && (
-              <button
-                onClick={() => setParam("printed", printedParam ? "" : "1")}
-                className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded transition-colors ${
-                  printedParam
-                    ? "bg-emerald-500 text-emerald-950 font-medium"
-                    : "bg-emerald-950/50 text-emerald-400 hover:bg-emerald-900/50"
-                }`}
-              >
-                <Check size={11} />
-                {stats.printed} printed
-              </button>
-            )}
+            {/* Print-status lifecycle filters (#166). The active chip shows an
+                X to clear; inactive chips show their count and filter on click. */}
             {(["queued", "printing", "printed"] as const).map((s) => (
               printStatusParam === s ? (
                 <button
@@ -542,27 +514,22 @@ export default function Library() {
                   {PRINT_STATUS_LABELS[s]}
                   <X size={10} />
                 </button>
+              ) : (stats && stats[s] > 0) ? (
+                <button
+                  key={s}
+                  onClick={() => setParam("print_status", s)}
+                  title={`Show only ${PRINT_STATUS_LABELS[s]} models`}
+                  className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded transition-colors ${
+                    s === "queued" ? "bg-sky-950/50 text-sky-400 hover:bg-sky-900/50" :
+                    s === "printing" ? "bg-amber-950/50 text-amber-400 hover:bg-amber-900/50" :
+                    "bg-emerald-950/50 text-emerald-400 hover:bg-emerald-900/50"
+                  }`}
+                >
+                  <Printer size={11} />
+                  {stats[s]} {PRINT_STATUS_LABELS[s].toLowerCase()}
+                </button>
               ) : null
             ))}
-            {!printStatusParam && (
-              <div className="flex gap-1">
-                {(["queued", "printing", "printed"] as const).map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setParam("print_status", s)}
-                    title={`Show only ${PRINT_STATUS_LABELS[s]} models`}
-                    className={`flex items-center gap-1 text-xs px-2 py-0.5 rounded transition-colors ${
-                      s === "queued" ? "bg-sky-950/50 text-sky-400 hover:bg-sky-900/50" :
-                      s === "printing" ? "bg-amber-950/50 text-amber-400 hover:bg-amber-900/50" :
-                      "bg-emerald-950/50 text-emerald-400 hover:bg-emerald-900/50"
-                    }`}
-                  >
-                    <Printer size={11} />
-                    {PRINT_STATUS_LABELS[s]}
-                  </button>
-                ))}
-              </div>
-            )}
             <button
               onClick={() => setParam("added_days", addedDays ? "" : String(settings.recent_days))}
               title={`Models added in the last ${settings.recent_days} days, newest first`}

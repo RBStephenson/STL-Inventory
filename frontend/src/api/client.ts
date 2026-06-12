@@ -40,7 +40,6 @@ export interface Model {
   excluded: boolean;
   is_favorite: boolean;
   user_rating: number | null;
-  in_queue: boolean;
   queued_at: string | null;
   printed_at: string | null;
   print_status: PrintStatus;
@@ -61,6 +60,7 @@ export interface ModelStats {
   no_thumbnail: number;
   favorites: number;
   queued: number;
+  printing: number;
   printed: number;
   excluded: number;
 }
@@ -483,12 +483,6 @@ export const api = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rating }),
       }),
-    setQueue: (id: number, in_queue: boolean) =>
-      request<{ ok: boolean; in_queue: boolean }>(`/models/${id}/queue`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ in_queue }),
-      }),
     reorderQueue: (ids: number[]) =>
       request<{ ok: boolean; updated: number }>("/models/queue/reorder", {
         method: "PATCH",
@@ -500,12 +494,6 @@ export const api = {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ excluded }),
-      }),
-    setPrinted: (id: number, printed: boolean) =>
-      request<{ ok: boolean; printed_at: string | null }>(`/models/${id}/printed`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ printed }),
       }),
     setPrintStatus: (id: number, status: PrintStatus) =>
       request<{ ok: boolean; print_status: PrintStatus; print_count: number }>(`/models/${id}/print-status`, {
