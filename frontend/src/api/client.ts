@@ -512,6 +512,18 @@ export const api = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ids, add_tags: addTags, remove_tags: removeTags }),
       }),
+    bulkExclude: (ids: number[], excluded: boolean) =>
+      request<{ ok: boolean; updated: number }>("/models/bulk/exclude", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids, excluded }),
+      }),
+    bulkReview: (ids: number[], needs_review: boolean) =>
+      request<{ ok: boolean; updated: number }>("/models/bulk/review", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids, needs_review }),
+      }),
     characters: (creatorId: number) =>
       request<string[]>(`/models/characters?creator_id=${creatorId}`),
     variants: (creatorId: number, character: string) =>

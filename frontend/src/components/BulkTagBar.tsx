@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import { Tag, Trash2, X, Check, Loader2, FolderOpen } from "lucide-react";
+import { Tag, Trash2, X, Check, Loader2, FolderOpen, EyeOff, AlertCircle } from "lucide-react";
 import { api, Collection } from "../api/client";
+import { useConfirm } from "../context/ConfirmContext";
+import { useToast } from "../context/ToastContext";
 
 interface Props {
   selectedIds: number[];
@@ -22,6 +24,8 @@ function parseTags(raw: string): string[] {
 }
 
 export default function BulkTagBar({ selectedIds, totalOnPage, onSelectAll, onClear, onDone, collections }: Props) {
+  const confirm = useConfirm();
+  const { toast } = useToast();
   const [mode, setMode] = useState<Mode>("idle");
   const [tagInput, setTagInput] = useState("");
   const [colSearch, setColSearch] = useState("");
@@ -84,6 +88,44 @@ export default function BulkTagBar({ selectedIds, totalOnPage, onSelectAll, onCl
       setStatus("error");
       setMessage("Failed — try again");
       setTimeout(() => setStatus("idle"), 2500);
+    }
+  };
+
+  const n = selectedIds.length;
+  const plural = n !== 1 ? "s" : "";
+
+  // "Hide" is the bulk equivalent of the per-card exclude: it removes the models
+  // from the viewer (files on disk are kept, restorable from the Excluded view).
+  const hideSelected = async () => {
+    const ok = await confirm({
+      title: `Hide ${n} model${plural}?`,
+      message: `This removes ${n} model${plural} from the library. Files on disk are kept, and you can restore them from the Excluded view.`,
+      confirmLabel: "Hide",
+      destructive: true,
+    });
+    if (!ok) return;
+    setStatus("loading");
+    try {
+      await api.models.bulkExclude(selectedIds, true);
+      toast(`Hid ${n} model${plural}.`, "success");
+      onDone();
+      onClear();  // models left the grid — drop the now-stale selection
+    } catch {
+      setStatus("idle");
+      toast("Couldn't hide the selected models — try again.", "error");
+    }
+  };
+
+  const markReview = async () => {
+    setStatus("loading");
+    try {
+      const res = await api.models.bulkReview(selectedIds, true);
+      toast(`Flagged ${res.updated} model${res.updated !== 1 ? "s" : ""} for review.`, "success");
+      onDone();
+      onClear();
+    } catch {
+      setStatus("idle");
+      toast("Couldn't flag the selected models — try again.", "error");
     }
   };
 
@@ -224,6 +266,22 @@ export default function BulkTagBar({ selectedIds, totalOnPage, onSelectAll, onCl
             >
               <FolderOpen size={13} />
               Add to Collection
+            </button>
+            <button
+              onClick={markReview}
+              title="Flag the selected models for review"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded text-sm bg-gray-800 border border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
+            >
+              <AlertCircle size={13} />
+              Mark Review
+            </button>
+            <button
+              onClick={hideSelected}
+              title="Hide the selected models from the library (files kept on disk)"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded text-sm bg-gray-800 border border-red-900/60 text-red-400 hover:bg-red-950/50 hover:text-red-300 transition-colors"
+            >
+              <EyeOff size={13} />
+              Hide
             </button>
           </div>
         )}

@@ -14,6 +14,7 @@ import BulkTagBar from "../components/BulkTagBar";
 import HelpLink from "../components/HelpLink";
 import { useToast } from "../context/ToastContext";
 import { nextTagParams } from "../utils/tagFilter";
+import { nextSelection } from "../utils/selection";
 
 const SITES = ["thingiverse", "printables", "myminifactory", "cults3d", "gumroad", "thangs", "makerworld", "other"];
 
@@ -350,19 +351,22 @@ export default function Library() {
     setPresetName("");
   };
 
-  const toggleSelect = useCallback((id: number) => {
-    setSelection(prev => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  }, []);
+  // Anchor for shift-click range selection — the last card toggled without Shift.
+  const selectAnchorRef = useRef<number | null>(null);
+
+  const toggleSelect = useCallback((id: number, shiftKey: boolean) => {
+    setSelection(prev => nextSelection(prev, models.map(m => m.id), selectAnchorRef.current, id, shiftKey));
+    if (!shiftKey) selectAnchorRef.current = id;
+  }, [models]);
 
   const selectAll = useCallback(() => {
     setSelection(new Set(models.map(m => m.id)));
   }, [models]);
 
-  const clearSelection = useCallback(() => setSelection(new Set()), []);
+  const clearSelection = useCallback(() => {
+    setSelection(new Set());
+    selectAnchorRef.current = null;
+  }, []);
 
   // After a model is excluded/restored, drop it from the current grid right away
   // and refresh the count chips (its own fetch keeps totals correct on next load).

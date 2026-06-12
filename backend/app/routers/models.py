@@ -10,7 +10,8 @@ from app.models import Model, Creator, ModelTag, CollectionModel, GroupOverride
 from app.schemas import (
     ModelList, ModelRead, ModelDetail, CreatorRead,
     ModelUpdate, ThumbnailUpdate, ThumbnailFromUrl, FavoriteUpdate, QueueUpdate, QueueReorder,
-    PrintedUpdate, PrintStatusUpdate, ExcludeUpdate, STLFileUpdate, BulkTagUpdate, SetGroupBody,
+    PrintedUpdate, PrintStatusUpdate, ExcludeUpdate, STLFileUpdate, BulkTagUpdate,
+    BulkExcludeUpdate, BulkReviewUpdate, SetGroupBody,
 )
 from app.services.thumbnails import ThumbnailDownloadError, download_thumbnail, store_thumbnail
 from app.services.variant_sync import propagate_source_url
@@ -460,6 +461,40 @@ def bulk_tag_models(body: BulkTagUpdate, db: Session = Depends(get_db)):
         model.updated_at = utcnow()
         sync_model_tags(model, db)
 
+    db.commit()
+    return {"ok": True, "updated": len(models_to_update)}
+
+
+# NB: these /bulk/... routes must be declared before /{model_id}/exclude etc.,
+# or FastAPI would match "bulk" as the model_id path param and 422 on int parse.
+@router.patch("/bulk/exclude")
+def bulk_exclude_models(body: BulkExcludeUpdate, db: Session = Depends(get_db)):
+    """Exclude (hide) or restore multiple models in one request. Mirrors the
+    single-model exclude: hiding also clears any lingering print-queue state."""
+    if not body.ids:
+        raise HTTPException(status_code=400, detail="No model IDs provided")
+
+    models_to_update = db.query(Model).filter(Model.id.in_(body.ids)).all()
+    for model in models_to_update:
+        model.excluded = body.excluded
+        if body.excluded:
+            model.in_queue = False
+            model.queued_at = None
+            model.queue_position = None
+    db.commit()
+    return {"ok": True, "updated": len(models_to_update)}
+
+
+@router.patch("/bulk/review")
+def bulk_review_models(body: BulkReviewUpdate, db: Session = Depends(get_db)):
+    """Mark or clear the needs-review flag across multiple models in one request."""
+    if not body.ids:
+        raise HTTPException(status_code=400, detail="No model IDs provided")
+
+    models_to_update = db.query(Model).filter(Model.id.in_(body.ids)).all()
+    for model in models_to_update:
+        model.needs_review = body.needs_review
+        model.updated_at = utcnow()
     db.commit()
     return {"ok": True, "updated": len(models_to_update)}
 
