@@ -11,7 +11,7 @@ import QuickAssignPopover from "./QuickAssignPopover";
 interface Props {
   model: Model;
   selected?: boolean;
-  onSelect?: (id: number) => void;
+  onSelect?: (id: number, shiftKey: boolean) => void;
   backTo?: string;
   /** Called after a successful favorite/queue toggle so parents can refresh
    *  derived data (e.g. the Library's favorites/queued count chips). */
@@ -138,7 +138,7 @@ export default function ModelCard({ model, selected = false, onSelect, backTo, o
   const handleSelect = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    onSelect?.(model.id);
+    onSelect?.(model.id, e.shiftKey);
   };
 
   const thumbnail = model.thumbnail_path

@@ -183,6 +183,16 @@ class BulkTagUpdate(BaseModel):
     remove_tags: list[str] = []
 
 
+class BulkExcludeUpdate(BaseModel):
+    ids: list[int]
+    excluded: bool
+
+
+class BulkReviewUpdate(BaseModel):
+    ids: list[int]
+    needs_review: bool
+
+
 class SetGroupBody(BaseModel):
     character: Optional[str] = None  # None = explicitly ungroup; string = target group name
 
