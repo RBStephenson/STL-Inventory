@@ -12,7 +12,7 @@ interface TagRow {
 
 export default function TagsPage() {
   const { toast } = useToast();
-  const { confirm } = useConfirm();
+  const confirm = useConfirm();
   const [tags, setTags] = useState<TagRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");

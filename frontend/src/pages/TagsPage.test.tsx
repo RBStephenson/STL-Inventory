@@ -20,7 +20,7 @@ vi.mock("../api/client", () => ({
   },
 }));
 vi.mock("../context/ToastContext", () => ({ useToast: () => ({ toast: vi.fn() }) }));
-vi.mock("../context/ConfirmContext", () => ({ useConfirm: () => ({ confirm: vi.fn(async () => true) }) }));
+vi.mock("../context/ConfirmContext", () => ({ useConfirm: () => vi.fn(async () => true) }));
 vi.mock("../components/HelpLink", () => ({ default: () => null }));
 
 import { api } from "../api/client";
