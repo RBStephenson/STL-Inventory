@@ -18,6 +18,12 @@ import { nextSelection } from "../utils/selection";
 
 const SITES = ["thingiverse", "printables", "myminifactory", "cults3d", "gumroad", "thangs", "makerworld", "other"];
 
+// Last applied Library filter querystring, remembered across navigation so that
+// returning to the Library — via the navbar link, an in-page back, or browser
+// Back — resumes the prior filter set instead of dropping to the unfiltered view
+// (#288). "Clear all" removes this so an intentional reset stays reset.
+const LIBRARY_QUERY_KEY = "library_query";
+
 // Compact tri-state toggle: "all" | "1" | "0"
 function TriToggle({ label, value, onChange }: {
   label: string;
@@ -217,7 +223,7 @@ export default function Library() {
     !!(creatorId || excludeCreatorId || site || activeTag || excludeTag || nsfwParam || thumbParam)
   );
   const [selection, setSelection] = useState<Set<number>>(new Set());
-  const { settings, update: updateSettings } = useAppSettings();
+  const { settings, update: updateSettings, upsertPreset, deletePreset: removePreset } = useAppSettings();
   const presets = settings.filter_presets;
   const pageSize = settings.library_page_size;
 
@@ -330,6 +336,31 @@ export default function Library() {
     return p.toString();
   })();
 
+  // --- Filter stickiness (#288) ---------------------------------------------
+  // Resume the last filter set when the Library is entered with no params (the
+  // navbar "Library" link, in-page back buttons, or browser Back to a bare `/`).
+  // One-shot: only on mount, and only when the URL carries nothing, so it never
+  // fights a deliberate navigation that already specifies filters.
+  const queryRestoredRef = useRef(false);
+  useEffect(() => {
+    if (queryRestoredRef.current) return;
+    queryRestoredRef.current = true;
+    if (searchParams.toString()) return; // arrived with explicit params — respect them
+    const saved = sessionStorage.getItem(LIBRARY_QUERY_KEY);
+    if (saved) setSearchParams(new URLSearchParams(saved), { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Remember the active filter set so the next entry can resume it; an empty set
+  // (incl. "Clear all") drops the saved query so a deliberate reset stays reset.
+  // The restore effect above runs first and, when it restores, re-renders with
+  // the resumed querystring — which lands back here and re-saves it.
+  useEffect(() => {
+    if (!queryRestoredRef.current) return;
+    if (currentQS) sessionStorage.setItem(LIBRARY_QUERY_KEY, currentQS);
+    else sessionStorage.removeItem(LIBRARY_QUERY_KEY);
+  }, [currentQS]);
+
   const applyPreset = (preset: FilterPreset) => {
     const p = new URLSearchParams(preset.qs);
     p.delete("page");
@@ -337,14 +368,13 @@ export default function Library() {
   };
 
   const deletePreset = (name: string) => {
-    void updateSettings({ filter_presets: presets.filter(p => p.name !== name) });
+    void removePreset(name);
   };
 
   const confirmSavePreset = () => {
     const name = presetName.trim();
     if (!name) return;
-    const next = [...presets.filter(p => p.name !== name), { name, qs: currentQS }];
-    void updateSettings({ filter_presets: next });
+    void upsertPreset({ name, qs: currentQS });
     setSavingPreset(false);
     setPresetName("");
   };

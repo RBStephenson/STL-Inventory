@@ -126,3 +126,63 @@ def test_library_sort_invalid_value_rejected(client):
     assert client.patch("/settings", json={"library_sort": "queue"}).status_code == 422
     assert client.patch("/settings", json={"library_sort": "bogus"}).status_code == 422
     assert client.get("/settings").json()["library_sort"] == "name"
+
+
+# --- Atomic single-preset endpoints (#287) ---
+# A whole-list PATCH could drop entries when a stale client snapshot was sent;
+# these endpoints mutate the stored list server-side so unrelated presets survive.
+
+
+def test_upsert_preset_adds_to_empty(client):
+    r = client.put("/settings/filter-presets", json={"name": "Favorites", "qs": "is_favorite=1"})
+    assert r.status_code == 200
+    assert r.json()["filter_presets"] == [{"name": "Favorites", "qs": "is_favorite=1"}]
+    assert client.get("/settings").json()["filter_presets"] == [
+        {"name": "Favorites", "qs": "is_favorite=1"}
+    ]
+
+
+def test_upsert_preset_preserves_existing(client):
+    # The #287 regression: saving one preset must not drop the others.
+    client.put("/settings/filter-presets", json={"name": "A", "qs": "q=a"})
+    client.put("/settings/filter-presets", json={"name": "B", "qs": "q=b"})
+    names = [p["name"] for p in client.get("/settings").json()["filter_presets"]]
+    assert names == ["A", "B"]
+
+
+def test_upsert_preset_replaces_same_name(client):
+    client.put("/settings/filter-presets", json={"name": "A", "qs": "q=a"})
+    r = client.put("/settings/filter-presets", json={"name": "A", "qs": "q=updated"})
+    assert r.status_code == 200
+    presets = client.get("/settings").json()["filter_presets"]
+    assert presets == [{"name": "A", "qs": "q=updated"}]
+
+
+def test_delete_preset_leaves_others(client):
+    client.put("/settings/filter-presets", json={"name": "A", "qs": "q=a"})
+    client.put("/settings/filter-presets", json={"name": "B", "qs": "q=b"})
+    r = client.delete("/settings/filter-presets", params={"name": "A"})
+    assert r.status_code == 200
+    assert r.json()["filter_presets"] == [{"name": "B", "qs": "q=b"}]
+
+
+def test_delete_missing_preset_is_noop(client):
+    client.put("/settings/filter-presets", json={"name": "A", "qs": "q=a"})
+    r = client.delete("/settings/filter-presets", params={"name": "does-not-exist"})
+    assert r.status_code == 200
+    assert client.get("/settings").json()["filter_presets"] == [{"name": "A", "qs": "q=a"}]
+
+
+def test_upsert_preset_shape_enforced(client):
+    assert client.put("/settings/filter-presets", json={"name": "X"}).status_code == 422
+    bad = {"name": "X", "qs": "q=x", "color": "red"}
+    assert client.put("/settings/filter-presets", json=bad).status_code == 422
+
+
+def test_upsert_preset_coexists_with_patch_list(client):
+    # A preset seeded via the legacy whole-list PATCH is visible to, and
+    # preserved by, the atomic upsert path.
+    client.patch("/settings", json={"filter_presets": [{"name": "Seed", "qs": "q=seed"}]})
+    client.put("/settings/filter-presets", json={"name": "New", "qs": "q=new"})
+    names = [p["name"] for p in client.get("/settings").json()["filter_presets"]]
+    assert names == ["Seed", "New"]

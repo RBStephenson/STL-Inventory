@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { api, AppSettings } from "../api/client";
+import { api, AppSettings, FilterPreset } from "../api/client";
 import { collectLegacyPreferences, clearLegacyPreferences } from "../utils/legacyPreferences";
 
 // Mirrors the backend DEFAULTS in routers/settings.py — used until the
@@ -16,11 +16,17 @@ const DEFAULTS: AppSettings = {
 interface AppSettingsContextValue {
   settings: AppSettings;
   update: (patch: Partial<AppSettings>) => Promise<void>;
+  // Atomic single-preset writes (#287): the server mutates the stored list, so
+  // these can't clobber unrelated presets the way a whole-list PATCH could.
+  upsertPreset: (preset: FilterPreset) => Promise<void>;
+  deletePreset: (name: string) => Promise<void>;
 }
 
 const AppSettingsContext = createContext<AppSettingsContextValue>({
   settings: DEFAULTS,
   update: async () => {},
+  upsertPreset: async () => {},
+  deletePreset: async () => {},
 });
 
 export function AppSettingsProvider({ children }: { children: ReactNode }) {
@@ -51,8 +57,16 @@ export function AppSettingsProvider({ children }: { children: ReactNode }) {
     setSettings(await api.settings.update(patch));
   };
 
+  const upsertPreset = async (preset: FilterPreset) => {
+    setSettings(await api.settings.upsertPreset(preset));
+  };
+
+  const deletePreset = async (name: string) => {
+    setSettings(await api.settings.deletePreset(name));
+  };
+
   return (
-    <AppSettingsContext.Provider value={{ settings, update }}>
+    <AppSettingsContext.Provider value={{ settings, update, upsertPreset, deletePreset }}>
       {children}
     </AppSettingsContext.Provider>
   );
