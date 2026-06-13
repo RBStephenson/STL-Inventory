@@ -175,3 +175,58 @@ def test_delete_tag_updates_model_tags_index(client, db):
     remaining = db.query(ModelTag).filter(ModelTag.model_id == m.id).all()
     assert all(r.tag != "bust" for r in remaining)
     assert any(r.tag == "figure" for r in remaining)
+
+
+# ---------------------------------------------------------------------------
+# Removing auto-detected tags (#298): removed_auto_tags suppression
+# ---------------------------------------------------------------------------
+
+class TestSuppressAutoTags:
+    def test_sync_excludes_removed_auto_tag_from_index(self, client, db):
+        creator = make_creator(db)
+        m = make_model(db, creator)
+        m.auto_tags = ["statue", "1:6scale"]
+        m.removed_auto_tags = ["statue"]
+        sync_model_tags(m, db); db.commit()
+
+        rows = {r.tag for r in db.query(ModelTag).filter(ModelTag.model_id == m.id)}
+        assert "statue" not in rows
+        assert "1:6scale" in rows
+
+    def test_user_tag_overrides_suppressed_auto_tag(self, client, db):
+        """A user tag with the same name as a removed auto-tag still shows (user wins)."""
+        creator = make_creator(db)
+        m = make_model(db, creator, tags=["statue"])
+        m.auto_tags = ["statue"]
+        m.removed_auto_tags = ["statue"]
+        sync_model_tags(m, db); db.commit()
+
+        rows = {r.tag: r.is_auto for r in db.query(ModelTag).filter(ModelTag.model_id == m.id)}
+        assert rows.get("statue") is False  # present, and marked as a user tag
+
+    def test_patch_persists_removed_auto_tags_and_updates_index(self, client, db):
+        creator = make_creator(db)
+        m = make_model(db, creator)
+        m.auto_tags = ["statue", "bust"]
+        sync_model_tags(m, db); db.commit()
+
+        r = client.patch(f"/models/{m.id}", json={"removed_auto_tags": ["statue"]})
+        assert r.status_code == 200
+
+        db.expire_all()
+        db.refresh(m)
+        assert m.removed_auto_tags == ["statue"]
+        rows = {r.tag for r in db.query(ModelTag).filter(ModelTag.model_id == m.id)}
+        assert "statue" not in rows
+        assert "bust" in rows
+
+    def test_model_read_returns_removed_auto_tags(self, client, db):
+        creator = make_creator(db)
+        m = make_model(db, creator)
+        m.auto_tags = ["statue"]
+        m.removed_auto_tags = ["statue"]
+        db.commit()
+
+        r = client.get(f"/models/{m.id}")
+        assert r.status_code == 200
+        assert r.json()["removed_auto_tags"] == ["statue"]

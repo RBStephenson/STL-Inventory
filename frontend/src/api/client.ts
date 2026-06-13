@@ -34,6 +34,7 @@ export interface Model {
   license: string | null;
   tags: string[];
   auto_tags: string[];
+  removed_auto_tags: string[];
   category: string | null;
   needs_review: boolean;
   nsfw: boolean;

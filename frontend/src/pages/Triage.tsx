@@ -217,11 +217,11 @@ export default function Triage() {
               {current.folder_path}
             </p>
 
-            {current.auto_tags?.length > 0 && (
+            {current.auto_tags?.filter(t => !(current.removed_auto_tags ?? []).includes(t)).length > 0 && (
               <div>
                 <p className="text-xs text-gray-500 mb-1.5">Detected tags</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {current.auto_tags.map(tag => (
+                  {current.auto_tags.filter(t => !(current.removed_auto_tags ?? []).includes(t)).map(tag => (
                     <span
                       key={tag}
                       className="px-2 py-0.5 bg-indigo-950 border border-indigo-800 text-indigo-300 rounded text-xs"
