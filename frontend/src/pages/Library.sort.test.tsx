@@ -54,6 +54,9 @@ describe("Library sort control (#247)", () => {
     listMock.mockClear();
     updateMock.mockClear();
     settings = mkSettings();
+    // Isolate the filter-stickiness store (#288) so a sort written to the URL in
+    // one test isn't resumed from sessionStorage by the next test's empty mount.
+    sessionStorage.clear();
   });
 
   it("defaults to Name and omits the sort param", async () => {

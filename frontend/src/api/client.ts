@@ -603,6 +603,19 @@ export const api = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(patch),
       }),
+    // Single-preset writes go through dedicated endpoints so the server does the
+    // read-modify-write against the stored list — a stale client snapshot can't
+    // drop unrelated presets (#287).
+    upsertPreset: (preset: FilterPreset) =>
+      request<AppSettings>("/settings/filter-presets", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(preset),
+      }),
+    deletePreset: (name: string) =>
+      request<AppSettings>(`/settings/filter-presets?name=${encodeURIComponent(name)}`, {
+        method: "DELETE",
+      }),
   },
   painting: {
     brands: {

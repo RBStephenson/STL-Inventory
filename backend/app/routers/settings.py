@@ -10,11 +10,13 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import AppSetting
-from app.schemas import AppSettingsRead, AppSettingsUpdate
+from app.schemas import AppSettingsRead, AppSettingsUpdate, FilterPreset
 
 router = APIRouter(prefix="/settings", tags=["settings"])
 
 DEFAULTS: dict = AppSettingsRead().model_dump()
+
+FILTER_PRESETS_KEY = "filter_presets"
 
 
 def _merged(db: Session) -> dict:
@@ -40,4 +42,39 @@ def update_settings(body: AppSettingsUpdate, db: Session = Depends(get_db)):
         else:
             row.value = value
     db.commit()
+    return _merged(db)
+
+
+def _stored_presets(db: Session) -> list[dict]:
+    """The currently-stored preset list, straight from the DB (never a client
+    snapshot). Falls back to the default empty list when the row is absent."""
+    row = db.get(AppSetting, FILTER_PRESETS_KEY)
+    return list(row.value) if row is not None else list(DEFAULTS[FILTER_PRESETS_KEY])
+
+
+def _write_presets(db: Session, presets: list[dict]) -> None:
+    row = db.get(AppSetting, FILTER_PRESETS_KEY)
+    if row is None:
+        db.add(AppSetting(key=FILTER_PRESETS_KEY, value=presets))
+    else:
+        row.value = presets
+    db.commit()
+
+
+@router.put("/filter-presets", response_model=AppSettingsRead)
+def upsert_filter_preset(preset: FilterPreset, db: Session = Depends(get_db)):
+    """Add or replace a single preset by name, atomically against the stored
+    list. Single-preset semantics avoid the whole-list-replace clobber (#287)
+    where a stale client snapshot could drop unrelated presets."""
+    presets = [p for p in _stored_presets(db) if p.get("name") != preset.name]
+    presets.append(preset.model_dump())
+    _write_presets(db, presets)
+    return _merged(db)
+
+
+@router.delete("/filter-presets", response_model=AppSettingsRead)
+def delete_filter_preset(name: str, db: Session = Depends(get_db)):
+    """Remove a single preset by name, leaving the rest untouched (#287)."""
+    presets = [p for p in _stored_presets(db) if p.get("name") != name]
+    _write_presets(db, presets)
     return _merged(db)
