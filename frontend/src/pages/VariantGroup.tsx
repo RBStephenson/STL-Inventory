@@ -1,9 +1,13 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, Layers, MoveRight, X } from "lucide-react";
+import { ArrowLeft, Layers, MoveRight, X, Keyboard } from "lucide-react";
 import { api, Model } from "../api/client";
 import ModelCard from "../components/ModelCard";
+import ShortcutsOverlay from "../components/ShortcutsOverlay";
 import { useToast } from "../context/ToastContext";
+import { modelLinkTo } from "../utils/modelLink";
+import { measureGridColumns } from "../utils/libraryKeys";
+import { useLibraryKeyboard } from "../hooks/useLibraryKeyboard";
 
 function GroupAction({ model, creatorId, onRemoved, onMoved }: {
   model: Model;
@@ -133,6 +137,37 @@ export default function VariantGroup() {
     if (next.length === 0) navigate(from);
   };
 
+  // --- Keyboard navigation (#169) --------------------------------------------
+  // Same WASD/arrow + Enter + "?" controls as the Library grid. No search box
+  // here, so "/" is a no-op.
+  const [showShortcuts, setShowShortcuts] = useState(false);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const getColumns = useCallback(() => measureGridColumns(gridRef.current), []);
+
+  const openVariant = useCallback((index: number) => {
+    const m = variants[index];
+    if (!m) return;
+    sessionStorage.setItem("library_scroll", String(window.scrollY));
+    navigate(modelLinkTo(m), { state: { from } });
+  }, [variants, navigate, from]);
+
+  const { focusedIndex, setFocusedIndex } = useLibraryKeyboard({
+    count: variants.length,
+    getColumns,
+    onActivate: openVariant,
+    onFocusSearch: () => {},
+    onToggleHelp: () => setShowShortcuts((o) => !o),
+    onEscape: () => {
+      if (showShortcuts) { setShowShortcuts(false); return; }
+      const active = document.activeElement;
+      if (active instanceof HTMLElement && active.tagName === "INPUT") { active.blur(); return; }
+      setFocusedIndex(-1);
+    },
+  });
+
+  // Keep the focus ring valid as variants are moved/removed out of the group.
+  useEffect(() => { setFocusedIndex(-1); }, [variants, setFocusedIndex]);
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       <div className="flex items-center gap-3 mb-6">
@@ -151,6 +186,14 @@ export default function VariantGroup() {
             {variants.length} variant{variants.length !== 1 ? "s" : ""}
           </span>
         )}
+        <button
+          onClick={() => setShowShortcuts(true)}
+          title="Keyboard shortcuts ( ? )"
+          aria-label="Keyboard shortcuts"
+          className="ml-auto p-1.5 rounded border border-gray-700 bg-gray-900 text-gray-400 hover:text-gray-100 hover:border-gray-500 transition-colors"
+        >
+          <Keyboard size={16} />
+        </button>
       </div>
 
       {loading ? (
@@ -158,10 +201,10 @@ export default function VariantGroup() {
       ) : variants.length === 0 ? (
         <div className="flex justify-center py-24 text-gray-500 text-sm">No variants found.</div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-          {variants.map((model) => (
+        <div ref={gridRef} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+          {variants.map((model, i) => (
             <div key={model.id} className="flex flex-col">
-              <ModelCard model={model} backTo={from} />
+              <ModelCard model={model} backTo={from} focused={focusedIndex === i} />
               <GroupAction
                 model={model}
                 creatorId={numCreatorId}
@@ -172,6 +215,8 @@ export default function VariantGroup() {
           ))}
         </div>
       )}
+
+      {showShortcuts && <ShortcutsOverlay onClose={() => setShowShortcuts(false)} showSearch={false} />}
     </div>
   );
 }

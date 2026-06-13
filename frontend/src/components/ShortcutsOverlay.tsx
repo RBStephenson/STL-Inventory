@@ -2,21 +2,23 @@ import { Keyboard, X } from "lucide-react";
 
 interface Props {
   onClose: () => void;
+  /** Whether to list the "/" focus-search shortcut (off on pages with no search box). */
+  showSearch?: boolean;
 }
 
-const SHORTCUTS: { keys: string[]; desc: string }[] = [
-  { keys: ["/"], desc: "Focus the search box" },
-  { keys: ["A", "D"], desc: "Move left / right between cards" },
-  { keys: ["W", "S"], desc: "Move up / down a row" },
-  { keys: ["←", "→", "↑", "↓"], desc: "Move between cards (arrow keys)" },
-  { keys: ["Enter"], desc: "Open the focused model" },
-  { keys: ["Esc"], desc: "Clear focus / close this dialog" },
-  { keys: ["?"], desc: "Show this help" },
-];
-
-// Help dialog for the Library keyboard shortcuts (#169). Closing is driven by
-// the backdrop, the X button, and the global Escape handler in Library.
-export default function ShortcutsOverlay({ onClose }: Props) {
+// Help dialog for the keyboard shortcuts (#169), shared by the Library and
+// variant-group grids. Closing is driven by the backdrop, the X button, and
+// the global Escape handler on the host page.
+export default function ShortcutsOverlay({ onClose, showSearch = true }: Props) {
+  const shortcuts: { keys: string[]; desc: string }[] = [
+    ...(showSearch ? [{ keys: ["/"], desc: "Focus the search box" }] : []),
+    { keys: ["A", "D"], desc: "Move left / right between cards" },
+    { keys: ["W", "S"], desc: "Move up / down a row" },
+    { keys: ["←", "→", "↑", "↓"], desc: "Move between cards (arrow keys)" },
+    { keys: ["Enter"], desc: "Open the focused model" },
+    { keys: ["Esc"], desc: "Clear focus / close this dialog" },
+    { keys: ["?"], desc: "Show this help" },
+  ];
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
@@ -43,7 +45,7 @@ export default function ShortcutsOverlay({ onClose }: Props) {
           </button>
         </div>
         <ul className="flex flex-col gap-2.5">
-          {SHORTCUTS.map(({ keys, desc }) => (
+          {shortcuts.map(({ keys, desc }) => (
             <li key={desc} className="flex items-center justify-between gap-4">
               <span className="text-sm text-gray-400">{desc}</span>
               <span className="flex items-center gap-1 shrink-0">

@@ -57,6 +57,22 @@ export function resolveLibraryKey(e: KeyEventLike, inEditable: boolean): Library
   }
 }
 
+// Measure the responsive grid's live column count by counting the cards that
+// share the first card's offsetTop (i.e. sit in the top row). Works for any
+// CSS-grid card list regardless of its breakpoint column counts.
+export function measureGridColumns(grid: HTMLElement | null): number {
+  if (!grid) return 1;
+  const cards = Array.from(grid.children) as HTMLElement[];
+  if (cards.length === 0) return 1;
+  const top = cards[0].offsetTop;
+  let cols = 0;
+  for (const c of cards) {
+    if (c.offsetTop === top) cols++;
+    else break;
+  }
+  return cols || 1;
+}
+
 // Compute the next focused card index. The first move from "no focus" (-1)
 // lands on the first card regardless of direction. Moves that would leave the
 // grid are no-ops (stay put) rather than wrapping.

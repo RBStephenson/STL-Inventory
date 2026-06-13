@@ -16,6 +16,7 @@ import { useToast } from "../context/ToastContext";
 import { nextTagParams } from "../utils/tagFilter";
 import { nextSelection } from "../utils/selection";
 import { modelLinkTo } from "../utils/modelLink";
+import { measureGridColumns } from "../utils/libraryKeys";
 import { useLibraryKeyboard } from "../hooks/useLibraryKeyboard";
 import ShortcutsOverlay from "../components/ShortcutsOverlay";
 
@@ -416,21 +417,9 @@ export default function Library() {
   const [showShortcuts, setShowShortcuts] = useState(false);
   const gridRef = useRef<HTMLDivElement>(null);
 
-  // Measure the responsive grid's column count (2→6 across breakpoints) so
-  // up/down jumps a whole row: count cards sharing the first card's offsetTop.
-  const getColumns = useCallback(() => {
-    const grid = gridRef.current;
-    if (!grid) return 1;
-    const cards = Array.from(grid.children) as HTMLElement[];
-    if (cards.length === 0) return 1;
-    const top = cards[0].offsetTop;
-    let cols = 0;
-    for (const c of cards) {
-      if (c.offsetTop === top) cols++;
-      else break;
-    }
-    return cols || 1;
-  }, []);
+  // Up/down jumps a whole row, so the move math needs the grid's live column
+  // count (2→6 across breakpoints), measured from the DOM.
+  const getColumns = useCallback(() => measureGridColumns(gridRef.current), []);
 
   const openModel = useCallback((index: number) => {
     const m = models[index];
