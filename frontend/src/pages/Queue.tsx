@@ -79,8 +79,8 @@ export default function Queue() {
     setLoading(true);
     try {
       const [q, p] = await Promise.all([
-        api.models.list({ in_queue: true, sort: "queue", group_variants: false, page_size: 200 }),
-        api.models.list({ printed: true, sort: "printed_at", group_variants: false, page_size: 60 }),
+        api.models.list({ print_status: "queued", sort: "queue", group_variants: false, page_size: 200 }),
+        api.models.list({ print_status: "printed", sort: "printed_at", group_variants: false, page_size: 60 }),
       ]);
       setQueued(q.items);
       setPrinted(p.items);

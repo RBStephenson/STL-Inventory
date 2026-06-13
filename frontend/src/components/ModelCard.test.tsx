@@ -26,7 +26,6 @@ vi.mock("../api/client", async (importOriginal) => {
         setPrintStatus: vi.fn(async () => ({ ok: true, print_status: "queued", print_count: 0 })),
         setFavorite: vi.fn(async () => ({ ok: true, is_favorite: false })),
         setRating: vi.fn(async () => ({ ok: true, user_rating: 4 })),
-        setQueue: vi.fn(async () => ({ ok: true, in_queue: false })),
         setNSFW: vi.fn(async () => ({ ok: true })),
         setExcluded: vi.fn(async () => ({ ok: true, excluded: false })),
       },
@@ -38,7 +37,7 @@ import { api } from "../api/client";
 
 const MODEL = {
   id: 7, name: "robocop", title: "RoboCop", character: null, variant_count: 1,
-  nsfw: false, is_favorite: false, in_queue: false, needs_review: false,
+  nsfw: false, is_favorite: false, needs_review: false,
   print_status: "none", print_count: 0,
   auto_tags: [], tags: [], thumbnail_path: null, thumbnail_url: null,
   rating: null, source_site: null, creator_id: 1,

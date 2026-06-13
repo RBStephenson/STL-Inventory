@@ -181,12 +181,10 @@ function parseLibraryOrigin(from: string | undefined): Record<string, string | n
     else if (val === "0") params[key] = false;
   }
   const fav = sp.get("is_favorite") === "1";
-  const queue = sp.get("in_queue") === "1";
-  const printed = sp.get("printed") === "1";
+  const printStatus = sp.get("print_status") ?? "";
   const excluded = sp.get("excluded") === "1";
   if (fav) params.is_favorite = true;
-  if (queue) params.in_queue = true;
-  if (printed) params.printed = true;
+  if (printStatus) params.print_status = printStatus;
   if (excluded) params.excluded = true;
   // "Recently added" view (#170): same window + newest-first order as the grid,
   // so Prev/Next walks the list the user was looking at.
@@ -198,7 +196,7 @@ function parseLibraryOrigin(from: string | undefined): Record<string, string | n
     // Chosen Library sort (#247): walk Prev/Next in the same order as the grid.
     params.sort = sp.get("sort")!;
   }
-  params.group_variants = !fav && !queue && !printed && !excluded;
+  params.group_variants = !fav && !printStatus && !excluded;
   return params;
 }
 
@@ -229,8 +227,6 @@ export default function ModelDetail() {
   const [nsfw, setNsfw] = useState(false);
   const [favorite, setFavorite] = useState(false);
   const [rating, setRating] = useState<number | null>(null);
-  const [queued, setQueued] = useState(false);
-  const [printedAt, setPrintedAt] = useState<string | null>(null);
   const [printStatus, setPrintStatus] = useState<import("../api/client").PrintStatus>("none");
   const [printCount, setPrintCount] = useState(0);
   const [tags, setTags] = useState<string[]>([]);
@@ -273,8 +269,6 @@ export default function ModelDetail() {
       setNsfw(model.nsfw);
       setFavorite(model.is_favorite);
       setRating(model.user_rating ?? null);
-      setQueued(model.in_queue);
-      setPrintedAt(model.printed_at);
       setPrintStatus(model.print_status ?? "none");
       setPrintCount(model.print_count ?? 0);
       setTags(model.tags ?? []);
@@ -432,32 +426,6 @@ export default function ModelDetail() {
     } catch {
       setRating(prev);  // revert on failure
       toast("Couldn't update rating — try again.", "error");
-    }
-  };
-
-  const toggleQueue = async () => {
-    const next = !queued;
-    setQueued(next);
-    try {
-      await api.models.setQueue(Number(id), next);
-    } catch {
-      setQueued(!next);  // revert on failure
-      toast("Couldn't update the print queue — try again.", "error");
-    }
-  };
-
-  const togglePrinted = async () => {
-    const next = !printedAt;
-    const prevPrinted = printedAt;
-    const prevQueued = queued;
-    setPrintedAt(next ? new Date().toISOString() : null);
-    if (next) setQueued(false);  // marking printed clears the queue
-    try {
-      await api.models.setPrinted(Number(id), next);
-    } catch {
-      setPrintedAt(prevPrinted);  // revert both on failure
-      setQueued(prevQueued);
-      toast("Couldn't update printed status — try again.", "error");
     }
   };
 
@@ -767,30 +735,6 @@ export default function ModelDetail() {
                 <StarRating value={rating} onChange={changeRating} size={16} />
               </div>
               <button
-                onClick={toggleQueue}
-                title={queued ? "Remove from print queue" : "Add to print queue"}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded border text-sm transition-colors ${
-                  queued
-                    ? "bg-sky-950/60 border-sky-800 text-sky-400 hover:bg-sky-900/60"
-                    : "bg-gray-800 border-gray-700 text-gray-400 hover:text-gray-200"
-                }`}
-              >
-                <Printer size={14} />
-                {queued ? "Queued" : "Queue"}
-              </button>
-              <button
-                onClick={togglePrinted}
-                title={printedAt ? "Un-mark as printed" : "Mark as printed"}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded border text-sm transition-colors ${
-                  printedAt
-                    ? "bg-emerald-950/60 border-emerald-800 text-emerald-400 hover:bg-emerald-900/60"
-                    : "bg-gray-800 border-gray-700 text-gray-400 hover:text-gray-200"
-                }`}
-              >
-                <Check size={14} />
-                {printedAt ? "Printed" : "Mark printed"}
-              </button>
-              <button
                 onClick={cyclePrintStatus}
                 title={`Print status: ${printStatus} — click to advance`}
                 aria-label={`Print status ${printStatus}`}
@@ -937,7 +881,7 @@ export default function ModelDetail() {
                   // For the current variant, reflect live local toggles rather
                   // than the (possibly stale) value from the variants fetch.
                   const vFavorite = isCurrent ? favorite : v.is_favorite;
-                  const vQueued = isCurrent ? queued : v.in_queue;
+                  const vQueued = (isCurrent ? printStatus : v.print_status) === "queued";
                   return (
                     <Link
                       key={v.id}

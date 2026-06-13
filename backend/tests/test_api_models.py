@@ -271,11 +271,11 @@ class TestExclude:
         creator = make_creator(db)
         m = make_model(db, creator, name="Queued")
         commit_all(db)
-        client.patch(f"/models/{m.id}/queue", json={"in_queue": True})
+        client.patch(f"/models/{m.id}/print-status", json={"status": "queued"})
 
         client.patch(f"/models/{m.id}/exclude", json={"excluded": True})
         db.refresh(m)
-        assert m.in_queue is False
+        assert m.print_status == "none"
         assert m.queue_position is None
 
     def test_exclude_unknown_model_returns_404(self, client):
@@ -356,7 +356,7 @@ class TestSTLFilePartType:
 
 class TestQueueOrdering:
     def _queue_names(self, client):
-        resp = client.get("/models?in_queue=true&sort=queue&group_variants=false")
+        resp = client.get("/models?print_status=queued&sort=queue&group_variants=false")
         assert resp.status_code == 200
         return [i["name"] for i in resp.json()["items"]]
 
@@ -366,7 +366,7 @@ class TestQueueOrdering:
         b = make_model(db, creator, name="B")
         c = make_model(db, creator, name="C")
         for m, pos in ((a, 0), (b, 1), (c, 2)):
-            m.in_queue = True
+            m.print_status = "queued"
             m.queue_position = pos
         c.is_favorite = True   # favorite jumps to the front despite position 2
         commit_all(db)
@@ -380,7 +380,7 @@ class TestQueueOrdering:
         c = make_model(db, creator, name="C")
         commit_all(db)
         for m in (a, b, c):
-            client.patch(f"/models/{m.id}/queue", json={"in_queue": True})
+            client.patch(f"/models/{m.id}/print-status", json={"status": "queued"})
 
         # Default order is insertion order A, B, C.
         assert self._queue_names(client) == ["A", "B", "C"]
@@ -397,7 +397,7 @@ class TestQueueOrdering:
         b = make_model(db, creator, name="B")
         commit_all(db)
         for m in (a, b):
-            client.patch(f"/models/{m.id}/queue", json={"in_queue": True})
+            client.patch(f"/models/{m.id}/print-status", json={"status": "queued"})
         # Manual order A, B; favorite B -> B floats to top.
         client.patch(f"/models/{b.id}/favorite", json={"is_favorite": True})
 

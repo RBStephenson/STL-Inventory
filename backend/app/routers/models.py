@@ -9,8 +9,8 @@ from app.database import get_db
 from app.models import Model, Creator, ModelTag, CollectionModel, GroupOverride
 from app.schemas import (
     ModelList, ModelRead, ModelDetail, CreatorRead,
-    ModelUpdate, ThumbnailUpdate, ThumbnailFromUrl, FavoriteUpdate, RatingUpdate, QueueUpdate, QueueReorder,
-    PrintedUpdate, PrintStatusUpdate, ExcludeUpdate, STLFileUpdate, BulkTagUpdate,
+    ModelUpdate, ThumbnailUpdate, ThumbnailFromUrl, FavoriteUpdate, RatingUpdate, QueueReorder,
+    PrintStatusUpdate, ExcludeUpdate, STLFileUpdate, BulkTagUpdate,
     BulkExcludeUpdate, BulkReviewUpdate, SetGroupBody,
 )
 from app.services.thumbnails import ThumbnailDownloadError, download_thumbnail, store_thumbnail
@@ -37,8 +37,6 @@ def _apply_filters(
     needs_review: bool | None = None,
     nsfw: bool | None = None,
     is_favorite: bool | None = None,
-    in_queue: bool | None = None,
-    printed: bool | None = None,
     print_status: str | None = None,
     min_rating: int | None = None,
     excluded: bool = False,
@@ -85,12 +83,6 @@ def _apply_filters(
         q = q.filter(Model.nsfw == nsfw)
     if is_favorite is not None:
         q = q.filter(Model.is_favorite == is_favorite)
-    if in_queue is not None:
-        q = q.filter(Model.in_queue == in_queue)
-    if printed is True:
-        q = q.filter(Model.printed_at != None)
-    if printed is False:
-        q = q.filter(Model.printed_at == None)
     if print_status is not None:
         q = q.filter(Model.print_status == print_status)
     if min_rating is not None:
@@ -98,6 +90,18 @@ def _apply_filters(
     if added_within_days is not None:
         q = q.filter(Model.created_at >= utcnow() - timedelta(days=added_within_days))
     return q
+
+
+def _clear_queue_state(model) -> None:
+    """Drop a model out of the active print queue without touching print history.
+
+    A queued/printing model reverts to 'none' and loses its queue ordering; a
+    printed model keeps its 'printed' status, printed_at and print_count.
+    """
+    if model.print_status in ("queued", "printing"):
+        model.print_status = "none"
+    model.queued_at = None
+    model.queue_position = None
 
 
 def _order_cols(sort: str) -> tuple:
@@ -189,8 +193,6 @@ def list_models(
     needs_review: bool | None = None,
     nsfw: bool | None = None,
     is_favorite: bool | None = None,
-    in_queue: bool | None = None,
-    printed: bool | None = None,
     print_status: str | None = None,
     min_rating: int | None = Query(None, ge=1, le=5),
     excluded: bool = False,  # default: hide user-excluded models; pass true for the Excluded view
@@ -204,8 +206,8 @@ def list_models(
         search=search, creator_id=creator_id, exclude_creator_id=exclude_creator_id,
         source_site=source_site, tag=tag, exclude_tag=exclude_tag,
         has_thumbnail=has_thumbnail, needs_review=needs_review,
-        nsfw=nsfw, is_favorite=is_favorite, in_queue=in_queue,
-        printed=printed, print_status=print_status, min_rating=min_rating,
+        nsfw=nsfw, is_favorite=is_favorite,
+        print_status=print_status, min_rating=min_rating,
         excluded=excluded, added_within_days=added_within_days,
     )
     # character filter is list_models-only (not exposed via Library URL state)
@@ -275,16 +277,19 @@ def model_stats(db: Session = Depends(get_db)):
         Model.excluded == False, Model.is_favorite == True
     ).scalar()
     queued = db.query(func.count(Model.id)).filter(
-        Model.excluded == False, Model.in_queue == True
+        Model.excluded == False, Model.print_status == "queued"
+    ).scalar()
+    printing = db.query(func.count(Model.id)).filter(
+        Model.excluded == False, Model.print_status == "printing"
     ).scalar()
     printed = db.query(func.count(Model.id)).filter(
-        Model.excluded == False, Model.printed_at != None
+        Model.excluded == False, Model.print_status == "printed"
     ).scalar()
     excluded = db.query(func.count(Model.id)).filter(Model.excluded == True).scalar()
     return {
         "total": total, "needs_review": needs_review, "no_thumbnail": no_thumbnail,
-        "favorites": favorites, "queued": queued, "printed": printed,
-        "excluded": excluded,
+        "favorites": favorites, "queued": queued, "printing": printing,
+        "printed": printed, "excluded": excluded,
     }
 
 
@@ -486,9 +491,7 @@ def bulk_exclude_models(body: BulkExcludeUpdate, db: Session = Depends(get_db)):
     for model in models_to_update:
         model.excluded = body.excluded
         if body.excluded:
-            model.in_queue = False
-            model.queued_at = None
-            model.queue_position = None
+            _clear_queue_state(model)
     db.commit()
     return {"ok": True, "updated": len(models_to_update)}
 
@@ -645,25 +648,6 @@ def set_rating(model_id: int, body: RatingUpdate, db: Session = Depends(get_db))
     return {"ok": True, "user_rating": model.user_rating}
 
 
-@router.patch("/{model_id}/queue")
-def set_queue(model_id: int, body: QueueUpdate, db: Session = Depends(get_db)):
-    """Add/remove a model from the print queue. New items append to the end of the
-    manual order (favorites still float to the top at display time)."""
-    model = db.query(Model).filter(Model.id == model_id).first()
-    if not model:
-        raise HTTPException(status_code=404, detail="Model not found")
-    model.in_queue = body.in_queue
-    if body.in_queue:
-        model.queued_at = utcnow()
-        max_pos = db.query(func.max(Model.queue_position)).filter(Model.in_queue == True).scalar()
-        model.queue_position = (max_pos or 0) + 1
-    else:
-        model.queued_at = None
-        model.queue_position = None
-    db.commit()
-    return {"ok": True, "in_queue": model.in_queue}
-
-
 @router.patch("/queue/reorder")
 def reorder_queue(body: QueueReorder, db: Session = Depends(get_db)):
     """Persist a manual drag order for the print queue. `ids` is the queue in the
@@ -679,29 +663,13 @@ def reorder_queue(body: QueueReorder, db: Session = Depends(get_db)):
     return {"ok": True, "updated": len(models)}
 
 
-@router.patch("/{model_id}/printed")
-def set_printed(model_id: int, body: PrintedUpdate, db: Session = Depends(get_db)):
-    """Mark a model printed (clears the queue) or un-mark it."""
-    model = db.query(Model).filter(Model.id == model_id).first()
-    if not model:
-        raise HTTPException(status_code=404, detail="Model not found")
-    if body.printed:
-        model.printed_at = utcnow()
-        # Marking printed removes it from the active queue.
-        model.in_queue = False
-        model.queued_at = None
-    else:
-        model.printed_at = None
-    db.commit()
-    return {"ok": True, "printed_at": model.printed_at}
-
-
 @router.patch("/{model_id}/print-status")
 def set_print_status(model_id: int, body: PrintStatusUpdate, db: Session = Depends(get_db)):
-    """Set a model's print lifecycle status (none|queued|printing|printed).
+    """Set a model's print lifecycle status — the single source of truth for print
+    tracking (none|queued|printing|printed).
 
-    Keeps legacy in_queue / printed_at fields in sync so existing Queue/History
-    views continue to work unchanged.
+    Maintains the supporting timestamps the status string can't carry: queue
+    ordering (queued_at/queue_position) and print history (printed_at/print_count).
     """
     from app.schemas import PRINT_STATUSES
     if body.status not in PRINT_STATUSES:
@@ -710,22 +678,26 @@ def set_print_status(model_id: int, body: PrintStatusUpdate, db: Session = Depen
     if not model:
         raise HTTPException(status_code=404, detail="Model not found")
 
+    was_queued = model.print_status == "queued"
     model.print_status = body.status
 
     if body.status == "queued":
-        if not model.in_queue:
-            model.in_queue = True
+        # Appending to the queue: new entries go to the end of the manual order
+        # (favorites still float to the top at display time).
+        if not was_queued:
             model.queued_at = utcnow()
-            max_pos = db.query(func.max(Model.queue_position)).filter(Model.in_queue == True).scalar()
+            max_pos = db.query(func.max(Model.queue_position)).filter(
+                Model.print_status == "queued"
+            ).scalar()
             model.queue_position = (max_pos or 0) + 1
     elif body.status == "printed":
         model.printed_at = model.printed_at or utcnow()
-        model.in_queue = False
         model.queued_at = None
+        model.queue_position = None
         model.print_count = (model.print_count or 0) + 1
-    elif body.status in ("none", "printing"):
-        model.in_queue = False
+    else:  # none | printing — leaves the active queue
         model.queued_at = None
+        model.queue_position = None
 
     db.commit()
     return {"ok": True, "print_status": model.print_status, "print_count": model.print_count}
@@ -741,9 +713,7 @@ def set_excluded(model_id: int, body: ExcludeUpdate, db: Session = Depends(get_d
     model.excluded = body.excluded
     if body.excluded:
         # A hidden model shouldn't linger in print-queue state.
-        model.in_queue = False
-        model.queued_at = None
-        model.queue_position = None
+        _clear_queue_state(model)
     db.commit()
     return {"ok": True, "excluded": model.excluded}
 
@@ -821,8 +791,6 @@ def get_neighbors(
     needs_review: bool | None = None,
     nsfw: bool | None = None,
     is_favorite: bool | None = None,
-    in_queue: bool | None = None,
-    printed: bool | None = None,
     print_status: str | None = None,
     min_rating: int | None = Query(None, ge=1, le=5),
     excluded: bool = False,
@@ -841,8 +809,8 @@ def get_neighbors(
         search=search, creator_id=creator_id, exclude_creator_id=exclude_creator_id,
         source_site=source_site, tag=tag, exclude_tag=exclude_tag,
         has_thumbnail=has_thumbnail, needs_review=needs_review,
-        nsfw=nsfw, is_favorite=is_favorite, in_queue=in_queue,
-        printed=printed, print_status=print_status, min_rating=min_rating,
+        nsfw=nsfw, is_favorite=is_favorite,
+        print_status=print_status, min_rating=min_rating,
         excluded=excluded, added_within_days=added_within_days,
     )
 

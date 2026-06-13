@@ -52,7 +52,6 @@ class ModelRead(ModelBase):
     excluded: bool = False
     is_favorite: bool = False
     user_rating: Optional[int] = None
-    in_queue: bool = False
     queued_at: Optional[datetime] = None
     printed_at: Optional[datetime] = None
     print_status: str = "none"
@@ -152,16 +151,8 @@ class RatingUpdate(BaseModel):
     rating: Optional[int] = Field(None, ge=1, le=5)
 
 
-class QueueUpdate(BaseModel):
-    in_queue: bool
-
-
 class QueueReorder(BaseModel):
     ids: list[int]   # queued model ids in the desired manual order
-
-
-class PrintedUpdate(BaseModel):
-    printed: bool
 
 
 PRINT_STATUSES = {"none", "queued", "printing", "printed"}

@@ -24,7 +24,6 @@ def _migrate_schema():
     migrations = [
         ("stl_files", "part_type", "TEXT"),
         ("models", "is_favorite", "BOOLEAN DEFAULT 0"),
-        ("models", "in_queue", "BOOLEAN DEFAULT 0"),
         ("models", "queued_at", "DATETIME"),
         ("models", "printed_at", "DATETIME"),
         ("models", "queue_position", "INTEGER"),
@@ -64,6 +63,49 @@ def _migrate_schema():
                 conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {column} {coldef}"))
                 conn.commit()
                 logger.info(f"Migrated: added {table}.{column}")
+
+        # One-time backfill: derive print_status from the legacy in_queue / printed_at
+        # flags for DBs that predate the lifecycle column (#166). The column was added
+        # defaulting to 'none', so models tracked under the old flag-based system need
+        # their status set once. Guarded by an app_settings flag because after this the
+        # legacy columns are no longer maintained — re-running could resurrect stale
+        # state. Queued wins over printed: a re-queued reprint reflects current intent,
+        # while printed_at / print_count preserve the print history.
+        existing_tables = {
+            r[0] for r in conn.execute(text(
+                "SELECT name FROM sqlite_master WHERE type = 'table'"
+            ))
+        }
+        model_cols = {r[1] for r in conn.execute(text("PRAGMA table_info(models)"))}
+        if (
+            "app_settings" in existing_tables
+            and "in_queue" in model_cols
+            and "print_status" in model_cols
+        ):
+            already_done = conn.execute(text(
+                "SELECT 1 FROM app_settings WHERE key = 'print_status_backfilled'"
+            )).first()
+            if not already_done:
+                # Order matters — set queued first, then only fill printed where the
+                # status is still untouched, so a both-flags row lands on 'queued'.
+                conn.execute(text(
+                    "UPDATE models SET print_status = 'queued' "
+                    "WHERE print_status = 'none' AND in_queue = 1"
+                ))
+                conn.execute(text(
+                    "UPDATE models SET print_status = 'printed' "
+                    "WHERE print_status = 'none' AND printed_at IS NOT NULL"
+                ))
+                conn.execute(text(
+                    "UPDATE models SET print_count = 1 "
+                    "WHERE print_status = 'printed' AND print_count = 0"
+                ))
+                conn.execute(text(
+                    "INSERT INTO app_settings (key, value) "
+                    "VALUES ('print_status_backfilled', 'true')"
+                ))
+                conn.commit()
+                logger.info("Migrated: backfilled print_status from legacy flags")
 
         # One-time cleanup of collection_models rows orphaned by collection
         # deletes from before the manual cascade existed (#214). Left in

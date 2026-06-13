@@ -34,11 +34,11 @@ class TestBulkExclude:
 
     def test_excluding_clears_queue_state(self, client, db):
         a, _, _ = _three_models(db)
-        client.patch(f"/models/{a.id}/queue", json={"in_queue": True})
+        client.patch(f"/models/{a.id}/print-status", json={"status": "queued"})
         client.patch("/models/bulk/exclude", json={"ids": [a.id], "excluded": True})
         db.refresh(a)
         assert a.excluded is True
-        assert a.in_queue is False
+        assert a.print_status == "none"
         assert a.queue_position is None
 
     def test_empty_ids_returns_400(self, client, db):

@@ -99,14 +99,16 @@ class Model(Base):
     # User curation — independent flags
     is_favorite = Column(Boolean, default=False, index=True)
     user_rating = Column(Integer, nullable=True, index=True)  # 1–5 stars; NULL = unrated (#167)
-    in_queue = Column(Boolean, default=False, index=True)   # queued to print next
-    queued_at = Column(DateTime, nullable=True)              # when added (tiebreak ordering)
-    queue_position = Column(Integer, nullable=True)          # manual drag-to-reorder order
-    printed_at = Column(DateTime, nullable=True)             # marked printed (clears queue)
 
-    # Print-status lifecycle: none → queued → printing → printed
+    # Print-status lifecycle: none → queued → printing → printed. Single source of
+    # truth for print tracking (#166); the legacy in_queue boolean was retired in
+    # favor of this column. The timestamps below are supporting metadata the status
+    # string can't carry on its own.
     print_status = Column(String, nullable=False, default="none", server_default="none", index=True)
     print_count = Column(Integer, nullable=False, default=0, server_default="0")
+    queued_at = Column(DateTime, nullable=True)              # when queued (tiebreak ordering)
+    queue_position = Column(Integer, nullable=True)          # manual drag-to-reorder order
+    printed_at = Column(DateTime, nullable=True)             # last marked printed (History sort)
 
     # Images
     thumbnail_path = Column(String, nullable=True)   # local path
