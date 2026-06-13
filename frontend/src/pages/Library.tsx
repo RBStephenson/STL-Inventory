@@ -261,7 +261,7 @@ export default function Library() {
       // Variant grouping collapses non-representative variants. When filtering by
       // favorites/queue/printed (which apply to individual variants), disable grouping
       // so a flagged non-representative variant isn't hidden behind its group.
-      const groupVariants = !favParam && !queueParam && !printedParam && !printStatusParam && !excludedParam;
+      const groupVariants = !favParam && !printStatusParam && !excludedParam;
       const params: Record<string, string | number | boolean> = { page, page_size: pageSize, group_variants: groupVariants };
       if (search)      params.q             = search;
       if (creatorId)   params.creator_id    = creatorId;
@@ -285,7 +285,7 @@ export default function Library() {
     } finally {
       if (fetchId === fetchIdRef.current) setLoading(false);
     }
-  }, [page, pageSize, search, creatorId, excludeCreatorId, site, activeTag, excludeTag, needsReview, nsfwParam, thumbParam, favParam, queueParam, printedParam, printStatusParam, excludedParam, minRating, addedDays, effectiveSort]);
+  }, [page, pageSize, search, creatorId, excludeCreatorId, site, activeTag, excludeTag, needsReview, nsfwParam, thumbParam, favParam, printStatusParam, excludedParam, minRating, addedDays, effectiveSort]);
 
   useEffect(() => { fetchModels(); }, [fetchModels]);
   useEffect(() => { api.scan.roots().then((r) => setScanRootCount(r.length)).catch(() => setScanRootCount(null)); }, []);
@@ -317,7 +317,7 @@ export default function Library() {
   }, [savingPreset]);
 
   const totalPages = Math.ceil(total / pageSize);
-  const hasFilters = !!(creatorId || excludeCreatorId || site || activeTag || excludeTag || needsReview || nsfwParam || thumbParam || favParam || queueParam || printedParam || printStatusParam || minRating || addedDays);
+  const hasFilters = !!(creatorId || excludeCreatorId || site || activeTag || excludeTag || needsReview || nsfwParam || thumbParam || favParam || printStatusParam || minRating || addedDays);
 
   const visibleTags = allTags.filter(({ tag }) =>
     !tagSearch || tag.includes(tagSearch.toLowerCase())
@@ -377,7 +377,7 @@ export default function Library() {
   // --- Drag to group ---------------------------------------------------------
   // Variant grouping is only on in the default view (favorites/queue/printed/
   // excluded views show flat, ungrouped cards), so drag-to-group is too.
-  const dndEnabled = !favParam && !queueParam && !printedParam && !printStatusParam && !excludedParam;
+  const dndEnabled = !favParam && !printStatusParam && !excludedParam;
   const [draggingId, setDraggingId] = useState<number | null>(null);
   // A pending merge of two ungrouped models, awaiting a group name from the user.
   const [pendingMerge, setPendingMerge] = useState<{ draggedId: number; targetId: number } | null>(null);

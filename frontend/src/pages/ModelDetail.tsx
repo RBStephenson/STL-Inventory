@@ -196,7 +196,7 @@ function parseLibraryOrigin(from: string | undefined): Record<string, string | n
     // Chosen Library sort (#247): walk Prev/Next in the same order as the grid.
     params.sort = sp.get("sort")!;
   }
-  params.group_variants = !fav && !queue && !printed && !excluded;
+  params.group_variants = !fav && !printStatus && !excluded;
   return params;
 }
 
