@@ -147,7 +147,9 @@ export default function ModelCard({ model, selected = false, onSelect, backTo, o
   const displayName = isGroup && model.character
     ? model.character
     : (model.title || model.name);
-  const allTagsDisplay = [...(model.auto_tags ?? []), ...localTags];
+  const removedAuto = new Set(model.removed_auto_tags ?? []);
+  const visibleAutoTags = (model.auto_tags ?? []).filter((t) => !removedAuto.has(t));
+  const allTagsDisplay = [...visibleAutoTags, ...localTags];
   const uniqueTags = [...new Set(allTagsDisplay)];
 
   const handleCardClick = () => {

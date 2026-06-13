@@ -78,6 +78,7 @@ class Model(Base):
     license = Column(String, nullable=True)
     tags = Column(JSON, default=list)             # user-set tags
     auto_tags = Column(JSON, default=list)        # scanner-detected: scale, type, modifiers
+    removed_auto_tags = Column(JSON, default=list)  # auto-tags the user suppressed; survives rescans
     category = Column(String, nullable=True)
     custom_attributes = Column(JSON, default=dict)  # arbitrary key/value attributes
     print_settings = Column(JSON, default=dict)

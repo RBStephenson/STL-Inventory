@@ -14,22 +14,30 @@ from app.models import Model, ModelTag
 logger = logging.getLogger(__name__)
 
 
-def sync_model_tags(model: Model, db: Session) -> None:
-    """Rebuild model_tags rows for a single model from its JSON tag columns."""
-    db.query(ModelTag).filter(ModelTag.model_id == model.id).delete(synchronize_session=False)
+def _tag_map_for(model: Model) -> dict[str, bool]:
+    """Map each effective tag -> is_auto for a model.
 
-    # Merge auto_tags and user tags; user tags override is_auto flag.
+    Auto-tags the user has suppressed (removed_auto_tags) are dropped, but a
+    user tag with the same name always wins and is kept (is_auto=False).
+    """
+    removed = {r.strip().lower() for r in (model.removed_auto_tags or []) if r.strip()}
     tag_map: dict[str, bool] = {}  # tag -> is_auto
     for raw in (model.auto_tags or []):
         t = raw.strip().lower()
-        if t:
+        if t and t not in removed:
             tag_map[t] = True
     for raw in (model.tags or []):
         t = raw.strip().lower()
         if t:
             tag_map[t] = False  # user tag wins
+    return tag_map
 
-    for tag, is_auto in tag_map.items():
+
+def sync_model_tags(model: Model, db: Session) -> None:
+    """Rebuild model_tags rows for a single model from its JSON tag columns."""
+    db.query(ModelTag).filter(ModelTag.model_id == model.id).delete(synchronize_session=False)
+
+    for tag, is_auto in _tag_map_for(model).items():
         db.add(ModelTag(model_id=model.id, tag=tag, is_auto=is_auto))
 
 
@@ -48,16 +56,7 @@ def rebuild_all_tags(db: Session) -> int:
         if not models:
             break
         for model in models:
-            tag_map: dict[str, bool] = {}
-            for raw in (model.auto_tags or []):
-                t = raw.strip().lower()
-                if t:
-                    tag_map[t] = True
-            for raw in (model.tags or []):
-                t = raw.strip().lower()
-                if t:
-                    tag_map[t] = False
-            for tag, is_auto in tag_map.items():
+            for tag, is_auto in _tag_map_for(model).items():
                 db.add(ModelTag(model_id=model.id, tag=tag, is_auto=is_auto))
                 count += 1
         db.flush()

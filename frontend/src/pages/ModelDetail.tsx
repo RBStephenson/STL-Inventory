@@ -230,6 +230,7 @@ export default function ModelDetail() {
   const [printStatus, setPrintStatus] = useState<import("../api/client").PrintStatus>("none");
   const [printCount, setPrintCount] = useState(0);
   const [tags, setTags] = useState<string[]>([]);
+  const [removedAutoTags, setRemovedAutoTags] = useState<string[]>([]);
   const [partTypes, setPartTypes] = useState<Record<number, string>>({});
   const [showKitBuilder, setShowKitBuilder] = useState(false);
   const [downloadingAll, setDownloadingAll] = useState(false);
@@ -272,6 +273,7 @@ export default function ModelDetail() {
       setPrintStatus(model.print_status ?? "none");
       setPrintCount(model.print_count ?? 0);
       setTags(model.tags ?? []);
+      setRemovedAutoTags(model.removed_auto_tags ?? []);
       const pts: Record<number, string> = {};
       model.stl_files.forEach((f) => { if (f.part_type) pts[f.id] = f.part_type; });
       setPartTypes(pts);
@@ -394,6 +396,24 @@ export default function ModelDetail() {
     const next = [...tags, tag];
     setTags(next);
     await api.models.update(Number(id), { tags: next });
+  };
+
+  // Suppress an auto-detected tag so it stops showing and survives rescans.
+  // If it was already promoted to a user tag, drop that too.
+  const suppressAutoTag = async (tag: string) => {
+    const prevRemoved = removedAutoTags;
+    const prevTags = tags;
+    const nextRemoved = removedAutoTags.includes(tag) ? removedAutoTags : [...removedAutoTags, tag];
+    const nextTags = tags.filter((t) => t !== tag);
+    setRemovedAutoTags(nextRemoved);
+    setTags(nextTags);
+    try {
+      await api.models.update(Number(id), { removed_auto_tags: nextRemoved, tags: nextTags });
+    } catch {
+      setRemovedAutoTags(prevRemoved);  // revert on failure
+      setTags(prevTags);
+      toast("Couldn't remove tag — try again.", "error");
+    }
   };
 
   const toggleNSFW = async () => {
@@ -856,6 +876,7 @@ export default function ModelDetail() {
           {editing && (
             <MetadataEditor
               model={model}
+              currentTags={tags}
               onSaved={() => { setEditing(false); load(); }}
               onCancel={() => setEditing(false)}
             />
@@ -985,12 +1006,18 @@ export default function ModelDetail() {
             </div>
           )}
 
-          {/* Auto-detected tags — click to promote to user tags, shift-click to filter */}
-          {(model.auto_tags ?? []).length > 0 && (
+          {/* Auto-detected tags — click + to promote to a user tag, × to remove
+              (suppressed tags survive rescans), click label to browse */}
+          {(() => {
+            const visibleAutoTags = (model.auto_tags ?? []).filter(
+              (t) => !removedAutoTags.includes(t)
+            );
+            if (visibleAutoTags.length === 0) return null;
+            return (
             <div className="flex flex-col gap-1.5">
-              <p className="text-xs text-gray-600">Auto-detected · click + to add as tag · click label to browse</p>
+              <p className="text-xs text-gray-600">Auto-detected · click + to add as tag · × to remove · click label to browse</p>
               <div className="flex flex-wrap gap-1.5">
-                {model.auto_tags.map((tag) => {
+                {visibleAutoTags.map((tag) => {
                   const already = tags.includes(tag);
                   return (
                     <div key={tag} className="flex items-center rounded-full border overflow-hidden border-gray-700">
@@ -1012,12 +1039,20 @@ export default function ModelDetail() {
                       >
                         {tag}
                       </Link>
+                      <button
+                        onClick={() => suppressAutoTag(tag)}
+                        title="Remove this auto-detected tag"
+                        className="flex items-center px-1.5 py-0.5 text-xs border-l border-gray-700 bg-gray-800/60 text-gray-600 hover:bg-rose-950 hover:text-rose-400 transition-colors"
+                      >
+                        <X size={9} />
+                      </button>
                     </div>
                   );
                 })}
               </div>
             </div>
-          )}
+            );
+          })()}
 
           {/* Collections */}
           <CollectionsSection key={model.id} modelId={model.id} initialIds={model.collection_ids} />

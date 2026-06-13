@@ -45,6 +45,7 @@ class ModelRead(ModelBase):
     license: Optional[str] = None
     tags: list = []
     auto_tags: list = []
+    removed_auto_tags: list = []
     category: Optional[str] = None
     custom_attributes: dict = {}
     needs_review: bool = False
@@ -126,6 +127,7 @@ class ModelUpdate(BaseModel):
     license: Optional[str] = None
     category: Optional[str] = None
     tags: Optional[list[str]] = None
+    removed_auto_tags: Optional[list[str]] = None
     custom_attributes: Optional[dict] = None
     nsfw: Optional[bool] = None
     needs_review: Optional[bool] = None

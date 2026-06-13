@@ -6,6 +6,10 @@ import { useToast } from "../context/ToastContext";
 
 interface Props {
   model: ModelDetail;
+  // Live user-tag list from the parent. Tags promoted via the "+" on
+  // auto-detected chips update this before the model prop is refetched, so the
+  // editor must initialize from it to avoid dropping the just-added tag (#299).
+  currentTags?: string[];
   onSaved: () => void;
   onCancel: () => void;
 }
@@ -24,7 +28,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-export default function MetadataEditor({ model, onSaved, onCancel }: Props) {
+export default function MetadataEditor({ model, currentTags, onSaved, onCancel }: Props) {
   const [form, setForm] = useState({
     title:         model.title        ?? "",
     description:   model.description  ?? "",
@@ -34,7 +38,7 @@ export default function MetadataEditor({ model, onSaved, onCancel }: Props) {
     license:       model.license      ?? "",
     category:      model.category     ?? "",
     creator_name:  model.creator?.name ?? "",
-    tags:          model.tags         ?? [],
+    tags:          currentTags        ?? model.tags ?? [],
     nsfw:          model.nsfw         ?? false,
     thumbnail_url: model.thumbnail_url ?? "",
   });
