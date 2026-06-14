@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geralt of Rivia — 1:6 Scale Painting Guide</title>
+
+  <link rel="stylesheet" href="../../assets/guide.css">
+  <link rel="stylesheet" href="../../assets/print.css" media="print">
+
+  <style>
+    /* ── PER-GUIDE THEME — White Wolf: cold steel, amber eyes, worn leather ── */
+    :root {
+      --bg:       #100f0d;
+      --surface:  #191714;
+      --surface2: #211e19;
+      --surface3: #2a2620;
+
+      --border:      #34302a;
+      --text:        #e8e4dc;
+      --text-muted:  #a8a294;
+      --text-dim:    #6b6457;
+
+      --accent: #c8a23c;          /* witcher amber-gold */
+
+      --tag-airbrush: #2266aa;
+      --tag-brush:    #226622;
+      --tag-wash:     #884422;
+      --tag-finish:   #555555;
+      --tag-effects:  #882244;
+      --tag-filter:   #446688;
+
+      --tip-bg:      rgba(0, 160, 0, 0.08);
+      --tip-border:  #2a6a2a;
+      --warn-bg:     rgba(200, 50, 50, 0.08);
+      --warn-border: #882222;
+    }
+
+    .sub-tab.folk-art-tab.active { border-color:#7a9a3a; color:#a8cc66; }
+    .sub-tab.effects-tab.active  { border-color:#b87030; color:#e8a050; }
+
+    .hero {
+      background: linear-gradient(135deg, #0c0b0a 0%, #211d17 55%, #100f0d 100%);
+      border-bottom: 2px solid var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+<nav class="guide-nav">
+  <a href="../../index.html">← All Guides</a>
+</nav>
+
+
+<div class="hero">
+  <div class="category">Video Games · The Witcher 3: Wild Hunt</div>
+
+  <h1><span>Geralt</span> of Rivia</h1>
+
+  <div class="subtitle">1:6 Scale · The White Wolf · cold-steel TMM · amber witcher eyes · weathered wolf-school leather</div>
+
+  <div class="film-ref">
+    <em>"Evil is evil. Lesser, greater, middling… makes no difference. If I'm to choose between one evil and another, I'd rather not choose at all."</em>
+  </div>
+
+  <div class="series-badge">
+    <span class="active">Geralt</span>
+    <a href="ciri-painting-guide.html">Ciri</a>
+  </div>
+
+  <div class="creator-credit">
+    Figure by <strong>CA3D</strong> · <a href="https://www.patreon.com/ca3d" target="_blank">CA3D on Patreon</a>
+  </div>
+
+  <div class="ref-thumb-wrap">
+    <img class="ref-thumb"
+         src="img/geralt-of-rivia-reference.jpg"
+         alt="Geralt of Rivia — reference"
+         onclick="openRefModal(this.src, this.alt)"
+         title="Click to view full reference image">
+    <div class="ref-thumb-label">Reference</div>
+  </div>
+</div>
+
+
+<div class="paint-bar">
+  <span class="paint-bar-label">Paint Lines Used</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#cc4444;"></span>Pro Acryl</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#8855cc;"></span>Pro Acryl Expert Acrylics</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#9aa0a6;"></span>Vallejo Metal Color</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#4488cc;"></span>Army Painter Fanatic</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#b03030;"></span>FW Inks</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#5a4a2a;"></span>Citadel Shades</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#7a9a3a;"></span>Folk Art (Basing)</span>
+  <span class="paint-pill"><span class="pill-dot" style="background:#b87030;"></span>Dirty Down</span>
+</div>
+
+
+<div class="container">
+
+  <div class="char-brief">
+    <strong>Geralt of Rivia</strong> — the mutated monster-hunter reads as <em>cold, gaunt, and weather-beaten</em>, not heroic-bright. Two signatures carry the whole figure: the ash-white hair/beard and the burning amber eyes — push the value gap between those and the muted, desaturated everything-else. Light source is a <strong>cool zenithal from upper-front</strong>, so highlights shift toward a pale neutral rather than warm cream (the warmth is reserved for skin flush and the brass medallion). Priority materials: <strong>cold-steel TMM</strong> on the swords, mail, and studs (gloss-black-base method at this scale), and <strong>heavily weathered wolf-school leather</strong>. Keep the palette low-chroma so the eyes and the red mushrooms on the base do the talking.
+  </div>
+
+
+  <div class="tabs">
+    <div class="tab tab-btn active" onclick="showTab('skin', this)">Skin</div>
+    <div class="tab tab-btn" onclick="showTab('hair-eyes', this)">Hair, Beard &amp; Eyes</div>
+    <div class="tab tab-btn" onclick="showTab('leather', this)">Armor &amp; Leather</div>
+    <div class="tab tab-btn" onclick="showTab('metals', this)">Metals &amp; Mail</div>
+    <div class="tab tab-btn" onclick="showTab('base', this)">Base</div>
+    <div class="tab tab-btn" onclick="showTab('airbrush-skills', this)">Airbrush Skills</div>
+    <div class="tab tab-btn" onclick="showTab('brush-skills', this)">Brush Skills</div>
+    <div class="tab tab-btn" onclick="showTab('thinning-ref', this)">Thinning Ref</div>
+  </div>
+
+
+  <!-- ═══════════════ SKIN ═══════════════ -->
+  <div class="tab-content active" id="skin">
+
+    <div class="section-header">
+      <h2>Skin</h2>
+      <p>Fair, warm-toned but slightly ashen complexion — a hard-living, scarred face. Matte, weathered finish with a cold cast in the recesses.</p>
+    </div>
+
+    <div class="phase-label">Value Structure</div>
+    <div class="value-map">
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#2a1c16;"></div>
+        <div class="chip-val">~18%</div>
+        <div class="chip-label">Deep Shadow</div>
+      </div>
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#5a3a2c;"></div>
+        <div class="chip-val">~35%</div>
+        <div class="chip-label">Shadow</div>
+      </div>
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#b07a5c;"></div>
+        <div class="chip-val">~55%</div>
+        <div class="chip-label">Mid-Tone</div>
+      </div>
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#d8b094;"></div>
+        <div class="chip-val">~78%</div>
+        <div class="chip-label">Highlight</div>
+      </div>
+      <div class="value-chip">
+        <div class="chip-swatch" style="background:#efdac4;"></div>
+        <div class="chip-val">~92%</div>
+        <div class="chip-label">Specular</div>
+      </div>
+    </div>
+
+    <div class="phase-label">Method Selection</div>
+    <div class="method-rec-block">
+      <strong>Method 2B — Red Zenithal (recommended).</strong> Geralt is the textbook rugged, weathered male face — deep nasolabial folds, a hard brow, a vertical scar, and decades of monster-hunting. The red zenithal builds genuine sub-surface warmth and an exertion flush under the skin without the risk of over-pinking that the magenta Pinkle would bring on a masculine face. Lean it slightly cool overall: this is a mutant who doesn't quite look healthy. Add a whisper of <em>Payne's Grey S02</em> glaze in the temples, under-eye, and beard shadow to give that gaunt witcher pallor.
+    </div>
+
+    <div class="method-cards">
+
+      <div class="method-card">
+        <h4>Method 1 — Basic</h4>
+        <p>Classic layering. Prime → shadow undercoat → base coat → mid-tone → highlight → optional unifying glaze.</p>
+        <span class="mc-pros">Most predictable; straightforward to correct</span>
+        <span class="mc-cons">Can read flat without enough layers</span>
+        <span class="mc-best">Tabletop / 28mm, first-time painters, anime/cartoon</span>
+      </div>
+
+      <div class="method-card">
+        <h4>Method 2A — Pinkle</h4>
+        <p>Black prime → white zenithal → magenta all over → Transparent Red into recesses → thin flesh layers over top.</p>
+        <span class="mc-pros">Luminous sub-surface scattering; fewer layers needed</span>
+        <span class="mc-cons">Poor zenithal = muddy; can over-pink a masculine face</span>
+        <span class="mc-best">Fair / feminine, protagonist / hero figures, display</span>
+      </div>
+
+      <div class="method-card recommended">
+        <span class="method-card-badge">★ Recommended</span>
+        <h4>Method 2B — Red Zenithal</h4>
+        <p>Black prime → white zenithal → FW Crimson Ink (1:2) over the whole face → thin flesh layers over the top, leaving warmth in the recesses.</p>
+        <span class="mc-pros">Natural warmth and exertion flush; rugged, weathered read</span>
+        <span class="mc-cons">Same zenithal dependency as 2A — get the value map right first</span>
+        <span class="mc-best">Rugged male, survivor, world-worn figures — Geralt exactly</span>
+      </div>
+
+    </div>
+
+    <div class="freckle-note">
+      <strong>Freckling / Speckling:</strong> Keep it subtle and weathering-focused rather than youthful freckles. After the skin is sealed, thin <strong>Petroleum Brown S14</strong> to near-watercolor, PSI 8–12, needle almost closed, 3–5cm. One light pass across the cheekbones, bridge of the nose, and forehead to suggest sun-and-wind damage. Step back and assess before any second pass — the gap between "weathered" and "dirty" is about two seconds of trigger time.
+    </div>
+
+
+    <div class="phase-label">Step-by-Step</div>
+
+    <div class="sub-tabs">
+      <div class="sub-tab active"     onclick="showSubTab('skin', 'skin-pro', this)">Pro Acryl</div>
+      <div class="sub-tab expert-tab" onclick="showSubTab('skin', 'skin-expert', this)">✦ Expert Acrylics — Brush Only</div>
+    </div>
+
+    <!-- PRO ACRYL -->
+    <div class="sub-content active" id="skin-pro">
+
+      <div class="phase-label">Foundation</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 1 · Airbrush</span>
+        <h3>Black Prime</h3>
+        <p>P-002 Black Primer — undiluted, 30+ PSI, 0.5mm nozzle, 20–25cm. Full, even coverage with no bare resin showing. This is the shadow anchor for the whole zenithal method.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#0d0d0d"></div><div class="swatch-info"><div class="swatch-name">P-002 Black Primer</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~4% value — black prime</div></div></div>
+        </div>
+        <div class="warning"><strong>⚠ NOTE:</strong> Never thin primer. Undiluted only, 30+ PSI, 0.5mm. Thinning turns it into paint and kills its grip.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 2 · Airbrush</span>
+        <h3>White Zenithal</h3>
+        <p>Bold Titanium White 001 thinned ~1:3, sprayed from directly above and slightly front, fading to nothing by the jaw and under the brow. 0.3mm, ~15 PSI, ~15cm. You want near-white on the forehead, cheekbones, and nose bridge; black held in the eye sockets, under the nose, and beard line.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#f4f2ee"></div><div class="swatch-info"><div class="swatch-name">Bold Titanium White 001</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~95% value — zenithal light map</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> Photograph and desaturate now. If the greyscale doesn't already read as a believable lit face, fix the value map here — no flesh layer will rescue a flat zenithal.</div>
+      </div>
+
+      <div class="phase-label">Value Build</div>
+
+      <div class="step">
+        <span class="step-number filter">Step 3 · Filter</span>
+        <h3>Red Zenithal Glaze (Method 2B)</h3>
+        <p>FW Crimson Ink thinned 1:2 with water, airbrushed as a thin all-over filter at ~12 PSI. The white zenithal glows warm through it — instant sub-surface flush. Build in 2–3 light passes rather than one heavy one.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#9c1f2a"></div><div class="swatch-info"><div class="swatch-name">FW Crimson Ink 513</div><div class="swatch-brand">FW Acrylic Ink</div><div class="swatch-value">~30% value — warm under-flush</div></div></div>
+        </div>
+        <div class="warning"><strong>⚠ NOTE:</strong> Use FW Crimson Ink for this thinned whole-face step — Pro Acryl Transparent Red shifts magenta at this dilution. Save undiluted PA Transparent Red for tiny localized accents only.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush</span>
+        <h3>Recess Shadow</h3>
+        <p>Push the deepest values into the eye sockets, the sides of the nose, the nasolabial folds, under the cheekbones, and the beard line. Thin 2:1 (water) and keep it tight to the recesses — let the zenithal warmth show everywhere else.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#4a2c20"></div><div class="swatch-info"><div class="swatch-name">Dark Warm Flesh S08</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~30% value — shadow flesh</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#2a1a12"></div><div class="swatch-info"><div class="swatch-name">Burnt Umber 018</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">darkening agent</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 3:1 Dark Warm Flesh S08 + Burnt Umber 018 — thinned 2:1, recesses only.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 5 · Brush</span>
+        <h3>Mid-Tone — True Skin Color</h3>
+        <p>Warm Flesh 073 is the anchor — Geralt's actual skin color. Thin 1:1 to 1:2 and lay it across the raised planes (forehead, cheeks, nose, chin), leaving the warm recesses untouched. Two or three thin coats beat one thick one.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#b07a5c"></div><div class="swatch-info"><div class="swatch-name">Warm Flesh 073</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~55% value — mid-tone anchor</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-label">Pallor &amp; Highlight</div>
+
+      <div class="step">
+        <span class="step-number wash">Step 6 · Glaze</span>
+        <h3>Cold Witcher Pallor</h3>
+        <p>The mutation read: glaze a <em>very</em> thin Payne's Grey S02 (1:8) into the temples, under the eyes, the hollows of the cheeks, and the beard shadow. Just enough to cool and gaunt-ify those zones — it should be felt, not seen.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#3a4250"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey S02</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">cool desaturating glaze</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 7 · Brush</span>
+        <h3>Highlight 1</h3>
+        <p>Mix the mid-tone up toward a pale neutral (cool light source) and lay it on the upper cheekbones, brow ridge, nose bridge and tip, and the high point of the chin. Thin 1:2, build the brightest planes in two passes.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#b07a5c"></div><div class="swatch-info"><div class="swatch-name">Warm Flesh 073</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">mid-tone base</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#d8b094"></div><div class="swatch-info"><div class="swatch-name">Bright Shadow Flesh S41</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~78% value — highlight</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 1:1 Warm Flesh 073 + Bright Shadow Flesh S41 — thinned 1:2.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 8 · Brush</span>
+        <h3>Specular Highlight</h3>
+        <p>Tiniest catch-points only: nose tip, the very peak of each cheekbone, the brow ridge, and the center of the lower lip. Load, wipe to near-dry, feather upward from the shadow edge.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#efdac4"></div><div class="swatch-info"><div class="swatch-name">Heavy Warm White S18</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~92% value — specular</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> Keep these warm-white, not pure white. Pure Titanium White on skin reads as a blown-out dot and breaks the cool-light illusion.</div>
+      </div>
+
+      <div class="phase-label">Scar &amp; Lips</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 9 · Brush</span>
+        <h3>The Scar (right brow → cheek)</h3>
+        <p>Geralt's vertical scar runs through the right eyebrow down the cheek. Paint a slightly lighter, de-saturated line with Beige Red S05, then a hairline Pale Pink 043 highlight on the raised scar tissue. A pinpoint FW Crimson Ink glaze at the deepest point keeps it from looking chalky.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#a86a5a"></div><div class="swatch-info"><div class="swatch-name">Beige Red S05</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">scar tissue base</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#d8a8a0"></div><div class="swatch-info"><div class="swatch-name">Pale Pink 043</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">raised scar highlight</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 10 · Brush</span>
+        <h3>Lips</h3>
+        <p>Keep them muted and male — barely warmer than the surrounding skin. A 1:1 Warm Flesh 073 + Beige Red S05 mix thinned heavily, with a faint Heavy Warm White S18 catch-light on the center of the lower lip only.</p>
+      </div>
+
+    </div><!-- end #skin-pro -->
+
+    <!-- EXPERT ACRYLICS -->
+    <div class="sub-content" id="skin-expert">
+      <div class="tip"><strong>✦ Brush-only workflow.</strong> Expert Acrylics are high-pigment, re-wettable artist acrylics — ideal for wet-blending a face with no airbrush. Work over a grey-primed head; skip the black zenithal.</div>
+
+      <div class="phase-label">Foundation</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Grey Prime + Mid-Tone Base</h3>
+        <p>Prime P-005 Dark Neutral Gray. Base the whole face with the mid-tone mixed from the triad below, thinned 2:1.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#b07a5c"></div><div class="swatch-info"><div class="swatch-name">Burnt Sienna + Titanium White</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">~55% value — mid-tone base</div></div></div>
+        </div>
+        <div class="ratio-box">Mix: 2:1 Burnt Sienna + Titanium White, warmed with a touch of Nickel Azo Yellow.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush — Wet Blend</span>
+        <h3>Shadow Into Mid-Tone</h3>
+        <p>While the mid-tone is still open, pull Burnt Umber (+ a touch of Sepia) into the sockets, nasolabial folds and beard line. Feather the edge with a clean damp brush before it sets.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#3a261c"></div><div class="swatch-info"><div class="swatch-name">Burnt Umber + Sepia</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">~28% value — warm shadow</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush — Glaze</span>
+        <h3>Cold Pallor</h3>
+        <p>Glaze Payne's Grey 1:6 into temples, under-eye and cheek hollows for the gaunt mutant cast. Build slowly.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#3a4250"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">cool desaturating glaze</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush</span>
+        <h3>Highlight → Specular</h3>
+        <p>Mid-tone + Titanium White up the planes (cheekbones, brow, nose), then a near-pure warm-white catch on nose tip and cheekbone peaks only. Keep the final dot small.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#efdac4"></div><div class="swatch-info"><div class="swatch-name">Mid-tone + Titanium White</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">~90% value — specular</div></div></div>
+      </div>
+
+    </div><!-- end #skin-expert -->
+
+  </div><!-- end #skin -->
+
+
+  <!-- ═══════════════ HAIR, BEARD & EYES ═══════════════ -->
+  <div class="tab-content" id="hair-eyes">
+
+    <div class="section-header">
+      <h2>Hair, Beard &amp; Eyes</h2>
+      <p>The two hero features. Ash-white swept-back hair and grizzled beard against burning amber witcher eyes. Maximize the value gap and the chroma gap.</p>
+    </div>
+
+    <div class="phase-label">Hair Value Structure</div>
+    <div class="value-map">
+      <div class="value-chip"><div class="chip-swatch" style="background:#3a3a40;"></div><div class="chip-val">~22%</div><div class="chip-label">Deep Recess</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#6a6a70;"></div><div class="chip-val">~42%</div><div class="chip-label">Shadow</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#a8a8ac;"></div><div class="chip-val">~65%</div><div class="chip-label">Mid Strands</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#d8d6d2;"></div><div class="chip-val">~85%</div><div class="chip-label">Highlight</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#f4f2ee;"></div><div class="chip-val">~96%</div><div class="chip-label">Top Strands</div></div>
+    </div>
+
+    <div class="phase-label">Hair</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 · Airbrush</span>
+      <h3>Shadow Base</h3>
+      <p>Over black prime, airbrush a cool mid-grey from the zenithal angle, leaving black deep between the strands and under the hair where it meets the neck and shoulders. Keep the underside dark.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#5a5c62"></div><div class="swatch-info"><div class="swatch-name">Cool Grey 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~40% value — hair shadow base</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 2 · Airbrush</span>
+      <h3>Value Build</h3>
+      <p>Neutral Grey 075 zenithal, lighter on the crown and the outer sweep of the hair. This builds the broad form before any strand work.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#9a9a9c"></div><div class="swatch-info"><div class="swatch-name">Neutral Grey 075</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~60% value — mid form</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 3 · Brush</span>
+      <h3>Strand Highlights</h3>
+      <p>Fine liner brush, follow the flow of each lock. Heavy Warm White S18 on the raised strands across the crown and the outer waves, then a few pure Bold Titanium White 001 hero strands on the very top (white hair is canonically white — the specular hierarchy still applies, so reserve pure white for the topmost strands only).</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#e8e6e0"></div><div class="swatch-info"><div class="swatch-name">Heavy Warm White S18</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~85% value — strand highlight</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#f8f6f2"></div><div class="swatch-info"><div class="swatch-name">Bold Titanium White 001</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~96% value — hero strands only</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> Keep the white hair slightly <em>cool</em>. A faint Payne's Grey S02 glaze in the deepest hair recesses prevents it drifting yellow and sells the silver.</div>
+    </div>
+
+    <div class="phase-label">Beard &amp; Stubble</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 4 · Brush — Stipple/Drybrush</span>
+      <h3>Grizzled Beard</h3>
+      <p>The beard is grey-white but a touch warmer and dirtier than the hair. Base Warm Grey 074 in the mass, drybrush Bone S23 across the jaw and chin to catch the hair texture, then stipple a little Neutral Grey 075 into the stubble zone on the upper cheeks where it fades into skin.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#7a7468"></div><div class="swatch-info"><div class="swatch-name">Warm Grey 074</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~45% value — beard mass</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#d8cdb8"></div><div class="swatch-info"><div class="swatch-name">Bone S23</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~80% value — beard drybrush</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ TIP:</strong> Stubble = a near-dry brush dragged <em>down</em> the grain. Let the warm skin show through; you're suggesting hair, not covering the cheek.</div>
+    </div>
+
+    <div class="phase-label">Eyes — the signature</div>
+    <div class="tip"><strong>✦ ORDER OF OPERATIONS:</strong> socket shadow → sclera → iris → iris highlight → catch-light → gloss. Always paint both eyes through each stage together so they match.</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 5 · Brush</span>
+      <h3>Socket Shadow</h3>
+      <p>Re-establish a dark Burnt Umber 018 line in the eye crease and the lower lid to seat the eye in the socket before any color goes down.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2a1a12"></div><div class="swatch-info"><div class="swatch-name">Burnt Umber 018</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~18% value — socket depth</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 6 · Brush</span>
+      <h3>Sclera (minimal) + Amber Iris</h3>
+      <p>Witcher eyes are almost entirely amber with very little white showing. Lay the smallest sliver of a warm off-white (Bone S23, not pure white) at the inner/outer corners, then fill the iris with Yellow Ochre 038 as the base, brought up with Warm Yellow 072 across most of the iris.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#b8862a"></div><div class="swatch-info"><div class="swatch-name">Yellow Ochre 038</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~45% value — iris base</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#e0a82c"></div><div class="swatch-info"><div class="swatch-name">Warm Yellow 072</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~65% value — iris body</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Step 7 · Brush</span>
+      <h3>Pupil + Iris Glow</h3>
+      <p>Round Coal Black 002 pupil dead center (a true black is correct here). Then a crescent of bright Bismuth Yellow S36 at the <em>bottom</em> of the iris — light passing through the eye glows opposite the zenithal source. A hairline Burnt Umber rim around the iris edge tightens it.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#0d0d0d"></div><div class="swatch-info"><div class="swatch-name">Coal Black 002</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">pupil — true black</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#f0d24a"></div><div class="swatch-info"><div class="swatch-name">Bismuth Yellow S36</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~82% value — iris glow</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number finish">Step 8 · Finish</span>
+      <h3>Catch-Light + Gloss</h3>
+      <p>A single pinpoint Bold Titanium White 001 catch-light at the upper-outer edge of each iris (opposite the glow). Once dry, a careful dot of gloss varnish on each eye for the wet shine — gloss the eyes only, keep the surrounding skin matte.</p>
+      <div class="warning"><strong>⚠ NOTE:</strong> One catch-light per eye, both in the same position. Two catch-lights or mismatched placement makes the eyes look crossed or wet-wrong.</div>
+    </div>
+
+  </div><!-- end #hair-eyes -->
+
+
+  <!-- ═══════════════ ARMOR & LEATHER ═══════════════ -->
+  <div class="tab-content" id="leather">
+
+    <div class="section-header">
+      <h2>Armor &amp; Leather</h2>
+      <p>Wolf-school gear: padded brown leather body, darker strapping and gauntlets, heavy real-world weathering. Satin finish — worn, supple, never glossy-new.</p>
+    </div>
+
+    <div class="phase-label">Leather Value Structure</div>
+    <div class="value-map">
+      <div class="value-chip"><div class="chip-swatch" style="background:#241712;"></div><div class="chip-val">~12%</div><div class="chip-label">Deep Recess</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#4a3122;"></div><div class="chip-val">~30%</div><div class="chip-label">Shadow</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#7a5436;"></div><div class="chip-val">~50%</div><div class="chip-label">Mid-Tone</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#a8794a;"></div><div class="chip-val">~68%</div><div class="chip-label">Highlight</div></div>
+      <div class="value-chip"><div class="chip-swatch" style="background:#cda86e;"></div><div class="chip-val">~82%</div><div class="chip-label">Edge / Wear</div></div>
+    </div>
+
+    <div class="sub-tabs">
+      <div class="sub-tab active"     onclick="showSubTab('leather', 'leather-pro', this)">Pro Acryl</div>
+      <div class="sub-tab expert-tab" onclick="showSubTab('leather', 'leather-expert', this)">✦ Expert Acrylics — Brush Only</div>
+    </div>
+
+    <!-- PRO ACRYL -->
+    <div class="sub-content active" id="leather-pro">
+
+      <div class="phase-label">Main Body Leather (warm brown)</div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 1 · Airbrush</span>
+        <h3>Shadow Base</h3>
+        <p>Over black prime, airbrush Dark Umber 019 from the zenithal angle, keeping black in the deep folds, under the pauldrons, and behind the straps.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#3a2418"></div><div class="swatch-info"><div class="swatch-name">Dark Umber 019</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~22% value — leather shadow</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number airbrush">Step 2 · Airbrush</span>
+        <h3>Base Coat</h3>
+        <p>Mahogany 009 across the broad leather panels, leaving the shadow tone in the recesses. This is the warm core of the armor.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#5a3526"></div><div class="swatch-info"><div class="swatch-name">Mahogany 009</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~38% value — leather base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span>
+        <h3>Mid-Tone Layer</h3>
+        <p>Caramel Brown S28 on the raised panels and the padded ribs of the gambeson, thinned 1:2. Leave Mahogany in the seams.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#7a5436"></div><div class="swatch-info"><div class="swatch-name">Caramel Brown S28</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~50% value — leather mid-tone</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush</span>
+        <h3>Edge Highlight</h3>
+        <p>Khaki 061 dragged along panel edges, raised stitching, and the high points of folds with a near-dry brush. Add a touch of Bone S23 on the most worn corners (belt edge, pauldron lip, knee).</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#a8895a"></div><div class="swatch-info"><div class="swatch-name">Khaki 061</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~68% value — edge highlight</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#cdc0a0"></div><div class="swatch-info"><div class="swatch-name">Bone S23</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~80% value — worn edges</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-label">Dark Strapping, Belts &amp; Gauntlets</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 5 · Brush</span>
+        <h3>Dark Leather</h3>
+        <p>The cross-straps, belts, gauntlet bodies and boots are a much darker leather. Base Black Brown 040, highlight with a 2:1 Black Brown 040 + Khaki 061 edge along the strap lengths so they read as distinct from the warm body leather.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#2a1f18"></div><div class="swatch-info"><div class="swatch-name">Black Brown 040</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~16% value — dark strap base</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#564030"></div><div class="swatch-info"><div class="swatch-name">+ Khaki 061 (2:1)</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">strap edge highlight</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-label">Weathering</div>
+
+      <div class="step">
+        <span class="step-number wash">Step 6 · Wash</span>
+        <h3>Grime &amp; Recess Shade</h3>
+        <p>Agrax Earthshade pulled into all the seams, fold lines, and where straps cross. Then a broad, very thin Brown Wash 201 over the lower legs and boots for ground grime building up from the bottom.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#3a2a1a"></div><div class="swatch-info"><div class="swatch-name">Agrax Earthshade</div><div class="swatch-brand">Citadel</div><div class="swatch-value">warm recess grime</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#4a3420"></div><div class="swatch-info"><div class="swatch-name">Brown Wash 201</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">ground grime filter</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 7 · Brush — Drybrush</span>
+        <h3>Dust &amp; Scuffs</h3>
+        <p>Light Khaki 061 drybrush on the lower legs, boot toes, and any forward-facing wear points for road dust. Then a few sharp Bone S23 scuff marks on the highest-stress edges. Keep dust concentrated low and let it fade upward.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#a8895a"></div><div class="swatch-info"><div class="swatch-name">Khaki 061</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">dust drybrush</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 8 · Finish</span>
+        <h3>Satin Seal</h3>
+        <p>Seal the leather satin (matte + gloss ~2:1). Leather should have a soft sheen — not the dead-flat of fabric, not the wet shine of metal.</p>
+      </div>
+
+    </div><!-- end leather-pro -->
+
+    <!-- EXPERT ACRYLICS -->
+    <div class="sub-content" id="leather-expert">
+      <div class="tip"><strong>✦ Brush-only leather.</strong> The Burnt Umber / Burnt Sienna / Sepia triad is purpose-built for aged leather. Glaze and drybrush — no airbrush needed.</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Base + Shadow Glaze</h3>
+        <p>Base the warm leather with 2:1 Burnt Sienna + Burnt Umber. Glaze pure Burnt Umber (1:4) into the folds and seams, building depth in layers.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#5a3826"></div><div class="swatch-info"><div class="swatch-name">Burnt Sienna + Burnt Umber</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">~40% value — leather base</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush</span>
+        <h3>Deepest Recesses</h3>
+        <p>Sepia (1:4) into the very deepest contact points — under straps, behind buckles. Warmer and more transparent than reaching for black.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#2e2018"></div><div class="swatch-info"><div class="swatch-name">Sepia</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">~14% value — deep recess</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush — Drybrush</span>
+        <h3>Highlight &amp; Wear</h3>
+        <p>Drybrush Burnt Sienna + Nickel Azo Yellow up the raised panels, then a pale Nickel Azo Yellow + Titanium White on the worn edges. Heavy-body Expert Acrylics hold beautifully on a near-dry brush.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#b0824a"></div><div class="swatch-info"><div class="swatch-name">Burnt Sienna + Nickel Azo Yellow</div><div class="swatch-brand">Expert Acrylics</div><div class="swatch-value">~66% value — edge highlight</div></div></div>
+      </div>
+
+    </div><!-- end leather-expert -->
+
+  </div><!-- end #leather -->
+
+
+  <!-- ═══════════════ METALS & MAIL ═══════════════ -->
+  <div class="tab-content" id="metals">
+
+    <div class="section-header">
+      <h2>Metals &amp; Mail</h2>
+      <p>Cold worn steel — twin swords (steel + silver), chainmail at waist and shoulders, studded/spiked gauntlets, buckles, and the brass wolf medallion. Gloss-black-base TMM at 1:6; one warm metal for the medallion.</p>
+    </div>
+
+    <div class="tip"><strong>✦ VALUE FIRST:</strong> At 1:6 you are painting the <em>light</em> that strikes the metal, not coating it in silver. The gloss black base <strong>is</strong> the shadow — leave it showing on every plane that turns away from the light. Restraint reads as polished steel; full coverage reads as toy chrome.</div>
+
+    <div class="phase-label">True Metallic Metal (TMM) — Gloss Black Base Method</div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 1 · Airbrush</span>
+      <h3>Gloss Black Base</h3>
+      <p>Over all steel — both blades, mail, studs, buckles — lay a thin, even <em>gloss</em> black. This reflective ground becomes the permanent shadow layer. Not matte primer; it needs the sheen.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#0e0e0e"></div><div class="swatch-info"><div class="swatch-name">Satin Black S39 + gloss medium</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~5% value — reflective shadow ground</div></div></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 2 · Airbrush — VMC</span>
+      <h3>Mid Steel on Light Planes</h3>
+      <p>Map where light hits — the flat of the blades, the upper faces of the buckle and studs, the top arc of each mail link. VMC Duraluminium thinned 1:1, multiple light passes, only on those light-facing planes. Build the centers of the lit areas up with VMC Aluminium. Leave the gloss black on every shadow plane.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#8a8d92"></div><div class="swatch-info"><div class="swatch-name">VMC 77.702 Duraluminium</div><div class="swatch-brand">Vallejo Metal Color</div><div class="swatch-value">~52% value — mid steel</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#b8bcc0"></div><div class="swatch-info"><div class="swatch-name">VMC 77.701 Aluminium</div><div class="swatch-brand">Vallejo Metal Color</div><div class="swatch-value">~70% value — bright steel</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ Brush fallback:</strong> Steel 010 thinned 1:3 drybrushed/edged on the light planes, then Silver 025 on the centers.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 3 · Airbrush — VMC</span>
+      <h3>Bright Specular Edges</h3>
+      <p>VMC Chrome on the cutting edges of the blades, the sharpest stud points, and the apex of each buckle only. Drop PSI slightly and feather. These are the hottest reflections — keep them thin and selective.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#dfe2e6"></div><div class="swatch-info"><div class="swatch-name">VMC 77.707 Chrome</div><div class="swatch-brand">Vallejo Metal Color</div><div class="swatch-value">~88% value — specular edge</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ Brush fallback:</strong> Magnesium S42, or Silver 025 + a touch of Heavy Warm White S18.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number airbrush">Step 4 · Airbrush</span>
+      <h3>Cold Shadow Deepening</h3>
+      <p>For silver/steel, lightly airbrush FW Payne's Gray Ink into the shadow-facing planes and recesses. Its satin finish preserves the metallic reflectivity that a black wash would dull, and it pushes the steel cold rather than warm.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#2c333c"></div><div class="swatch-info"><div class="swatch-name">FW Payne's Gray Ink</div><div class="swatch-brand">FW Acrylic Ink</div><div class="swatch-value">cold shadow glaze</div></div></div>
+      </div>
+    </div>
+
+    <div class="phase-label">Chainmail</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 5 · Brush — Drybrush</span>
+      <h3>Mail Links</h3>
+      <p>Over the same gloss black, drybrush Steel 010 across the mail so it only catches the top of each ring, then a lighter Silver 025 drybrush on the upper/most-exposed mail panels (shoulders, top of the waist skirt). Knock the whole thing back with a targeted Nuln Oil into the mass so it reads as recessed iron, not a sheet of foil.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#6a6d72"></div><div class="swatch-info"><div class="swatch-name">Steel 010</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~48% value — mail body</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#2a2622"></div><div class="swatch-info"><div class="swatch-name">Nuln Oil</div><div class="swatch-brand">Citadel</div><div class="swatch-value">mail recess shade</div></div></div>
+      </div>
+      <div class="warning"><strong>⚠ NOTE:</strong> Mail wants to look dark and dense. Resist the urge to brighten the whole mass — only the topmost links should catch silver.</div>
+    </div>
+
+    <div class="phase-label">Brass — Wolf Medallion &amp; Hardware</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 6 · Brush</span>
+      <h3>Aged Brass Accents</h3>
+      <p>The wolf-school medallion and any brass buckle cores get a warm metal over the gloss black: Bright Gold 031 base on the light planes, Rich Gold 028 on the raised detail, then a Transparent Brown 052 glaze (or Burnt Umber, Expert Acrylics) into the recesses to age it. A pinpoint Magnesium S42 catch on the wolf's snout/ears sells the polish where it's handled.</p>
+      <div class="swatches">
+        <div class="swatch"><div class="swatch-dot" style="background:#b89134"></div><div class="swatch-info"><div class="swatch-name">Bright Gold 031</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~58% value — brass base</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#cda94a"></div><div class="swatch-info"><div class="swatch-name">Rich Gold 028</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~70% value — brass highlight</div></div></div>
+        <div class="swatch"><div class="swatch-dot" style="background:#4a3018"></div><div class="swatch-info"><div class="swatch-name">Transparent Brown 052</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">aging glaze</div></div></div>
+      </div>
+      <div class="tip"><strong>✦ Brush fallback (airbrush):</strong> VMC 77.725 Gold on light planes, shadowed with the same Transparent Brown glaze.</div>
+    </div>
+
+    <div class="phase-label">Silver Sword vs. Steel Sword</div>
+
+    <div class="step">
+      <span class="step-number brush">Step 7 · Brush</span>
+      <h3>Differentiate the Two Blades</h3>
+      <p>The <strong>steel sword</strong> (on the back) reads slightly warmer and more worn — let more gloss black show, add a faint Brown Wash 201 streak for old use. The <strong>silver sword</strong> (in hand, for monsters) is brighter and cleaner with the ornate runed hilt: push the Chrome edges harder and keep the fuller crisp. A hair of Transparent Blue 046 glazed along the silver blade cools it a touch below the steel.</p>
+      <div class="swatch"><div class="swatch-dot" style="background:#2c333c"></div><div class="swatch-info"><div class="swatch-name">Transparent Blue 046 (whisper)</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">cools the silver blade</div></div></div>
+      <div class="step-number finish" style="margin-top:10px;display:inline-block;">Finish</div>
+      <p style="margin-top:8px;">Leave all steel gloss/satin as-is — do <em>not</em> matte-coat the blades. The sheen is the metal.</p>
+    </div>
+
+  </div><!-- end #metals -->
+
+
+  <!-- ═══════════════ BASE ═══════════════ -->
+  <div class="tab-content" id="base">
+
+    <div class="section-header">
+      <h2>Base &amp; Groundwork</h2>
+      <p>A broken rocky outcrop with grass tufts and a cluster of red fly-agaric mushrooms — a damp forest-floor vignette. The cold grey rock and warm red caps frame the figure's palette: low-chroma everywhere, with the mushrooms as the single pop of color besides the eyes.</p>
+    </div>
+
+    <div class="sub-tabs">
+      <div class="sub-tab active"       onclick="showSubTab('base','base-pro',this)">Pro Acryl</div>
+      <div class="sub-tab folk-art-tab" onclick="showSubTab('base','base-folkart',this)">🎨 Craft Paints — Basing</div>
+      <div class="sub-tab effects-tab"  onclick="showSubTab('base','base-effects',this)">✦ Effects</div>
+    </div>
+
+    <!-- PRO ACRYL -->
+    <div class="sub-content active" id="base-pro">
+
+      <div class="phase-label">Rock &amp; Stone</div>
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Stone Base &amp; Drybrush</h3>
+        <p>Base the rock Payne's Grey S02 (cool, near-black in the cracks). Drybrush up through Dark Neutral Grey 044 → Bright Neutral Grey 045, leaving the deep value in the fissures. A final sparse Bone S23 drybrush catches the sharpest top edges.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#2c333c"></div><div class="swatch-info"><div class="swatch-name">Payne's Grey S02</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~18% value — stone shadow</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#6a6c70"></div><div class="swatch-info"><div class="swatch-name">Bright Neutral Grey 045</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~55% value — stone mid drybrush</div></div></div>
+        </div>
+        <div class="ratio-box">Drybrush sequence: Payne's Grey S02 → Dark Neutral Grey 044 → Bright Neutral Grey 045 → sparse Bone S23.</div>
+      </div>
+
+      <div class="phase-label">Soil &amp; Grass</div>
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush — Drybrush</span>
+        <h3>Earth</h3>
+        <p>Base the soil patches Dark Umber 019, drybrush Green Brown 020 then a little Khaki 061 for dried earth catching the light between the grass.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#3a2418"></div><div class="swatch-info"><div class="swatch-name">Dark Umber 019</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~20% — soil base</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 3 · Brush</span>
+        <h3>Sculpted Grass Blades</h3>
+        <p>The cast grass tufts: base Dark Camo Green 036, layer Camo Green 020 up the blades, then tip the upper third with Yellow Green 065 so the light catches the points. Keep the bases of the blades dark and shadowed.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#3a4a28"></div><div class="swatch-info"><div class="swatch-name">Dark Camo Green 036</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~28% — grass shadow</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#8aa048"></div><div class="swatch-info"><div class="swatch-name">Yellow Green 065</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~62% — blade tips</div></div></div>
+        </div>
+      </div>
+
+      <div class="phase-label">Red Mushrooms (Fly Agaric)</div>
+      <div class="step">
+        <span class="step-number brush">Step 4 · Brush</span>
+        <h3>Caps</h3>
+        <p>Base the caps Burnt Red 008, build the lit dome with Bold Pyrrole Red 003, then a fine Orange Red S31 highlight on the very top. Keep the underside (gills) in shadow — a Burgundy 069 deepening where the cap meets the stem.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#7a1e1c"></div><div class="swatch-info"><div class="swatch-name">Burnt Red 008</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~28% — cap shadow</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#c8302a"></div><div class="swatch-info"><div class="swatch-name">Bold Pyrrole Red 003</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~50% — cap body</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#e0552e"></div><div class="swatch-info"><div class="swatch-name">Orange Red S31</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~68% — cap highlight</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 5 · Brush</span>
+        <h3>White Spots &amp; Stems</h3>
+        <p>Dot the caps with Bold Titanium White 001 — slightly irregular, larger toward the center, smaller at the rim (canonical white spots, so true white is correct here). Stems get Bone S23 base with a Beige Grey 006 shadow under the cap and a thin Heavy Warm White S18 highlight up the lit side.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#f4f2ee"></div><div class="swatch-info"><div class="swatch-name">Bold Titanium White 001</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">cap spots — true white</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#cdc0a0"></div><div class="swatch-info"><div class="swatch-name">Bone S23</div><div class="swatch-brand">Pro Acryl</div><div class="swatch-value">~78% — stem</div></div></div>
+        </div>
+        <div class="tip"><strong>✦ TIP:</strong> Gloss-varnish the caps only (leave stems matte). The wet sheen reads as a fresh, damp mushroom and pops the red against the cold rock.</div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 6 · Finish</span>
+        <h3>Seal &amp; Static Grass</h3>
+        <p>Matte varnish the whole base (mask/avoid the glossed caps). Add PVA and 2mm + 4mm mixed static grass in clusters around the rock edges and between the sculpted blades — denser at the perimeter, sparser toward the figure. Let dry fully before pinning Geralt in.</p>
+        <div class="warning"><strong>⚠ NOTE:</strong> Seal and grass the base BEFORE mounting the figure. Boot pegs go in last.</div>
+      </div>
+
+    </div><!-- end base-pro -->
+
+    <!-- FOLK ART -->
+    <div class="sub-content" id="base-folkart">
+      <div class="tip"><strong>🎨 Craft Paints — Budget Basing Palette.</strong> Inexpensive Folk Art craft acrylics handle terrain beautifully and save your Pro Acryl for the figure. Thin a little more for any wash-style work.</div>
+
+      <div class="phase-label">Rock &amp; Soil</div>
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span>
+        <h3>Stone Shadow Base</h3>
+        <p>Base the rock Pure Black K479, then drybrush up with a grey craft mid-tone, leaving black in the cracks.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#0e0e0e"></div><div class="swatch-info"><div class="swatch-name">Pure Black K479</div><div class="swatch-brand">Folk Art</div><div class="swatch-value">~5% — stone shadow</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush + Drybrush</span>
+        <h3>Soil</h3>
+        <p>Coffee Bean K940 base on the earth, Bark Brown 2560 drybrush for the lit dirt between grass.</p>
+        <div class="swatches">
+          <div class="swatch"><div class="swatch-dot" style="background:#3a2820"></div><div class="swatch-info"><div class="swatch-name">Coffee Bean K940</div><div class="swatch-brand">Folk Art</div><div class="swatch-value">~12% — soil shadow</div></div></div>
+          <div class="swatch"><div class="swatch-dot" style="background:#6a4030"></div><div class="swatch-info"><div class="swatch-name">Bark Brown 2560</div><div class="swatch-brand">Folk Art</div><div class="swatch-value">~40% — soil mid</div></div></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 3 · Finish</span>
+        <h3>Seal &amp; Static Grass</h3>
+        <p>Matte varnish, then PVA + 2mm/4mm mixed static grass in clusters, denser at the edges. Dry fully before mounting the figure.</p>
+        <div class="warning"><strong>⚠ NOTE:</strong> Paint the mushrooms with Pro Acryl reds from the Pro Acryl tab — craft reds won't hit the same chroma.</div>
+      </div>
+
+    </div><!-- end base-folkart -->
+
+    <!-- EFFECTS -->
+    <div class="sub-content" id="base-effects">
+      <div class="phase-label">Effects Products — Apply Over Sealed Paint</div>
+      <div class="tip"><strong>💡 Timing Rule:</strong> Dirty Down goes on <em>after</em> the paint is cured and <em>before</em> the final matte coat, over a sealed surface.</div>
+
+      <div class="step">
+        <span class="step-number brush">Step 1 · Brush</span> <span class="tag tag-effects">Effects</span>
+        <h3>Damp Earth &amp; Moss in the Cracks</h3>
+        <p>Stipple Dirty Down Moss into the shaded rock fissures and the bases of the grass tufts where damp forest growth would gather. Avoid the lit top faces of the rock.</p>
+        <div class="swatch"><div class="swatch-dot" style="background:#4a5a30"></div><div class="swatch-info"><div class="swatch-name">Dirty Down Moss</div><div class="swatch-brand">Dirty Down</div><div class="swatch-value">effect — stipple into recesses</div></div></div>
+      </div>
+
+      <div class="step">
+        <span class="step-number brush">Step 2 · Brush</span> <span class="tag tag-effects">Effects</span>
+        <h3>Shape While Wet</h3>
+        <p>It stays workable for a few minutes — push it deeper into the cracks and pull it off the high points with a damp brush. Keep coverage broken and uneven; ~20–30% of the rock is plenty.</p>
+      </div>
+
+      <div class="step">
+        <span class="step-number finish">Step 3 · Finish</span>
+        <h3>Cure, Then Matte Varnish</h3>
+        <p>Cure 2–3 hours (overnight ideal) before the final matte coat, or varnishing can reactivate and streak it.</p>
+        <div class="warning"><strong>⚠ Seal last:</strong> Matte varnish the whole base after curing to lock the effect and unify the finish — keep it off the glossed mushroom caps.</div>
+      </div>
+
+    </div><!-- end base-effects -->
+
+  </div><!-- end #base -->
+
+
+  <!-- ═══════════════ AIRBRUSH SKILLS ═══════════════ -->
+  <div class="tab-content" id="airbrush-skills">
+
+    <div class="section-header">
+      <h2>Airbrush Skills</h2>
+      <p>This guide uses the airbrush for priming, zenithal value-mapping, the red-zenithal skin filter, broad leather and hair base coats, and the gloss-black-base TMM steel with VMC metallics.</p>
+    </div>
+
+    <div class="phase-label">Nozzle Assignments</div>
+    <table class="thin-table">
+      <thead>
+        <tr><th>Task</th><th>Nozzle</th><th>Why</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Priming (undiluted — do not thin)</td><td>0.5mm</td><td>High flow for primer viscosity; 30+ PSI</td></tr>
+        <tr><td>Zenithal &amp; broad base coats (leather, hair)</td><td>0.3mm</td><td>Controlled coverage and smooth gradients</td></tr>
+        <tr><td>Skin red-zenithal filter, VMC metallics, edge work</td><td>0.2mm</td><td>Fine control on flesh, small light planes, and blade edges</td></tr>
+      </tbody>
+    </table>
+
+    <div class="phase-label">Zenithal Sequence</div>
+    <div id="ab-zenithal-anchor"></div>
+
+    <div class="phase-label">PSI &amp; Distance Reference</div>
+    <table class="psi-table">
+      <thead>
+        <tr><th>Task</th><th>PSI</th><th>Distance</th><th>Notes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Priming (undiluted)</td><td>30+</td><td>20–25cm</td><td>0.5mm; do NOT thin primer</td></tr>
+        <tr><td>Zenithal — black</td><td>30+</td><td>20–25cm</td><td>0.5mm; undiluted</td></tr>
+        <tr><td>Zenithal — white</td><td>15</td><td>15cm</td><td>0.3mm; Bold Titanium White 001 ~1:3</td></tr>
+        <tr><td>Red-zenithal skin filter</td><td>12</td><td>10–12cm</td><td>0.2mm; FW Crimson Ink 1:2, 2–3 passes</td></tr>
+        <tr><td>Leather / hair base coat</td><td>15–18</td><td>10–15cm</td><td>0.3mm; build in passes</td></tr>
+        <tr><td>VMC steel (Dura/Alu/Chrome)</td><td>14–18</td><td>8–12cm</td><td>0.2mm; 1:1 thin, light-planes only</td></tr>
+        <tr><td>Weathering / freckling</td><td>8–12</td><td>3–5cm</td><td>Needle almost closed; micro-dots</td></tr>
+      </tbody>
+    </table>
+
+    <div id="ab-greyscale-anchor"></div>
+
+    <div class="phase-label">Technique — Gloss-Black-Base TMM</div>
+    <div class="step">
+      <span class="step-number airbrush">Technique · TMM Light-Mapping</span>
+      <h3>Spraying Light, Not Coverage</h3>
+      <p>The whole steel approach lives or dies on restraint. After the gloss black, angle the figure so you can see which planes face your light, and spray VMC only onto those — pull the trigger in short bursts as you track the light planes, never flooding the surface. Re-check from multiple angles: any plane that should be in shadow must keep its gloss black. Chrome touches only the cutting edges and apex points.</p>
+      <div class="tip"><strong>✦ TIP:</strong> Spray VMC over a <em>glossy</em> ground for maximum reflectivity — VMC metallics level smoother and shine harder over gloss black than over matte.</div>
+    </div>
+
+    <div class="phase-label">Troubleshooting</div>
+    <div class="trouble-grid">
+      <div class="trouble-card">
+        <h4>Blowback / Bubbling</h4>
+        <p>Cause: paint cup loose or nozzle blocked → air pushes back into the cup and bubbles. Fix: check the nozzle is seated, clear any dried paint, and don't over-thin VMC (it's ready near 1:1).</p>
+      </div>
+      <div class="trouble-card">
+        <h4>Uneven Coverage / Banding</h4>
+        <p>Cause: moving too fast or too close on the zenithal → striped light map. Fix: increase distance to ~15cm, keep the airbrush moving in smooth overlapping passes, build value gradually.</p>
+      </div>
+      <div class="trouble-card">
+        <h4>Paint Too Thin / Runs</h4>
+        <p>Cause: over-thinned skin filter pooling in recesses. Fix: drop to 2–3 very light passes, let each flash off; if it pools, stop and let it dry before continuing.</p>
+      </div>
+      <div class="trouble-card">
+        <h4>VMC Looks Dull/Grainy</h4>
+        <p>Cause: sprayed over matte or at too low PSI → grain instead of shine. Fix: ensure the gloss black ground, raise PSI slightly, and lay thin even coats — VMC self-levels to a mirror over gloss.</p>
+      </div>
+    </div>
+
+  </div><!-- end #airbrush-skills -->
+
+
+  <!-- ═══════════════ BRUSH SKILLS ═══════════════ -->
+  <div class="tab-content" id="brush-skills">
+
+    <div class="section-header">
+      <h2>Brush Skills</h2>
+      <p>The brush techniques this guide leans on: controlled drybrushing (mail, beard, rock), edge highlighting (leather, steel), targeted glazing (cold pallor, blade temperature), and fine detail control (eyes, scar, mushroom spots).</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Controlled Drybrush</span>
+      <h3>Mail, Beard &amp; Rock</h3>
+      <p>Load a stiff brush, wipe almost all the paint off onto a towel until it's nearly dry, then drag lightly across raised texture so only the high points catch. Build in several light passes rather than one heavy one — you can always add more, but a loaded drybrush dumps chalk into the recesses you worked to keep dark.</p>
+      <div class="tip"><strong>✦ TIP:</strong> For chainmail, drag the brush <em>across</em> the rings at a shallow angle so it skips the tops and skips the recesses entirely.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Edge Highlighting</span>
+      <h3>Leather &amp; Steel Edges</h3>
+      <p>Side-load a fine brush (paint on one edge, blot the other), then run the loaded edge along a raised lip — strap edges, panel seams, blade spines, buckle rims. Let the line break naturally at worn points rather than tracing a perfect unbroken edge; broken highlights read as used gear.</p>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Targeted Glazing</span>
+      <h3>Cold Pallor &amp; Blade Temperature</h3>
+      <p>A glaze is paint thinned to near-water (1:6–1:8) applied in many invisible layers to shift color or value without obscuring detail. Used here for the Payne's Grey witcher pallor, the brass aging, and cooling the silver blade below the steel. Always build a glaze in multiple passes and let each dry — one heavy glaze stains and streaks.</p>
+      <div class="tip"><strong>✦ TIP:</strong> Keep a clean damp brush in the other hand to pull a glaze back off a high point if it starts to pool.</div>
+    </div>
+
+    <div class="step">
+      <span class="step-number brush">Technique · Fine Detail Control</span>
+      <h3>Eyes, Scar &amp; Mushroom Spots</h3>
+      <p>For the smallest marks — the iris glow, the catch-light, the scar line, the cap spots — use the very tip of a well-pointed fine brush with paint at milk consistency. Steady your painting hand against your other hand, and let the brush tip do the work in single deliberate touches rather than strokes.</p>
+    </div>
+
+    <!-- Greyscale check tip injected by skills-reference.js -->
+
+  </div><!-- end #brush-skills -->
+
+
+  <!-- ═══════════════ THINNING REF ═══════════════ -->
+  <div class="tab-content" id="thinning-ref">
+    <!-- Content injected by skills-reference.js -->
+  </div><!-- end #thinning-ref -->
+
+</div><!-- end .container -->
+
+
+<footer class="guide-footer">
+  Guide by
+  <a href="https://www.youtube.com/@brent_the_programmer9108" target="_blank">brent_the_programmer</a>
+  &middot;
+  <a href="https://instagram.com/stephenson913" target="_blank">@stephenson913</a>
+</footer>
+
+<button class="back-to-top" id="backToTop" title="Back to top"
+        onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+
+<div class="ref-modal" id="refModal" onclick="if(event.target===this)closeRefModal()">
+  <div class="ref-modal-inner">
+    <button class="ref-modal-close" onclick="closeRefModal()" title="Close">✕</button>
+    <img class="ref-modal-img" id="refModalImg" src="" alt="">
+    <div class="ref-modal-caption" id="refModalCaption"></div>
+  </div>
+</div>
+
+
+<script>
+window.GUIDE_THINNING = {
+  airbrushRows: [
+    { technique: 'White zenithal (skin/hair)', nozzle: '0.3mm', ratio: '1:3',        behavior: 'Builds near-white on top planes in passes without flooding; black held in recesses.' },
+    { technique: 'Red-zenithal skin filter',   nozzle: '0.2mm', ratio: '1:2 (FW Crimson Ink)', behavior: 'Transparent warm flush over zenithal; 2–3 light passes. FW ink — not PA Transparent Red.' },
+    { technique: 'Leather / hair base coat',    nozzle: '0.3mm', ratio: '1:3 to 1:4', behavior: 'Semi-transparent; layers over zenithal keeping the value map intact.' },
+    { technique: 'VMC steel (Dura/Alu)',        nozzle: '0.2mm', ratio: '1:1 (distilled water)', behavior: 'Light-planes only over gloss black; multiple thin passes for a mirror finish.' },
+    { technique: 'VMC Chrome edges',            nozzle: '0.2mm', ratio: '1:1',        behavior: 'Lower PSI, feathered onto cutting edges and apex points only.' },
+  ],
+  brushRows: [
+    { technique: 'Cold pallor / blade glaze', ratio: '1:6 to 1:8', behavior: 'Payne’s Grey / Transparent Blue — many invisible passes to shift temperature.' },
+  ],
+  thinningCards: []
+};
+</script>
+
+<script src="../../assets/guide.js"></script>
+<script src="../../assets/skills-reference.js"></script>
+<script>
+  function openRefModal(src, alt) {
+    var modal = document.getElementById('refModal');
+    document.getElementById('refModalImg').src = src;
+    document.getElementById('refModalImg').alt = alt;
+    document.getElementById('refModalCaption').textContent = alt;
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeRefModal() {
+    document.getElementById('refModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeRefModal();
+  });
+
+  function showSubTab(parentId, contentId, btn) {
+    const parent = document.getElementById(parentId);
+    if (!parent) return;
+    parent.querySelectorAll('.sub-content').forEach(c => c.classList.remove('active'));
+    parent.querySelectorAll('.sub-tab').forEach(b => b.classList.remove('active'));
+    const el = document.getElementById(contentId);
+    if (el) el.classList.add('active');
+    if (btn) btn.classList.add('active');
+  }
+  (function() {
+    const btn = document.getElementById('backToTop');
+    if (!btn) return;
+    window.addEventListener('scroll', function() {
+      btn.classList.toggle('visible', window.scrollY > 300);
+    }, { passive: true });
+  })();
+</script>
+
+</body>
+</html>
