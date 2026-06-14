@@ -38,6 +38,12 @@ jobs:
         working-directory: backend
         run: pip install -r requirements-test.txt
 
+      # Chromium powers the painting PDF-export tests (#320). --with-deps adds
+      # the system libraries headless Chromium needs on the runner.
+      - name: Install Playwright Chromium
+        working-directory: backend
+        run: playwright install --with-deps chromium
+
       - name: Run pytest
         working-directory: backend
         run: pytest -v

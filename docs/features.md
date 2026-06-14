@@ -337,6 +337,11 @@ as the standalone HTML version.
   confirmation.
 - **Print** (button, top-right of a guide) expands *every* tab and sub-tab into
   one continuous, print-styled document — the whole guide in one pass.
+- **Export PDF** (button, top-right of a guide) renders that same print-styled
+  document to a downloadable PDF — handy for sharing a guide or printing it
+  later. In Docker the renderer is bundled and ready to use; the standalone
+  build needs a one-time `playwright install chromium` (see the install notes)
+  the first time you export.
 - **Model links** tie guides to your library both ways: a model that has a guide
   shows a **Guide** badge on its Library card and a **Painting guide** button on
   its detail page, and the guide links back to its model.

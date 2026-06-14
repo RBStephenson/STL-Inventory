@@ -23,6 +23,7 @@ from app.painting.schemas import (
 )
 from app.painting.services.guides import build_tabs, collect_paint_ids, missing_paint_ids
 from app.painting.services.importing import import_guide_html, make_db_resolver
+from app.painting.services.pdf import ChromiumNotInstalledError, render_guide_pdf
 from app.painting.services.rendering import attach_resolved_paints, render_guide_html
 from app.utils import utcnow
 
@@ -194,6 +195,30 @@ def export_guide_html(guide_id: int, db: Session = Depends(get_db)):
         content=html,
         media_type="text/html; charset=utf-8",
         headers={"Content-Disposition": f'attachment; filename="{guide.slug}.html"'},
+    )
+
+
+@router.get("/guides/{guide_id}/export/pdf", response_class=Response)
+async def export_guide_pdf(guide_id: int, db: Session = Depends(get_db)):
+    """Render a guide to a print-ready PDF via headless Chromium (spec §9.4).
+
+    Reuses the static-HTML export with assets inlined and print media emulated,
+    so the PDF matches the in-browser print view. Single-guide only."""
+    guide = _get_or_404(db, Guide, guide_id, "Guide")
+    try:
+        pdf = await render_guide_pdf(db, guide)
+    except ChromiumNotInstalledError:
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "PDF rendering needs Chromium, which isn't installed. "
+                "Run `playwright install chromium` and try again."
+            ),
+        )
+    return Response(
+        content=pdf,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{guide.slug}.pdf"'},
     )
 
 

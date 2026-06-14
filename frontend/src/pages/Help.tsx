@@ -404,7 +404,10 @@ const SECTIONS: Section[] = [
           in-app — a tabbed, step-by-step recipe with value maps, numbered steps,
           <strong> paint swatches</strong> drawn from your shelf, and a shared
           Thinning Reference. <strong>Print</strong> expands every tab into one
-          print-styled document. A model with a guide shows a <strong>Guide</strong>{" "}
+          print-styled document, and <strong>Export PDF</strong> saves that same
+          document as a downloadable PDF (the standalone build needs a one-time{" "}
+          <code>playwright install chromium</code> the first time you export).
+          A model with a guide shows a <strong>Guide</strong>{" "}
           badge on its Library card and a <strong>Painting guide</strong> button on
           its detail page, and the guide links back to its model.
         </p>
