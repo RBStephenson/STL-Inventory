@@ -248,7 +248,8 @@ def _render_phases(buf: _Buf, phases, paints: dict[int, PaintInfo]) -> None:
     """A run of phases (already filtered to one sub-content), steps numbered 1..N."""
     number = 0
     for phase in phases:
-        buf.add(f'<div class="phase-label">{_t(phase.label)}</div>')
+        if phase.label:  # unlabeled phases emit no divider
+            buf.add(f'<div class="phase-label">{_t(phase.label)}</div>')
         for step in phase.steps:
             number += 1
             _render_step(buf, step, number, paints)
