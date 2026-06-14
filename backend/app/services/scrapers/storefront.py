@@ -155,9 +155,18 @@ async def _scrape_mmf(url: str) -> list[StorefrontProduct]:
 # Products live at props.sections[].search_results.products[], each carrying a
 # name, permalink, canonical url and thumbnail_url — no per-product fetch needed.
 #
-# Note: each section embeds only its first page of results (search_results.total
-# is the full count). Pulling the remainder needs Gumroad's products-search
-# endpoint and is tracked as a follow-up (#316); this returns the embedded page.
+# Each section embeds only its first page (~9 products) while search_results.total
+# is the full count. The "load more" SPA calls a products-search endpoint scoped
+# by the section id + the seller's external id; we page through it to recover the
+# rest (#316):
+#   GET {profile_base}/products/search?section_id={id}&user_id={creator_id}&from={offset}
+# `from` is a 0-based offset into the section's results; the response mirrors the
+# embedded product shape under "products".
+
+_GUMROAD_PAGE_SIZE = 9      # products per search response (Gumroad's fixed page size)
+_GUMROAD_MAX_PAGES = 200    # bound the per-section walk so a store/markup change can't loop forever
+_GUMROAD_CONCURRENCY = 8    # parallel search requests in flight
+
 
 async def _scrape_gumroad(url: str) -> list[StorefrontProduct]:
     """
@@ -171,37 +180,106 @@ async def _scrape_gumroad(url: str) -> list[StorefrontProduct]:
         except Exception as e:
             logger.error(f"Gumroad profile fetch failed: {e}")
             return []
+        final_url = str(r.url)
+        html = r.text
 
-    page = _gumroad_inertia_page(r.text)
-    if page is None:
-        logger.warning(
-            "Gumroad: could not parse Inertia page data from profile — "
-            "site structure may have changed"
-        )
-        return []
+        page = _gumroad_inertia_page(html)
+        if page is None:
+            logger.warning(
+                "Gumroad: could not parse Inertia page data from profile — "
+                "site structure may have changed"
+            )
+            return []
 
-    products: list[StorefrontProduct] = []
-    seen: set[str] = set()
-    for section in page.get("props", {}).get("sections", []):
-        for prod in (section.get("search_results") or {}).get("products", []):
-            permalink = prod.get("permalink")
-            name = (prod.get("name") or "").strip()
-            if not permalink or not name or permalink in seen:
-                continue
-            seen.add(permalink)
-            products.append(StorefrontProduct(
-                title=name,
-                source_url=prod.get("url") or f"{url.rstrip('/')}/l/{permalink}",
-                source_site="gumroad",
-                external_id=permalink,
-                thumbnail_url=prod.get("thumbnail_url"),
-            ))
+        props = page.get("props", {})
+        creator_id = (props.get("creator_profile") or {}).get("external_id")
+        search_base = _gumroad_origin(final_url)
+
+        products: list[StorefrontProduct] = []
+        seen: set[str] = set()
+        for section in props.get("sections", []):
+            results = section.get("search_results") or {}
+            embedded = results.get("products") or []
+            _gumroad_add_products(embedded, products, seen, url)
+
+            section_id = section.get("id")
+            total = results.get("total") or 0
+            if creator_id and section_id and total > len(embedded):
+                more = await _gumroad_fetch_more(
+                    client, search_base, section_id, creator_id, total, len(embedded)
+                )
+                _gumroad_add_products(more, products, seen, url)
 
     if not products:
         logger.warning("Gumroad: no products found in profile page data")
     else:
-        logger.info(f"Gumroad: scraped {len(products)} products from embedded page data")
+        logger.info(f"Gumroad: scraped {len(products)} products")
     return products
+
+
+def _gumroad_add_products(
+    raw: list[dict],
+    products: list[StorefrontProduct],
+    seen: set[str],
+    url: str,
+) -> None:
+    """Append parsed, de-duplicated products from a list of raw Gumroad dicts."""
+    for prod in raw:
+        permalink = prod.get("permalink")
+        name = (prod.get("name") or "").strip()
+        if not permalink or not name or permalink in seen:
+            continue
+        seen.add(permalink)
+        products.append(StorefrontProduct(
+            title=name,
+            source_url=prod.get("url") or f"{url.rstrip('/')}/l/{permalink}",
+            source_site="gumroad",
+            external_id=permalink,
+            thumbnail_url=prod.get("thumbnail_url"),
+        ))
+
+
+def _gumroad_origin(url: str) -> str:
+    """scheme://host for the products-search endpoint (drops path/query)."""
+    m = re.match(r"(https?://[^/]+)", url)
+    return m.group(1) if m else url.rstrip("/")
+
+
+async def _gumroad_fetch_more(
+    client: httpx.AsyncClient,
+    search_base: str,
+    section_id: str,
+    creator_id: str,
+    total: int,
+    start: int,
+) -> list[dict]:
+    """
+    Page through a section's products-search endpoint beyond the embedded first
+    page. Offsets are independent, so requests run concurrently (bounded by
+    _GUMROAD_CONCURRENCY) and capped at _GUMROAD_MAX_PAGES per section.
+    """
+    end = min(total, start + _GUMROAD_MAX_PAGES * _GUMROAD_PAGE_SIZE)
+    if end < total:
+        logger.warning(
+            f"Gumroad: section capped at {_GUMROAD_MAX_PAGES} pages "
+            f"({end}/{total} products) — unusually large store."
+        )
+    offsets = list(range(start, end, _GUMROAD_PAGE_SIZE))
+    semaphore = asyncio.Semaphore(_GUMROAD_CONCURRENCY)
+
+    async def fetch_page(offset: int) -> list[dict]:
+        params = {"section_id": section_id, "user_id": creator_id, "from": offset}
+        async with semaphore:
+            try:
+                r = await client.get(f"{search_base}/products/search", params=params)
+                r.raise_for_status()
+                return r.json().get("products") or []
+            except Exception as e:
+                logger.error(f"Gumroad products-search (from={offset}) failed: {e}")
+                return []
+
+    pages = await asyncio.gather(*(fetch_page(o) for o in offsets))
+    return [prod for page in pages for prod in page]
 
 
 def _gumroad_inertia_page(html: str) -> Optional[dict]:
