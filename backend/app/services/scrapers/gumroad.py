@@ -72,13 +72,27 @@ def _parse(html: str, url: str) -> Optional[ScrapedModel]:
 
     title = og("title") or _text(soup, ["h1.product-name", "h1"])
     description = og("description") or _text(soup, [".product-description", ".description"])
-    thumbnail_url = og("image")
+    og_image = og("image")
 
-    # Try JSON-LD for richer data
-    images = []
+    images: list[str] = []
     tags: list[str] = []
     creator_name: Optional[str] = None
+    product_thumb: Optional[str] = None
 
+    # --- Inertia data-page (richest source on current Gumroad) ---
+    # props.product carries the seller name, the full cover image set and a
+    # dedicated thumbnail that the OG tags alone don't expose.
+    product = _inertia_product(html)
+    if product:
+        title = (product.get("name") or "").strip() or title
+        description = description or (product.get("summary") or None)
+        creator_name = ((product.get("seller") or {}).get("name") or "").strip() or None
+        product_thumb = product.get("thumbnail_url") or None
+        for cover in product.get("covers") or []:
+            if cover.get("type") == "image" and cover.get("url"):
+                images.append(cover["url"])
+
+    # --- JSON-LD fallback (older/non-Inertia pages) ---
     for script in soup.find_all("script", type="application/ld+json"):
         try:
             ld = json.loads(script.string or "")
@@ -87,7 +101,7 @@ def _parse(html: str, url: str) -> Optional[ScrapedModel]:
             if ld.get("@type") in ("Product", "CreativeWork"):
                 title = title or ld.get("name")
                 description = description or ld.get("description")
-                creator_name = (
+                creator_name = creator_name or (
                     ld.get("author", {}).get("name")
                     or ld.get("brand", {}).get("name")
                 )
@@ -99,7 +113,7 @@ def _parse(html: str, url: str) -> Optional[ScrapedModel]:
         except Exception:
             pass
 
-    # Creator from page if not in LD
+    # Creator from page if still unknown
     if not creator_name:
         creator_name = _text(soup, [
             ".creator-profile-name",
@@ -108,12 +122,17 @@ def _parse(html: str, url: str) -> Optional[ScrapedModel]:
             '[class*="creator"] h3',
         ])
 
-    if thumbnail_url and thumbnail_url not in images:
-        images.insert(0, thumbnail_url)
+    # Merge the OG image into the gallery (deduped — it's usually the main cover)
+    if og_image and og_image not in images:
+        images.append(og_image)
     images = [i for i in images if i]
 
     if not title:
         return None
+
+    # Prefer Gumroad's dedicated product thumbnail (matches storefront.py), then
+    # the OG image, then the first gallery cover.
+    thumbnail_url = product_thumb or og_image or (images[0] if images else None)
 
     return ScrapedModel(
         title=title,
@@ -122,10 +141,21 @@ def _parse(html: str, url: str) -> Optional[ScrapedModel]:
         source_site=SITE,
         external_id=extract_id(url),
         creator_name=creator_name,
-        thumbnail_url=images[0] if images else None,
+        thumbnail_url=thumbnail_url,
         image_urls=images,
         tags=tags,
     )
+
+
+def _inertia_product(html: str) -> Optional[dict]:
+    """Pull props.product from a Gumroad Inertia product page, if present."""
+    # Local import to avoid a package-init import cycle (see __init__.py order).
+    from app.services.scrapers.storefront import _gumroad_inertia_page
+
+    page = _gumroad_inertia_page(html)
+    if not page:
+        return None
+    return (page.get("props") or {}).get("product")
 
 
 async def search(query: str, limit: int = 12) -> list[SearchResult]:
