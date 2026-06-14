@@ -1,14 +1,16 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Paintbrush } from "lucide-react";
+import { Paintbrush, Upload } from "lucide-react";
 import { api, GuideListItem } from "../api/client";
+import ImportGuideModal from "../components/guide/ImportGuideModal";
 
 export default function GuidesPage() {
   const [guides, setGuides] = useState<GuideListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [importing, setImporting] = useState(false);
 
-  useEffect(() => {
+  const load = useCallback(() => {
     let alive = true;
     api.painting.guides
       .list({ page_size: 200 })
@@ -18,15 +20,33 @@ export default function GuidesPage() {
     return () => { alive = false; };
   }, []);
 
+  useEffect(() => load(), [load]);
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
-      <h1 className="flex items-center gap-2 text-2xl font-bold text-white mb-1">
-        <Paintbrush size={22} className="text-indigo-400" />
-        Painting Guides
-      </h1>
+      <div className="flex items-start justify-between gap-4 mb-1">
+        <h1 className="flex items-center gap-2 text-2xl font-bold text-white">
+          <Paintbrush size={22} className="text-indigo-400" />
+          Painting Guides
+        </h1>
+        <button
+          onClick={() => setImporting(true)}
+          title="Import a guide from an HTML file — it lands as a draft for review"
+          className="inline-flex items-center gap-1.5 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-200 text-sm px-3 py-1.5 rounded transition-colors"
+        >
+          <Upload size={15} /> Import guide
+        </button>
+      </div>
       <p className="text-sm text-gray-500 mb-8">
         Step-by-step painting guides for your models.
       </p>
+
+      {importing && (
+        <ImportGuideModal
+          onClose={() => setImporting(false)}
+          onImported={() => { setImporting(false); load(); }}
+        />
+      )}
 
       {error && (
         <p role="alert" className="text-sm text-rose-400 bg-rose-950/30 border border-rose-900/50 rounded px-3 py-2">

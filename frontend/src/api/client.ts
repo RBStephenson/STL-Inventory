@@ -394,6 +394,28 @@ export interface GuideList {
   items: GuideListItem[];
 }
 
+// --- Guide import (#277) --------------------------------------------------
+// The importer resolves swatch paints against the Paint Shelf; unresolved ones
+// are dropped from the draft and reported here (the inventory-gap list, §9.7).
+
+export interface UnresolvedPaint {
+  name: string;
+  brand: string | null;
+  step: string | null;
+}
+
+export interface GuideImportReport {
+  resolved_paints: number;
+  unresolved_paints: UnresolvedPaint[];
+  unmapped_nodes: string[];
+  notes: string[];
+}
+
+export interface GuideImportResult {
+  guide: Guide;
+  report: GuideImportReport;
+}
+
 export interface DirEntry {
   name: string;
   path: string;
@@ -720,6 +742,21 @@ export const api = {
       get: (id: number) => request<Guide>(`/painting/guides/${id}`),
       // The set of model ids that have at least one guide (Library badge, #263).
       modelIds: () => request<{ model_ids: number[] }>("/painting/guides/model-ids"),
+      // Import a legacy guide HTML file → lands a draft + returns the report (#277).
+      import_: (html: string, slug: string) =>
+        request<GuideImportResult>("/painting/guides/import", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ html, slug }),
+        }),
+      update: (id: number, patch: Partial<{ status: string }>) =>
+        request<Guide>(`/painting/guides/${id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(patch),
+        }),
+      delete: (id: number) =>
+        request<{ ok: boolean }>(`/painting/guides/${id}`, { method: "DELETE" }),
     },
   },
   database: {

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import GuidesPage from "./GuidesPage";
 
@@ -51,5 +52,13 @@ describe("GuidesPage", () => {
     });
     renderPage();
     expect(await screen.findByText("No guides yet")).toBeInTheDocument();
+  });
+
+  it("opens the import modal from the header button (#277)", async () => {
+    renderPage();
+    await screen.findByRole("link", { name: /RoboCop/ });
+    expect(screen.queryByTestId("import-guide-modal")).toBeNull();
+    await userEvent.click(screen.getByRole("button", { name: /import guide/i }));
+    expect(screen.getByTestId("import-guide-modal")).toBeInTheDocument();
   });
 });

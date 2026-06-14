@@ -325,16 +325,26 @@ guide is a tabbed, step-by-step recipe: per-tab **value maps**, numbered
 **Thinning Reference**. Each guide carries its own theme, so it looks the same
 as the standalone HTML version.
 
+- **Import guide** (button, top-right of the Guides page) uploads a guide HTML
+  file. It lands as a **draft** for review — never auto-published — and shows an
+  **import report**: how many swatch paints matched your Paint Shelf, which were
+  dropped because they aren't on your shelf, and any content the importer
+  couldn't map. Add the missing paints to your Paint Shelf and re-import, or
+  delete the draft, if the report flags gaps.
+- **Publish / Unpublish** and **Delete** (buttons, top-right of a guide) control
+  a guide's lifecycle: drafts stay flagged in the list until you publish, and
+  delete removes the guide and all its tabs, steps and swatches after a
+  confirmation.
 - **Print** (button, top-right of a guide) expands *every* tab and sub-tab into
   one continuous, print-styled document — the whole guide in one pass.
 - **Model links** tie guides to your library both ways: a model that has a guide
   shows a **Guide** badge on its Library card and a **Painting guide** button on
   its detail page, and the guide links back to its model.
 
-> **Getting guides in:** authoring and importing guides from the UI isn't built
-> yet — today guides are created through the API (`POST /painting/guides`) or the
-> HTML importer (`POST /painting/guides/import`). An in-app import/authoring
-> screen is tracked separately, and AI-assisted generation is a later milestone.
+> **Authoring:** importing existing guide HTML and publishing/deleting are built
+> in. A full in-app **structured editor** (editing a guide's tabs, steps and
+> swatches) is tracked separately, and AI-assisted generation is a later
+> milestone.
 
 ## Settings
 
