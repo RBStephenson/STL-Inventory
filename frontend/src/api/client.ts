@@ -757,6 +757,23 @@ export const api = {
         }),
       delete: (id: number) =>
         request<{ ok: boolean }>(`/painting/guides/${id}`, { method: "DELETE" }),
+      // Render the guide to a print-ready PDF and trigger a download (#320).
+      // A blob endpoint, so it can't go through request(); surfaces the 503
+      // "Chromium not installed" detail like the other download helpers.
+      exportPdf: async (id: number, slug: string) => {
+        const res = await fetch(`${BASE}/painting/guides/${id}/export/pdf`);
+        if (!res.ok) {
+          let detail = `${res.status} ${res.statusText}`;
+          try { detail = (await res.json()).detail || detail; } catch { /* ignore */ }
+          throw new ApiError(res.status, detail);
+        }
+        const url = URL.createObjectURL(await res.blob());
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${slug}.pdf`;
+        a.click();
+        URL.revokeObjectURL(url);
+      },
     },
   },
   database: {

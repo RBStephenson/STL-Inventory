@@ -33,6 +33,7 @@ vi.mock("../api/client", async (importOriginal) => {
           get: vi.fn().mockResolvedValue(GUIDE),
           update: vi.fn(),
           delete: vi.fn().mockResolvedValue({ ok: true }),
+          exportPdf: vi.fn().mockResolvedValue(undefined),
         },
       },
     },
@@ -66,6 +67,27 @@ describe("GuideReaderPage", () => {
     await userEvent.click(screen.getByRole("button", { name: /print/i }));
     expect(printSpy).toHaveBeenCalledTimes(1);
     printSpy.mockRestore();
+  });
+
+  it("exports a PDF via the Export PDF button (#320)", async () => {
+    const { api } = await import("../api/client");
+    renderAt("1");
+    await screen.findByRole("heading", { level: 1, name: /RoboCop/ });
+
+    await userEvent.click(screen.getByRole("button", { name: /export pdf/i }));
+    expect(api.painting.guides.exportPdf).toHaveBeenCalledWith(1, "robocop");
+  });
+
+  it("surfaces a PDF export failure as a toast (#320)", async () => {
+    const { api } = await import("../api/client");
+    vi.mocked(api.painting.guides.exportPdf).mockRejectedValueOnce(
+      new Error("PDF rendering needs Chromium")
+    );
+    renderAt("1");
+    await screen.findByRole("heading", { level: 1, name: /RoboCop/ });
+
+    await userEvent.click(screen.getByRole("button", { name: /export pdf/i }));
+    expect(await screen.findByText(/needs Chromium/i)).toBeInTheDocument();
   });
 
   it("shows a View-model link only when the guide is linked to a model (#263)", async () => {

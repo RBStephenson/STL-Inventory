@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Printer, Globe, Undo2, Trash2 } from "lucide-react";
+import { ArrowLeft, Printer, FileDown, Globe, Undo2, Trash2 } from "lucide-react";
 import { api, Guide } from "../api/client";
 import GuideReader from "../components/guide/GuideReader";
 import ModelLink from "../components/guide/ModelLink";
@@ -39,6 +39,18 @@ export default function GuideReaderPage() {
       toast(next === "published" ? "Guide published." : "Guide unpublished — back to draft.", "success");
     } catch (e) {
       toast((e as Error)?.message || "Could not update the guide.", "error");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const exportPdf = async () => {
+    if (!guide) return;
+    setBusy(true);
+    try {
+      await api.painting.guides.exportPdf(guide.id, guide.slug);
+    } catch (e) {
+      toast((e as Error)?.message || "Could not export the PDF.", "error");
     } finally {
       setBusy(false);
     }
@@ -92,6 +104,14 @@ export default function GuideReaderPage() {
               className="inline-flex items-center gap-1.5 bg-gray-800 hover:bg-red-950/60 border border-gray-700 hover:border-red-800 text-gray-300 hover:text-red-300 text-sm px-3 py-1.5 rounded transition-colors disabled:opacity-50"
             >
               <Trash2 size={15} /> Delete
+            </button>
+            <button
+              onClick={exportPdf}
+              disabled={busy}
+              title="Export this guide as a print-ready PDF"
+              className="inline-flex items-center gap-1.5 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-200 text-sm px-3 py-1.5 rounded transition-colors disabled:opacity-50"
+            >
+              <FileDown size={15} /> Export PDF
             </button>
             <button
               onClick={() => window.print()}

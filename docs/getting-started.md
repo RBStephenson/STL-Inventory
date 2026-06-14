@@ -51,6 +51,11 @@ survives app updates:
 | macOS | `~/Library/Application Support/STL-Inventory/` |
 | Linux | `~/.local/share/stl-inventory/` |
 
+> **Optional — PDF export of painting guides:** exporting a painting guide to PDF
+> needs a headless browser that can't be bundled into the standalone app. The
+> first time you use **Export PDF**, run `playwright install chromium` once from a
+> terminal (Playwright ships with the app). The Docker image already includes it.
+
 ---
 
 ## Docker (advanced)
