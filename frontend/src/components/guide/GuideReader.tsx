@@ -95,7 +95,7 @@ function Phases({ phases }: { phases: GuidePhase[] }) {
     <>
       {phases.map((phase) => (
         <div key={phase.id}>
-          <div className="phase-label">{phase.label}</div>
+          {phase.label && <div className="phase-label">{phase.label}</div>}
           {phase.steps.map((step) => {
             number += 1;
             return <StepCard key={step.id} step={step} number={number} />;

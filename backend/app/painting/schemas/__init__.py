@@ -400,7 +400,10 @@ class StepRead(BaseModel):
 
 
 class PhaseIn(BaseModel):
-    label: str = Field(min_length=1)
+    # May be empty: a run of steps with no .phase-label divider is a legitimate
+    # unlabeled phase (the importer produces these). Renderers skip the divider
+    # when blank.
+    label: str = ""
     subtab_key: Optional[str] = None
     sort_order: int = 0
     steps: list[StepIn] = []

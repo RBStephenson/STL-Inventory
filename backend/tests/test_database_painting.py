@@ -70,6 +70,9 @@ PRE268_GUIDE_COLUMNS = [
     ("guides", "title_lead"), ("guides", "subtitle"), ("guides", "category_label"),
     ("guides", "quote"), ("guides", "head_style"),
     ("guide_tabs", "dom_id"), ("guide_tabs", "subtabs"), ("guide_tabs", "method_block"),
+    ("guide_tabs", "has_expert_subtab"), ("guide_tabs", "section"),
+    ("guide_tabs", "value_map"), ("guide_tabs", "skin_config"),
+    ("guide_tabs", "metals_config"),
     ("guide_phases", "subtab_key"), ("guide_steps", "technique_label"),
 ]
 

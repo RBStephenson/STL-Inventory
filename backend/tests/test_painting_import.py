@@ -100,6 +100,27 @@ class TestRoundTrip:
         assert step["warning"] == "<strong>⚠ NOTE:</strong> Never thin primer."
 
 
+class TestUnlabeledPhase:
+    """A run of steps with no .phase-label divider is a legitimate unlabeled
+    phase the importer produces (`label: ""`). It must survive create, not 422
+    on the schema's old min_length=1 constraint — the cause of the import 500."""
+
+    def test_create_accepts_empty_phase_label(self, client, paint):
+        body = presto_body(paint["id"])
+        body["tabs"][0]["phases"][0]["label"] = ""
+        r = client.post("/painting/guides", json=body)
+        assert r.status_code == 201, r.text
+        assert r.json()["tabs"][0]["phases"][0]["label"] == ""
+
+    def test_export_omits_empty_phase_divider(self, client, paint):
+        body = presto_body(paint["id"])
+        body["tabs"][0]["phases"][0]["label"] = ""
+        gid = client.post("/painting/guides", json=body).json()["id"]
+        html = client.get(f"/painting/guides/{gid}/export").text
+        # No blank divider bar left behind for the unlabeled phase.
+        assert '<div class="phase-label"></div>' not in html
+
+
 class TestImportEndpoint:
     def test_unresolved_swatch_dropped_and_reported(self, client):
         # Export a guide, then rewrite a swatch name to one not on the shelf:

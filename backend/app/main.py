@@ -42,6 +42,15 @@ def _migrate_schema():
         ("guide_tabs", "dom_id", "TEXT"),
         ("guide_tabs", "subtabs", "JSON DEFAULT '[]'"),
         ("guide_tabs", "method_block", "JSON"),
+        # The remaining guide_tabs JSON/flag columns. A DB created at an
+        # intermediate schema version can be missing any subset of these (the
+        # #280 migration only covered dom_id/subtabs/method_block, so e.g.
+        # guide_tabs.section was absent → import 500 "no column named section").
+        ("guide_tabs", "has_expert_subtab", "BOOLEAN DEFAULT 0"),
+        ("guide_tabs", "section", "JSON"),
+        ("guide_tabs", "value_map", "JSON"),
+        ("guide_tabs", "skin_config", "JSON"),
+        ("guide_tabs", "metals_config", "JSON"),
         ("guide_phases", "subtab_key", "TEXT"),
         ("guide_steps", "technique_label", "TEXT"),
         ("models", "print_status", "VARCHAR NOT NULL DEFAULT 'none'"),
