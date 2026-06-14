@@ -1,8 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import GuideReaderPage from "./GuideReaderPage";
+import { ToastProvider } from "../context/ToastContext";
+import { ConfirmProvider } from "../context/ConfirmContext";
+
+const navigateSpy = vi.hoisted(() => vi.fn());
+vi.mock("react-router-dom", async (importOriginal) => {
+  const orig = await importOriginal<typeof import("react-router-dom")>();
+  return { ...orig, useNavigate: () => navigateSpy };
+});
 
 const GUIDE = vi.hoisted(() => ({
   id: 1, slug: "robocop", title: "RoboCop", title_lead: "RoboCop", subtitle: null,
@@ -19,17 +27,29 @@ vi.mock("../api/client", async (importOriginal) => {
   const orig = await importOriginal<typeof import("../api/client")>();
   return {
     ...orig,
-    api: { painting: { guides: { get: vi.fn().mockResolvedValue(GUIDE) } } },
+    api: {
+      painting: {
+        guides: {
+          get: vi.fn().mockResolvedValue(GUIDE),
+          update: vi.fn(),
+          delete: vi.fn().mockResolvedValue({ ok: true }),
+        },
+      },
+    },
   };
 });
 
 function renderAt(id: string) {
   return render(
-    <MemoryRouter initialEntries={[`/painting/guides/${id}`]}>
-      <Routes>
-        <Route path="/painting/guides/:id" element={<GuideReaderPage />} />
-      </Routes>
-    </MemoryRouter>
+    <ToastProvider>
+      <ConfirmProvider>
+        <MemoryRouter initialEntries={[`/painting/guides/${id}`]}>
+          <Routes>
+            <Route path="/painting/guides/:id" element={<GuideReaderPage />} />
+          </Routes>
+        </MemoryRouter>
+      </ConfirmProvider>
+    </ToastProvider>
   );
 }
 
@@ -66,5 +86,33 @@ describe("GuideReaderPage", () => {
     vi.mocked(api.painting.guides.get).mockRejectedValueOnce(new Error("boom"));
     renderAt("1");
     expect(await screen.findByRole("alert")).toHaveTextContent("boom");
+  });
+
+  it("publishes a draft guide (#277)", async () => {
+    const { api } = await import("../api/client");
+    vi.mocked(api.painting.guides.get).mockResolvedValueOnce({ ...GUIDE, status: "draft" });
+    vi.mocked(api.painting.guides.update).mockResolvedValueOnce({ ...GUIDE, status: "published" });
+    renderAt("1");
+
+    const publishBtn = await screen.findByRole("button", { name: /^publish$/i });
+    await userEvent.click(publishBtn);
+
+    expect(api.painting.guides.update).toHaveBeenCalledWith(1, { status: "published" });
+    // Button flips to Unpublish once published.
+    expect(await screen.findByRole("button", { name: /unpublish/i })).toBeInTheDocument();
+  });
+
+  it("deletes a guide after confirmation and navigates away (#277)", async () => {
+    const { api } = await import("../api/client");
+    renderAt("1");
+    await screen.findByRole("heading", { level: 1, name: /RoboCop/ });
+
+    await userEvent.click(screen.getByRole("button", { name: /delete/i }));
+    // Confirm dialog → click its destructive action.
+    const dialog = await screen.findByRole("alertdialog");
+    await userEvent.click(within(dialog).getByRole("button", { name: /^delete$/i }));
+
+    expect(api.painting.guides.delete).toHaveBeenCalledWith(1);
+    expect(navigateSpy).toHaveBeenCalledWith("/painting/guides");
   });
 });

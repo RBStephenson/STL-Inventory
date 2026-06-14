@@ -409,8 +409,13 @@ const SECTIONS: Section[] = [
           its detail page, and the guide links back to its model.
         </p>
         <p>
-          Authoring or importing guides from the UI isn't built yet — for now guides
-          come in through the API or the HTML importer.
+          <strong>Import guide</strong> (top of the Guides page) uploads a guide
+          HTML file. It lands as a <strong>draft</strong> and shows a report: which
+          swatch paints matched your shelf, which were dropped (not on your shelf),
+          and any unmapped content. Add the missing paints and re-import, or delete
+          the draft, if the report flags gaps. From an open guide you can{" "}
+          <strong>Publish / Unpublish</strong> it or <strong>Delete</strong> it.
+          A full structured editor for a guide's contents is still to come.
         </p>
       </>
     ),
