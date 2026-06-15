@@ -325,6 +325,12 @@ guide is a tabbed, step-by-step recipe: per-tab **value maps**, numbered
 **Thinning Reference**. Each guide carries its own theme, so it looks the same
 as the standalone HTML version.
 
+- **New guide** (button, top-right of the Guides page) creates a guide from
+  scratch, and **Edit** (button, top-right of an open guide) changes its title,
+  subtitle, scale, franchise, technique tags, creator credit, paint lines and
+  other header details. Editing the metadata leaves the guide's content spine
+  (tabs, steps, swatches) untouched; a structured editor for that content is
+  coming next.
 - **Import guide** (button, top-right of the Guides page) uploads a guide HTML
   file. It lands as a **draft** for review — never auto-published — and shows an
   **import report**: how many swatch paints matched your Paint Shelf, which were

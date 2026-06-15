@@ -388,6 +388,33 @@ export interface Guide {
   published_at: string | null;
 }
 
+// Editor input shapes (#329). Mirror backend GuideCreate/GuideUpdate. The full
+// `tabs` spine (TabIn) is omitted here — the metadata editor never sends it, so
+// the content spine is left untouched (replace-subtree only fires when present).
+export type GuideScale = "1:6" | "1:12" | "75mm" | "28mm" | "bust" | "other";
+export type GuideStatus = "draft" | "in_review" | "published" | "archived";
+
+export interface GuideCreateInput {
+  slug: string;
+  title: string;
+  title_lead?: string | null;
+  subtitle?: string | null;
+  category_label?: string | null;
+  model_id?: number | null;
+  scale?: GuideScale | null;
+  status?: GuideStatus;
+  franchise?: string | null;
+  quote?: string | null;
+  creator_credit?: CreatorCredit | null;
+  light_source?: string | null;
+  philosophy_note?: string | null;
+  paint_lines_used?: PaintPill[];
+  technique_tags?: string[];
+}
+
+// All-optional partial update; same fields as create plus `status`.
+export type GuideUpdateInput = Partial<GuideCreateInput>;
+
 export interface GuideListItem {
   id: number;
   slug: string;
@@ -767,7 +794,17 @@ export const api = {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ html, slug }),
         }),
-      update: (id: number, patch: Partial<{ status: string }>) =>
+      // Create a new guide (#329). Backend GuideCreate requires slug+title;
+      // everything else (incl. the `tabs` spine) is optional.
+      create: (body: GuideCreateInput) =>
+        request<Guide>("/painting/guides", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        }),
+      // Partial update (#258/#329). Omitted scalar/JSON fields are unchanged;
+      // sending `tabs` REPLACES the whole tab subtree (omit to leave it alone).
+      update: (id: number, patch: GuideUpdateInput) =>
         request<Guide>(`/painting/guides/${id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },

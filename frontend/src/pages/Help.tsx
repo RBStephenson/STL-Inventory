@@ -418,7 +418,14 @@ const SECTIONS: Section[] = [
           and any unmapped content. Add the missing paints and re-import, or delete
           the draft, if the report flags gaps. From an open guide you can{" "}
           <strong>Publish / Unpublish</strong> it or <strong>Delete</strong> it.
-          A full structured editor for a guide's contents is still to come.
+        </p>
+        <p>
+          <strong>New guide</strong> (top of the Guides page) creates a guide from
+          scratch, and <strong>Edit</strong> (on an open guide) changes its title,
+          subtitle, scale, franchise, technique tags, creator credit and other
+          details. Editing the metadata leaves the guide's content spine
+          untouched. A structured editor for the tabs/steps/swatches themselves is
+          coming next.
         </p>
       </>
     ),
