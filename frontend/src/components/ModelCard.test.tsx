@@ -82,6 +82,34 @@ describe("ModelCard painting-guide badge (#263)", () => {
   });
 });
 
+describe("api.fileUrl content versioning (#185)", () => {
+  it("omits the version param when none is given", () => {
+    expect(api.fileUrl("/data/thumbnails/7.png")).toBe(
+      "/api/files/image?path=%2Fdata%2Fthumbnails%2F7.png"
+    );
+  });
+
+  it("appends an encoded v= when a version is given", () => {
+    expect(api.fileUrl("/data/thumbnails/7.png", "2026-06-15T00:00:00")).toBe(
+      "/api/files/image?path=%2Fdata%2Fthumbnails%2F7.png&v=2026-06-15T00%3A00%3A00"
+    );
+  });
+});
+
+describe("ModelCard thumbnail cache-busting (#185)", () => {
+  it("versions the thumbnail URL with the model's updated_at", () => {
+    renderCard({
+      thumbnail_path: "/data/thumbnails/7.png",
+      updated_at: "2026-06-15T12:00:00",
+    } as any);
+    const img = screen.getByRole("img");
+    expect(img).toHaveAttribute(
+      "src",
+      "/api/files/image?path=%2Fdata%2Fthumbnails%2F7.png&v=2026-06-15T12%3A00%3A00"
+    );
+  });
+});
+
 describe("ModelCard print-status cycle (#166)", () => {
   beforeEach(() => { vi.clearAllMocks(); });
 

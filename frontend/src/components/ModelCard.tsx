@@ -150,7 +150,7 @@ export default function ModelCard({ model, selected = false, onSelect, backTo, o
   };
 
   const thumbnail = model.thumbnail_path
-    ? api.fileUrl(model.thumbnail_path)
+    ? api.fileUrl(model.thumbnail_path, model.updated_at)
     : model.thumbnail_url ?? null;
 
   const displayName = isGroup && model.character

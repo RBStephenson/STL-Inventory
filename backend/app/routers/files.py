@@ -96,7 +96,7 @@ def _is_safe_path(p: Path) -> bool:
 
 
 @router.get("/image")
-def serve_image(path: str):
+def serve_image(path: str, v: str | None = None):
     p = Path(path)
     if p.suffix.lower() not in ALLOWED_IMAGE_EXTENSIONS:
         raise HTTPException(status_code=400, detail="Not an image file")
@@ -106,9 +106,17 @@ def serve_image(path: str):
         raise HTTPException(status_code=404, detail="File not found")
     # Captured/downloaded thumbnails are rewritten in place at a fixed path
     # (thumbnails/{model_id}.png), so the URL never changes when the bytes do.
-    # no-cache forces revalidation; FileResponse's ETag/Last-Modified keep
-    # unchanged images as cheap 304s.
-    return FileResponse(p, headers={"Cache-Control": "no-cache"})
+    # Callers that pass an opaque content version (`v`, e.g. the model's
+    # updated_at) get an immutable long-cache response: the URL changes whenever
+    # the content does, so the browser can serve repeat loads from cache without
+    # revalidating — this is what makes variant-group / Library re-renders instant
+    # on slow external drives (#185). Without `v` we keep no-cache + ETag/304 for
+    # raw drive images served by the picker, where no version signal exists.
+    if v:
+        cache_control = "public, max-age=31536000, immutable"
+    else:
+        cache_control = "no-cache"
+    return FileResponse(p, headers={"Cache-Control": cache_control})
 
 
 @router.get("/stl")
