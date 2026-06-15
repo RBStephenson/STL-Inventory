@@ -940,7 +940,12 @@ export const api = {
       }));
     },
   },
-  fileUrl: (path: string) => `/api/files/image?path=${encodeURIComponent(path)}`,
+  // `version` (e.g. a model's updated_at) makes the URL change when the image
+  // content changes, letting the backend serve it as an immutable long-cache
+  // response so repeat loads are instant (#185).
+  fileUrl: (path: string, version?: string | null) =>
+    `/api/files/image?path=${encodeURIComponent(path)}` +
+    (version ? `&v=${encodeURIComponent(version)}` : ""),
   stlUrl: (path: string) => `/api/files/stl?path=${encodeURIComponent(path)}`,
   downloadZip: async (fileIds: number[], zipName: string) => {
     const res = await fetch(`${BASE}/files/download-zip`, {

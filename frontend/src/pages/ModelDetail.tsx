@@ -257,8 +257,8 @@ export default function ModelDetail() {
       if (e.key === "Escape") { setLightboxOpen(false); return; }
       if (!activeImage) return;
       const allImgs = [
-        model?.thumbnail_path ? api.fileUrl(model.thumbnail_path) : model?.thumbnail_url,
-        ...(model?.image_paths ?? []).map(api.fileUrl),
+        model?.thumbnail_path ? api.fileUrl(model.thumbnail_path, model.updated_at) : model?.thumbnail_url,
+        ...(model?.image_paths ?? []).map((p) => api.fileUrl(p)),
       ].filter(Boolean) as string[];
       const idx = allImgs.indexOf(activeImage);
       if (e.key === "ArrowLeft" && idx > 0) setActiveImage(allImgs[idx - 1]);
@@ -509,7 +509,7 @@ export default function ModelDetail() {
       setModel(m);
       setVariantVersion((v) => v + 1);
       const thumb = m.thumbnail_path
-        ? api.fileUrl(m.thumbnail_path)
+        ? api.fileUrl(m.thumbnail_path, m.updated_at)
         : m.thumbnail_url ?? null;
       setActiveImage(thumb);
       setLoading(false);
@@ -596,8 +596,8 @@ export default function ModelDetail() {
   if (!model) return <div className="p-8 text-gray-500">Model not found.</div>;
 
   const allImages = [
-    model.thumbnail_path ? api.fileUrl(model.thumbnail_path) : model.thumbnail_url,
-    ...model.image_paths.map(api.fileUrl),
+    model.thumbnail_path ? api.fileUrl(model.thumbnail_path, model.updated_at) : model.thumbnail_url,
+    ...model.image_paths.map((p) => api.fileUrl(p)),
   ].filter(Boolean) as string[];
 
   const hasSTLs = model.stl_files.some((f) =>
@@ -949,7 +949,7 @@ export default function ModelDetail() {
               <div className="flex gap-2 overflow-x-auto pb-1">
                 {variants.map((v) => {
                   const vThumb = v.thumbnail_path
-                    ? api.fileUrl(v.thumbnail_path)
+                    ? api.fileUrl(v.thumbnail_path, v.updated_at)
                     : v.thumbnail_url ?? null;
                   const isCurrent = v.id === model.id;
                   // For the current variant, reflect live local toggles rather

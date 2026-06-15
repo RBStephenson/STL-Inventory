@@ -93,6 +93,35 @@ class TestServeStl:
 
 
 # ---------------------------------------------------------------------------
+# /files/image — cache headers (#185)
+# ---------------------------------------------------------------------------
+
+class TestServeImageCaching:
+    def _write_png(self, tmp_path):
+        img = tmp_path / "thumb.png"
+        img.write_bytes(b"\x89PNG\r\n\x1a\n")
+        return img
+
+    def test_unversioned_request_is_no_cache(self, client, tmp_path, monkeypatch):
+        import app.routers.files as files_module
+        monkeypatch.setattr(files_module, "_is_safe_path", lambda p: True)
+        img = self._write_png(tmp_path)
+
+        resp = client.get("/files/image", params={"path": str(img)})
+        assert resp.status_code == 200
+        assert resp.headers["cache-control"] == "no-cache"
+
+    def test_versioned_request_is_immutable(self, client, tmp_path, monkeypatch):
+        import app.routers.files as files_module
+        monkeypatch.setattr(files_module, "_is_safe_path", lambda p: True)
+        img = self._write_png(tmp_path)
+
+        resp = client.get("/files/image", params={"path": str(img), "v": "2026-06-15T00:00:00"})
+        assert resp.status_code == 200
+        assert resp.headers["cache-control"] == "public, max-age=31536000, immutable"
+
+
+# ---------------------------------------------------------------------------
 # /files/download-zip
 # ---------------------------------------------------------------------------
 
