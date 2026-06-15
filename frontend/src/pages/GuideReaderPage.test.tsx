@@ -19,7 +19,7 @@ const GUIDE = vi.hoisted(() => ({
   philosophy_note: null, paint_lines_used: [], technique_tags: [], character_brief: null,
   theme: null, head_style: null, thinning_config: null,
   tabs: [{ id: 1, name: "Metals", dom_id: null, sort_order: 0, has_expert_subtab: false,
-    section: null, value_map: null, subtabs: [], method_block: null, phases: [] }],
+    section: null, value_map: null, subtabs: [], callouts: [], method_block: null, phases: [] }],
   created_at: null, updated_at: null, published_at: null,
 }));
 

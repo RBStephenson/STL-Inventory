@@ -378,10 +378,34 @@ def _parse_method_block(content: Tag) -> Optional[dict]:
     return block
 
 
+# Direct .tab-content children that are tab-level prose, mapped to a callout
+# kind. A bare <p> (intro paragraph) is handled separately by tag name.
+_CALLOUT_KIND = {"tip": "tip", "warning": "warning", "warn": "warning"}
+
+
+def _parse_callouts(content: Tag) -> list[dict]:
+    """Tab-level prose nodes directly under .tab-content, in document order:
+    intro <p> (kind 'text') + .tip/.warning/.warn callouts (#271). Nodes nested
+    inside a step or sub-content are not direct children, so they are excluded."""
+    out: list[dict] = []
+    for child in content.find_all(recursive=False):
+        classes = set(_classes(child))
+        kind = next((k for cls, k in _CALLOUT_KIND.items() if cls in classes), None)
+        if kind is not None:
+            out.append({"kind": kind, "html": _inner_html(child)})
+        elif child.name == "p" and not classes:
+            out.append({"kind": "text", "html": _inner_html(child)})
+    return out
+
+
 def _parse_tab(content: Tag, name: str, resolve: PaintResolver,
                report: ImportReport) -> dict:
     dom_id = content.get("id")
     tab: dict = {"name": name, "dom_id": dom_id, "phases": []}
+
+    callouts = _parse_callouts(content)
+    if callouts:
+        tab["callouts"] = callouts
 
     header = content.select_one(".section-header")
     if header is not None:
@@ -431,15 +455,20 @@ def _subtab_key(st: Tag, dom_id: Optional[str]) -> str:
 
 
 # Direct-child classes the tab walker handles; anything else is a coverage gap.
+# tip/warning/warn are captured as tab-level callouts (#271).
 _KNOWN_TAB_CHILD = {
     "section-header", "phase-label", "value-map", "method-rec-block",
     "method-cards", "freckle-note", "sub-tabs", "sub-content", "step",
+    "tip", "warning", "warn",
 }
 
 
 def _record_unmapped(content: Tag, report: ImportReport, dom_id: Optional[str]) -> None:
     for child in content.find_all(recursive=False):
         classes = set(_classes(child))
+        # Bare <p> intro paragraphs are captured as 'text' callouts (#271).
+        if child.name == "p" and not classes:
+            continue
         if classes.isdisjoint(_KNOWN_TAB_CHILD):
             label = child.name + (f".{'.'.join(sorted(classes))}" if classes else "")
             report.unmapped_nodes.append(f"#{dom_id} > {label}")

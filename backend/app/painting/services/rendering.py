@@ -310,11 +310,26 @@ def _render_method_block(buf: _Buf, method: dict | None) -> None:
         buf.add(f'<div class="freckle-note">{_html(method["freckle_note"])}</div>')
 
 
+def _render_callouts(buf: _Buf, callouts, kinds: tuple[str, ...]) -> None:
+    """Tab-level callouts (#271). Intro 'text' nodes emit a <p>; 'tip'/'warning'
+    emit the matching callout div. Filtered by `kinds` so intros render above the
+    content and tip/warning render below it, each in document order."""
+    for c in callouts or []:
+        kind = c.get("kind")
+        if kind not in kinds:
+            continue
+        if kind == "text":
+            buf.add(f"<p>{_html(c.get('html', ''))}</p>")
+        else:
+            buf.add(f'<div class="{kind}">{_html(c.get("html", ""))}</div>')
+
+
 def _render_tab(buf: _Buf, tab, paints: dict[int, PaintInfo], active: bool) -> None:
     dom_id = _tab_dom_id(tab)
     cls = "tab-content active" if active else "tab-content"
     buf.add(f'<div class="{cls}" id="{_attr(dom_id)}">')
     _render_section_header(buf, tab.section)
+    _render_callouts(buf, tab.callouts, ("text",))
     _render_value_map(buf, tab.value_map)
     _render_method_block(buf, tab.method_block)
 
@@ -344,6 +359,7 @@ def _render_tab(buf: _Buf, tab, paints: dict[int, PaintInfo], active: bool) -> N
     else:
         direct = [p for p in tab.phases if not p.subtab_key]
         _render_phases(buf, direct, paints)
+    _render_callouts(buf, tab.callouts, ("tip", "warning"))
     buf.add("</div>")
 
 

@@ -116,6 +116,20 @@ class TestTabsAndContent:
         assert '<div class="chip-val">~25%</div>' in html
         assert '<div class="chip-label">Deep Shadow</div>' in html
 
+    def test_tab_callouts_placed_around_content(self, client, paint):
+        # Intro 'text' renders as a <p> after the section header (above the
+        # value map); tip/warning render at the tab's end (#271).
+        html = _export(client, paint["id"]).text
+        intro = "<p>Skin is the <em>largest</em> exposed area — invest here.</p>"
+        tip = '<div class="tip"><strong>✦ TIP:</strong> Photograph and desaturate to check value.</div>'
+        warning = '<div class="warning"><strong>⚠ NOTE:</strong> Thin glazes, never flood recesses.</div>'
+        assert intro in html
+        assert tip in html
+        assert warning in html
+        # intro sits above the value map; tip/warning below the steps
+        assert html.index(intro) < html.index('<div class="phase-label">Value Structure</div>')
+        assert html.index(tip) > html.index('id="skin-expert"')
+
     def test_method_block(self, client, paint):
         html = _export(client, paint["id"]).text
         assert '<div class="phase-label">Method Selection</div>' in html
