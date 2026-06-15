@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import {
   HardDrive, Plus, Trash2, AlertCircle, CheckCircle, FolderSearch,
-  Database, Download, Upload, ShieldAlert, Paintbrush, SlidersHorizontal,
+  Database, Download, Upload, ShieldAlert, Paintbrush, SlidersHorizontal, RefreshCw,
 } from "lucide-react";
 import { api, ScanRoot } from "../api/client";
 import { useAppSettings } from "../context/AppSettingsContext";
@@ -70,11 +70,29 @@ export default function Settings() {
     else { setError(msg); setTimeout(() => setError(null), 4000); }
   };
 
+  const [reloadingEnv, setReloadingEnv] = useState(false);
+
   const load = () => {
     api.scan.roots()
       .then(setRoots)
       .catch(() => flash("Could not load drive list", "err"))
       .finally(() => setLoading(false));
+  };
+
+  const reloadEnv = async () => {
+    setReloadingEnv(true);
+    try {
+      const res = await api.settings.reloadEnv();
+      load();
+      const restart = res.restart_required.length
+        ? ` (${res.restart_required.join(", ")} still need a restart)`
+        : "";
+      flash(`Settings reloaded — ${res.scan_roots.length} scan root(s) from .env${restart}`, "ok");
+    } catch (e: any) {
+      flash(e?.message || "Could not reload settings", "err");
+    } finally {
+      setReloadingEnv(false);
+    }
   };
 
   useEffect(() => { load(); }, []);
@@ -297,6 +315,22 @@ export default function Settings() {
             })}
           </div>
         )}
+
+        {/* Re-read scan roots / drive mappings from .env without a restart (#140) */}
+        <div className="flex items-center gap-3 mt-4">
+          <button
+            onClick={reloadEnv}
+            disabled={reloadingEnv}
+            title="Re-read scan roots and drive mappings from the .env file"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 text-sm disabled:opacity-50 transition-colors"
+          >
+            <RefreshCw size={14} className={reloadingEnv ? "animate-spin" : ""} />
+            Reload .env settings
+          </button>
+          <span className="text-xs text-gray-600">
+            Applies changes to scan roots and drive paths. Database location still needs a restart.
+          </span>
+        </div>
       </section>
 
       {/* Add new root */}

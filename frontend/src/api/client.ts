@@ -141,6 +141,13 @@ export interface AppSettings {
 
 export type LibrarySort = "name" | "added" | "creator" | "rating";
 
+export interface EnvReloadResult {
+  ok: boolean;
+  scan_roots: string[];
+  drive_mappings: Record<string, string>;
+  restart_required: string[];
+}
+
 // --- Painting module (Paint Shelf, M1) ---
 
 export const PAINT_FINISHES = [
@@ -734,6 +741,9 @@ export const api = {
       request<AppSettings>(`/settings/filter-presets?name=${encodeURIComponent(name)}`, {
         method: "DELETE",
       }),
+    // Re-read the .env / environment config without a full restart (#140).
+    reloadEnv: () =>
+      request<EnvReloadResult>("/settings/reload", { method: "POST" }),
   },
   painting: {
     brands: {

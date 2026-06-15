@@ -30,8 +30,26 @@ class Settings(BaseSettings):
             return self.stl_drive_2.rstrip("/\\") + suffix
         return docker_path
 
+    def reload(self) -> None:
+        """Re-read configuration from the environment / .env file in place (#140).
+
+        Modules import the shared ``settings`` object by reference, so we mutate
+        the existing instance rather than rebinding it: a fresh ``Settings()``
+        re-reads the sources, then its field values are copied over. Only values
+        read dynamically (e.g. ``stl_roots`` on the next scan / file-serve) take
+        effect live; ``database_url`` is bound once at engine creation and still
+        needs a restart — see RESTART_REQUIRED_KEYS.
+        """
+        fresh = Settings()
+        for name in type(self).model_fields:
+            setattr(self, name, getattr(fresh, name))
+
     class Config:
         env_file = ".env"
 
+
+# Env-level settings that are consumed once at startup and can't be applied by a
+# live reload — surfaced to the user so they know a restart is still required.
+RESTART_REQUIRED_KEYS = ["database_url"]
 
 settings = Settings()

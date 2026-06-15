@@ -214,6 +214,15 @@ class DownloadZipRequest(BaseModel):
         from_attributes = True
 
 
+class EnvReloadResult(BaseModel):
+    """Outcome of re-reading the .env / environment config (#140). Carries only
+    the live-effective values that are safe to show — never secrets."""
+    ok: bool = True
+    scan_roots: list[str] = []
+    drive_mappings: dict[str, str] = {}
+    restart_required: list[str] = []
+
+
 class FilterPreset(BaseModel):
     """A saved Library filter: a display name plus the filter querystring."""
     name: str
