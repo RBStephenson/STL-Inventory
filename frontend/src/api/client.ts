@@ -114,6 +114,17 @@ export interface ScanRoot {
   last_scanned: string | null;
 }
 
+export interface DriveStatusRoot {
+  path: string;
+  enabled: boolean;
+  available: boolean;
+}
+
+export interface DriveStatus {
+  roots: DriveStatusRoot[];
+  all_available: boolean;
+}
+
 export interface FilterPreset {
   name: string;
   qs: string;
@@ -598,6 +609,7 @@ export const api = {
       request<{ ok: boolean }>(`/files/open-folder?path=${encodeURIComponent(path)}`, {
         method: "POST",
       }),
+    driveStatus: () => request<DriveStatus>("/files/drive-status"),
   },
   scrape: {
     fetchUrl: (url: string) =>

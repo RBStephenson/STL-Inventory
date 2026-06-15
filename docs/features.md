@@ -357,6 +357,11 @@ At **/settings** you manage your **scan roots** — the top-level folder paths t
 app reads from. Add or remove paths, and see when each was last scanned. This is
 also where standalone users point the app at their drives for the first time.
 
+If a configured folder can't be found when the Library loads — typically an
+external drive that's unmounted or disconnected — a warning banner appears at the
+top of the Library listing the affected paths, so an empty library reads as
+"drive unavailable" rather than "everything is gone".
+
 It's also home to **Data Management** (see below).
 
 ## Backup, restore & reset

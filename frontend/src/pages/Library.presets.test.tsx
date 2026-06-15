@@ -31,6 +31,7 @@ vi.mock("../api/client", () => ({
     },
     collections: { list: vi.fn().mockResolvedValue([]) },
     scan: { roots: vi.fn().mockResolvedValue([]) },
+    files: { driveStatus: vi.fn().mockResolvedValue({ roots: [], all_available: true }) },
     painting: { guides: { modelIds: vi.fn().mockResolvedValue({ model_ids: [] }) } },
   },
 }));
