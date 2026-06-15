@@ -84,3 +84,54 @@ describe("Library search debounce (#220)", () => {
     expect(listMock).toHaveBeenCalledWith(expect.objectContaining({ q: "abc" }));
   });
 });
+
+describe("Library search clear button (#355)", () => {
+  beforeEach(() => {
+    listMock.mockClear();
+    // The debounce test above persists its query to sessionStorage; clear it so
+    // the restore-on-mount effect doesn't repopulate the search box here.
+    sessionStorage.clear();
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.runOnlyPendingTimers();
+    vi.useRealTimers();
+  });
+
+  it("is hidden until there is text, then clears the query immediately on click", async () => {
+    renderLibrary();
+    await flush();
+    listMock.mockClear();
+
+    const input = screen.getByPlaceholderText(/search models/i) as HTMLInputElement;
+
+    // No text yet → no clear button.
+    expect(screen.queryByLabelText(/clear search/i)).toBeNull();
+
+    act(() => {
+      fireEvent.change(input, { target: { value: "akuma" } });
+    });
+    expect(input.value).toBe("akuma");
+
+    // Button now present.
+    const clearBtn = screen.getByLabelText(/clear search/i);
+
+    // Clicking clears the input without waiting for the debounce…
+    act(() => {
+      fireEvent.click(clearBtn);
+    });
+    expect(input.value).toBe("");
+    // …and the button disappears again.
+    expect(screen.queryByLabelText(/clear search/i)).toBeNull();
+
+    // The cleared query is fetched (no lingering `q`), and a late debounce timer
+    // from the typed value must not resurrect it.
+    await act(async () => {
+      vi.advanceTimersByTime(300);
+      await Promise.resolve();
+    });
+    const calls = listMock.mock.calls;
+    const lastCall = calls[calls.length - 1]?.[0] ?? {};
+    expect(lastCall.q ?? "").toBe("");
+  });
+});

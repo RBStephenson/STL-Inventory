@@ -210,6 +210,20 @@ export default function Library() {
     }, 250);
   };
 
+  // Clear the search immediately — skip the debounce so the results update at
+  // once — then return focus to the input for the next query (#355).
+  const clearSearch = () => {
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+    setSearchInput("");
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.delete("q");
+      next.delete("page");
+      return next;
+    }, { replace: true });
+    searchInputRef.current?.focus();
+  };
+
   const setPage = (p: number) => {
     window.scrollTo({ top: 0, behavior: "smooth" });
     setSearchParams((prev) => {
@@ -703,8 +717,18 @@ export default function Library() {
             placeholder="Search models…  (press / )"
             value={searchInput}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full bg-gray-900 border border-gray-700 rounded pl-9 pr-3 py-2 text-sm text-gray-100 placeholder-gray-600 focus:outline-none focus:border-indigo-500"
+            className="w-full bg-gray-900 border border-gray-700 rounded pl-9 pr-9 py-2 text-sm text-gray-100 placeholder-gray-600 focus:outline-none focus:border-indigo-500"
           />
+          {searchInput && (
+            <button
+              type="button"
+              onClick={clearSearch}
+              aria-label="Clear search"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-200 transition-colors"
+            >
+              <X size={16} />
+            </button>
+          )}
         </div>
 
         {/* Active filter chips */}
