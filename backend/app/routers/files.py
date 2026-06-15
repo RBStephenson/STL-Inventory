@@ -26,6 +26,20 @@ ALLOWED_STL_EXTENSIONS = {".stl", ".3mf", ".obj"}
 _roots_cache: tuple[float, list[Path]] | None = None
 _ROOTS_TTL = 5.0
 
+# Cache image-picker results per model. The picker walks the whole character
+# boundary on every open, which is slow on external drives; reopening the same
+# picker (or switching between sibling variants that share a boundary) is the
+# common case. Short TTL keeps it fresh enough that a just-added image shows up
+# on the next open without a manual reload. In-memory and per-process only.
+_model_images_cache: dict[int, tuple[float, list[dict]]] = {}
+_MODEL_IMAGES_TTL = 30.0
+_MODEL_IMAGES_MAX = 128
+
+
+def _clear_model_images_cache() -> None:
+    """Drop all cached image-picker results (used by tests and after writes)."""
+    _model_images_cache.clear()
+
 
 # Directories the file server is allowed to read from
 def _allowed_roots() -> list[Path]:
@@ -288,6 +302,11 @@ def list_model_images(model_id: int):
     from app.database import SessionLocal
     from app.models import Model as ModelDB
 
+    now = time.monotonic()
+    cached = _model_images_cache.get(model_id)
+    if cached is not None and now - cached[0] < _MODEL_IMAGES_TTL:
+        return cached[1]
+
     db = SessionLocal()
     try:
         model = db.query(ModelDB).filter(ModelDB.id == model_id).first()
@@ -343,6 +362,47 @@ def list_model_images(model_id: int):
                                        "url": f"/api/files/image?path={_url_quote(str(entry), safe='')}"})
 
         _collect(boundary)
+
+        # Bound the cache: evict the oldest entry once it's full (cheap LRU).
+        if len(_model_images_cache) >= _MODEL_IMAGES_MAX:
+            oldest = min(_model_images_cache, key=lambda k: _model_images_cache[k][0])
+            _model_images_cache.pop(oldest, None)
+        _model_images_cache[model_id] = (time.monotonic(), images)
         return images
     finally:
         db.close()
+
+
+@router.get("/drive-status")
+def drive_status():
+    """Report availability of each configured scan root.
+
+    External drives can be unmounted or disconnected, in which case scans and
+    file serving silently return nothing. This lets the UI surface a clear
+    "drive unavailable" warning instead of an empty library.
+    """
+    from app.database import SessionLocal
+    from app.models import ScanRoot
+
+    db = SessionLocal()
+    try:
+        rows = db.query(ScanRoot.path, ScanRoot.enabled).all()
+    finally:
+        db.close()
+
+    roots: list[dict] = []
+    for path, enabled in rows:
+        if not path:
+            continue
+        p = Path(path)
+        available = p.is_dir()
+        roots.append({
+            "path": path,
+            "enabled": bool(enabled),
+            "available": available,
+        })
+
+    return {
+        "roots": roots,
+        "all_available": all(r["available"] for r in roots if r["enabled"]),
+    }

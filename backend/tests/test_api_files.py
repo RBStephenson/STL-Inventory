@@ -307,3 +307,102 @@ class TestBrowseImages:
 
         resp = client.get("/files/browse-images", params={"path": "/etc"})
         assert resp.status_code == 403
+
+
+# ---------------------------------------------------------------------------
+# /files/model-images (caching)
+# ---------------------------------------------------------------------------
+
+class TestModelImagesCache:
+    @pytest.fixture(autouse=True)
+    def _clear_cache(self):
+        import app.routers.files as files_module
+        files_module._clear_model_images_cache()
+        files_module._roots_cache = None
+        yield
+        files_module._clear_model_images_cache()
+        files_module._roots_cache = None
+
+    def _setup_model(self, db, tmp_path):
+        """A scan root → creator → character folder holding the model."""
+        from app.models import ScanRoot
+        db.add(ScanRoot(path=str(tmp_path), enabled=True))
+        char_dir = tmp_path / "Creator" / "Hero"
+        char_dir.mkdir(parents=True)
+        creator = make_creator(db)
+        model = make_model(db, creator)
+        model.folder_path = str(char_dir)
+        db.commit()
+        return model, char_dir
+
+    def test_returns_images_in_boundary(self, client, db, tmp_path):
+        model, char_dir = self._setup_model(db, tmp_path)
+        (char_dir / "render.png").write_bytes(b"PNG")
+
+        resp = client.get(f"/files/model-images/{model.id}")
+        assert resp.status_code == 200
+        assert [i["filename"] for i in resp.json()] == ["render.png"]
+
+    def test_second_open_is_served_from_cache(self, client, db, tmp_path):
+        """A file added after the first call isn't re-walked until the TTL lapses."""
+        model, char_dir = self._setup_model(db, tmp_path)
+        (char_dir / "first.png").write_bytes(b"PNG")
+
+        first = client.get(f"/files/model-images/{model.id}").json()
+        assert [i["filename"] for i in first] == ["first.png"]
+
+        # Add a new image — the cached result should still be returned.
+        (char_dir / "second.png").write_bytes(b"PNG")
+        cached = client.get(f"/files/model-images/{model.id}").json()
+        assert [i["filename"] for i in cached] == ["first.png"]
+
+    def test_cache_clear_forces_rewalk(self, client, db, tmp_path):
+        import app.routers.files as files_module
+        model, char_dir = self._setup_model(db, tmp_path)
+        (char_dir / "first.png").write_bytes(b"PNG")
+
+        client.get(f"/files/model-images/{model.id}")
+        (char_dir / "second.png").write_bytes(b"PNG")
+        files_module._clear_model_images_cache()
+
+        fresh = client.get(f"/files/model-images/{model.id}").json()
+        assert {i["filename"] for i in fresh} == {"first.png", "second.png"}
+
+    def test_unknown_model_returns_404(self, client, db):
+        resp = client.get("/files/model-images/99999")
+        assert resp.status_code == 404
+
+
+# ---------------------------------------------------------------------------
+# /files/drive-status
+# ---------------------------------------------------------------------------
+
+class TestDriveStatus:
+    def test_reports_available_root(self, client, db, tmp_path):
+        from app.models import ScanRoot
+        db.add(ScanRoot(path=str(tmp_path), enabled=True))
+        db.commit()
+
+        data = client.get("/files/drive-status").json()
+        assert data["all_available"] is True
+        entry = next(r for r in data["roots"] if r["path"] == str(tmp_path))
+        assert entry == {"path": str(tmp_path), "enabled": True, "available": True}
+
+    def test_reports_unavailable_root(self, client, db, tmp_path):
+        from app.models import ScanRoot
+        missing = tmp_path / "unmounted_drive"
+        db.add(ScanRoot(path=str(missing), enabled=True))
+        db.commit()
+
+        data = client.get("/files/drive-status").json()
+        assert data["all_available"] is False
+        entry = next(r for r in data["roots"] if r["path"] == str(missing))
+        assert entry["available"] is False
+
+    def test_disabled_unavailable_root_does_not_fail_all(self, client, db, tmp_path):
+        from app.models import ScanRoot
+        db.add(ScanRoot(path=str(tmp_path / "gone"), enabled=False))
+        db.commit()
+
+        data = client.get("/files/drive-status").json()
+        assert data["all_available"] is True

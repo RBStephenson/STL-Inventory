@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, useNavigate, useLocation, Link } from "react-router-dom";
-import { Search, SlidersHorizontal, AlertCircle, Tag, X, Bookmark, BookmarkPlus, Star, Printer, FolderPlus, ArrowRight, EyeOff, Package, GripVertical, Layers, Sparkles, Keyboard } from "lucide-react";
+import { Search, SlidersHorizontal, AlertCircle, AlertTriangle, Tag, X, Bookmark, BookmarkPlus, Star, Printer, FolderPlus, ArrowRight, EyeOff, Package, GripVertical, Layers, Sparkles, Keyboard } from "lucide-react";
 import {
   DndContext, DragOverlay, PointerSensor, useSensor, useSensors,
   useDraggable, useDroppable, pointerWithin,
@@ -260,6 +260,8 @@ export default function Library() {
   // null = unknown/loading; number = how many scan folders are configured
   const [scanRootCount, setScanRootCount] = useState<number | null>(null);
   const [collections, setCollections] = useState<Collection[]>([]);
+  // Configured roots that are currently unavailable (unmounted/disconnected drive).
+  const [unavailableRoots, setUnavailableRoots] = useState<string[]>([]);
   // Model ids that have a painting guide → "Guide" badge (#263). Only fetched
   // when the painting module is enabled.
   const [guideModelIds, setGuideModelIds] = useState<Set<number>>(new Set());
@@ -302,6 +304,11 @@ export default function Library() {
 
   useEffect(() => { fetchModels(); }, [fetchModels]);
   useEffect(() => { api.scan.roots().then((r) => setScanRootCount(r.length)).catch(() => setScanRootCount(null)); }, []);
+  useEffect(() => {
+    api.files.driveStatus()
+      .then((s) => setUnavailableRoots(s.roots.filter((r) => r.enabled && !r.available).map((r) => r.path)))
+      .catch(() => setUnavailableRoots([]));
+  }, []);
   useEffect(() => { api.models.creators().then(setCreators).catch(() => {}); }, []);
   const refreshStats = useCallback(() => { api.models.stats().then(setStats).catch(() => {}); }, []);
   useEffect(() => { refreshStats(); }, [refreshStats]);
@@ -514,6 +521,29 @@ export default function Library() {
 
   return (
     <div className="p-6">
+      {/* A configured drive is unavailable (unmounted/disconnected) — #304 */}
+      {unavailableRoots.length > 0 && (
+        <div className="mb-6 rounded-xl border border-amber-700/60 bg-amber-950/40 p-4" role="alert">
+          <div className="flex items-start gap-3">
+            <div className="rounded-lg bg-amber-600/20 p-2 text-amber-300 shrink-0">
+              <AlertTriangle size={20} />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-sm font-semibold text-amber-100">
+                {unavailableRoots.length === 1 ? "A scan folder is unavailable" : "Some scan folders are unavailable"}
+              </h2>
+              <p className="text-sm text-amber-200/80 mt-1">
+                These folders couldn't be found — the drive may be disconnected or unmounted.
+                Models stored there won't load until it's reconnected.
+              </p>
+              <ul className="mt-2 space-y-0.5 text-xs font-mono text-amber-200/70">
+                {unavailableRoots.map((p) => <li key={p}>{p}</li>)}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* First-run onboarding: no scan folders configured yet */}
       {scanRootCount === 0 && (
         <div className="mb-6 rounded-xl border border-indigo-700/60 bg-indigo-950/40 p-5">
