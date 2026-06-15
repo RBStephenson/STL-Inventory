@@ -13,6 +13,7 @@ import Help from "./pages/Help";
 import TagsPage from "./pages/TagsPage";
 import GuidesPage from "./pages/GuidesPage";
 import GuideReaderPage from "./pages/GuideReaderPage";
+import GuideEditorPage from "./pages/GuideEditorPage";
 import PaintShelfPage from "./pages/PaintShelfPage";
 import BackToTop from "./components/BackToTop";
 
@@ -33,7 +34,9 @@ export default function App() {
           <Route path="/settings" element={<Settings />} />
           <Route path="/tags" element={<TagsPage />} />
           <Route path="/painting/guides" element={<GuidesPage />} />
+          <Route path="/painting/guides/new" element={<GuideEditorPage />} />
           <Route path="/painting/guides/:id" element={<GuideReaderPage />} />
+          <Route path="/painting/guides/:id/edit" element={<GuideEditorPage />} />
           <Route path="/painting/shelf" element={<PaintShelfPage />} />
           <Route path="/help" element={<Help />} />
         </Routes>

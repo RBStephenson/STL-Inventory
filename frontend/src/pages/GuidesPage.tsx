@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Paintbrush, Upload } from "lucide-react";
+import { Paintbrush, Plus, Upload } from "lucide-react";
 import { api, GuideListItem } from "../api/client";
 import ImportGuideModal from "../components/guide/ImportGuideModal";
 
@@ -29,13 +29,22 @@ export default function GuidesPage() {
           <Paintbrush size={22} className="text-indigo-400" />
           Painting Guides
         </h1>
-        <button
-          onClick={() => setImporting(true)}
-          title="Import a guide from an HTML file — it lands as a draft for review"
-          className="inline-flex items-center gap-1.5 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-200 text-sm px-3 py-1.5 rounded transition-colors"
-        >
-          <Upload size={15} /> Import guide
-        </button>
+        <div className="flex items-center gap-2">
+          <Link
+            to="/painting/guides/new"
+            title="Create a new guide from scratch"
+            className="inline-flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm px-3 py-1.5 rounded transition-colors"
+          >
+            <Plus size={15} /> New guide
+          </Link>
+          <button
+            onClick={() => setImporting(true)}
+            title="Import a guide from an HTML file — it lands as a draft for review"
+            className="inline-flex items-center gap-1.5 bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-200 text-sm px-3 py-1.5 rounded transition-colors"
+          >
+            <Upload size={15} /> Import guide
+          </button>
+        </div>
       </div>
       <p className="text-sm text-gray-500 mb-8">
         Step-by-step painting guides for your models.
