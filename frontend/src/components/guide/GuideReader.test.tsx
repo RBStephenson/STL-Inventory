@@ -37,6 +37,10 @@ const GUIDE: Guide = {
         { hex: "#101010", value_pct: 10, zone_label: "deep shadow" },
       ] },
       subtabs: [], method_block: null,
+      callouts: [
+        { kind: "text", html: "Intro <em>note</em> for metals." },
+        { kind: "tip", html: "<strong>✦ TIP:</strong> buff lightly." },
+      ],
       phases: [
         {
           id: 11, label: "Base", subtab_key: null, sort_order: 0,
@@ -53,7 +57,7 @@ const GUIDE: Guide = {
     },
     {
       id: 2, name: "Skin", dom_id: "skin", sort_order: 1, has_expert_subtab: true,
-      section: null, value_map: null, method_block: null,
+      section: null, value_map: null, method_block: null, callouts: [],
       subtabs: [
         { key: "pa", label: "Pro Acryl", css_class: null, sort_order: 0 },
         { key: "ex", label: "Expert", css_class: "expert-tab", sort_order: 1 },
@@ -118,6 +122,17 @@ describe("GuideReader", () => {
     // value map chip
     expect(within(metals).getByText("deep shadow")).toBeInTheDocument();
     expect(within(metals).getByText("~10%")).toBeInTheDocument();
+  });
+
+  it("renders tab-level callouts: intro above content, tip below (#271)", () => {
+    const { container } = render(<GuideReader guide={GUIDE} />);
+    const metals = panel(container, "metals");
+    expect(within(metals).getByText(/Intro/)).toBeInTheDocument();
+    expect(within(metals).getByText(/buff lightly/)).toBeInTheDocument();
+    // intro paragraph sits above the value map; tip sits below the steps
+    const html = metals.innerHTML;
+    expect(html.indexOf("Intro")).toBeLessThan(html.indexOf("Value Zones"));
+    expect(html.indexOf("buff lightly")).toBeGreaterThan(html.indexOf("Step 1"));
   });
 
   it("defaults to the first tab active and switches on click", async () => {

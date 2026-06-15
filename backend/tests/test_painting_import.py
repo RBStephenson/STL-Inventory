@@ -103,6 +103,15 @@ class TestRoundTrip:
         )["steps"][0]
         assert step["warning"] == "<strong>⚠ NOTE:</strong> Never thin primer."
 
+    def test_tab_callouts_survive(self, client, paint):
+        # Tab-level intro <p> + tip/warning round-trip (#271): captured in
+        # document order, regrouped text-above / tip-warning-below by the exporter.
+        _, result = self._round_trip(client, paint)
+        callouts = result["guide"]["tabs"][0]["callouts"]
+        assert [c["kind"] for c in callouts] == ["text", "tip", "warning"]
+        assert "<em>largest</em>" in callouts[0]["html"]
+        assert callouts[1]["html"].startswith("<strong>✦ TIP:</strong>")
+
 
 class TestUnlabeledPhase:
     """A run of steps with no .phase-label divider is a legitimate unlabeled
@@ -289,6 +298,46 @@ class TestMixExpansion:
 
 
 # ---------------------------------------------------------------------------
+# tab-level callouts (#271): captured, not reported as coverage gaps
+# ---------------------------------------------------------------------------
+
+class TestTabCallouts:
+    HTML = """
+    <div class="tabs">
+      <div class="tab-btn" onclick="showTab('skin', this)">Skin</div>
+    </div>
+    <div class="tab-content" id="skin">
+      <div class="section-header"><h2>Skin</h2><p>nested intro</p></div>
+      <p>Intro <em>paragraph</em> for the tab.</p>
+      <div class="step"><h3>Base</h3><p>do the thing</p></div>
+      <div class="tip"><strong>✦ TIP:</strong> work both eyes.</div>
+      <div class="warn">old-style warn.</div>
+      <div class="warning">⚠ careful.</div>
+    </div>
+    """
+
+    def _parse(self):
+        return import_guide_html(self.HTML, slug="t", resolve_paint=lambda n, b: None)
+
+    def test_callouts_captured_in_order(self):
+        draft, _ = self._parse()
+        callouts = draft["tabs"][0]["callouts"]
+        assert [c["kind"] for c in callouts] == ["text", "tip", "warning", "warning"]
+        assert callouts[0]["html"] == "Intro <em>paragraph</em> for the tab."
+        assert callouts[1]["html"].startswith("<strong>✦ TIP:</strong>")
+
+    def test_callouts_not_reported_unmapped(self):
+        _, report = self._parse()
+        assert report.unmapped_nodes == []
+
+    def test_section_header_p_not_captured_as_callout(self):
+        # the <p> inside .section-header is the section intro, not a tab callout
+        draft, _ = self._parse()
+        htmls = [c["html"] for c in draft["tabs"][0]["callouts"]]
+        assert "nested intro" not in htmls
+
+
+# ---------------------------------------------------------------------------
 # real corpus parse + import report (schema-coverage / inventory gap lists)
 # ---------------------------------------------------------------------------
 
@@ -322,3 +371,19 @@ class TestRealCorpus:
         assert len(report.unresolved_paints) > 0
         # unmapped_nodes is the schema-coverage to-do list (may be non-empty)
         assert isinstance(report.unmapped_nodes, list)
+
+
+@pytest.mark.skipif(not CORPUS.exists(), reason="corpus fixture not present")
+def test_tab_level_callouts_gone_from_corpus_unmapped():
+    """#271 step 1: across all 40 corpus guides, tab-level tip/warning/warn and
+    stray intro <p> are now captured, so they no longer appear in any guide's
+    unmapped_nodes (the remaining gaps are wargaming furniture)."""
+    closed = (" > div.tip", " > div.warning", " > div.warn", " > p")
+    leftover = []
+    for path in CORPUS.rglob("*.html"):
+        _, report = import_guide_html(
+            path.read_text(encoding="utf-8"), slug=path.stem,
+            resolve_paint=lambda n, b: None,
+        )
+        leftover += [n for n in report.unmapped_nodes if n.endswith(closed)]
+    assert leftover == []

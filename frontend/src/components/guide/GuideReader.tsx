@@ -1,6 +1,7 @@
 import { useState, CSSProperties } from "react";
 import {
   Guide, GuideTab, GuidePhase, GuideStep, GuideSwatch, GuideTheme, MethodBlock,
+  TabCallout,
 } from "../../api/client";
 import ThinningReference from "./ThinningReference";
 import { AirbrushSkills, BrushSkills } from "./SkillsTabs";
@@ -88,6 +89,25 @@ function StepCard({ step, number }: { step: GuideStep; number: number }) {
   );
 }
 
+// Tab-level callouts (#271): intro 'text' nodes render a <p>; 'tip'/'warning'
+// render the matching callout div. `kinds` filters so intros sit above the
+// content and tip/warning below it, mirroring the static exporter.
+function Callouts({ callouts, kinds }: { callouts: TabCallout[]; kinds: TabCallout["kind"][] }) {
+  return (
+    <>
+      {callouts
+        .filter((c) => kinds.includes(c.kind))
+        .map((c, i) =>
+          c.kind === "text" ? (
+            <p key={i} dangerouslySetInnerHTML={{ __html: c.html }} />
+          ) : (
+            <div key={i} className={c.kind} dangerouslySetInnerHTML={{ __html: c.html }} />
+          ),
+        )}
+    </>
+  );
+}
+
 // A run of phases (one tab or sub-content); steps numbered continuously 1..N.
 function Phases({ phases }: { phases: GuidePhase[] }) {
   let number = 0;
@@ -160,6 +180,7 @@ function TabPanel({
   onSelectSub: (key: string) => void;
 }) {
   const subtabs = tab.subtabs ?? [];
+  const callouts = tab.callouts ?? [];
   return (
     <>
       {tab.section && (
@@ -168,6 +189,7 @@ function TabPanel({
           {tab.section.intro && <p dangerouslySetInnerHTML={{ __html: tab.section.intro }} />}
         </div>
       )}
+      <Callouts callouts={callouts} kinds={["text"]} />
       <ValueMapBlock valueMap={tab.value_map} />
       {tab.method_block && <MethodBlockView method={tab.method_block} />}
 
@@ -197,6 +219,7 @@ function TabPanel({
       ) : (
         <Phases phases={tab.phases.filter((p) => !p.subtab_key)} />
       )}
+      <Callouts callouts={callouts} kinds={["tip", "warning"]} />
     </>
   );
 }

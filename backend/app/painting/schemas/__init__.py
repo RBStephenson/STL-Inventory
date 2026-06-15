@@ -227,6 +227,16 @@ class SubTabDef(BaseModel):
     model_config = {"extra": "forbid"}
 
 
+class TabCallout(BaseModel):
+    """A tab-level prose node directly under .tab-content (outside any step):
+    an intro paragraph (text) or a tip/warning callout (#271). `html` is inner
+    HTML, preserved verbatim like step tips."""
+    kind: Literal["tip", "warning", "text"]
+    html: str
+
+    model_config = {"extra": "forbid"}
+
+
 class MethodCard(BaseModel):
     title: str
     body: Optional[str] = None
@@ -429,6 +439,7 @@ class TabIn(BaseModel):
     section: Optional[TabSection] = None
     value_map: Optional[ValueMap] = None
     subtabs: list[SubTabDef] = []
+    callouts: list[TabCallout] = []
     method_block: Optional[MethodBlock] = None
     skin_config: Optional[SkinConfig] = None
     metals_config: Optional[MetalsConfig] = None
@@ -446,6 +457,7 @@ class TabRead(BaseModel):
     section: Optional[TabSection] = None
     value_map: Optional[ValueMap] = None
     subtabs: list[SubTabDef] = []
+    callouts: list[TabCallout] = []
     method_block: Optional[MethodBlock] = None
     skin_config: Optional[SkinConfig] = None
     metals_config: Optional[MetalsConfig] = None

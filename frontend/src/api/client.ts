@@ -299,6 +299,11 @@ export interface MethodBlock {
   freckle_note: string | null;
 }
 
+export interface TabCallout {
+  kind: "tip" | "warning" | "text";
+  html: string;
+}
+
 export interface GuideTab {
   id: number;
   name: string;
@@ -308,6 +313,7 @@ export interface GuideTab {
   section: GuideTabSection | null;
   value_map: { label: string | null; chips: ValueChip[] } | null;
   subtabs: SubTabDef[];
+  callouts: TabCallout[];
   method_block: MethodBlock | null;
   phases: GuidePhase[];
 }

@@ -157,6 +157,10 @@ class GuideTab(Base):
     # matching subtab_key renders inside that .sub-content (M2 #268). Always a
     # list (never null) so the read schema's list field validates.
     subtabs = Column(JSON, default=list)
+    # Tab-level prose nodes: intro <p> + tip/warning callouts that sit directly
+    # under .tab-content (outside any step), in document order (#271).
+    # [{kind: "tip"|"warning"|"text", html}] — always a list (read schema needs it).
+    callouts = Column(JSON, default=list)
     method_block = Column(JSON, nullable=True)       # Skin "Method Selection": rec + cards + freckle_note
     skin_config = Column(JSON, nullable=True)        # (legacy, superseded by method_block)
     metals_config = Column(JSON, nullable=True)      # TMM + optional NMM (Metals tab)

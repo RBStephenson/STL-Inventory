@@ -86,6 +86,16 @@ def presto_body(paint_id, **over):
                     {"key": "expert", "label": "✦ Expert Acrylics — Brush Only",
                      "css_class": "expert-tab", "sort_order": 1},
                 ],
+                # Tab-level prose (#271): intro <p> renders above the content,
+                # tip/warning below the steps — order matches the exporter's split.
+                "callouts": [
+                    {"kind": "text",
+                     "html": "Skin is the <em>largest</em> exposed area — invest here."},
+                    {"kind": "tip",
+                     "html": "<strong>✦ TIP:</strong> Photograph and desaturate to check value."},
+                    {"kind": "warning",
+                     "html": "<strong>⚠ NOTE:</strong> Thin glazes, never flood recesses."},
+                ],
                 "phases": [
                     {
                         "label": "Foundation",
@@ -188,6 +198,24 @@ class TestTabStructure:
         assert mb["cards"][1]["badge"] == "★ Recommended"
         assert mb["cards"][0]["pros"] == "Predictable"
         assert mb["freckle_note"].startswith("<strong>Freckling")
+
+    def test_tab_callouts_survive_create(self, client, paint):
+        tab = _create(client, paint["id"])["tabs"][0]
+        kinds = [c["kind"] for c in tab["callouts"]]
+        assert kinds == ["text", "tip", "warning"]
+        assert "<em>largest</em>" in tab["callouts"][0]["html"]
+
+    def test_tab_callouts_default_empty(self, client, paint):
+        body = presto_body(paint["id"])
+        del body["tabs"][0]["callouts"]
+        tab = client.post("/painting/guides", json=body).json()["tabs"][0]
+        assert tab["callouts"] == []
+
+    def test_callout_rejects_unknown_kind(self, client, paint):
+        body = presto_body(paint["id"])
+        body["tabs"][0]["callouts"] = [{"kind": "note", "html": "x"}]
+        r = client.post("/painting/guides", json=body)
+        assert r.status_code == 422
 
 
 class TestStepAndPhaseGrouping:
