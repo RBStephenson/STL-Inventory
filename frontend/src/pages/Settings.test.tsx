@@ -26,6 +26,12 @@ vi.mock("../api/client", () => ({
         filter_presets: [],
         recent_days: 7,
       }),
+      reloadEnv: vi.fn().mockResolvedValue({
+        ok: true,
+        scan_roots: ["/srv/a", "/srv/b"],
+        drive_mappings: {},
+        restart_required: ["database_url"],
+      }),
     },
   },
 }));
@@ -165,6 +171,31 @@ describe("Settings – Painting Guides toggle (#180)", () => {
 
     expect(await screen.findByText("DB locked")).toBeInTheDocument();
     expect(checkbox).not.toBeChecked();
+  });
+});
+
+describe("Settings – Reload .env (#140)", () => {
+  beforeEach(() => { vi.clearAllMocks(); });
+
+  it("POSTs the reload and flashes the result with the restart note", async () => {
+    const { api } = await import("../api/client");
+    render(<Settings />);
+
+    await userEvent.click(await screen.findByRole("button", { name: /reload \.env settings/i }));
+
+    expect(api.settings.reloadEnv).toHaveBeenCalled();
+    expect(await screen.findByText(/2 scan root\(s\) from \.env/i)).toBeInTheDocument();
+    expect(screen.getByText(/database_url still need a restart/i)).toBeInTheDocument();
+  });
+
+  it("surfaces the backend error when reload fails", async () => {
+    const { api } = await import("../api/client");
+    vi.mocked(api.settings.reloadEnv).mockRejectedValueOnce(new Error("boom"));
+    render(<Settings />);
+
+    await userEvent.click(await screen.findByRole("button", { name: /reload \.env settings/i }));
+
+    expect(await screen.findByText("boom")).toBeInTheDocument();
   });
 });
 

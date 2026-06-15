@@ -186,3 +186,45 @@ def test_upsert_preset_coexists_with_patch_list(client):
     client.put("/settings/filter-presets", json={"name": "New", "qs": "q=new"})
     names = [p["name"] for p in client.get("/settings").json()["filter_presets"]]
     assert names == ["Seed", "New"]
+
+
+# --- .env reload (#140) ---
+
+import pytest
+from app.config import settings as live_settings
+
+
+@pytest.fixture
+def restore_settings():
+    """Reloading mutates the shared settings singleton; snapshot/restore it so a
+    reload test can't leak env-config state into later tests."""
+    snapshot = {n: getattr(live_settings, n) for n in type(live_settings).model_fields}
+    yield
+    for name, value in snapshot.items():
+        setattr(live_settings, name, value)
+
+
+def test_reload_reports_scan_roots_and_restart_keys(client, restore_settings):
+    r = client.post("/settings/reload")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["ok"] is True
+    # database_url is bound once at startup — flagged as needing a restart.
+    assert "database_url" in body["restart_required"]
+    assert set(body.keys()) == {"ok", "scan_roots", "drive_mappings", "restart_required"}
+
+
+def test_reload_picks_up_changed_env(client, monkeypatch, restore_settings):
+    monkeypatch.setenv("STL_ROOTS", "/srv/a,/srv/b")
+    r = client.post("/settings/reload")
+    assert r.status_code == 200
+    assert r.json()["scan_roots"] == ["/srv/a", "/srv/b"]
+    # The live singleton was updated in place, so other modules see it too.
+    assert live_settings.stl_root_list == ["/srv/a", "/srv/b"]
+
+
+def test_reload_never_exposes_secrets(client, monkeypatch, restore_settings):
+    monkeypatch.setenv("MMF_API_KEY", "super-secret-token")
+    r = client.post("/settings/reload")
+    assert "super-secret-token" not in r.text
+    assert "mmf_api_key" not in r.json()
