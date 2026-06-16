@@ -231,6 +231,13 @@ class FilterPreset(BaseModel):
     model_config = {"extra": "forbid"}
 
 
+class ScanTagRule(BaseModel):
+    """A user keyword→tag inference rule (#31). When a folder/file name contains
+    the whole word `keyword` (case-insensitive), `tag` is added to auto-tags."""
+    keyword: str
+    tag: str
+
+
 class AppSettingsRead(BaseModel):
     """Every known app setting with its default — the single source of truth
     for the store's whitelist (routers/settings.py derives DEFAULTS from it)."""
@@ -244,6 +251,8 @@ class AppSettingsRead(BaseModel):
     # defaults (#31). Matched case-insensitively against a path's basename and
     # its full POSIX path — see services/scan_rules.py.
     scan_ignore_patterns: list[str] = []
+    # User keyword→tag inference rules, merged with built-in detection (#31).
+    scan_tag_rules: list[ScanTagRule] = []
 
 
 class AppSettingsUpdate(BaseModel):
@@ -262,6 +271,8 @@ class AppSettingsUpdate(BaseModel):
     # dropped so an empty editor row can't poison the list.
     scan_ignore_patterns: Optional[list[str]] = Field(None, max_length=200)
 
+    scan_tag_rules: Optional[list[ScanTagRule]] = Field(None, max_length=500)
+
     @field_validator("scan_ignore_patterns")
     @classmethod
     def _clean_patterns(cls, v: Optional[list[str]]) -> Optional[list[str]]:
@@ -277,6 +288,27 @@ class AppSettingsUpdate(BaseModel):
             if p not in seen:
                 seen.add(p)
                 out.append(p)
+        return out
+
+    @field_validator("scan_tag_rules")
+    @classmethod
+    def _clean_tag_rules(cls, v: Optional[list[ScanTagRule]]) -> Optional[list[ScanTagRule]]:
+        if v is None:
+            return None
+        seen: set[tuple[str, str]] = set()
+        out: list[ScanTagRule] = []
+        for rule in v:
+            keyword = rule.keyword.strip()
+            tag = rule.tag.strip()
+            if not keyword or not tag:
+                continue  # blank rows dropped, never a 422
+            if len(keyword) > 100 or len(tag) > 100:
+                raise ValueError("tag rule keyword/tag must be 100 characters or fewer")
+            key = (keyword.lower(), tag.lower())
+            if key in seen:
+                continue
+            seen.add(key)
+            out.append(ScanTagRule(keyword=keyword, tag=tag))
         return out
 
     model_config = {"extra": "forbid"}

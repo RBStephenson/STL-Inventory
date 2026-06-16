@@ -213,7 +213,8 @@ describe("Settings – Scan ignore patterns (#31)", () => {
 
     await screen.findByText("WIP");
     await userEvent.type(screen.getByPlaceholderText(/_archive/i), "_archive");
-    await userEvent.click(screen.getByRole("button", { name: /^add$/i }));
+    // First "Add" is the ignore-pattern one (a second exists for tag rules).
+    await userEvent.click(screen.getAllByRole("button", { name: /^add$/i })[0]);
 
     expect(api.settings.update).toHaveBeenCalledWith({
       scan_ignore_patterns: ["WIP", "_archive"],
@@ -229,7 +230,7 @@ describe("Settings – Scan ignore patterns (#31)", () => {
 
     await screen.findByText("WIP");
     await userEvent.type(screen.getByPlaceholderText(/_archive/i), "WIP");
-    await userEvent.click(screen.getByRole("button", { name: /^add$/i }));
+    await userEvent.click(screen.getAllByRole("button", { name: /^add$/i })[0]);
 
     expect(api.settings.update).not.toHaveBeenCalled();
   });
@@ -248,6 +249,44 @@ describe("Settings – Scan ignore patterns (#31)", () => {
     await userEvent.click(await screen.findByRole("button", { name: /remove WIP/i }));
 
     expect(api.settings.update).toHaveBeenCalledWith({ scan_ignore_patterns: ["_archive"] });
+  });
+});
+
+describe("Settings – Scan tag rules (#31)", () => {
+  beforeEach(() => { vi.clearAllMocks(); });
+
+  it("adds a keyword→tag rule, appending to the list", async () => {
+    const { api } = await import("../api/client");
+    vi.mocked(api.settings.get).mockResolvedValue(mkSettings({ scan_tag_rules: [] }));
+    vi.mocked(api.settings.update).mockResolvedValue(
+      mkSettings({ scan_tag_rules: [{ keyword: "Aztec", tag: "civ" }] })
+    );
+
+    render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
+
+    await userEvent.type(await screen.findByPlaceholderText(/keyword/i), "Aztec");
+    await userEvent.type(screen.getByPlaceholderText(/tag \(/i), "civ");
+    // Two "Add" buttons on the page (ignore patterns + tag rules); the tag-rule
+    // one is the second.
+    await userEvent.click(screen.getAllByRole("button", { name: /^add$/i })[1]);
+
+    expect(api.settings.update).toHaveBeenCalledWith({
+      scan_tag_rules: [{ keyword: "Aztec", tag: "civ" }],
+    });
+  });
+
+  it("removes a tag rule via its trash button", async () => {
+    const { api } = await import("../api/client");
+    vi.mocked(api.settings.get).mockResolvedValue(
+      mkSettings({ scan_tag_rules: [{ keyword: "Aztec", tag: "civ" }] })
+    );
+    vi.mocked(api.settings.update).mockResolvedValue(mkSettings({ scan_tag_rules: [] }));
+
+    render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
+
+    await userEvent.click(await screen.findByRole("button", { name: /remove Aztec to civ/i }));
+
+    expect(api.settings.update).toHaveBeenCalledWith({ scan_tag_rules: [] });
   });
 });
 

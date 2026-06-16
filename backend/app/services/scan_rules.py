@@ -20,6 +20,7 @@ consults the compiled matcher per folder, never the DB.
 from __future__ import annotations
 
 import fnmatch
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -28,6 +29,7 @@ from sqlalchemy.orm import Session
 from app.models import AppSetting
 
 IGNORE_PATTERNS_KEY = "scan_ignore_patterns"
+TAG_RULES_KEY = "scan_tag_rules"
 
 # Built-in ignore patterns, merged with the user's. Empty today (the scanner has
 # always walked everything), but the hook makes the merge semantics explicit and
@@ -82,3 +84,49 @@ def load_ignore_matcher(db: Session) -> IgnoreMatcher:
     row = db.query(AppSetting).filter(AppSetting.key == IGNORE_PATTERNS_KEY).one_or_none()
     user = _normalise(row.value) if row is not None else ()
     return IgnoreMatcher(_normalise(_DEFAULT_IGNORE_PATTERNS + user))
+
+
+# ---------------------------------------------------------------------------
+# Tag-inference rules (#31, Phase 2)
+# ---------------------------------------------------------------------------
+# A user rule is {"keyword": <literal>, "tag": <auto-tag>}: when a folder/file
+# name contains the whole word `keyword` (case-insensitive), `tag` is added to
+# the model's auto-tags. These ADD to the built-in _TYPES/_MODIFIERS detection
+# in name_parser — they never replace it — and deliberately do NOT feed
+# character extraction / variant grouping, so a new tag rule can't reshape how
+# products group (only what they're tagged).
+
+
+@dataclass(frozen=True)
+class CompiledTagRule:
+    pattern: re.Pattern
+    tag: str
+
+
+def load_tag_rules(db: Session) -> tuple[CompiledTagRule, ...]:
+    """Compile the stored ``scan_tag_rules`` into (whole-word pattern, tag) pairs.
+
+    The keyword is regex-escaped, so a user can never inject an invalid or
+    catastrophic pattern. De-duplicated on (keyword, tag); blanks dropped.
+    Called once per scan run.
+    """
+    row = db.query(AppSetting).filter(AppSetting.key == TAG_RULES_KEY).one_or_none()
+    raw = row.value if (row is not None and isinstance(row.value, list)) else []
+    seen: set[tuple[str, str]] = set()
+    out: list[CompiledTagRule] = []
+    for item in raw:
+        if not isinstance(item, dict):
+            continue
+        keyword = str(item.get("keyword", "")).strip()
+        tag = str(item.get("tag", "")).strip().lower()
+        key = (keyword.lower(), tag)
+        if not keyword or not tag or key in seen:
+            continue
+        seen.add(key)
+        # (?<!\w)…(?!\w) instead of \b…\b: a plain word-boundary fails when the
+        # keyword starts/ends with a non-word char (e.g. "c++"), where \b can't
+        # sit next to "+". The lookarounds assert no adjacent word char either way.
+        out.append(CompiledTagRule(
+            re.compile(rf"(?<!\w){re.escape(keyword)}(?!\w)", re.I), tag
+        ))
+    return tuple(out)

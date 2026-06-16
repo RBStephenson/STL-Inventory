@@ -5,10 +5,11 @@ grouping — the subsystem that has historically harboured the subtlest bugs.
 Each test lays out a fake library under tmp_path, runs the real walk, and
 asserts what got indexed (and how it grouped).
 """
+import re
 from pathlib import Path
 
 from app.models import Creator, Model, STLFile
-from app.services import scanner
+from app.services import scanner, name_parser
 from app.services.scan_rules import IgnoreMatcher
 from tests.conftest import make_creator
 
@@ -177,6 +178,38 @@ class TestIgnorePatterns:
 
         assert removed == 0
         assert any("WIP" in m.folder_path for m in _models(db, creator))
+
+
+# ---------------------------------------------------------------------------
+# Configurable tag-inference rules (#31, Phase 2)
+# ---------------------------------------------------------------------------
+
+class TestTagRules:
+    def test_user_rule_adds_auto_tag(self, db, tmp_path):
+        """A keyword→tag rule tags a model whose name contains the whole word."""
+        creator_dir = tmp_path / "Creator"
+        _stl(creator_dir / "Aztec Warrior" / "STL")
+        creator = make_creator(db, "Creator")
+
+        name_parser.set_tag_rules([(re.compile(r"\bAztec\b", re.I), "civ")])
+        try:
+            _walk(db, creator, creator_dir)
+        finally:
+            name_parser.set_tag_rules(None)
+
+        m = next(m for m in _models(db, creator) if "Aztec" in m.folder_path)
+        assert "civ" in (m.auto_tags or [])
+
+    def test_no_rules_leaves_auto_tags_unchanged(self, db, tmp_path):
+        name_parser.set_tag_rules(None)
+        creator_dir = tmp_path / "Creator"
+        _stl(creator_dir / "Aztec Warrior" / "STL")
+        creator = make_creator(db, "Creator")
+
+        _walk(db, creator, creator_dir)
+
+        m = next(m for m in _models(db, creator) if "Aztec" in m.folder_path)
+        assert "civ" not in (m.auto_tags or [])
 
 
 # ---------------------------------------------------------------------------

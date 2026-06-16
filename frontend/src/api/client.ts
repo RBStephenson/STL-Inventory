@@ -138,6 +138,12 @@ export interface AppSettings {
   recent_days: number;
   library_sort: LibrarySort;
   scan_ignore_patterns: string[];
+  scan_tag_rules: ScanTagRule[];
+}
+
+export interface ScanTagRule {
+  keyword: string;
+  tag: string;
 }
 
 export type LibrarySort = "name" | "added" | "creator" | "rating";

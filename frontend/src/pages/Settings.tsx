@@ -72,8 +72,10 @@ export default function Settings() {
 
   const [reloadingEnv, setReloadingEnv] = useState(false);
 
-  // Scan rules — ignore patterns (#31)
+  // Scan rules — ignore patterns + tag-inference rules (#31)
   const [newPattern, setNewPattern] = useState("");
+  const [newKeyword, setNewKeyword] = useState("");
+  const [newTag, setNewTag] = useState("");
 
   const load = () => {
     api.scan.roots()
@@ -257,6 +259,36 @@ export default function Settings() {
       });
     } catch (e: any) {
       flash(e?.message || "Could not remove ignore pattern", "err");
+    }
+  };
+
+  const addTagRule = async () => {
+    const keyword = newKeyword.trim();
+    const tag = newTag.trim();
+    if (!keyword || !tag) return;
+    const current = appSettings.scan_tag_rules;
+    if (current.some((r) => r.keyword.toLowerCase() === keyword.toLowerCase()
+                         && r.tag.toLowerCase() === tag.toLowerCase())) {
+      setNewKeyword(""); setNewTag("");
+      return;
+    }
+    try {
+      await updateAppSettings({ scan_tag_rules: [...current, { keyword, tag }] });
+      setNewKeyword(""); setNewTag("");
+    } catch (e: any) {
+      flash(e?.message || "Could not add tag rule", "err");
+    }
+  };
+
+  const removeTagRule = async (keyword: string, tag: string) => {
+    try {
+      await updateAppSettings({
+        scan_tag_rules: appSettings.scan_tag_rules.filter(
+          (r) => !(r.keyword === keyword && r.tag === tag)
+        ),
+      });
+    } catch (e: any) {
+      flash(e?.message || "Could not remove tag rule", "err");
     }
   };
 
@@ -568,6 +600,63 @@ export default function Settings() {
             <button
               onClick={addIgnorePattern}
               disabled={!newPattern.trim()}
+              className="flex items-center gap-1 px-3 py-1.5 text-sm rounded bg-indigo-600 text-white hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              <Plus size={14} /> Add
+            </button>
+          </div>
+        </div>
+
+        <p className="text-xs text-gray-600 mt-6 mb-4">
+          <strong className="text-gray-500">Tag rules</strong> add an auto-tag to any model whose
+          name contains a keyword — e.g. keyword <code className="text-gray-500">Aztec</code> →
+          tag <code className="text-gray-500">civ</code>. These add to the built-in tag detection and
+          apply on the next full scan; they don't affect how variants group.
+        </p>
+        <div className="flex flex-col gap-2 self-start" data-testid="tag-rules">
+          {appSettings.scan_tag_rules.length === 0 && (
+            <p className="text-xs text-gray-600 italic">No tag rules yet.</p>
+          )}
+          {appSettings.scan_tag_rules.map((r) => (
+            <div
+              key={`${r.keyword} ${r.tag}`}
+              className="flex items-center justify-between gap-3 bg-gray-900 border border-gray-800 rounded-lg px-4 py-2 self-start min-w-[18rem]"
+            >
+              <span className="text-sm text-gray-200">
+                <code>{r.keyword}</code>
+                <span className="text-gray-600 mx-2">&rarr;</span>
+                <code className="text-indigo-300">{r.tag}</code>
+              </span>
+              <button
+                onClick={() => removeTagRule(r.keyword, r.tag)}
+                aria-label={`Remove ${r.keyword} to ${r.tag}`}
+                className="text-gray-500 hover:text-red-400 transition-colors"
+              >
+                <Trash2 size={14} />
+              </button>
+            </div>
+          ))}
+          <div className="flex items-center gap-2 mt-1">
+            <input
+              type="text"
+              value={newKeyword}
+              onChange={(e) => setNewKeyword(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addTagRule(); } }}
+              placeholder="keyword (e.g. Aztec)"
+              className="bg-gray-900 border border-gray-700 rounded px-3 py-1.5 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-indigo-500 w-44"
+            />
+            <span className="text-gray-600">&rarr;</span>
+            <input
+              type="text"
+              value={newTag}
+              onChange={(e) => setNewTag(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addTagRule(); } }}
+              placeholder="tag (e.g. civ)"
+              className="bg-gray-900 border border-gray-700 rounded px-3 py-1.5 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-indigo-500 w-44"
+            />
+            <button
+              onClick={addTagRule}
+              disabled={!newKeyword.trim() || !newTag.trim()}
               className="flex items-center gap-1 px-3 py-1.5 text-sm rounded bg-indigo-600 text-white hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               <Plus size={14} /> Add

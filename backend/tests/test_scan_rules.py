@@ -8,9 +8,9 @@ from pathlib import Path
 import pytest
 
 from app.models import AppSetting
-from app.schemas import AppSettingsUpdate
+from app.schemas import AppSettingsUpdate, ScanTagRule
 from app.services import scan_rules
-from app.services.scan_rules import IgnoreMatcher, load_ignore_matcher
+from app.services.scan_rules import IgnoreMatcher, load_ignore_matcher, load_tag_rules
 
 
 class TestIgnoreMatcher:
@@ -73,3 +73,51 @@ class TestUpdateValidator:
     def test_rejects_overlong_pattern(self):
         with pytest.raises(ValueError):
             AppSettingsUpdate(scan_ignore_patterns=["x" * 201])
+
+
+class TestLoadTagRules:
+    def test_no_row_yields_empty(self, db):
+        assert load_tag_rules(db) == ()
+
+    def test_compiles_whole_word_case_insensitive(self, db):
+        db.add(AppSetting(key=scan_rules.TAG_RULES_KEY,
+                          value=[{"keyword": "Aztec", "tag": "Civ"}]))
+        db.commit()
+        rules = load_tag_rules(db)
+        assert len(rules) == 1
+        assert rules[0].tag == "civ"  # lower-cased to match built-in tag casing
+        assert rules[0].pattern.search("Lost Aztec Temple")
+        assert not rules[0].pattern.search("Aztecan")  # whole word only
+
+    def test_keyword_is_regex_escaped(self, db):
+        db.add(AppSetting(key=scan_rules.TAG_RULES_KEY,
+                          value=[{"keyword": "c++", "tag": "code"}]))
+        db.commit()
+        rules = load_tag_rules(db)
+        # ".+" would match anything if not escaped; "c++" must match literally
+        assert rules[0].pattern.search("my c++ thing")
+        assert not rules[0].pattern.search("aaaa")
+
+    def test_drops_blank_and_dedupes(self, db):
+        db.add(AppSetting(key=scan_rules.TAG_RULES_KEY, value=[
+            {"keyword": "Aztec", "tag": "civ"},
+            {"keyword": "aztec", "tag": "civ"},   # dup (case-insensitive)
+            {"keyword": "", "tag": "x"},          # blank keyword
+            {"keyword": "y", "tag": ""},          # blank tag
+        ]))
+        db.commit()
+        assert len(load_tag_rules(db)) == 1
+
+
+class TestUpdateValidatorTagRules:
+    def test_drops_blank_rows_and_dedupes(self):
+        body = AppSettingsUpdate(scan_tag_rules=[
+            ScanTagRule(keyword=" Aztec ", tag=" Civ "),
+            ScanTagRule(keyword="aztec", tag="civ"),  # dup after strip/lower
+            ScanTagRule(keyword="", tag="x"),
+        ])
+        assert body.scan_tag_rules == [ScanTagRule(keyword="Aztec", tag="Civ")]
+
+    def test_rejects_overlong(self):
+        with pytest.raises(ValueError):
+            AppSettingsUpdate(scan_tag_rules=[ScanTagRule(keyword="x" * 101, tag="t")])

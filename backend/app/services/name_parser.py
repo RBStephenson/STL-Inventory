@@ -77,6 +77,20 @@ _TYPES: list[tuple[re.Pattern, str]] = [
     (re.compile(r"\bsupport[-\s]?free\b",           re.I), "support-free"),
 ]
 
+# User-configured tag-inference rules (#31, Phase 2): extra (pattern, tag) pairs
+# loaded from app_settings and merged into type detection at scan time. Module
+# global, set once per scan run by the scanner (mirrors its override loading);
+# default empty so non-scan callers see only the built-in rules. These ADD tags
+# only — they do not feed _strip_signal_tokens / character_key, so a tag rule
+# never changes how products group.
+_user_type_rules: tuple[tuple[re.Pattern, str], ...] = ()
+
+
+def set_tag_rules(rules: list[tuple[re.Pattern, str]] | None) -> None:
+    """Replace the active user tag-inference rules. Pass None/empty to clear."""
+    global _user_type_rules
+    _user_type_rules = tuple(rules or ())
+
 # ---------------------------------------------------------------------------
 # Modifier keywords
 # ---------------------------------------------------------------------------
@@ -401,6 +415,11 @@ def _parse_text(text: str) -> NameSignals:
         sig.types.append("statue")
 
     for pattern, tag in _TYPES:
+        if pattern.search(text) and tag not in sig.types:
+            sig.types.append(tag)
+
+    # User tag-inference rules (#31) — additive, after the built-ins.
+    for pattern, tag in _user_type_rules:
         if pattern.search(text) and tag not in sig.types:
             sig.types.append(tag)
 
