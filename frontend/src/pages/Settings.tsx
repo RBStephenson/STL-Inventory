@@ -588,6 +588,7 @@ export default function Settings() {
       <section className="mt-12 pt-8 border-t border-gray-800">
         <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
           <FolderSearch size={14} /> Scan Rules
+          <HelpLink section="scan-rules" label="About scan rules" />
         </h2>
         <p className="text-xs text-gray-600 mb-4">
           Folders matching an <strong className="text-gray-500">ignore pattern</strong> (and everything

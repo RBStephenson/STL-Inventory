@@ -371,7 +371,27 @@ external drive that's unmounted or disconnected — a warning banner appears at 
 top of the Library listing the affected paths, so an empty library reads as
 "drive unavailable" rather than "everything is gone".
 
-It's also home to **Data Management** (see below).
+It's also home to **Scan Rules** and **Data Management** (see below).
+
+## Scan rules
+
+Under **Settings → Scan Rules** you can tune how the scanner reads your folders.
+Each list *adds* to the built-in behaviour — you extend the defaults, you can't
+break them. All three take effect on the next scan.
+
+- **Ignore patterns** — folders matching a pattern (and everything inside them)
+  are skipped. Matching is case-insensitive against a folder's name (`WIP`) or its
+  full path (`*/_archive/*`). Adding a pattern also drops any already-indexed
+  models it now covers on the next scan.
+- **Tag rules** — a keyword→tag pair adds an auto-tag to any model whose name
+  contains the whole keyword (e.g. `Aztec` → `civ`). They supplement the built-in
+  tag detection and do **not** change how variants group.
+- **Parts folder names** — exact folder names (e.g. `Sprues`, `Magnets`) treated
+  as parts/structure: never indexed as their own model and never used to group
+  variants, alongside the built-ins (Parts, Base, Supports…).
+
+A safety cap protects against an over-broad ignore pattern: if a single scan
+would remove more than half your models, the cleanup is skipped and logged.
 
 ## Backup, restore & reset
 

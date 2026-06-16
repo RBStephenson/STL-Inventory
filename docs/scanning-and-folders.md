@@ -121,6 +121,16 @@ These appear as **auto-tags** on the model and feed the Library's tag filter.
 Auto-tags are kept separate from tags you add yourself, and a rescan refreshes
 them — so as detection improves, your tags improve too.
 
+## Scan rules
+
+The built-in detection above can be extended under **Settings → Scan Rules**.
+Every rule list *adds* to the defaults (it never replaces them) and applies on the
+next scan. See [Scan rules](features.md#scan-rules) for the full description:
+
+- **Ignore patterns** — skip folders by name (`WIP`) or path glob (`*/_archive/*`).
+- **Tag rules** — add an auto-tag when a name contains a keyword (`Aztec` → `civ`).
+- **Parts folder names** — extra exact folder names treated as parts/structure.
+
 ## needs_review
 
 When the scanner finds a folder it isn't confident about — no name signals and no

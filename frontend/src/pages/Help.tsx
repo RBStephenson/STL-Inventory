@@ -454,6 +454,46 @@ const SECTIONS: Section[] = [
     ),
   },
   {
+    id: "scan-rules",
+    title: "Scan rules",
+    icon: FolderSearch,
+    body: (
+      <>
+        <p>
+          Under <strong>Settings → Scan Rules</strong> you can customise how the scanner
+          interprets your folders. Each list <em>adds</em> to the built-in behaviour — you
+          can extend the defaults but never break them. All three apply on the next scan.
+        </p>
+        <ul>
+          <li>
+            <strong>Ignore patterns</strong> — folders matching a pattern (and everything
+            inside) are skipped entirely. Matching is case-insensitive against a folder's
+            name (<code>WIP</code>) or its full path (<code>{"*/_archive/*"}</code>).
+            Adding a pattern also removes any already-indexed models it now covers on the
+            next scan.
+          </li>
+          <li>
+            <strong>Tag rules</strong> — a keyword→tag pair adds an auto-tag to any model
+            whose name contains the whole keyword, e.g. <code>Aztec</code> →{" "}
+            <code>civ</code>. These supplement the built-in tag detection and don't affect
+            how variants group.
+          </li>
+          <li>
+            <strong>Parts folder names</strong> — exact folder names (e.g.{" "}
+            <code>Sprues</code>, <code>Magnets</code>) treated as parts/structure: never
+            indexed as their own model and never used to group variants, alongside the
+            built-ins (Parts, Base, Supports…).
+          </li>
+        </ul>
+        <p className="text-gray-500">
+          A safety cap prevents an over-broad ignore pattern from wiping your library: if a
+          single scan would remove more than half your models, the cleanup is skipped and
+          logged instead.
+        </p>
+      </>
+    ),
+  },
+  {
     id: "settings",
     title: "Settings",
     icon: SettingsIcon,
