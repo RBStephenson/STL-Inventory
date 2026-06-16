@@ -749,3 +749,118 @@ class TestSortByCreator:
         body = resp.json()
         assert body["prev_id"] is None  # first in creator order
         assert body["next_id"] is not None
+
+
+# ---------------------------------------------------------------------------
+# Bulk group assignment (#374) — rename / merge / split / ungroup primitive
+# ---------------------------------------------------------------------------
+
+class TestBatchSetGroup:
+    def _override_for(self, db, model):
+        from app.models import GroupOverride
+        return (
+            db.query(GroupOverride)
+            .filter(GroupOverride.path == model.folder_path)
+            .first()
+        )
+
+    def test_assigns_group_to_many(self, client, db):
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A")
+        b = make_model(db, creator, name="B")
+        commit_all(db)
+
+        resp = client.post(
+            "/models/group/batch-set",
+            json={"model_ids": [a.id, b.id], "character": "Goblin"},
+        )
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["character"] == "Goblin"
+        assert sorted(data["updated"]) == sorted([a.id, b.id])
+        assert data["missing"] == []
+
+        db.refresh(a); db.refresh(b)
+        assert a.character == "Goblin"
+        assert b.character == "Goblin"
+        # Override persisted so the assignment survives a rescan.
+        assert self._override_for(db, a).character == "Goblin"
+
+    def test_merge_groups(self, client, db):
+        """Members of group A reassigned to group B's character."""
+        creator = make_creator(db)
+        a1 = make_model(db, creator, name="A1", character="Akuma")
+        a2 = make_model(db, creator, name="A2", character="Akuma")
+        commit_all(db)
+
+        resp = client.post(
+            "/models/group/batch-set",
+            json={"model_ids": [a1.id, a2.id], "character": "Ryu"},
+        )
+        assert resp.status_code == 200
+        db.refresh(a1); db.refresh(a2)
+        assert a1.character == "Ryu"
+        assert a2.character == "Ryu"
+
+    def test_ungroup_writes_null_override(self, client, db):
+        """character=null is sticky ungroup (NULL override row), not deletion."""
+        creator = make_creator(db)
+        m = make_model(db, creator, name="M", character="Akuma")
+        commit_all(db)
+
+        resp = client.post(
+            "/models/group/batch-set",
+            json={"model_ids": [m.id], "character": None},
+        )
+        assert resp.status_code == 200
+        assert resp.json()["character"] is None
+        db.refresh(m)
+        assert m.character is None
+        ov = self._override_for(db, m)
+        assert ov is not None and ov.character is None
+
+    def test_blank_character_normalized_to_ungroup(self, client, db):
+        creator = make_creator(db)
+        m = make_model(db, creator, name="M", character="Akuma")
+        commit_all(db)
+
+        resp = client.post(
+            "/models/group/batch-set",
+            json={"model_ids": [m.id], "character": "   "},
+        )
+        assert resp.status_code == 200
+        assert resp.json()["character"] is None
+
+    def test_empty_ids_is_400(self, client, db):
+        resp = client.post(
+            "/models/group/batch-set",
+            json={"model_ids": [], "character": "Goblin"},
+        )
+        assert resp.status_code == 400
+
+    def test_missing_ids_reported_others_updated(self, client, db):
+        creator = make_creator(db)
+        m = make_model(db, creator, name="M")
+        commit_all(db)
+
+        resp = client.post(
+            "/models/group/batch-set",
+            json={"model_ids": [m.id, 999999], "character": "Goblin"},
+        )
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["updated"] == [m.id]
+        assert data["missing"] == [999999]
+
+    def test_409_when_scan_running(self, client, db, monkeypatch):
+        from app.services import scanner
+        creator = make_creator(db)
+        m = make_model(db, creator, name="M")
+        commit_all(db)
+
+        monkeypatch.setattr(scanner, "get_status", lambda: {"running": True})
+        resp = client.post(
+            "/models/group/batch-set",
+            json={"model_ids": [m.id], "character": "Goblin"},
+        )
+        assert resp.status_code == 409
