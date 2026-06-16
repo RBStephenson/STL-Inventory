@@ -670,6 +670,15 @@ export const api = {
       request<{ ok: boolean; deleted: boolean }>(`/models/${id}/set-group`, {
         method: "DELETE",
       }),
+    batchSetGroup: (modelIds: number[], character: string | null) =>
+      request<{ ok: boolean; character: string | null; updated: number[]; missing: number[] }>(
+        `/models/group/batch-set`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ model_ids: modelIds, character }),
+        },
+      ),
     updateSTLFile: (fileId: number, body: Record<string, unknown>) =>
       request<{ ok: boolean }>(`/models/stl-files/${fileId}`, {
         method: "PATCH",

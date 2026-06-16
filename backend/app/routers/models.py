@@ -11,7 +11,7 @@ from app.schemas import (
     ModelList, ModelRead, ModelDetail, CreatorRead,
     ModelUpdate, ThumbnailUpdate, ThumbnailFromUrl, FavoriteUpdate, RatingUpdate, QueueReorder,
     PrintStatusUpdate, ExcludeUpdate, STLFileUpdate, BulkTagUpdate,
-    BulkExcludeUpdate, BulkReviewUpdate, SetGroupBody,
+    BulkExcludeUpdate, BulkReviewUpdate, SetGroupBody, BatchSetGroupBody,
 )
 from app.services.thumbnails import ThumbnailDownloadError, download_thumbnail, store_thumbnail
 from app.services.variant_sync import propagate_source_url
@@ -741,6 +741,27 @@ def split_pack(model_id: int, db: Session = Depends(get_db)):
     return result
 
 
+def _normalize_group(character: str | None) -> str | None:
+    """Empty/whitespace target → None (explicit ungroup); else the trimmed name."""
+    return character.strip() if character and character.strip() else None
+
+
+def _apply_group_override(db: Session, model: Model, character: str | None) -> None:
+    """Upsert a GroupOverride for one model and reflect it on the row immediately.
+
+    Shared by the single (set_group) and bulk (batch_set_group) paths. Does NOT
+    commit — the caller owns the transaction so a bulk write is atomic. The upsert
+    is conflict-safe (avoids a TOCTOU race on concurrent writes to the same path)."""
+    stmt = (
+        _sqlite_insert(GroupOverride)
+        .values(path=model.folder_path, character=character)
+        .on_conflict_do_update(index_elements=["path"], set_={"character": character})
+    )
+    db.execute(stmt)
+    model.character = character
+    model.updated_at = utcnow()
+
+
 @router.post("/{model_id}/set-group")
 def set_group(model_id: int, body: SetGroupBody, db: Session = Depends(get_db)):
     """Assign a model to a specific character group (or explicitly ungroup it).
@@ -754,20 +775,42 @@ def set_group(model_id: int, body: SetGroupBody, db: Session = Depends(get_db)):
     if not model:
         raise HTTPException(status_code=404, detail="Model not found")
 
-    character = body.character.strip() if body.character and body.character.strip() else None
-
-    # Atomic upsert — avoids a TOCTOU race if two requests arrive simultaneously.
-    stmt = (
-        _sqlite_insert(GroupOverride)
-        .values(path=model.folder_path, character=character)
-        .on_conflict_do_update(index_elements=["path"], set_={"character": character})
-    )
-    db.execute(stmt)
-
-    model.character = character
-    model.updated_at = utcnow()
+    character = _normalize_group(body.character)
+    _apply_group_override(db, model, character)
     db.commit()
     return {"ok": True, "character": character}
+
+
+@router.post("/group/batch-set")
+def batch_set_group(body: BatchSetGroupBody, db: Session = Depends(get_db)):
+    """Assign many models to one character group (or ungroup them) in a single
+    atomic transaction. Powers group-level rename / merge / split / ungroup.
+
+    `character=null` writes a NULL override — sticky ungroup that survives rescans,
+    mirroring the per-model X button (NOT the heuristic-restoring DELETE path).
+    Unknown ids are skipped and reported rather than failing the whole batch.
+    Returns 409 if a scan is running (it would overwrite character on commit)."""
+    if scanner.get_status()["running"]:
+        raise HTTPException(status_code=409, detail="A scan is running — try again after it completes.")
+
+    if not body.model_ids:
+        raise HTTPException(status_code=400, detail="model_ids must not be empty.")
+
+    character = _normalize_group(body.character)
+    requested = list(dict.fromkeys(body.model_ids))  # de-dupe, preserve order
+    models = db.query(Model).filter(Model.id.in_(requested)).all()
+    found = {m.id for m in models}
+
+    for model in models:
+        _apply_group_override(db, model, character)
+    db.commit()
+
+    return {
+        "ok": True,
+        "character": character,
+        "updated": [m.id for m in models],
+        "missing": [mid for mid in requested if mid not in found],
+    }
 
 
 @router.delete("/{model_id}/set-group")

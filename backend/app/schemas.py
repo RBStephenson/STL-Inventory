@@ -196,6 +196,13 @@ class SetGroupBody(BaseModel):
     character: Optional[str] = None  # None = explicitly ungroup; string = target group name
 
 
+class BatchSetGroupBody(BaseModel):
+    """Assign many models to one group (or ungroup) in a single transaction.
+    Powers group rename / merge / split / ungroup on the VariantGroup page."""
+    model_ids: list[int]
+    character: Optional[str] = None  # None = explicitly ungroup all; string = target group name
+
+
 class ScanRootCreate(BaseModel):
     path: str
     layout: str = "{creator}"
