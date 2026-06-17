@@ -50,6 +50,7 @@ export interface Model {
   nsfw: boolean;
   excluded: boolean;
   is_favorite: boolean;
+  is_group_rep: boolean;
   user_rating: number | null;
   queued_at: string | null;
   printed_at: string | null;
@@ -597,6 +598,12 @@ export const api = {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
+      }),
+    setGroupRep: (id: number, isGroupRep: boolean) =>
+      request<{ ok: boolean; is_group_rep: boolean }>(`/models/${id}/group-rep`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ is_group_rep: isGroupRep }),
       }),
     setNSFW: (id: number, nsfw: boolean) =>
       request<{ ok: boolean }>(`/models/${id}`, {

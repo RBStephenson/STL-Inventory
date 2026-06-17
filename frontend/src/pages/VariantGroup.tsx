@@ -15,18 +15,35 @@ import { useLibraryKeyboard } from "../hooks/useLibraryKeyboard";
 // failure. Reports any models the backend skipped (unknown ids → `missing`).
 type ApplyGroup = (ids: number[], character: string | null) => Promise<boolean>;
 
-function GroupAction({ model, creatorId, applyGroup, onRemoved, onMoved }: {
+function GroupAction({ model, creatorId, applyGroup, onRemoved, onMoved, onRepChanged }: {
   model: Model;
   creatorId: number;
   applyGroup: ApplyGroup;
   onRemoved: (id: number) => void;
   onMoved: (id: number) => void;
+  onRepChanged: () => void;
 }) {
+  const { toast } = useToast();
   const [moving, setMoving] = useState(false);
   const [target, setTarget] = useState("");
   const [saving, setSaving] = useState(false);
+  const [settingRep, setSettingRep] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const makeRep = async () => {
+    if (model.is_group_rep || settingRep) return;
+    setSettingRep(true);
+    try {
+      await api.models.setGroupRep(model.id, true);
+      toast("Group thumbnail updated.", "success");
+      onRepChanged();
+    } catch (e: any) {
+      toast(e?.message || "Couldn't set the group thumbnail — try again.", "error");
+    } finally {
+      setSettingRep(false);
+    }
+  };
 
   const openMove = () => {
     setTarget("");
@@ -93,6 +110,19 @@ function GroupAction({ model, creatorId, applyGroup, onRemoved, onMoved }: {
       >
         <MoveRight size={11} />
         Move to group
+      </button>
+      <button
+        onClick={makeRep}
+        disabled={model.is_group_rep || settingRep}
+        title={model.is_group_rep ? "This is the group's display thumbnail" : "Use as the group's display thumbnail"}
+        aria-label={model.is_group_rep ? "Current group thumbnail" : "Set as group thumbnail"}
+        className={`px-2 py-1 rounded border text-xs transition-colors ${
+          model.is_group_rep
+            ? "bg-indigo-900/50 border-indigo-600 text-indigo-300 cursor-default"
+            : "bg-gray-800 hover:bg-gray-700 border-gray-700 text-gray-500 hover:text-gray-200"
+        }`}
+      >
+        <ImageIcon size={11} />
       </button>
       <button
         onClick={remove}
@@ -271,6 +301,14 @@ export default function VariantGroup() {
         if (data.items.length > 0) hadVariants.current = true;
       })
       .finally(() => setLoading(false));
+  }, [numCreatorId, decodedCharacter]);
+
+  const reloadVariants = useCallback(() => {
+    if (!numCreatorId || !decodedCharacter) return;
+    api.models
+      .variants(numCreatorId, decodedCharacter)
+      .then((data) => setVariants(data.items))
+      .catch(() => {});
   }, [numCreatorId, decodedCharacter]);
 
   // Navigate back once the group has been emptied by bulk/single ops.
@@ -539,6 +577,7 @@ export default function VariantGroup() {
                 applyGroup={applyGroup}
                 onRemoved={removeVariant}
                 onMoved={removeVariant}
+                onRepChanged={reloadVariants}
               />
             </div>
           ))}

@@ -24,6 +24,7 @@ def _migrate_schema():
     migrations = [
         ("stl_files", "part_type", "TEXT"),
         ("models", "is_favorite", "BOOLEAN DEFAULT 0"),
+        ("models", "is_group_rep", "BOOLEAN NOT NULL DEFAULT 0"),
         ("models", "queued_at", "DATETIME"),
         ("models", "printed_at", "DATETIME"),
         ("models", "queue_position", "INTEGER"),

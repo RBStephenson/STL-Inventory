@@ -5,6 +5,7 @@ import VariantGroup from "./VariantGroup";
 
 const batchSetGroup = vi.fn();
 const batchThumbnailFromUrl = vi.fn();
+const setGroupRep = vi.fn();
 const variantsMock = vi.fn();
 const toast = vi.fn();
 
@@ -16,6 +17,7 @@ vi.mock("../api/client", () => ({
       setGroupOverride: vi.fn().mockResolvedValue({}),
       batchSetGroup: (...a: unknown[]) => batchSetGroup(...a),
       batchThumbnailFromUrl: (...a: unknown[]) => batchThumbnailFromUrl(...a),
+      setGroupRep: (...a: unknown[]) => setGroupRep(...a),
     },
   },
 }));
@@ -48,12 +50,13 @@ const flush = () => act(async () => { await Promise.resolve(); });
 beforeEach(() => {
   batchSetGroup.mockReset();
   batchThumbnailFromUrl.mockReset();
+  setGroupRep.mockReset();
   toast.mockReset();
   variantsMock.mockReset();
   variantsMock.mockResolvedValue({
     items: [
-      { id: 10, name: "Bust", character: "Rocky" },
-      { id: 11, name: "Full size", character: "Rocky" },
+      { id: 10, name: "Bust", character: "Rocky", is_group_rep: false },
+      { id: 11, name: "Full size", character: "Rocky", is_group_rep: false },
     ],
   });
 });
@@ -128,6 +131,21 @@ describe("VariantGroup bulk management (#183)", () => {
     await act(async () => { fireEvent.click(screen.getByText("Apply")); });
 
     expect(toast).toHaveBeenCalledWith(expect.stringContaining("may not load"), "error");
+  });
+
+  it("sets a member as the group display thumbnail (#193) and refetches", async () => {
+    setGroupRep.mockResolvedValue({ ok: true, is_group_rep: true });
+    renderPage();
+    await flush();
+
+    await act(async () => {
+      fireEvent.click(screen.getAllByLabelText("Set as group thumbnail")[0]);
+    });
+
+    expect(setGroupRep).toHaveBeenCalledWith(10, true);
+    expect(toast).toHaveBeenCalledWith("Group thumbnail updated.", "success");
+    // Refetched so the new rep / ordering is reflected.
+    expect(variantsMock).toHaveBeenCalledTimes(2);
   });
 
   it("reports skipped models from a partial bulk result", async () => {
