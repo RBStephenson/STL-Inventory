@@ -133,6 +133,12 @@ const SECTIONS: Section[] = [
             <strong>Move to group</strong> (with name suggestions) and <strong>× Remove</strong>.
           </li>
           <li>
+            <strong>Group thumbnail:</strong> the group's library card shows one variant's image.
+            By default that's a variant that has a thumbnail; to pick a specific one, open the
+            group and click the <strong>image button</strong> on that variant —{" "}
+            <strong>Set as group thumbnail</strong>. The choice survives rescans.
+          </li>
+          <li>
             <strong>From a model:</strong> the <strong>Set group</strong> button in the model
             header assigns or changes the group; leave it blank to ungroup.
           </li>
@@ -198,6 +204,11 @@ const SECTIONS: Section[] = [
           <li><strong>From URL</strong> — paste any image URL; the image is downloaded and stored locally, so it keeps working even when the site blocks hot-linking.</li>
           <li><strong>Clear</strong> — remove the thumbnail entirely.</li>
         </ul>
+        <p className="text-gray-500">
+          To clear an image fast without opening the dialog, use{" "}
+          <strong>Clear image</strong> in a card's <strong>⋯ quick-assign</strong> menu, or the{" "}
+          <strong>Clear image</strong> button next to <strong>Change image</strong> on the model page.
+        </p>
       </>
     ),
   },

@@ -116,7 +116,12 @@ group as well as individual variants:
   - **Ungroup** — pull the selected models out of the group, making them
     standalone models in the Library.
 - **Per-card actions** — below each card, **Move to group** (with name
-  suggestions) and **× Remove** act on that one variant.
+  suggestions), the **image button** (**Set as group thumbnail**), and
+  **× Remove** act on that one variant.
+- **Pick the group thumbnail** — the group's Library card borrows one
+  variant's image. By default a variant that *has* a thumbnail represents the
+  group; click the **image button** under any variant to make it the group's
+  display image instead. The choice is saved and survives rescans.
 
 Models that move or ungroup leave the current list immediately. When the last
 variant leaves, the group view closes back to where you came from.
@@ -176,6 +181,10 @@ If the auto-chosen thumbnail is wrong (or missing), open a model and click
 - **From URL** — paste any image URL; the image is downloaded and stored
   locally, so it keeps working even when the site blocks hot-linking.
 - **Clear** — remove the thumbnail entirely.
+
+To clear an image quickly without opening the dialog, use **Clear image** in a
+card's **⋯ quick-assign** menu, or the **Clear image** button next to **Change
+image** on the model's detail page.
 
 ## Favorites, print queue & printed tracking
 
