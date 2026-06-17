@@ -76,6 +76,7 @@ function ModelCard({ model, selected = false, onSelect, backTo, onMutate, exclud
   const [localTags, setLocalTags] = useState<string[]>(model.tags ?? []);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [rating, setRating] = useState<number | null>(model.user_rating ?? null);
+  const [imageCleared, setImageCleared] = useState(false);
 
   const variantCount = model.variant_count ?? 1;
   const isGroup = variantCount > 1;
@@ -155,7 +156,9 @@ function ModelCard({ model, selected = false, onSelect, backTo, onMutate, exclud
     onSelect?.(model.id, e.shiftKey);
   };
 
-  const thumbnail = model.thumbnail_path
+  const thumbnail = imageCleared
+    ? null
+    : model.thumbnail_path
     ? api.fileUrl(model.thumbnail_path, model.updated_at)
     : model.thumbnail_url ?? null;
 
@@ -381,6 +384,8 @@ function ModelCard({ model, selected = false, onSelect, backTo, onMutate, exclud
         initialTags={localTags}
         allTags={allTagSuggestions}
         onTagsChange={(next) => setLocalTags(next)}
+        hasImage={!!thumbnail}
+        onImageCleared={() => { setImageCleared(true); onMutate?.(); }}
         onClose={() => setPopoverOpen(false)}
       />
     )}
