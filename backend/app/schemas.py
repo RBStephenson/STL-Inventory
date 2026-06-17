@@ -52,6 +52,7 @@ class ModelRead(ModelBase):
     nsfw: bool = False
     excluded: bool = False
     is_favorite: bool = False
+    is_group_rep: bool = False
     user_rating: Optional[int] = None
     queued_at: Optional[datetime] = None
     printed_at: Optional[datetime] = None
@@ -149,6 +150,11 @@ class BatchThumbnailFromUrl(BaseModel):
     Fetched once, fanned out to every member's per-model thumbnail file."""
     model_ids: list[int]
     url: str
+
+
+class GroupRepUpdate(BaseModel):
+    """Designate (or clear) a model as its variant group's display rep (#193)."""
+    is_group_rep: bool = True
 
 
 class FavoriteUpdate(BaseModel):

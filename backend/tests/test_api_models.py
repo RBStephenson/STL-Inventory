@@ -208,6 +208,72 @@ class TestVariantsEndpoint:
 
 
 # ---------------------------------------------------------------------------
+# Group display thumbnail / representative override (#193)
+# ---------------------------------------------------------------------------
+
+class TestGroupRepOverride:
+    def test_designated_rep_overrides_thumbnail_heuristic(self, client, db):
+        creator = make_creator(db, "Creator")
+        # v_other has a thumbnail and the lower id, so it would win by default.
+        v_other = make_model(db, creator, name="A_has_thumb", character="Hero", thumbnail_path="/tmp/a.jpg")
+        v_pick = make_model(db, creator, name="B_pick", character="Hero", thumbnail_path="/tmp/b.jpg")
+        commit_all(db)
+
+        # Default: lowest-id thumbnailed model represents the group.
+        item = client.get("/models?group_variants=true").json()["items"][0]
+        assert item["id"] == v_other.id
+
+        resp = client.patch(f"/models/{v_pick.id}/group-rep", json={"is_group_rep": True})
+        assert resp.status_code == 200
+        assert resp.json()["is_group_rep"] is True
+
+        item = client.get("/models?group_variants=true").json()["items"][0]
+        assert item["id"] == v_pick.id
+
+    def test_designating_rep_clears_siblings(self, client, db):
+        creator = make_creator(db, "Creator")
+        v1 = make_model(db, creator, name="V1", character="Hero")
+        v2 = make_model(db, creator, name="V2", character="Hero")
+        commit_all(db)
+
+        client.patch(f"/models/{v1.id}/group-rep", json={"is_group_rep": True})
+        client.patch(f"/models/{v2.id}/group-rep", json={"is_group_rep": True})
+
+        # Only one member may carry the flag.
+        data = client.get(f"/models/variants?creator_id={creator.id}&character=Hero").json()
+        flagged = [m["id"] for m in data["items"] if m["is_group_rep"]]
+        assert flagged == [v2.id]
+        # The rep sorts first on the variants page.
+        assert data["items"][0]["id"] == v2.id
+
+    def test_clearing_rep_falls_back_to_heuristic(self, client, db):
+        creator = make_creator(db, "Creator")
+        v_thumb = make_model(db, creator, name="A_thumb", character="Hero", thumbnail_path="/tmp/a.jpg")
+        v_pick = make_model(db, creator, name="B_pick", character="Hero")
+        commit_all(db)
+
+        client.patch(f"/models/{v_pick.id}/group-rep", json={"is_group_rep": True})
+        assert client.get("/models?group_variants=true").json()["items"][0]["id"] == v_pick.id
+
+        resp = client.patch(f"/models/{v_pick.id}/group-rep", json={"is_group_rep": False})
+        assert resp.json()["is_group_rep"] is False
+        # Heuristic resumes — the thumbnailed member represents the group.
+        assert client.get("/models?group_variants=true").json()["items"][0]["id"] == v_thumb.id
+
+    def test_rep_on_ungrouped_model_rejected(self, client, db):
+        creator = make_creator(db, "Creator")
+        loner = make_model(db, creator, name="Loner", character=None)
+        commit_all(db)
+
+        resp = client.patch(f"/models/{loner.id}/group-rep", json={"is_group_rep": True})
+        assert resp.status_code == 400
+
+    def test_rep_missing_model_404(self, client, db):
+        resp = client.patch("/models/999999/group-rep", json={"is_group_rep": True})
+        assert resp.status_code == 404
+
+
+# ---------------------------------------------------------------------------
 # Stats endpoint
 # ---------------------------------------------------------------------------
 

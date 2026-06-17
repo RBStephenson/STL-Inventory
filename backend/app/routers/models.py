@@ -12,6 +12,7 @@ from app.schemas import (
     ModelUpdate, ThumbnailUpdate, ThumbnailFromUrl, BatchThumbnailFromUrl, FavoriteUpdate, RatingUpdate, QueueReorder,
     PrintStatusUpdate, ExcludeUpdate, STLFileUpdate, BulkTagUpdate,
     BulkExcludeUpdate, BulkReviewUpdate, SetGroupBody, BatchSetGroupBody,
+    GroupRepUpdate,
 )
 from app.services.thumbnails import ThumbnailDownloadError, download_thumbnail, fetch_image_bytes, store_thumbnail
 from app.services.variant_sync import propagate_source_url
@@ -156,7 +157,7 @@ def _collapse_variants(q) -> tuple:
     from collections import defaultdict
     rows = q.with_entities(
         Model.id, Model.creator_id, Model.character,
-        Model.thumbnail_path, Model.thumbnail_url,
+        Model.thumbnail_path, Model.thumbnail_url, Model.is_group_rep,
     ).all()
     groups: dict[tuple, list] = defaultdict(list)
     for row in rows:
@@ -167,8 +168,16 @@ def _collapse_variants(q) -> tuple:
     for group_rows in groups.values():
         if len(group_rows) <= 1:
             continue
+        # User-designated representative wins (#193); else prefer a thumbnailed
+        # member; else fall back to the lowest id.
+        flagged = [r for r in group_rows if r.is_group_rep]
         with_thumb = [r for r in group_rows if r.thumbnail_path or r.thumbnail_url]
-        rep_id = min(with_thumb, key=lambda r: r.id).id if with_thumb else min(group_rows, key=lambda r: r.id).id
+        if flagged:
+            rep_id = min(flagged, key=lambda r: r.id).id
+        elif with_thumb:
+            rep_id = min(with_thumb, key=lambda r: r.id).id
+        else:
+            rep_id = min(group_rows, key=lambda r: r.id).id
         for r in group_rows:
             if r.id != rep_id:
                 non_rep_ids.append(r.id)
@@ -440,7 +449,8 @@ def list_variants(
             Model.character == character,
             Model.excluded == False,
         )
-        .order_by(has_thumb, Model.name)
+        # User-designated rep first (#193), then thumbnailed members, then name.
+        .order_by(Model.is_group_rep.desc(), has_thumb, Model.name)
         .all()
     )
     return ModelList(total=len(items), page=1, page_size=max(len(items), 1), items=items)
@@ -574,6 +584,36 @@ def set_thumbnail(model_id: int, body: ThumbnailUpdate, db: Session = Depends(ge
         model.thumbnail_url = data["thumbnail_url"] or None
     db.commit()
     return {"ok": True}
+
+
+@router.patch("/{model_id}/group-rep")
+def set_group_rep(model_id: int, body: GroupRepUpdate, db: Session = Depends(get_db)):
+    """Designate a model as its variant group's display thumbnail (#193).
+
+    Sets `is_group_rep` on this model and clears it from every sibling in the
+    same (creator, character) group, so at most one member is the rep. Pass
+    `is_group_rep=false` to clear it and fall back to the heuristic. 400 if the
+    model isn't part of a group (no creator/character).
+    """
+    model = db.query(Model).filter(Model.id == model_id).first()
+    if not model:
+        raise HTTPException(status_code=404, detail="Model not found")
+    if model.creator_id is None or not model.character:
+        raise HTTPException(status_code=400, detail="Model is not part of a variant group.")
+
+    if body.is_group_rep:
+        # Clear the flag across the whole group first, then set it on this model.
+        db.query(Model).filter(
+            Model.creator_id == model.creator_id,
+            Model.character == model.character,
+            Model.id != model.id,
+        ).update({Model.is_group_rep: False}, synchronize_session=False)
+        model.is_group_rep = True
+    else:
+        model.is_group_rep = False
+    model.updated_at = utcnow()
+    db.commit()
+    return {"ok": True, "is_group_rep": model.is_group_rep}
 
 
 @router.post("/group/thumbnail/from-url")

@@ -99,6 +99,11 @@ class Model(Base):
 
     # User curation — independent flags
     is_favorite = Column(Boolean, default=False, index=True)
+    # User-designated display thumbnail for the model's variant group (#193).
+    # When set on a member, that model becomes the group's representative card
+    # (overriding the id/has-thumbnail heuristic). Survives rescans like other
+    # user flags; harmless if the group later changes.
+    is_group_rep = Column(Boolean, default=False, server_default="0", nullable=False)
     user_rating = Column(Integer, nullable=True, index=True)  # 1–5 stars; NULL = unrated (#167)
 
     # Print-status lifecycle: none → queued → printing → printed. Single source of
