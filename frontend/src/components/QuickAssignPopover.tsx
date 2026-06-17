@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { X, Tag, Layers, Check, Loader2 } from "lucide-react";
+import { X, Tag, Layers, Check, Loader2, ImageOff } from "lucide-react";
 import { api, Collection } from "../api/client";
 import { useToast } from "../context/ToastContext";
 
@@ -14,6 +14,10 @@ interface Props {
   allTags: TagSuggestion[];
   onTagsChange: (tags: string[]) => void;
   onClose: () => void;
+  /** True when the model currently has a thumbnail — gates the Clear image action (#192). */
+  hasImage?: boolean;
+  /** Called after the thumbnail is cleared so the parent can drop the card image. */
+  onImageCleared?: () => void;
 }
 
 export default function QuickAssignPopover({
@@ -22,6 +26,8 @@ export default function QuickAssignPopover({
   allTags,
   onTagsChange,
   onClose,
+  hasImage = false,
+  onImageCleared,
 }: Props) {
   const { toast } = useToast();
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -37,6 +43,8 @@ export default function QuickAssignPopover({
   const [loadingCollections, setLoadingCollections] = useState(true);
   const [savingTags, setSavingTags] = useState(false);
   const [togglingCollection, setTogglingCollection] = useState<number | null>(null);
+  const [imageCleared, setImageCleared] = useState(false);
+  const [clearingImage, setClearingImage] = useState(false);
 
   // Load collections + current membership on mount
   useEffect(() => {
@@ -115,6 +123,20 @@ export default function QuickAssignPopover({
       removeTag(tags[tags.length - 1]);
     } else if (e.key === "Escape") {
       setTagDropdownOpen(false);
+    }
+  };
+
+  const clearImage = async () => {
+    setClearingImage(true);
+    try {
+      await api.models.clearThumbnail(modelId);
+      setImageCleared(true);
+      onImageCleared?.();
+      toast("Image cleared.", "success");
+    } catch {
+      toast("Couldn't clear the image — try again.", "error");
+    } finally {
+      setClearingImage(false);
     }
   };
 
@@ -272,6 +294,21 @@ export default function QuickAssignPopover({
           </div>
         )}
       </div>
+
+      {/* Image section (#192) */}
+      {hasImage && !imageCleared && (
+        <div className="px-3 py-2 border-t border-gray-700/50">
+          <button
+            type="button"
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); clearImage(); }}
+            disabled={clearingImage}
+            className="flex items-center gap-2 w-full px-1.5 py-1 rounded text-xs text-left text-rose-400 hover:bg-rose-900/30 transition-colors disabled:opacity-50"
+          >
+            {clearingImage ? <Loader2 size={11} className="animate-spin" /> : <ImageOff size={11} />}
+            Clear image
+          </button>
+        </div>
+      )}
     </div>
   );
 }

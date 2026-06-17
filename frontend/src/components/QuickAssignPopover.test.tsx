@@ -18,6 +18,7 @@ vi.mock("../api/client", () => ({
     models: {
       get: vi.fn(async () => mockDetail),
       update: vi.fn(async () => ({ ok: true })),
+      clearThumbnail: vi.fn(async () => ({ ok: true })),
     },
   },
 }));
@@ -118,6 +119,25 @@ describe("QuickAssignPopover (#172)", () => {
     renderPopover({ onClose });
     fireEvent.click(screen.getByRole("button", { name: /close quick assign/i }));
     expect(onClose).toHaveBeenCalled();
+  });
+
+  it("hides the Clear image action when the model has no image", () => {
+    renderPopover({ hasImage: false });
+    expect(screen.queryByText("Clear image")).not.toBeInTheDocument();
+  });
+
+  it("clears the image and fires onImageCleared (#192)", async () => {
+    const onImageCleared = vi.fn();
+    renderPopover({ hasImage: true, onImageCleared });
+    fireEvent.click(screen.getByText("Clear image"));
+    await waitFor(() =>
+      expect(vi.mocked(api.models.clearThumbnail)).toHaveBeenCalledWith(5)
+    );
+    expect(onImageCleared).toHaveBeenCalled();
+    // The action hides itself after a successful clear.
+    await waitFor(() =>
+      expect(screen.queryByText("Clear image")).not.toBeInTheDocument()
+    );
   });
 
   it("shows the quick-assign button on the ModelCard", async () => {

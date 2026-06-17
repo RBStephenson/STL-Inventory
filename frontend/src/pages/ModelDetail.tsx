@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef, lazy, Suspense } from "react";
 import { useParams, Link, useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, ChevronLeft, ChevronRight, ChevronDown, ExternalLink, Package, Star, Download, Tag, FileBox, Globe, Images, Box, ImagePlus, Pencil, Plus, Wrench, FolderDown, Folder, Copy, Check, Printer, Layers, Split, FolderOpen, X, ZoomIn, Paintbrush, RefreshCw } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, ChevronDown, ExternalLink, Package, Star, Download, Tag, FileBox, Globe, Images, Box, ImagePlus, Pencil, Plus, Wrench, FolderDown, Folder, Copy, Check, Printer, Layers, Split, FolderOpen, X, ZoomIn, Paintbrush, RefreshCw, ImageOff } from "lucide-react";
 import { api, ApiError, Model, ModelDetail as ModelDetailType, Collection } from "../api/client";
 import FindOnWeb from "../components/FindOnWeb";
 const STLViewer = lazy(() => import("../components/STLViewer"));
@@ -390,6 +390,23 @@ export default function ModelDetail() {
     }
   };
 
+  const clearImage = async () => {
+    if (!model) return;
+    const ok = await confirm({
+      title: "Clear this model's image?",
+      message: "The thumbnail will be removed. You can set a new one anytime.",
+      confirmLabel: "Clear image",
+    });
+    if (!ok) return;
+    try {
+      await api.models.clearThumbnail(model.id);
+      toast("Image cleared.", "success");
+      load();
+    } catch (e: any) {
+      toast(e?.message || "Couldn't clear the image — try again.", "error");
+    }
+  };
+
   const savePartType = async (fileId: number, value: string) => {
     const pt = value.trim().toLowerCase() || "";
     // Revert target is the last-persisted value, not live input state (onChange
@@ -725,12 +742,22 @@ export default function ModelDetail() {
                     <ZoomIn size={14} />
                   </button>
                 )}
-                <button
-                  onClick={() => setShowImagePicker(true)}
-                  className="absolute bottom-3 right-3 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-gray-300 hover:text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <ImagePlus size={13} /> Change image
-                </button>
+                <div className="absolute bottom-3 right-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {activeImage && (
+                    <button
+                      onClick={clearImage}
+                      className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-black/60 hover:bg-rose-900/70 text-gray-300 hover:text-white text-xs"
+                    >
+                      <ImageOff size={13} /> Clear image
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setShowImagePicker(true)}
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-gray-300 hover:text-white text-xs"
+                  >
+                    <ImagePlus size={13} /> Change image
+                  </button>
+                </div>
               </div>
               {allImages.length > 1 && (
                 <div className="flex gap-2 flex-wrap">

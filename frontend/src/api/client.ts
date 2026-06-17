@@ -598,6 +598,18 @@ export const api = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       }),
+    setThumbnail: (id: number, body: { thumbnail_path?: string | null; thumbnail_url?: string | null }) =>
+      request<{ ok: boolean }>(`/models/${id}/thumbnail`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      }),
+    clearThumbnail: (id: number) =>
+      request<{ ok: boolean }>(`/models/${id}/thumbnail`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ thumbnail_path: null, thumbnail_url: null }),
+      }),
     setNSFW: (id: number, nsfw: boolean) =>
       request<{ ok: boolean }>(`/models/${id}`, {
         method: "PATCH",
