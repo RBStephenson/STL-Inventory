@@ -153,6 +153,22 @@ class TestVariantGrouping:
         item = resp.json()["items"][0]
         assert item["variant_count"] == 2
 
+    def test_variant_count_correct_on_later_page(self, client, db):
+        # vc_map is scoped to the current page's (creator_id, character) pairs
+        # (#393); a representative that lands on page 2 must still get its count.
+        filler = make_creator(db, "Aaa Filler")
+        for i in range(3):
+            make_model(db, filler, name=f"Filler {i}", character=f"Solo{i}")
+        zed = make_creator(db, "Zzz Group")
+        for i in range(4):
+            make_model(db, zed, name=f"Variant {i}", character="Boss")
+        commit_all(db)
+
+        resp = client.get("/models?group_variants=true&page=2&page_size=2&sort=creator")
+        items = resp.json()["items"]
+        boss = next(i for i in items if i["character"] == "Boss")
+        assert boss["variant_count"] == 4
+
     def test_group_representative_prefers_thumbnail(self, client, db):
         creator = make_creator(db, "Creator")
         # v1 has no thumbnail, v2 has one — v2 should be representative
