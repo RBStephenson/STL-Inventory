@@ -30,6 +30,8 @@ vi.mock("../api/client", async (importOriginal) => {
         setNSFW: vi.fn(async () => ({ ok: true })),
         setExcluded: vi.fn(async () => ({ ok: true, excluded: false })),
         update: vi.fn(async () => ({})),
+        variants: vi.fn(async () => ({ items: [{ id: 1 }, { id: 2 }], total: 2 })),
+        batchSetGroup: vi.fn(async () => ({ ok: true, character: "Oni", updated: [1, 2], missing: [] })),
       },
     },
   };
@@ -162,10 +164,18 @@ describe("ModelCard inline rename (#191)", () => {
     expect(screen.getByText("RoboCop")).toBeInTheDocument();
   });
 
-  it("does not offer rename for a variant group (double-click is a no-op)", () => {
+  it("renames a whole variant group on double-click + Enter", async () => {
     renderCard({ variant_count: 3, character: "Akuma" } as any);
     fireEvent.doubleClick(screen.getByText("Akuma"));
-    expect(screen.queryByLabelText("Rename model")).toBeNull();
+    const input = screen.getByLabelText("Rename group") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "Oni" } });
+    fireEvent.keyDown(input, { key: "Enter" });
+    // Resolves the group's members, then rewrites their shared character.
+    await waitFor(() => expect(vi.mocked(api.models.variants)).toHaveBeenCalledWith(1, "Akuma"));
+    await waitFor(() =>
+      expect(vi.mocked(api.models.batchSetGroup)).toHaveBeenCalledWith([1, 2], "Oni")
+    );
+    expect(screen.getByText("Oni")).toBeInTheDocument();
   });
 
   it("opens the rename editor from the quick-assign popover", () => {
