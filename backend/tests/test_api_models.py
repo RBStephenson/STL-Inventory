@@ -180,6 +180,41 @@ class TestVariantGrouping:
         item = resp.json()["items"][0]
         assert item["id"] == v2.id
 
+    def test_group_representative_promotes_favorited(self, client, db):
+        # #302 auto-promotion: a favorited member outranks a merely-thumbnailed
+        # one so its ⭐ chip shows on the Library card.
+        creator = make_creator(db, "Creator")
+        make_model(db, creator, name="Has_thumb", character="Hero", thumbnail_path="/tmp/t.jpg")
+        fav = make_model(db, creator, name="Favorited", character="Hero")
+        fav.is_favorite = True
+        commit_all(db)
+
+        resp = client.get("/models?group_variants=true")
+        assert resp.json()["items"][0]["id"] == fav.id
+
+    def test_group_representative_promotes_queued(self, client, db):
+        # A queued member also auto-promotes so its 🖨 chip is visible.
+        creator = make_creator(db, "Creator")
+        make_model(db, creator, name="Has_thumb", character="Hero", thumbnail_path="/tmp/t.jpg")
+        queued = make_model(db, creator, name="Queued", character="Hero")
+        queued.print_status = "queued"
+        commit_all(db)
+
+        resp = client.get("/models?group_variants=true")
+        assert resp.json()["items"][0]["id"] == queued.id
+
+    def test_designated_rep_still_wins_over_favorited(self, client, db):
+        # An explicit user-set rep (#193) outranks auto-promotion (#302).
+        creator = make_creator(db, "Creator")
+        pick = make_model(db, creator, name="Designated", character="Hero")
+        fav = make_model(db, creator, name="Favorited", character="Hero")
+        fav.is_favorite = True
+        commit_all(db)
+
+        client.patch(f"/models/{pick.id}/group-rep", json={"is_group_rep": True})
+        resp = client.get("/models?group_variants=true")
+        assert resp.json()["items"][0]["id"] == pick.id
+
 
 # ---------------------------------------------------------------------------
 # Variants endpoint

@@ -149,11 +149,14 @@ def _apply_sort(q, sort: str):
 
 
 # Representative precedence within a variant group, expressed as ORDER BY columns:
-# user-flagged rep wins (#193); else a thumbnailed member; else the lowest id.
-# `func.row_number()` over this order picks the rep as rn == 1.
+# Rep precedence: user-flagged rep wins (#193); else a favorited/queued member so
+# its status chips surface on the Library card (#302 auto-promotion); else a
+# thumbnailed member (#300); else the lowest id. `func.row_number()` over this
+# order picks the rep as rn == 1.
 def _rep_order():
     has_thumb = (Model.thumbnail_path != None) | (Model.thumbnail_url != None)
-    return (Model.is_group_rep.desc(), has_thumb.desc(), Model.id.asc())
+    pinned = (Model.is_favorite == True) | (Model.print_status.in_(("queued", "printing")))
+    return (Model.is_group_rep.desc(), pinned.desc(), has_thumb.desc(), Model.id.asc())
 
 
 def _collapse_variants(q):
