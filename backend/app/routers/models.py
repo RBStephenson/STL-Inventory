@@ -1,7 +1,7 @@
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
-from sqlalchemy import func, exists, text as _sql
+from sqlalchemy import func, exists, select
 from sqlalchemy.dialects.sqlite import insert as _sqlite_insert
 from sqlalchemy.orm import Session, joinedload
 
@@ -148,43 +148,65 @@ def _apply_sort(q, sort: str):
     return q.order_by(*_order_cols(sort))
 
 
-def _collapse_variants(q) -> tuple:
-    """Apply variant grouping to a query.
+# Representative precedence within a variant group, expressed as ORDER BY columns:
+# user-flagged rep wins (#193); else a thumbnailed member; else the lowest id.
+# `func.row_number()` over this order picks the rep as rn == 1.
+def _rep_order():
+    has_thumb = (Model.thumbnail_path != None) | (Model.thumbnail_url != None)
+    return (Model.is_group_rep.desc(), has_thumb.desc(), Model.id.asc())
 
-    Returns (filtered_query, rep_by_nonrep) where rep_by_nonrep maps each
-    non-representative model ID to its group representative's ID.
+
+def _collapse_variants(q):
+    """Collapse multi-variant characters to one representative, entirely in SQL.
+
+    A model is hidden only when it belongs to a group (same creator_id +
+    character) of size > 1 and is not that group's representative. NULL-character
+    or NULL-creator models never collapse. Done with window functions so the
+    filtered set is never materialized in Python.
     """
-    from collections import defaultdict
-    rows = q.with_entities(
-        Model.id, Model.creator_id, Model.character,
-        Model.thumbnail_path, Model.thumbnail_url, Model.is_group_rep,
-    ).all()
-    groups: dict[tuple, list] = defaultdict(list)
-    for row in rows:
-        if row.character and row.creator_id is not None:
-            groups[(row.creator_id, row.character)].append(row)
-    rep_by_nonrep: dict[int, int] = {}
-    non_rep_ids: list[int] = []
-    for group_rows in groups.values():
-        if len(group_rows) <= 1:
-            continue
-        # User-designated representative wins (#193); else prefer a thumbnailed
-        # member; else fall back to the lowest id.
-        flagged = [r for r in group_rows if r.is_group_rep]
-        with_thumb = [r for r in group_rows if r.thumbnail_path or r.thumbnail_url]
-        if flagged:
-            rep_id = min(flagged, key=lambda r: r.id).id
-        elif with_thumb:
-            rep_id = min(with_thumb, key=lambda r: r.id).id
-        else:
-            rep_id = min(group_rows, key=lambda r: r.id).id
-        for r in group_rows:
-            if r.id != rep_id:
-                non_rep_ids.append(r.id)
-                rep_by_nonrep[r.id] = rep_id
-    if non_rep_ids:
-        q = q.filter(~Model.id.in_(non_rep_ids))
-    return q, rep_by_nonrep
+    sub = q.with_entities(
+        Model.id.label("id"),
+        Model.creator_id.label("cr"),
+        Model.character.label("ch"),
+        func.count().over(
+            partition_by=(Model.creator_id, Model.character)
+        ).label("cnt"),
+        func.row_number().over(
+            partition_by=(Model.creator_id, Model.character),
+            order_by=_rep_order(),
+        ).label("rn"),
+    ).subquery()
+    # Keep group reps (rn == 1) and lone members (cnt == 1). SQL partitions treat
+    # all NULLs as one group, so NULL creator/character rows would collapse into a
+    # single survivor — guard them explicitly: anything that can't group is kept.
+    keep = (
+        select(sub.c.id)
+        .where(
+            (sub.c.cr == None) | (sub.c.ch == None)
+            | (sub.c.cnt == 1) | (sub.c.rn == 1)
+        )
+    )
+    return q.filter(Model.id.in_(keep))
+
+
+def _resolve_group_rep(q, model_id: int) -> int:
+    """Map a model to its variant group's representative within the filtered set.
+
+    Used by neighbors so Prev/Next on a grouped non-rep still pages from the
+    representative card. Returns model_id unchanged when it isn't in the filtered
+    set or can't group (NULL creator/character)."""
+    row = q.filter(Model.id == model_id).with_entities(
+        Model.creator_id, Model.character
+    ).first()
+    if row is None or row.creator_id is None or not row.character:
+        return model_id
+    rep = (
+        q.filter(Model.creator_id == row.creator_id, Model.character == row.character)
+        .order_by(*_rep_order())
+        .with_entities(Model.id)
+        .first()
+    )
+    return rep.id if rep else model_id
 
 
 @router.get("", response_model=ModelList)
@@ -227,22 +249,32 @@ def list_models(
     # Non-reps are computed from the *filtered* set so a model that is the only match
     # under the current filters is never hidden by a sibling that doesn't match.
     if group_variants:
-        q, _ = _collapse_variants(q)
+        q = _collapse_variants(q)
 
     total = q.count()
     items = _apply_sort(q, sort).offset((page - 1) * page_size).limit(page_size).all()
 
-    # Build variant count map for annotating group representatives
+    # Build variant count map for annotating group representatives. Scope the
+    # GROUP BY to the (creator_id, character) pairs actually on this page so the
+    # query never scans the whole table (#393).
     vc_map: dict[tuple[int, str], int] = {}
     if group_variants and items:
-        count_rows = db.execute(_sql("""
-            SELECT creator_id, character, COUNT(*) AS cnt
-            FROM models
-            WHERE character IS NOT NULL AND excluded = 0
-            GROUP BY creator_id, character
-            HAVING COUNT(*) > 1
-        """)).fetchall()
-        vc_map = {(r[0], r[1]): r[2] for r in count_rows}
+        pairs = {(m.creator_id, m.character) for m in items
+                 if m.creator_id is not None and m.character}
+        if pairs:
+            count_rows = (
+                db.query(Model.creator_id, Model.character, func.count(Model.id))
+                .filter(
+                    Model.excluded == False,
+                    Model.character != None,
+                    Model.creator_id.in_({p[0] for p in pairs}),
+                    Model.character.in_({p[1] for p in pairs}),
+                )
+                .group_by(Model.creator_id, Model.character)
+                .having(func.count(Model.id) > 1)
+                .all()
+            )
+            vc_map = {(r[0], r[1]): r[2] for r in count_rows if (r[0], r[1]) in pairs}
 
     item_reads = []
     for m in items:
@@ -975,8 +1007,8 @@ def get_neighbors(
 
     target_id = model_id
     if group_variants:
-        q, rep_by_nonrep = _collapse_variants(q)
-        target_id = rep_by_nonrep.get(model_id, model_id)
+        target_id = _resolve_group_rep(q, model_id)
+        q = _collapse_variants(q)
 
     ids = [row[0] for row in _apply_sort(q.with_entities(Model.id), sort).all()]
     try:
