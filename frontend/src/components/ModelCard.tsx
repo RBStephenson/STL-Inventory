@@ -78,6 +78,7 @@ function ModelCard({ model, selected = false, onSelect, backTo, onMutate, exclud
   const [rating, setRating] = useState<number | null>(model.user_rating ?? null);
   const [imageCleared, setImageCleared] = useState(false);
   const [localTitle, setLocalTitle] = useState(model.title ?? "");
+  const [localCharacter, setLocalCharacter] = useState(model.character ?? "");
   const [editingName, setEditingName] = useState(false);
   const [nameDraft, setNameDraft] = useState("");
   const nameInputRef = useRef<HTMLInputElement>(null);
@@ -85,20 +86,39 @@ function ModelCard({ model, selected = false, onSelect, backTo, onMutate, exclud
   const variantCount = model.variant_count ?? 1;
   const isGroup = variantCount > 1;
 
-  // Keep the optimistic title in sync if the parent reloads with fresh data.
+  // Keep the optimistic name in sync if the parent reloads with fresh data.
   useEffect(() => { setLocalTitle(model.title ?? ""); }, [model.title]);
+  useEffect(() => { setLocalCharacter(model.character ?? ""); }, [model.character]);
   useEffect(() => { if (editingName) nameInputRef.current?.select(); }, [editingName]);
 
   const startRename = () => {
-    if (isGroup) return;  // group rename is a separate gesture (#191 P2)
-    setNameDraft(localTitle || model.name);
+    setNameDraft(isGroup ? localCharacter : (localTitle || model.name));
     setEditingName(true);
   };
 
-  const commitRename = async () => {
-    const next = nameDraft.trim();
-    setEditingName(false);
-    if (!next || next === (localTitle || model.name)) return;
+  // Renaming a variant group rewrites the shared `character` on every member,
+  // so the whole group follows; a plain model just updates its own title.
+  const renameGroup = async (next: string) => {
+    const prev = localCharacter;
+    if (model.creator_id == null) {
+      toast("Can't rename a group with no creator.", "error");
+      return;
+    }
+    setLocalCharacter(next);
+    try {
+      const { items } = await api.models.variants(model.creator_id, prev);
+      const res = await api.models.batchSetGroup(items.map((m) => m.id), next);
+      if (res.missing?.length) {
+        toast(`Renamed, but ${res.missing.length} variant(s) couldn't be updated.`, "error");
+      }
+      onMutate?.();
+    } catch {
+      setLocalCharacter(prev);  // revert on failure
+      toast("Couldn't rename group — try again.", "error");
+    }
+  };
+
+  const renameModel = async (next: string) => {
     const prev = localTitle;
     setLocalTitle(next);
     try {
@@ -108,6 +128,14 @@ function ModelCard({ model, selected = false, onSelect, backTo, onMutate, exclud
       setLocalTitle(prev);  // revert on failure
       toast("Couldn't rename — try again.", "error");
     }
+  };
+
+  const commitRename = async () => {
+    const next = nameDraft.trim();
+    setEditingName(false);
+    const current = isGroup ? localCharacter : (localTitle || model.name);
+    if (!next || next === current) return;
+    await (isGroup ? renameGroup(next) : renameModel(next));
   };
 
   const changeRating = async (next: number | null) => {
@@ -191,8 +219,8 @@ function ModelCard({ model, selected = false, onSelect, backTo, onMutate, exclud
     ? api.fileUrl(model.thumbnail_path, model.updated_at)
     : model.thumbnail_url ?? null;
 
-  const displayName = isGroup && model.character
-    ? model.character
+  const displayName = isGroup && localCharacter
+    ? localCharacter
     : (localTitle || model.name);
   const removedAuto = new Set(model.removed_auto_tags ?? []);
   const visibleAutoTags = (model.auto_tags ?? []).filter((t) => !removedAuto.has(t));
@@ -372,15 +400,15 @@ function ModelCard({ model, selected = false, onSelect, backTo, onMutate, exclud
               else if (e.key === "Escape") { e.preventDefault(); setEditingName(false); }
             }}
             onBlur={commitRename}
-            aria-label="Rename model"
+            aria-label={isGroup ? "Rename group" : "Rename model"}
             className="text-sm font-medium bg-gray-800 border border-indigo-500 rounded px-1 py-0.5 text-gray-100 focus:outline-none"
           />
         ) : (
           <p
             className="text-sm font-medium truncate text-gray-100"
-            onClick={isGroup ? undefined : (e) => { e.preventDefault(); e.stopPropagation(); }}
-            onDoubleClick={isGroup ? undefined : (e) => { e.preventDefault(); e.stopPropagation(); startRename(); }}
-            title={isGroup ? undefined : "Double-click to rename"}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+            onDoubleClick={(e) => { e.preventDefault(); e.stopPropagation(); startRename(); }}
+            title={isGroup ? "Double-click to rename this group" : "Double-click to rename"}
           >
             {displayName}
           </p>
@@ -439,7 +467,7 @@ function ModelCard({ model, selected = false, onSelect, backTo, onMutate, exclud
         onTagsChange={(next) => setLocalTags(next)}
         hasImage={!!thumbnail}
         onImageCleared={() => { setImageCleared(true); onMutate?.(); }}
-        onRename={isGroup ? undefined : startRename}
+        onRename={startRename}
         onClose={() => setPopoverOpen(false)}
       />
     )}
