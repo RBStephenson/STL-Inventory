@@ -142,7 +142,7 @@ ship v0.9.0 on the work above.
 
 ---
 
-## v0.10 — Variant-group management 🚧 In progress
+## v0.10 — Variant-group management ✅ Complete
 
 A focused milestone making variant groups fully manageable. Shipped: bulk
 set-group endpoint + multi-select groundwork
@@ -167,14 +167,14 @@ list-path performance pass — SQL variant collapse, page-scoped variant counts,
 and supporting indexes
 ([#392](https://github.com/RBStephenson/STL-Inventory/issues/392),
 [#393](https://github.com/RBStephenson/STL-Inventory/issues/393),
-[#394](https://github.com/RBStephenson/STL-Inventory/issues/394)).
+[#394](https://github.com/RBStephenson/STL-Inventory/issues/394)), and manual
+drag-to-reorder of models within a group
+([#399](https://github.com/RBStephenson/STL-Inventory/issues/399), Phase 2 of
+[#302](https://github.com/RBStephenson/STL-Inventory/issues/302)).
 
-Still open:
-
-| Issue | Item |
-|-------|------|
-| [#302](https://github.com/RBStephenson/STL-Inventory/issues/302) / [#399](https://github.com/RBStephenson/STL-Inventory/issues/399) | **Manual drag-to-reorder** models within a group (Phase 2; needs a persisted `variant_order` column) |
-| [#188](https://github.com/RBStephenson/STL-Inventory/issues/188) | **Nested variant groups** — group variant groups (the largest remaining item) |
+Combining variant groups is covered by the drag/move-to-group merge above;
+nested groups-within-groups ([#188](https://github.com/RBStephenson/STL-Inventory/issues/188))
+was closed as out of scope — merging already satisfies the need.
 
 ---
 
