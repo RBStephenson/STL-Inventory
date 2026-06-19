@@ -621,6 +621,37 @@ const SECTIONS: Section[] = [
     ),
   },
   {
+    id: "tags",
+    title: "Tag Management",
+    icon: Tag,
+    body: (
+      <>
+        <p>
+          The <strong>Tags</strong> page (nav bar) lists every tag in the library with a model
+          count. Three actions are available per tag:
+        </p>
+        <ul>
+          <li>
+            <strong>Rename</strong> — changes the tag name on every model that carries it.
+            Renaming to a name a model already has deduplicates silently.
+          </li>
+          <li>
+            <strong>Merge</strong> — pick a target tag from the dropdown; all models get
+            the target tag and the source tag is removed. Use this to consolidate typos
+            or near-duplicates (<em>figure</em> + <em>figures</em> → <em>figure</em>).
+          </li>
+          <li>
+            <strong>Delete</strong> — removes the tag from every model. A confirmation
+            dialog shows how many models are affected.
+          </li>
+        </ul>
+        <p>
+          Changes are applied immediately and reflected in the Library without a rescan.
+        </p>
+      </>
+    ),
+  },
+  {
     id: "about",
     title: "About & support",
     icon: Heart,
@@ -651,37 +682,6 @@ const SECTIONS: Section[] = [
         </p>
         <p>Thank you for being here, and happy printing!</p>
         <p className="text-gray-500">— Brent the Programmer</p>
-      </>
-    ),
-  },
-  {
-    id: "tags",
-    title: "Tag Management",
-    icon: Tag,
-    body: (
-      <>
-        <p>
-          The <strong>Tags</strong> page (nav bar) lists every tag in the library with a model
-          count. Three actions are available per tag:
-        </p>
-        <ul>
-          <li>
-            <strong>Rename</strong> — changes the tag name on every model that carries it.
-            Renaming to a name a model already has deduplicates silently.
-          </li>
-          <li>
-            <strong>Merge</strong> — pick a target tag from the dropdown; all models get
-            the target tag and the source tag is removed. Use this to consolidate typos
-            or near-duplicates (<em>figure</em> + <em>figures</em> → <em>figure</em>).
-          </li>
-          <li>
-            <strong>Delete</strong> — removes the tag from every model. A confirmation
-            dialog shows how many models are affected.
-          </li>
-        </ul>
-        <p>
-          Changes are applied immediately and reflected in the Library without a rescan.
-        </p>
       </>
     ),
   },
