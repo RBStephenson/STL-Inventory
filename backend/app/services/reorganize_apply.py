@@ -35,7 +35,7 @@ from typing import Callable
 from sqlalchemy.orm import Session
 
 from app.config import settings
-from app.models import GroupOverride, Model, PackOverride, ReorganizeManifest, STLFile
+from app.models import GroupOverride, Model, PackOverride, ReorganizeManifest, ScanRoot, STLFile
 from app.services import write_lock
 from app.utils import utcnow
 
@@ -87,6 +87,32 @@ def _validate_manifest_id(manifest_id: str) -> str:
     if not _MANIFEST_ID_RE.match(manifest_id or ""):
         raise ApplyError("Invalid manifest id", status=400)
     return manifest_id
+
+
+def _allowed_roots(db: Session) -> list[str]:
+    """Normalized scan-root directories — the only places apply/undo may touch.
+
+    Every move source and destination must resolve inside one of these. Phase 1
+    already marks scan-root escapes ineligible, but apply executes a *persisted*
+    manifest, so re-confining here defends against a tampered manifest row and
+    keeps the path a move operates on from being uncontrolled user data."""
+    return [os.path.normpath(os.path.abspath(r.path))
+            for r in db.query(ScanRoot).all() if r.path]
+
+
+def _confine(raw: str, roots: list[str]) -> str:
+    """Normalize a manifest path and assert it lives under an allowed scan root.
+
+    Returns the normalized OS-native path to use for the actual file operation
+    (reassigning to the validated value is the path-traversal barrier). Raises if
+    the path escapes every root. Uses normpath (lexical, case-preserving) — never
+    realpath — so case-only renames aren't canonicalized away."""
+    native = os.path.normpath(os.path.abspath(_os_native(raw)))
+    for root in roots:
+        if native == root or native.startswith(root + os.sep):
+            return native
+    raise ApplyError(f"Path escapes the allowed scan roots: {raw}", status=400,
+                     detail={"path": raw})
 
 
 def _safe_move(src: str, dst: str) -> None:
@@ -178,12 +204,12 @@ def _select_entries(payload: dict, entry_ids: list[int]) -> list[dict]:
     return selected
 
 
-def _probe_writable(dirs: set[str]) -> None:
+def _probe_writable(dirs: set[str], roots: list[str]) -> None:
     """Create+delete a temp file under each destination's nearest existing
     ancestor. Re-run at apply time because permissions vary per subtree and the
     read-only Docker mount must fail here, not after a partial move."""
     for d in sorted(dirs):
-        target = Path(_os_native(d))
+        target = Path(_confine(d, roots))
         while not target.exists():
             parent = target.parent
             if parent == target:
@@ -200,13 +226,13 @@ def _probe_writable(dirs: set[str]) -> None:
             )
 
 
-def _verify_no_drift(selected: list[dict], stat_fn: StatFn) -> None:
+def _verify_no_drift(selected: list[dict], stat_fn: StatFn, roots: list[str]) -> None:
     """Re-stat every source; abort the whole batch on any fingerprint mismatch."""
     drifted: list[str] = []
     for entry in selected:
         for f in entry["files"]:
             try:
-                size, mtime_ns = stat_fn(f["current_path"])
+                size, mtime_ns = stat_fn(_confine(f["current_path"], roots))
             except OSError:
                 drifted.append(f["current_path"])
                 continue
@@ -247,20 +273,26 @@ def apply_manifest(
 
     payload = _load_manifest(db, manifest_id)
     selected = _select_entries(payload, entry_ids)
+    roots = _allowed_roots(db)
 
     dest_dirs = {e["proposed_dir"] for e in selected}
-    _probe_writable(dest_dirs)
+    _probe_writable(dest_dirs, roots)
 
     # Hold the app-wide write lock for the whole operation: no scan may prune or
     # insert rows under the move, and no second apply/undo may interleave.
     with write_lock.library_write("apply", timeout=0.0):
-        _verify_no_drift(selected, stat_fn)
+        _verify_no_drift(selected, stat_fn, roots)
 
         log = _UndoLog(manifest_id)
         moved = 0
         try:
             for f in _ordered_moves(selected):
-                move_fn(f["current_path"], f["proposed_path"])
+                # Confine both ends to a scan root before touching disk — the
+                # value the move operates on is now validated, not raw manifest
+                # data. Canonical paths still go to the log/DB.
+                src = _confine(f["current_path"], roots)
+                dst = _confine(f["proposed_path"], roots)
+                move_fn(src, dst)
                 # Record only AFTER the move completes — the log is the recovery
                 # source of truth, so it must reflect reality on disk.
                 log.record(f["current_path"], f["proposed_path"], f["size_bytes"], f["mtime_ns"])
@@ -402,6 +434,7 @@ def undo_manifest(
         )
 
     records = _read_undo_log(manifest_id)
+    roots = _allowed_roots(db)
 
     with write_lock.library_write("undo", timeout=0.0):
         skipped: list[dict] = []
@@ -411,14 +444,21 @@ def undo_manifest(
         # deepest-source-first so a re-created parent never blocks a child.
         for rec in reversed(records):
             to, frm = rec["to"], rec["from"]
-            to_n = _os_native(to)
+            # Confine both ends to a scan root before any disk access — a tampered
+            # log can't drive a move outside the library. Reason out on escape.
+            try:
+                to_n = _confine(to, roots)
+                frm_n = _confine(frm, roots)
+            except ApplyError:
+                skipped.append({"path": to, "reason": "escapes_roots"})
+                continue
 
             if not os.path.exists(to_n):
                 # Already reversed (idempotent re-run) or never landed.
                 skipped.append({"path": to, "reason": "missing"})
                 continue
             try:
-                size, mtime_ns = stat_fn(to)
+                size, mtime_ns = stat_fn(to_n)
             except OSError:
                 skipped.append({"path": to, "reason": "unreadable"})
                 continue
@@ -426,13 +466,13 @@ def undo_manifest(
                 # User edited/replaced the file after apply — don't move blind.
                 skipped.append({"path": to, "reason": "drift"})
                 continue
-            if os.path.exists(_os_native(frm)) and _key(frm) != _key(to):
+            if os.path.exists(frm_n) and _key(frm) != _key(to):
                 # Something new occupies the original location — refuse to clobber.
                 skipped.append({"path": to, "reason": "origin_occupied"})
                 continue
 
             try:
-                move_fn(to, frm)
+                move_fn(to_n, frm_n)
             except Exception as e:
                 skipped.append({"path": to, "reason": f"move_failed: {e}"})
                 continue

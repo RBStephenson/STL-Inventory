@@ -316,6 +316,33 @@ class TestManifestIdValidation:
         assert resp.status_code == 400
 
 
+class TestPathConfinement:
+    def test_confine_rejects_outside_root(self, tmp_path):
+        from app.services.reorganize_apply import _confine
+        root = os.path.normpath(os.path.abspath(str(tmp_path)))
+        # Inside → returned normalized.
+        inside = str(tmp_path / "Abe3D" / "head.stl")
+        assert _confine(inside, [root]).startswith(root)
+        # Outside / traversal → rejected.
+        with pytest.raises(ApplyError):
+            _confine("/etc/passwd", [root])
+        with pytest.raises(ApplyError):
+            _confine(str(tmp_path / ".." / "evil.stl"), [root])
+
+    def test_apply_aborts_when_paths_escape_roots(self, client, db, tmp_path, write_mode):
+        from app.models import ScanRoot
+        _root(db, tmp_path)
+        m = _seed(db, tmp_path)
+        mid = _preview(client)["manifest_id"]
+        # Drop the scan root → nothing is confined anymore → apply must refuse,
+        # not move files to paths it can no longer vouch for (tampered-manifest
+        # defense-in-depth).
+        db.query(ScanRoot).delete()
+        db.commit()
+        resp = client.post("/reorganize/apply", json={"manifest_id": mid, "entry_ids": [m.id]})
+        assert resp.status_code == 400
+
+
 class TestOverrideRepath:
     def test_pack_and_group_overrides_repathed(self, db, tmp_path, write_mode, client):
         _root(db, tmp_path)
