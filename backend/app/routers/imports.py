@@ -26,24 +26,11 @@ from app.services import scanner
 router = APIRouter(prefix="/import", tags=["import"])
 
 
-def _safe_resolve(user_path: str, db: Session) -> Path:
-    """Resolve a user-supplied import path and confine it to the allowed roots
-    before any filesystem access (path-injection barrier).
-
-    Uses realpath + commonpath containment (the canonical guard) and returns the
-    *resolved* path for all downstream disk operations. Allowed = configured scan
-    roots + the bootstrap browse allowlist: import sources are reached through the
-    allowlist-guarded folder picker, and a pack may legitimately sit inside a
-    configured root, so both sets are permitted."""
-    real = os.path.realpath(user_path)
-    allowed = [os.path.realpath(str(r)) for r in _configured_roots(db) + _bootstrap_roots()]
-    for base in allowed:
-        try:
-            if os.path.commonpath([real, base]) == base:
-                return Path(real)
-        except ValueError:
-            continue  # different drives (Windows) — not under this base
-    raise HTTPException(status_code=403, detail="Path is outside the allowed folders")
+def _allowed_bases(db: Session) -> list[str]:
+    """Resolved allow set for import paths: configured scan roots + the bootstrap
+    browse allowlist. Import sources come through the allowlist-guarded folder
+    picker, and a pack may sit inside a configured root, so both are permitted."""
+    return [os.path.realpath(str(r)) for r in _configured_roots(db) + _bootstrap_roots()]
 
 
 def _pack_key(folder_path: str, source: str) -> str:
@@ -76,8 +63,22 @@ def source_contents(source: str, db: Session = Depends(get_db)):
     if not source.strip():
         raise HTTPException(status_code=400, detail="source is required")
 
-    p = _safe_resolve(source.strip(), db)  # 403 if outside allowed roots
-    src = str(p)
+    # Path-injection barrier (inline so CodeQL sees the guard at the sink):
+    # realpath + commonpath containment against the allowed roots.
+    real = os.path.realpath(source.strip())
+    contained = False
+    for base in _allowed_bases(db):
+        try:
+            if os.path.commonpath([real, base]) == base:
+                contained = True
+                break
+        except ValueError:
+            continue  # different drives (Windows)
+    if not contained:
+        raise HTTPException(status_code=403, detail="Path is outside the allowed folders")
+
+    p = Path(real)
+    src = real
     if not p.exists() or not p.is_dir():
         raise HTTPException(status_code=404, detail="Folder not found")
 
@@ -121,7 +122,21 @@ def scan_folder(body: InboxScanRequest, db: Session = Depends(get_db)):
 
     if not body.path.strip():
         raise HTTPException(status_code=400, detail="Path is required")
-    p = _safe_resolve(body.path.strip(), db)  # 403 if outside allowed roots
+
+    # Path-injection barrier (inline; see source_contents).
+    real = os.path.realpath(body.path.strip())
+    contained = False
+    for base in _allowed_bases(db):
+        try:
+            if os.path.commonpath([real, base]) == base:
+                contained = True
+                break
+        except ValueError:
+            continue
+    if not contained:
+        raise HTTPException(status_code=403, detail="Path is outside the allowed folders")
+
+    p = Path(real)
     if not p.exists():
         raise HTTPException(status_code=400, detail="Path does not exist")
     if not p.is_dir():
