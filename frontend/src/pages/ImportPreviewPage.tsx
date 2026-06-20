@@ -46,6 +46,8 @@ export default function ImportPreviewPage() {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [status, setStatus] = useState<Record<string, ImportStatus>>({});
 
+  const [applying, setApplying] = useState(false);
+
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   useEffect(() => () => { if (pollRef.current) clearInterval(pollRef.current); }, []);
 
@@ -140,6 +142,28 @@ export default function ImportPreviewPage() {
   const cards: SourceContentsEntry[] = isFlat
     ? [{ name: source.split(/[\\/]/).filter(Boolean).pop() || source, path: source, already_imported: false }]
     : entries;
+
+  const stagedCount = cards.filter((c) => c.already_imported || status[c.path] === "done").length;
+  const libraryName = libraries.find((l) => l.id === libraryId)?.name ?? "library";
+
+  const applyBatch = async () => {
+    if (!libraryId) { toast("Pick a destination library first.", "error"); return; }
+    setApplying(true);
+    try {
+      const res = await api.import.apply(source);
+      if (res.moved_models > 0) toast(`Moved ${res.moved_models} pack(s) into ${libraryName}.`, "success");
+      if (res.skipped > 0) {
+        const why = res.ineligible[0]?.reasons[0] ?? "ineligible";
+        toast(`${res.skipped} pack(s) skipped (${why}).`, res.moved_models > 0 ? "info" : "error");
+      }
+      if (res.moved_models === 0 && res.skipped === 0) toast("Nothing to move.", "info");
+      await load();  // moved models lose is_inbox → leave the list
+    } catch (e: unknown) {
+      toast(e instanceof Error ? e.message : "Couldn't move the packs — check the destination is writable.", "error");
+    } finally {
+      setApplying(false);
+    }
+  };
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-8 space-y-6">
@@ -274,6 +298,26 @@ export default function ImportPreviewPage() {
       <Link to="/import" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300">
         <ArrowLeft size={14} /> Choose a different folder
       </Link>
+
+      {/* Batch apply — move staged (imported) packs into the mapped library */}
+      {stagedCount > 0 && (
+        <div className="fixed bottom-0 inset-x-0 z-40 flex justify-center pb-5 pointer-events-none">
+          <div className="pointer-events-auto flex items-center gap-4 bg-gray-900 border border-gray-700 rounded-xl shadow-2xl px-5 py-3">
+            <span className="text-sm text-gray-300">
+              {stagedCount} imported pack{stagedCount !== 1 ? "s" : ""} ready to move
+            </span>
+            <button
+              onClick={applyBatch}
+              disabled={applying || !libraryId}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white text-sm font-medium transition-colors"
+            >
+              {applying
+                ? <><Loader2 size={14} className="animate-spin" /> Moving…</>
+                : <>Move to {libraryName}</>}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

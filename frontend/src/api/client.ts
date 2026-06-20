@@ -168,6 +168,21 @@ export interface SourceMapping {
   library_id: number;
 }
 
+export interface ImportApplyIneligible {
+  model_id: number;
+  proposed_dir: string;
+  reasons: string[];
+}
+
+export interface ImportApplyResult {
+  manifest_id: string;
+  moved_models: number;
+  moved_files: number;
+  skipped: number;
+  ineligible: ImportApplyIneligible[];
+  undo_log: string | null;
+}
+
 export interface DriveStatusRoot {
   path: string;
   enabled: boolean;
@@ -995,6 +1010,12 @@ export const api = {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ source_path, library_id }),
+      }),
+    apply: (source: string) =>
+      request<ImportApplyResult>("/import/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ source }),
       }),
   },
   settings: {

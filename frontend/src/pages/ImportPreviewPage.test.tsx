@@ -12,6 +12,9 @@ vi.mock("../api/client", () => ({
       setMapping: vi.fn().mockResolvedValue({ source_path: "/src", library_id: 1 }),
       preview: vi.fn(),
       scanFolder: vi.fn().mockResolvedValue({ running: true, message: "importing" }),
+      apply: vi.fn().mockResolvedValue({
+        manifest_id: "m1", moved_models: 1, moved_files: 2, skipped: 0, ineligible: [], undo_log: null,
+      }),
     },
     scan: {
       libraries: vi.fn(),
@@ -84,6 +87,28 @@ describe("ImportPreviewPage (#452 C2)", () => {
     await screen.findByText("PackA");
     fireEvent.change(screen.getByLabelText("Library"), { target: { value: "1" } });
     await waitFor(() => expect(api.import.setMapping).toHaveBeenCalledWith("/src", 1));
+  });
+
+  it("shows the batch bar for imported packs and applies via /import/apply", async () => {
+    vi.mocked(api.import.sourceContents).mockResolvedValue({
+      source: "/src", is_flat: false,
+      entries: [{ name: "PackA", path: "/src/PackA", already_imported: true }],
+    });
+    vi.mocked(api.scan.libraries).mockResolvedValue([
+      { id: 1, path: "/lib", name: "minis", is_writable: true, write_enabled: true },
+    ]);
+    vi.mocked(api.import.getMapping).mockResolvedValue({ source_path: "/src", library_id: 1 });
+    vi.mocked(api.import.preview).mockResolvedValue({ source: "/src", library_id: 1, packs: [PACK] });
+
+    render(
+      <MemoryRouter initialEntries={["/import/preview?source=/src"]}>
+        <ImportPreviewPage />
+      </MemoryRouter>
+    );
+
+    const moveBtn = await screen.findByRole("button", { name: /move to minis/i });
+    fireEvent.click(moveBtn);
+    await waitFor(() => expect(api.import.apply).toHaveBeenCalledWith("/src"));
   });
 
   it("imports a pack: scan, then enrich the ingested models", async () => {

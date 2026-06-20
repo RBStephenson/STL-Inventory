@@ -15,15 +15,39 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import ImportSourceMapping, Model, ScanRoot, STLFile
+from app.routers.reorganize import _build_and_persist
 from app.routers.scan import _bootstrap_roots, _configured_roots
 from app.schemas import (
+    ImportApplyIneligible, ImportApplyRequest, ImportApplyResponse,
     ImportPreviewPack, ImportPreviewResponse, InboxScanRequest,
     SourceContentsEntry, SourceContentsResponse,
     SourceMappingRead, SourceMappingSet,
 )
-from app.services import scanner
+from app.services import reorganize_apply, scanner, write_lock
+from app.services.reorganize_apply import ApplyError
 
 router = APIRouter(prefix="/import", tags=["import"])
+
+
+# Entry flags (Phase 1) that make a pack ineligible to move, mapped to a reason.
+_INELIGIBLE_FLAGS = [
+    ("unclassifiable", "missing creator/character"),
+    ("collision", "destination collision"),
+    ("over_length", "path too long"),
+    ("reserved_name", "reserved filename"),
+    ("overlaps_other", "overlaps another move"),
+    ("spans_multiple_dirs", "files span multiple folders"),
+    ("is_symlink", "symlinked"),
+    ("escapes_scan_root", "no writable destination library"),
+    ("missing_files_on_disk", "files missing on disk"),
+]
+
+
+def _ineligible_reasons(entry) -> list[str]:
+    reasons = [label for attr, label in _INELIGIBLE_FLAGS if getattr(entry, attr, False)]
+    if getattr(entry, "missing_fields", None):
+        reasons.append("missing " + ", ".join(entry.missing_fields))
+    return reasons or ["ineligible"]
 
 
 def _allowed_bases(db: Session) -> list[str]:
@@ -275,3 +299,54 @@ def set_source_mapping(body: SourceMappingSet, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(mapping)
     return mapping
+
+
+@router.post("/apply", response_model=ImportApplyResponse)
+def import_apply(body: ImportApplyRequest, db: Session = Depends(get_db)):
+    """Batch-move the ingested inbox packs under a source into their mapped
+    library (#453). Builds a manifest scoped to those inbox models (destination =
+    mapped library via the source→library mapping) and runs it through the
+    existing reorganize apply engine — drift verification + crash-safe undo log,
+    is_inbox cleared on move (#324). No second mover."""
+    src = os.path.realpath(body.source.strip())
+    if not body.source.strip():
+        raise HTTPException(status_code=400, detail="source is required")
+
+    mapping = (
+        db.query(ImportSourceMapping)
+        .filter(ImportSourceMapping.source_path == src)
+        .first()
+    )
+    if not mapping:
+        raise HTTPException(status_code=400, detail="No destination library mapped for this source.")
+
+    resp = _build_and_persist(db, None, None, None, inbox_source=src)
+    eligible_ids = [e.model_id for e in resp.entries if e.eligible]
+    ineligible = [
+        ImportApplyIneligible(
+            model_id=e.model_id, proposed_dir=e.proposed_dir, reasons=_ineligible_reasons(e),
+        )
+        for e in resp.entries if not e.eligible
+    ]
+
+    if not eligible_ids:
+        return ImportApplyResponse(
+            manifest_id=resp.manifest_id, moved_models=0, moved_files=0,
+            skipped=len(ineligible), ineligible=ineligible,
+        )
+
+    try:
+        result = reorganize_apply.apply_manifest(db, resp.manifest_id, eligible_ids)
+    except write_lock.LibraryBusy as e:
+        raise HTTPException(status_code=409, detail=str(e))
+    except ApplyError as e:
+        raise HTTPException(status_code=e.status, detail={"message": str(e), **e.detail})
+
+    return ImportApplyResponse(
+        manifest_id=result.manifest_id,
+        moved_models=result.moved_models,
+        moved_files=result.moved_files,
+        skipped=len(ineligible),
+        ineligible=ineligible,
+        undo_log=result.undo_log,
+    )
