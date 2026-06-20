@@ -1088,6 +1088,16 @@ def prepare_inbox_scan() -> bool:
     return True
 
 
+def abort_inbox_scan(message: str = "error: failed to start") -> None:
+    """Release the write lock and clear running state after prepare_inbox_scan()
+    succeeded but the worker thread failed to launch. Without this, a failed
+    thread.start() would leave the lock held and state stuck at running."""
+    with _state_lock:
+        _scan_state["running"] = False
+        _scan_state["message"] = message
+    write_lock.release_scan()
+
+
 def scan_inbox_folder(
     path: str, db: Session | None = None, _lock_already_held: bool = False
 ) -> None:

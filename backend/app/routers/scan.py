@@ -228,13 +228,21 @@ def start_inbox_scan(body: InboxScanRequest, db: Session = Depends(get_db)):
             detail="Library is busy — reorganize in progress, try again shortly",
         )
 
-    thread = threading.Thread(
-        target=scanner.scan_inbox_folder,
-        args=(path,),
-        kwargs={"_lock_already_held": True},
-        daemon=True,
-    )
-    thread.start()
+    # Pass the canonical, validated path across the worker boundary (not the raw
+    # request value). If the thread fails to launch, release the lock and reset
+    # state so a failed start doesn't wedge the library at running-forever.
+    try:
+        thread = threading.Thread(
+            target=scanner.scan_inbox_folder,
+            args=(str(p),),
+            kwargs={"_lock_already_held": True},
+            daemon=True,
+        )
+        thread.start()
+    except Exception as e:
+        scanner.abort_inbox_scan()
+        raise HTTPException(status_code=500, detail=f"Failed to start import: {e}")
+
     return ScanStatus(running=True, message="importing")
 
 

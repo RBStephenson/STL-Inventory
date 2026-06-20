@@ -289,6 +289,16 @@ def apply_manifest(
             )
     src_roots = roots + inbox_src_dirs
 
+    # Persist the approved inbox source dirs into the *trusted* manifest row
+    # (DB-backed) so undo can validate restore targets without trusting the
+    # writable undo log on disk. Written before any move so a crash mid-batch
+    # still leaves undo able to confine the original inbox paths.
+    if inbox_src_dirs:
+        row = db.get(ReorganizeManifest, manifest_id)
+        if row is not None:
+            row.payload = {**row.payload, "applied_inbox_roots": sorted(set(inbox_src_dirs))}
+            db.commit()
+
     dest_dirs = {e["proposed_dir"] for e in selected}
     _probe_writable(dest_dirs, roots)
 
@@ -462,6 +472,16 @@ def undo_manifest(
     records = _read_undo_log(manifest_id)
     roots = _allowed_roots(db)
 
+    # Restore targets are confined to the scan roots PLUS the inbox source dirs
+    # this manifest actually approved at apply time. Those are read from the
+    # trusted manifest row (DB), never from the writable undo log — so a tampered
+    # log cannot redirect a restore outside an approved root.
+    row = db.get(ReorganizeManifest, manifest_id)
+    applied_inbox = list((row.payload.get("applied_inbox_roots") or []) if row else [])
+    frm_roots = roots + [
+        os.path.normpath(os.path.abspath(_os_native(r))) for r in applied_inbox
+    ]
+
     with write_lock.library_write("undo", timeout=0.0):
         skipped: list[dict] = []
         reversed_moves: list[tuple[str, str]] = []   # (to, from) that succeeded
@@ -470,17 +490,16 @@ def undo_manifest(
         # deepest-source-first so a re-created parent never blocks a child.
         for rec in reversed(records):
             to, frm = rec["to"], rec["from"]
-            # The "to" path (current file location after apply) must be inside a
-            # scan root — confine it strictly. The "frm" path (original location,
-            # written by apply) may be an inbox dir outside scan roots; the undo
-            # log lives in the app data dir and is not user-controlled, so we
-            # normalize without re-confining to a scan root.
+            # The "to" path (current location after apply) must be inside a scan
+            # root. The "frm" path (original location) must be inside a scan root
+            # OR an approved inbox source dir from the trusted manifest. Either
+            # escape is refused, not forced.
             try:
                 to_n = _confine(to, roots)
+                frm_n = _confine(frm, frm_roots)
             except ApplyError:
                 skipped.append({"path": to, "reason": "escapes_roots"})
                 continue
-            frm_n = os.path.normpath(os.path.abspath(_os_native(frm)))
 
             if not os.path.exists(to_n):
                 # Already reversed (idempotent re-run) or never landed.
