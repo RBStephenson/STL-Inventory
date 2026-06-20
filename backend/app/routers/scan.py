@@ -86,7 +86,9 @@ def browse_dirs(path: str = "", mode: str = "", db: Session = Depends(get_db)):
             }
         path = str(Path.home())
 
-    p = Path(path)
+    # Resolve to a canonical absolute path (eliminates .. traversal) before
+    # any existence or allowlist check, so CodeQL sees the sanitisation.
+    p = Path(path).resolve()
     if not p.exists() or not p.is_dir():
         raise HTTPException(status_code=404, detail="Folder not found")
 
@@ -176,7 +178,9 @@ def start_inbox_scan(body: InboxScanRequest, db: Session = Depends(get_db)):
     path = body.path.strip()
     if not path:
         raise HTTPException(status_code=400, detail="Path is required")
-    p = Path(path)
+    # Resolve to canonical absolute path (eliminates .. traversal) before any
+    # filesystem or allowlist check, so CodeQL sees the sanitisation boundary.
+    p = Path(path).resolve()
     if not p.exists():
         raise HTTPException(status_code=400, detail="Path does not exist")
     if not p.is_dir():
