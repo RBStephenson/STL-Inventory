@@ -20,6 +20,7 @@ from sqlalchemy.orm import Session, joinedload
 from app.models import (
     Creator,
     GroupOverride,
+    ImportSourceMapping,
     Model,
     PackOverride,
     ScanRoot,
@@ -136,6 +137,7 @@ def build_manifest(
     template: str | None,
     root_id: int | None = None,
     overrides: dict[int, dict] | None = None,
+    inbox_source: str | None = None,
 ) -> Manifest:
     """Build the reorganize preview manifest. Raises ReorganizeTemplateError on
     a malformed template (caller maps to 4xx).
@@ -156,10 +158,10 @@ def build_manifest(
 
     # Managed destination root for inbox models: they live outside every scan
     # root, so they can't anchor their proposed path to a containing root the way
-    # in-library models do. Anchor them at the primary (first enabled) scan root
-    # — that is the managed library they get moved into. None when no roots exist
-    # (then inbox models stay ineligible: nowhere to move them).
-    dest_root = None
+    # in-library models do. Default anchor is the primary (first enabled) scan
+    # root; a source→library mapping overrides it per model (#453). None when no
+    # roots exist (then inbox models stay ineligible: nowhere to move them).
+    primary_dest = None
     primary = (
         db.query(ScanRoot)
         .filter(ScanRoot.enabled == True)  # noqa: E712
@@ -167,7 +169,30 @@ def build_manifest(
         .first()
     )
     if primary and primary.path:
-        dest_root = _canon(primary.path)
+        primary_dest = _canon(primary.path)
+
+    # Source→library destination map (#453): canon(source_path) → canon(library
+    # path). An inbox model resolves to the library of its longest-matching
+    # source ancestor, falling back to the primary root.
+    src_lib = [
+        (_key(sp), _canon(lp))
+        for (sp, lp) in (
+            db.query(ImportSourceMapping.source_path, ScanRoot.path)
+            .join(ScanRoot, ImportSourceMapping.library_id == ScanRoot.id)
+            .all()
+        )
+        if sp and lp
+    ]
+
+    def _dest_for(m: Model) -> str | None:
+        if not m.is_inbox:
+            return None
+        mk = _key(m.folder_path or "")
+        best_len, best = -1, None
+        for skey, lib in src_lib:
+            if (mk == skey or mk.startswith(skey + "/")) and len(skey) > best_len:
+                best_len, best = len(skey), lib
+        return best if best is not None else primary_dest
 
     pack_paths = [_canon(p) for (p,) in db.query(PackOverride.path).all() if p]
     group_paths = [_canon(p) for (p,) in db.query(GroupOverride.path).all() if p]
@@ -176,7 +201,14 @@ def build_manifest(
         db.query(Model)
         .options(joinedload(Model.creator), joinedload(Model.stl_files))
     )
-    if root_id is not None:
+    if inbox_source is not None:
+        # Scoped import apply (#453): only inbox models under this source folder.
+        skey = _key(inbox_source)
+        models = [
+            m for m in models_q.filter(Model.is_inbox == True).all()  # noqa: E712
+            if _key(m.folder_path or "") == skey or _key(m.folder_path or "").startswith(skey + "/")
+        ]
+    elif root_id is not None:
         # Limit to models physically under the selected root.
         root_canons = [c for c, _ in root_keys]
         models = [
@@ -190,7 +222,7 @@ def build_manifest(
     entries: list[Entry] = []
     for m in models:
         entries.append(_build_entry(m, segments, root_keys, pack_paths, group_paths,
-                                    overrides.get(m.id), dest_root))
+                                    overrides.get(m.id), _dest_for(m)))
 
     _detect_collisions(entries)
     _detect_overlaps(entries)

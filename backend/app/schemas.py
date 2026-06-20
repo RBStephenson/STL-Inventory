@@ -312,6 +312,25 @@ class SourceContentsResponse(BaseModel):
     entries: list[SourceContentsEntry]
 
 
+class ImportApplyRequest(BaseModel):
+    source: str
+
+
+class ImportApplyIneligible(BaseModel):
+    model_id: int
+    proposed_dir: str
+    reasons: list[str]
+
+
+class ImportApplyResponse(BaseModel):
+    manifest_id: str
+    moved_models: int
+    moved_files: int
+    skipped: int                       # ineligible entries not moved
+    ineligible: list[ImportApplyIneligible]
+    undo_log: Optional[str] = None
+
+
 class DownloadZipRequest(BaseModel):
     file_ids: list[int]
     zip_name: str = "kit-build"
