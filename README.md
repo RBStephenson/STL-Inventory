@@ -116,9 +116,10 @@ A folder is only indexed as a model if it contains 3D files.
 - Sticky build summary with a **Copy list** button (copies selected filenames to clipboard)
 - Uncategorized files shown at the bottom
 
-### Bulk Tag Editor
+### Bulk Editor
 - Checkbox-select multiple models in the Library grid
 - Floating bar to add or remove tags across the selection at once
+- **Enrich** mode sets creator, character, and/or title across the whole selection in one pass — the fast way to make loose, badly-named imports eligible for reorganize
 
 ### Collections
 - Group models into named sets independent of tags/creators (projects, wishlists, etc.)
@@ -140,6 +141,13 @@ Enable under **Settings → Painting Guides** — adds **Guides** and **Paint Sh
 - In-app structured editor for tabs, phases, steps, and swatches.
 - **Print** or **Export PDF** the whole guide in one pass — the print stylesheet preserves dark backgrounds and paint chip colors so swatches render correctly on paper.
 - **Model links** — guides appear as a badge on Library cards and a button on model detail pages.
+
+### Import Folder (`/import`)
+- One-shot import of an arbitrary folder **without** adding it as a permanent scan root — for loose downloads, a dumped ZIP, or unsorted files
+- Each immediate subdirectory is treated as a creator; flat files in the root land under a single `_Inbox` creator
+- Imported models are flagged as **inbox** (`?is_inbox=1` filter in the Library) so you can enrich and reorganize them separately
+- Pairs with **Bulk Enrich** → **Reorganize**: import loose files, fill in creator/character/title, then file them into the managed library on disk. Inbox models move into the primary scan root on apply and revert cleanly on undo
+- Standalone-only writes apply (Docker mounts are read-only for reorganize)
 
 ### Scan
 - **Parallel** — scans up to 4 creator directories concurrently for faster indexing on large libraries

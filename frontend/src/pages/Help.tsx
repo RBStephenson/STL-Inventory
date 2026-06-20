@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import {
   Rocket, LayoutGrid, Layers, FileBox, Box, Image as ImageIcon,
   Star, Wrench, Globe, AlertTriangle, Tags, Users, FolderSearch,
-  Settings as SettingsIcon, Database, EyeOff, LifeBuoy, FolderOpen, Heart, Palette, Tag, FolderSync, type LucideIcon,
+  Settings as SettingsIcon, Database, EyeOff, LifeBuoy, FolderOpen, Heart, Palette, Tag, FolderSync, Inbox, type LucideIcon,
 } from "lucide-react";
 
 /** A keyboard key, styled like the hints elsewhere in the app. */
@@ -368,14 +368,69 @@ const SECTIONS: Section[] = [
   },
   {
     id: "bulk-tags",
-    title: "Bulk tag editor",
+    title: "Bulk editor (tags & enrich)",
     icon: Tags,
     body: (
-      <p>
-        In the Library, hover a card and use the checkbox to select multiple models. A
-        floating bar appears where you can <strong>add or remove tags</strong> or{" "}
-        <strong>add to a collection</strong> across the whole selection at once.
-      </p>
+      <>
+        <p>
+          In the Library, hover a card and use the checkbox to select multiple models. A
+          floating bar appears with actions across the whole selection at once:
+        </p>
+        <ul>
+          <li><strong>Add or remove tags</strong> across every selected model.</li>
+          <li><strong>Add to a collection</strong> in one step.</li>
+          <li>
+            <strong>Enrich</strong> — set <strong>creator</strong>,{" "}
+            <strong>character</strong>, and/or <strong>title</strong> across the
+            selection. Leave a field blank to leave it untouched. The fast way to fill
+            in metadata for loose or badly-named <a href="#import">imports</a> so they
+            become eligible for <a href="#reorganize">Reorganize</a>.
+          </li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    id: "import",
+    title: "Import folder",
+    icon: Inbox,
+    body: (
+      <>
+        <p>
+          <strong>Import</strong> (nav bar, at <code>/import</code>) does a one-shot index
+          of an arbitrary folder <strong>without</strong> adding it as a permanent scan
+          root — for loose downloads, an unzipped pack, or unsorted files you want in the
+          catalog but not re-scanned every run.
+        </p>
+        <ul>
+          <li>
+            <strong>Pick a folder</strong> with the browser, then <strong>Start
+            import</strong>. Progress shows inline and the Library refreshes when it's done.
+          </li>
+          <li>
+            <strong>Structure</strong> — each immediate subdirectory is treated as a
+            creator (the same convention scans use). Files sitting directly in the chosen
+            folder land under a single <code>_Inbox</code> creator.
+          </li>
+          <li>
+            <strong>Inbox flag</strong> — imported models are marked as <strong>inbox</strong>.
+            The <code>?is_inbox=1</code> Library filter (linked from the import "done"
+            screen) shows just these, so you can review them separately.
+          </li>
+          <li>
+            <strong>The pipeline</strong> — import is the front of{" "}
+            <em>import → enrich → organize</em>: bring loose files in, use{" "}
+            <a href="#bulk-tags">Bulk → Enrich</a> to set creator/character/title, then{" "}
+            <a href="#reorganize">Reorganize</a> to file them into the managed library on
+            disk. Inbox models anchor at your primary scan root, move in on apply (the
+            inbox flag clears), and revert cleanly on undo.
+          </li>
+        </ul>
+        <p className="text-gray-500">
+          Like Reorganize, the move step is <strong>standalone-only</strong> (Docker mounts
+          are read-only); importing and enriching work everywhere.
+        </p>
+      </>
     ),
   },
   {

@@ -13,7 +13,8 @@ A tour of every screen and what it does.
 - [Metadata editing & web enrichment](#metadata-editing--web-enrichment)
 - [Triage queue](#triage-queue)
 - [Collections](#collections)
-- [Bulk tag editor](#bulk-tag-editor)
+- [Bulk editor (tags & enrich)](#bulk-editor-tags--enrich)
+- [Import folder](#import-folder)
 - [Creators & per-creator rescan](#creators--per-creator-rescan)
 - [Settings](#settings)
 - [Backup, restore & reset](#backup-restore--reset)
@@ -305,11 +306,40 @@ There are two ways:
 - Collections are included in the database backup, so they survive a
   backup/restore with no extra work.
 
-## Bulk tag editor
+## Bulk editor (tags & enrich)
 
 In the Library, hover a card and use the checkbox to select multiple models. A
-floating bar appears where you can **add or remove tags** or **add to a
-collection** across the whole selection at once.
+floating bar appears with bulk actions across the whole selection at once:
+
+- **Add or remove tags** — apply or strip a tag on every selected model.
+- **Add to a collection** — drop the whole selection into a collection.
+- **Enrich** — set **creator**, **character**, and/or **title** across the
+  selection in one pass. Leave a field blank to leave it untouched. This is the
+  fast way to fill in metadata for loose or badly-named imports so they become
+  eligible for [Reorganize](#reorganize-library).
+
+## Import folder
+
+**Import** (in the nav, at **/import**) does a one-shot index of an arbitrary
+folder **without** adding it as a permanent scan root — for loose downloads, an
+unzipped pack, or a pile of unsorted files you want in the catalog but don't
+want scanned on every run.
+
+- **Pick a folder** with the browser, then **Start import**. Progress shows
+  inline; the Library refreshes when it finishes.
+- **Structure** — each immediate subdirectory is treated as a creator (the same
+  one-level-per-creator convention scans use). Files sitting directly in the
+  chosen folder land under a single `_Inbox` creator.
+- **Inbox flag** — imported models are marked as **inbox**. The Library's
+  `?is_inbox=1` filter (linked from the import "done" screen) shows just these,
+  so you can review, enrich, and file them separately from your settled library.
+- **The pipeline** — import is the front of **import → enrich → organize**:
+  bring loose files in, use **Bulk → Enrich** to set creator/character/title,
+  then **Reorganize** to move them into the managed library on disk. Inbox models
+  anchor at your primary scan root, move in on apply (the inbox flag clears), and
+  revert cleanly on undo.
+- Like Reorganize, the move step is **standalone-only** (Docker mounts are
+  read-only); importing and enriching work everywhere.
 
 ## Creators & per-creator rescan
 
