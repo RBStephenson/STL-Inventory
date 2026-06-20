@@ -1,4 +1,7 @@
-"""Tests for PATCH /models/bulk/enrich (#429)."""
+"""Tests for PATCH /models/bulk/enrich (#429, #437)."""
+from unittest.mock import patch
+
+from app.models import GroupOverride
 from tests.conftest import make_creator, make_model
 
 
@@ -82,3 +85,40 @@ class TestBulkEnrich:
         _, a, _, _ = _setup(db)
         r = client.patch("/models/bulk/enrich", json={"ids": [a.id], "character": "Dwarf"})
         assert r.status_code == 200  # not 422 from int("bulk")
+
+    def test_character_creates_group_override(self, client, db):
+        """Setting character must persist a GroupOverride so rescans don't overwrite it."""
+        _, a, _, _ = _setup(db)
+        client.patch("/models/bulk/enrich", json={"ids": [a.id], "character": "Dragon"})
+        override = db.query(GroupOverride).filter(GroupOverride.path == a.folder_path).first()
+        assert override is not None
+        assert override.character == "Dragon"
+
+    def test_blank_character_creates_ungroup_override(self, client, db):
+        """Clearing character must write a NULL GroupOverride, not just clear the column."""
+        _, a, _, _ = _setup(db)
+        client.patch("/models/bulk/enrich", json={"ids": [a.id], "character": "Elf"})
+        client.patch("/models/bulk/enrich", json={"ids": [a.id], "character": ""})
+        override = db.query(GroupOverride).filter(GroupOverride.path == a.folder_path).first()
+        assert override is not None
+        assert override.character is None  # explicit ungroup — not deleted
+
+    def test_character_survives_rescan(self, client, db):
+        """Regression: bulk-enriched character must not be overwritten by a subsequent scan."""
+        from app.services import scanner
+
+        _, a, _, _ = _setup(db)
+        client.patch("/models/bulk/enrich", json={"ids": [a.id], "character": "Orc"})
+
+        # Simulate what _index_model does: load overrides then apply them.
+        scanner._load_group_overrides(db)
+        # The override must be present in the scanner's in-memory map.
+        assert a.folder_path in scanner._group_overrides
+        assert scanner._group_overrides[a.folder_path] == "Orc"
+
+    def test_409_when_scan_running(self, client, db):
+        """Returns 409 when a scan is in progress, matching set-group / batch-set-group behaviour."""
+        _, a, _, _ = _setup(db)
+        with patch("app.routers.models.scanner.get_status", return_value={"running": True}):
+            r = client.patch("/models/bulk/enrich", json={"ids": [a.id], "character": "Troll"})
+        assert r.status_code == 409

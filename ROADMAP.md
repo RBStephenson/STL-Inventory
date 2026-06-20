@@ -181,19 +181,18 @@ Shipped in **v0.11.0**.
 
 ---
 
-## v0.12 — Import-and-organize pipeline — Planned
+## v0.12 — Import-and-organize pipeline ✅ Complete
 
 The end-to-end **import → enrich → organize** workflow for loose, badly-named, or
 unknown-creator files. Reorganize (v0.11) is only the last mile; these add the
 import and bulk-enrich steps that make unorganized files eligible to file away.
-Both children reuse the v0.11 Phase 2 apply/move engine, so this milestone
-sequences behind [#324](https://github.com/RBStephenson/STL-Inventory/issues/324).
+Both children reuse the v0.11 Phase 2 apply/move engine.
 
 | Issue | Item |
 |-------|------|
 | [#427](https://github.com/RBStephenson/STL-Inventory/issues/427) | **Epic — import-and-organize pipeline** for loose/unknown files |
-| [#428](https://github.com/RBStephenson/STL-Inventory/issues/428) | **Child A — one-shot import folder → library** (move-in ingest, not a permanent scan root) |
-| [#429](https://github.com/RBStephenson/STL-Inventory/issues/429) | **Child B — bulk-enrich metadata** (set creator/character/title across a selection — the bridge to reorganize-eligibility) |
+| [#428](https://github.com/RBStephenson/STL-Inventory/issues/428) | **Child A — one-shot import folder → library** ([#446](https://github.com/RBStephenson/STL-Inventory/pull/446)) — index an arbitrary folder as inbox models (`is_inbox` flag) without adding it as a permanent scan root; each immediate subdir is treated as a creator. Inbox models anchor at the primary scan root in reorganize, move into the managed library on apply (clearing `is_inbox`), and restore on undo |
+| [#429](https://github.com/RBStephenson/STL-Inventory/issues/429) | **Child B — bulk-enrich metadata** ([#436](https://github.com/RBStephenson/STL-Inventory/pull/436)) — `PATCH /models/bulk/enrich` sets creator/character/title across a multi-selection; the Enrich mode in the bulk toolbar — the bridge to reorganize-eligibility |
 
 ---
 

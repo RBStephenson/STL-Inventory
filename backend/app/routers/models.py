@@ -601,13 +601,18 @@ def bulk_enrich_models(body: BulkEnrichUpdate, db: Session = Depends(get_db)):
     if not any([body.creator_name, body.character is not None, body.title is not None]):
         raise HTTPException(status_code=400, detail="At least one field to update must be provided")
 
+    if scanner.get_status()["running"]:
+        raise HTTPException(status_code=409, detail="A scan is running — try again after it completes.")
+
     creator_id = resolve_creator(body.creator_name, db).id if body.creator_name else None
+    character = _normalize_group(body.character) if body.character is not None else None
     models_to_update = db.query(Model).filter(Model.id.in_(body.ids)).all()
     for model in models_to_update:
         if creator_id is not None:
             model.creator_id = creator_id
         if body.character is not None:
-            model.character = body.character.strip() or None
+            # Write a durable GroupOverride so the value survives rescans.
+            _apply_group_override(db, model, character)
         if body.title is not None:
             model.title = body.title.strip() or None
         model.updated_at = utcnow()
