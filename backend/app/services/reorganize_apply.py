@@ -329,3 +329,122 @@ def _prune_empty_sources(selected: list[dict]) -> None:
                 native.rmdir()
         except OSError:
             pass
+
+
+# --- Phase 2b: undo --------------------------------------------------------
+
+
+@dataclass
+class UndoResult:
+    manifest_id: str
+    reversed_files: int
+    skipped: list[dict]               # [{path, reason}] entries left in place
+
+
+def _parent(path: str) -> str:
+    return path.rsplit("/", 1)[0] if "/" in path else ""
+
+
+def undo_log_path(manifest_id: str) -> Path:
+    return write_lock.data_dir() / f"reorg_undo_{manifest_id}.log"
+
+
+def _read_undo_log(manifest_id: str) -> list[dict]:
+    path = undo_log_path(manifest_id)
+    if not path.exists():
+        raise ApplyError("No undo log for this manifest — nothing to undo", status=404)
+    records: list[dict] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line:
+            records.append(json.loads(line))
+    return records
+
+
+def undo_manifest(
+    db: Session,
+    manifest_id: str,
+    *,
+    move_fn: MoveFn = _safe_move,
+    stat_fn: StatFn = _stat,
+) -> UndoResult:
+    """Reverse a completed apply by replaying its undo log to → from in reverse.
+
+    Idempotent and partial-apply safe: each step is re-derived from the log plus
+    current disk state, never assumed. A destination (``to``) that's missing,
+    drifted, or whose origin (``from``) is now occupied is skipped and reported,
+    not forced. Running undo twice simply skips everything the first run already
+    reversed.
+    """
+    if not settings.reorganize_write_enabled:
+        raise ApplyError(
+            "Reorganize apply is disabled — this deployment is read-only",
+            status=403,
+        )
+
+    records = _read_undo_log(manifest_id)
+
+    with write_lock.library_write("undo", timeout=0.0):
+        skipped: list[dict] = []
+        reversed_moves: list[tuple[str, str]] = []   # (to, from) that succeeded
+
+        # Reverse order: a move made last is undone first, mirroring apply's
+        # deepest-source-first so a re-created parent never blocks a child.
+        for rec in reversed(records):
+            to, frm = rec["to"], rec["from"]
+            to_n = _os_native(to)
+
+            if not os.path.exists(to_n):
+                # Already reversed (idempotent re-run) or never landed.
+                skipped.append({"path": to, "reason": "missing"})
+                continue
+            try:
+                size, mtime_ns = stat_fn(to)
+            except OSError:
+                skipped.append({"path": to, "reason": "unreadable"})
+                continue
+            if size != rec["size_bytes"] or mtime_ns != rec["mtime_ns"]:
+                # User edited/replaced the file after apply — don't move blind.
+                skipped.append({"path": to, "reason": "drift"})
+                continue
+            if os.path.exists(_os_native(frm)) and _key(frm) != _key(to):
+                # Something new occupies the original location — refuse to clobber.
+                skipped.append({"path": to, "reason": "origin_occupied"})
+                continue
+
+            try:
+                move_fn(to, frm)
+            except Exception as e:
+                skipped.append({"path": to, "reason": f"move_failed: {e}"})
+                continue
+            reversed_moves.append((to, frm))
+
+        _repath_db_undo(db, reversed_moves)
+        return UndoResult(
+            manifest_id=manifest_id,
+            reversed_files=len(reversed_moves),
+            skipped=skipped,
+        )
+
+
+def _repath_db_undo(db: Session, reversed_moves: list[tuple[str, str]]) -> None:
+    """Point STLFile.path / Model.folder_path and the path-keyed overrides back to
+    the pre-apply locations, in one transaction. The log only carries paths, so
+    rows are found by their current (``to``) path."""
+    override_dirs: set[tuple[str, str]] = set()   # (proposed_dir, source_dir)
+    for to, frm in reversed_moves:
+        stl = db.query(STLFile).filter(STLFile.path == to).first()
+        if stl is None:
+            continue
+        stl.path = frm
+        model = db.get(Model, stl.model_id)
+        if model is not None:
+            model.folder_path = _parent(frm)
+            model.updated_at = utcnow()
+        override_dirs.add((_parent(to), _parent(frm)))
+
+    for proposed_dir, source_dir in override_dirs:
+        if proposed_dir and source_dir:
+            _repath_overrides(db, PackOverride, proposed_dir, source_dir)
+            _repath_overrides(db, GroupOverride, proposed_dir, source_dir)
+    db.commit()
