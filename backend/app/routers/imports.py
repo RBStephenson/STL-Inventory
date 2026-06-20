@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import ImportSourceMapping, Model, ScanRoot, STLFile
+from app.routers.scan import _bootstrap_roots, _configured_roots, _is_under_configured_root
 from app.schemas import (
     ImportPreviewPack, ImportPreviewResponse, InboxScanRequest,
     SourceContentsEntry, SourceContentsResponse,
@@ -23,6 +24,18 @@ from app.schemas import (
 from app.services import scanner
 
 router = APIRouter(prefix="/import", tags=["import"])
+
+
+def _guard_path(p: Path, db: Session) -> None:
+    """Confine a user-supplied import path to the allowed roots before any
+    filesystem access (path-injection barrier, mirrors /scan/browse).
+
+    Allowed = configured scan roots + the bootstrap browse allowlist. Import
+    sources are reached through the allowlist-guarded folder picker, and a pack
+    may legitimately sit inside a configured root, so both sets are permitted."""
+    allowed = _configured_roots(db) + _bootstrap_roots()
+    if not _is_under_configured_root(p, allowed):
+        raise HTTPException(status_code=403, detail="Path is outside the allowed folders")
 
 
 def _pack_key(folder_path: str, source: str) -> str:
@@ -57,6 +70,7 @@ def source_contents(source: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="source is required")
 
     p = Path(src)
+    _guard_path(p, db)
     if not p.exists() or not p.is_dir():
         raise HTTPException(status_code=404, detail="Folder not found")
 
@@ -102,6 +116,7 @@ def scan_folder(body: InboxScanRequest, db: Session = Depends(get_db)):
     p = Path(norm)
     if not norm or norm == ".":
         raise HTTPException(status_code=400, detail="Path is required")
+    _guard_path(p, db)
     if not p.exists():
         raise HTTPException(status_code=400, detail="Path does not exist")
     if not p.is_dir():
