@@ -401,11 +401,14 @@ def undo_log_path(manifest_id: str) -> Path:
     barrier the move paths use — so the request-supplied value provably can't
     traverse out (belt and braces, and a sanitizer CodeQL recognizes)."""
     safe = _validate_manifest_id(manifest_id)
-    base = os.path.normpath(os.path.abspath(str(write_lock.data_dir())))
-    candidate = os.path.normpath(os.path.abspath(os.path.join(base, f"reorg_undo_{safe}.log")))
-    if not (candidate == base or candidate.startswith(base + os.sep)):
+    base = write_lock.data_dir().resolve()
+    candidate = (base / f"reorg_undo_{safe}.log").resolve()
+    # The log is a single file directly under the data dir; its resolved parent
+    # must be exactly that dir. resolve() + parent-equality is the path-traversal
+    # barrier CodeQL models (plain normpath/startswith was not recognized).
+    if candidate.parent != base:
         raise ApplyError("Invalid manifest id", status=400)
-    return Path(candidate)
+    return candidate
 
 
 def _read_undo_log(manifest_id: str) -> list[dict]:
