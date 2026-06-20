@@ -779,6 +779,12 @@ export const api = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ids, needs_review }),
       }),
+    bulkEnrich: (ids: number[], fields: { creator_name?: string; character?: string; title?: string }) =>
+      request<{ ok: boolean; updated: number }>("/models/bulk/enrich", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids, ...fields }),
+      }),
     characters: (creatorId: number) =>
       request<string[]>(`/models/characters?creator_id=${creatorId}`),
     variants: (creatorId: number, character: string) =>

@@ -215,6 +215,13 @@ class BulkReviewUpdate(BaseModel):
     needs_review: bool
 
 
+class BulkEnrichUpdate(BaseModel):
+    ids: list[int]
+    creator_name: Optional[str] = None
+    character: Optional[str] = None
+    title: Optional[str] = None
+
+
 class SetGroupBody(BaseModel):
     character: Optional[str] = None  # None = explicitly ungroup; string = target group name
 

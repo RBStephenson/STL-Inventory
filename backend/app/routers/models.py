@@ -11,7 +11,7 @@ from app.schemas import (
     ModelList, ModelRead, ModelDetail, CreatorRead,
     ModelUpdate, ThumbnailUpdate, ThumbnailFromUrl, BatchThumbnailFromUrl, FavoriteUpdate, RatingUpdate, QueueReorder, GroupReorder,
     PrintStatusUpdate, ExcludeUpdate, STLFileUpdate, BulkTagUpdate,
-    BulkExcludeUpdate, BulkReviewUpdate, SetGroupBody, BatchSetGroupBody,
+    BulkExcludeUpdate, BulkReviewUpdate, BulkEnrichUpdate, SetGroupBody, BatchSetGroupBody,
     GroupRepUpdate,
 )
 from app.services.thumbnails import ThumbnailDownloadError, download_thumbnail, fetch_image_bytes, store_thumbnail
@@ -583,6 +583,29 @@ def bulk_review_models(body: BulkReviewUpdate, db: Session = Depends(get_db)):
     models_to_update = db.query(Model).filter(Model.id.in_(body.ids)).all()
     for model in models_to_update:
         model.needs_review = body.needs_review
+        model.updated_at = utcnow()
+    db.commit()
+    return {"ok": True, "updated": len(models_to_update)}
+
+
+@router.patch("/bulk/enrich")
+def bulk_enrich_models(body: BulkEnrichUpdate, db: Session = Depends(get_db)):
+    """Set creator, character, and/or title across multiple models in one request.
+    Any field omitted from the payload is left unchanged on each model."""
+    if not body.ids:
+        raise HTTPException(status_code=400, detail="No model IDs provided")
+    if not any([body.creator_name, body.character is not None, body.title is not None]):
+        raise HTTPException(status_code=400, detail="At least one field to update must be provided")
+
+    creator_id = resolve_creator(body.creator_name, db).id if body.creator_name else None
+    models_to_update = db.query(Model).filter(Model.id.in_(body.ids)).all()
+    for model in models_to_update:
+        if creator_id is not None:
+            model.creator_id = creator_id
+        if body.character is not None:
+            model.character = body.character.strip() or None
+        if body.title is not None:
+            model.title = body.title.strip() or None
         model.updated_at = utcnow()
     db.commit()
     return {"ok": True, "updated": len(models_to_update)}
