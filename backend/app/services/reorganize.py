@@ -327,6 +327,12 @@ def _detect_overlaps(entries: list[Entry]) -> None:
 
     Moving A into a tree that is also B's source (or destination) is unsafe to
     apply in any order, so both are flagged ineligible.
+
+    NOTE (perf, deferred): this is O(n^2) over the manifest. Preview is I/O-bound
+    (it stats every file on disk), so the quadratic string scan is not the
+    bottleneck today. If apply-time scale on very large libraries proves it
+    matters (Phase 2, #324), bucket entries by normalized parent-dir prefix and
+    sweep once instead.
     """
     dirs: list[tuple[Entry, str, str]] = [
         (e, _key(e.proposed_dir), _key(_canon(e.files[0].current_path)) if e.files else _key(e.proposed_dir))
