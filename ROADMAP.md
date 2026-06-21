@@ -229,9 +229,9 @@ guide-import overrides + no silent drop of undecided paints).
 
 ## v1.0 — Planned
 
-| Issue | Item |
-|-------|------|
-| [#17](https://github.com/RBStephenson/STL-Inventory/issues/17) | **Notarize the macOS standalone binary** |
+Scope TBD. macOS notarization ([#17](https://github.com/RBStephenson/STL-Inventory/issues/17))
+moved to the backlog — deferred until there's appetite for the Apple Developer
+Program cost.
 
 ---
 
@@ -273,6 +273,7 @@ Larger, well-defined efforts not tied to a near-term milestone.
 | Issue | Item |
 |-------|------|
 | [#16](https://github.com/RBStephenson/STL-Inventory/issues/16) | **Cross-model kit building (kitbash)** — assemble a character from parts across multiple packs; needs cross-model part-picker UI design |
+| [#17](https://github.com/RBStephenson/STL-Inventory/issues/17) | **Notarize the macOS standalone binary** — deferred; requires a paid Apple Developer Program membership |
 
 ---
 
