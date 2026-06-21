@@ -64,6 +64,8 @@ def _migrate_schema():
         # shelf paint. The paint_id NOT-NULL relax is an Alembic-batch rebuild
         # (0011); only the additive name column is handled here.
         ("guide_mix_components", "name", "TEXT"),
+        # #477: same for a single swatch (paint_id relax in Alembic 0012).
+        ("guide_swatches", "name", "TEXT"),
         ("models", "print_status", "VARCHAR NOT NULL DEFAULT 'none'"),
         ("models", "print_count", "INTEGER NOT NULL DEFAULT 0"),
         ("models", "user_rating", "INTEGER"),

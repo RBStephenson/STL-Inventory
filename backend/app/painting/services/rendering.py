@@ -136,8 +136,8 @@ def _paint_lookup(db: Session, guide: Guide) -> dict[int, PaintInfo]:
     for tab in guide.tabs:
         for phase in tab.phases:
             for step in phase.steps:
-                ids.update(s.paint_id for s in step.swatches)
-                # A mix component can be name-only (paint_id None) under #425.
+                # A swatch (#477) or mix component (#425) can be name-only.
+                ids.update(s.paint_id for s in step.swatches if s.paint_id is not None)
                 ids.update(m.paint_id for m in step.mix_components if m.paint_id is not None)
     if not ids:
         return {}
@@ -205,19 +205,27 @@ def _swatch_value(value_pct: int | None, role_label: str | None) -> str:
 
 
 def _render_swatch(swatch, paints: dict[int, PaintInfo]) -> str:
-    info = paints.get(swatch.paint_id)
-    if info is None:  # CRUD validates paint ids, so this is defensive only
-        return ""
-    dot = f"background:{_attr(info.hex)}" if info.hex else ""
-    name = f"{info.name} {info.code}".strip()
+    # Render by the resolved paint, or by the stored name when the swatch didn't
+    # resolve to a shelf paint (#477) — so it round-trips with no dot/brand.
+    info = paints.get(swatch.paint_id) if swatch.paint_id is not None else None
+    if info is None:
+        name = (swatch.name or "").strip()
+        if not name:
+            return ""
+        dot, brand = "", ""
+    else:
+        dot = f"background:{_attr(info.hex)}" if info.hex else ""
+        name = f"{info.name} {info.code}".strip()
+        brand = info.brand
     value = _swatch_value(swatch.value_pct, swatch.role_label)
     value_span = f'<div class="swatch-value">{_t(value)}</div>' if value else ""
+    brand_span = f'<div class="swatch-brand">{_t(brand)}</div>' if brand else ""
     return (
         '<div class="swatch">'
         f'<div class="swatch-dot" style="{dot}"></div>'
         '<div class="swatch-info">'
         f'<div class="swatch-name">{_t(name)}</div>'
-        f'<div class="swatch-brand">{_t(info.brand)}</div>'
+        f"{brand_span}"
         f"{value_span}</div></div>"
     )
 

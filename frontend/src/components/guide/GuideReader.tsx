@@ -54,15 +54,17 @@ function swatchValue(sw: GuideSwatch): string {
 
 function SwatchRow({ swatch }: { swatch: GuideSwatch }) {
   const p = swatch.paint;
-  if (!p) return null; // CRUD validates paint ids; defensive only
-  const name = `${p.name} ${p.code}`.trim();
+  // A swatch renders by its resolved paint, or by its stored name when it didn't
+  // resolve to a shelf paint (#477) — neutral dot, no brand.
+  const name = p ? `${p.name} ${p.code}`.trim() : (swatch.name ?? "");
+  if (!name) return null;
   const value = swatchValue(swatch);
   return (
     <div className="swatch">
-      <div className="swatch-dot" style={p.hex ? { background: p.hex } : undefined} />
+      <div className="swatch-dot" style={p?.hex ? { background: p.hex } : undefined} />
       <div className="swatch-info">
         <div className="swatch-name">{name}</div>
-        <div className="swatch-brand">{p.brand}</div>
+        {p && <div className="swatch-brand">{p.brand}</div>}
         {value && <div className="swatch-value">{value}</div>}
       </div>
     </div>

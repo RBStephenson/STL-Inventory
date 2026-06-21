@@ -6,7 +6,7 @@ import { Guide } from "../../api/client";
 
 function mkSwatch(over = {}) {
   return {
-    id: 1, paint_id: 10, value_pct: 10, role_label: "shadow base", sort_order: 0,
+    id: 1, paint_id: 10, name: null, value_pct: 10, role_label: "shadow base", sort_order: 0,
     paint: { name: "Coal Black", code: "002", brand: "Monument Hobbies", hex: "#2A2A2A" },
     ...over,
   };
@@ -150,6 +150,16 @@ describe("GuideReader", () => {
     expect(
       within(metals).getByText("Burnt Sienna 073 + Titanium White 001 + Mid-tone (3:1:1)"),
     ).toBeInTheDocument();
+  });
+
+  it("renders a name-only swatch (unresolved paint) by its name (#477)", () => {
+    const g = structuredClone(GUIDE);
+    g.tabs[0].phases[0].steps[0].swatches.push(
+      { id: 88, paint_id: null, name: "Nonexistent NX1", value_pct: null, role_label: null, sort_order: 9, paint: null },
+    );
+    const { container } = render(<GuideReader guide={g} />);
+    const metals = panel(container, "metals");
+    expect(within(metals).getByText("Nonexistent NX1")).toBeInTheDocument();
   });
 
   it("renders tab-level callouts: intro above content, tip below (#271)", () => {

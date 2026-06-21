@@ -14,7 +14,9 @@ const TECHNIQUES: StepTechnique[] = ["airbrush", "brush", "wash", "finish", "eff
 let _seq = 0;
 const nextKey = () => `k${++_seq}`;
 
-interface DraftSwatch { _key: string; paint: PickedPaint | null; value_pct: string; role_label: string; }
+// `name` preserves an unresolved (name-only) swatch from import (#477): no
+// PaintPicker, just passed through on save so editing the guide can't drop it.
+interface DraftSwatch { _key: string; paint: PickedPaint | null; name: string | null; value_pct: string; role_label: string; }
 interface DraftStep {
   _key: string; title: string; technique_tag: StepTechnique | ""; technique_label: string;
   body: string; value_intent: string; tip: string; warning: string; ratio_box: string;
@@ -45,9 +47,10 @@ function toDraft(tabs: GuideTab[]): DraftTab[] {
         ratio_box: s.ratio_box ?? "",
         swatches: s.swatches.map((w) => ({
           _key: nextKey(),
-          paint: w.paint
+          paint: w.paint && w.paint_id != null
             ? { id: w.paint_id, name: w.paint.name, code: w.paint.code, hex: w.paint.hex }
             : null,
+          name: w.name ?? null,
           value_pct: w.value_pct == null ? "" : String(w.value_pct),
           role_label: w.role_label ?? "",
         })),
@@ -78,9 +81,11 @@ function serialize(tabs: DraftTab[]): TabInput[] {
         ratio_box: orNull(s.ratio_box),
         sort_order: si,
         swatches: s.swatches
-          .filter((w) => w.paint)
+          // Keep paint-backed swatches and preserved name-only ones (#477).
+          .filter((w) => w.paint || (w.name && w.name.trim()))
           .map((w, wi) => ({
-            paint_id: w.paint!.id,
+            paint_id: w.paint ? w.paint.id : null,
+            name: w.paint ? null : w.name,
             value_pct: w.value_pct.trim() === "" ? null : Number(w.value_pct),
             role_label: orNull(w.role_label),
             sort_order: wi,
@@ -133,9 +138,21 @@ function RowButtons({ onUp, onDown, onRemove, removeLabel }: RowControls) {
 // --- Swatch / Step / Phase / Tab editors (module scope, not nested) ---------
 
 function SwatchRow({ value, onChange, ...ctl }: { value: DraftSwatch; onChange: (v: DraftSwatch) => void } & RowControls) {
+  // A name-only swatch (unresolved import, #477) has no shelf paint to pick —
+  // show its name read-only so editing preserves rather than drops it.
+  const nameOnly = !value.paint && !!value.name;
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      <PaintPicker value={value.paint} onChange={(p) => onChange({ ...value, paint: p })} />
+      {nameOnly ? (
+        <span
+          className="px-2 py-1 text-xs rounded bg-gray-800 border border-gray-700 text-gray-300"
+          title="Unresolved paint — preserved by name"
+        >
+          {value.name} <span className="text-gray-500">(unresolved)</span>
+        </span>
+      ) : (
+        <PaintPicker value={value.paint} onChange={(p) => onChange({ ...value, paint: p })} />
+      )}
       <input
         aria-label="Value %" type="number" min={0} max={100} placeholder="val%"
         className="w-16 bg-gray-900 border border-gray-700 rounded px-2 py-1 text-xs text-gray-100 focus:border-indigo-600 focus:outline-none"
@@ -194,7 +211,7 @@ function StepEditor({ value, onChange, ...ctl }: { value: DraftStep; onChange: (
             removeLabel="Remove swatch"
           />
         ))}
-        <button type="button" onClick={() => set({ swatches: [...value.swatches, { _key: nextKey(), paint: null, value_pct: "", role_label: "" }] })}
+        <button type="button" onClick={() => set({ swatches: [...value.swatches, { _key: nextKey(), paint: null, name: null, value_pct: "", role_label: "" }] })}
           className="inline-flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300">
           <Plus size={12} /> Add swatch
         </button>

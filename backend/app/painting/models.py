@@ -231,12 +231,18 @@ class GuideStep(Base):
 
 
 class GuideSwatch(Base):
-    """A paint reference inside a step — must resolve to an owned paint."""
+    """A paint reference inside a step.
+
+    `paint_id` is nullable (#477, mirrors #425): a swatch that doesn't resolve to
+    a shelf paint is kept as a `name`-only row so it round-trips rather than being
+    dropped. Each row carries a paint_id or a name.
+    """
     __tablename__ = "guide_swatches"
 
     id = Column(Integer, primary_key=True)
     step_id = Column(Integer, ForeignKey("guide_steps.id"), nullable=False, index=True)
-    paint_id = Column(Integer, ForeignKey("paints.id"), nullable=False)
+    paint_id = Column(Integer, ForeignKey("paints.id"), nullable=True)
+    name = Column(String, nullable=True)             # raw swatch text when unresolved
     value_pct = Column(Integer, nullable=True)       # role value at this usage
     role_label = Column(String, nullable=True)       # "mid-tone base", "final specular"
     sort_order = Column(Integer, default=0)
