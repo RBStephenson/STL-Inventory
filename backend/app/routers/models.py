@@ -12,10 +12,12 @@ from app.schemas import (
     ModelUpdate, ThumbnailUpdate, ThumbnailFromUrl, BatchThumbnailFromUrl, FavoriteUpdate, RatingUpdate, QueueReorder, GroupReorder,
     PrintStatusUpdate, ExcludeUpdate, STLFileUpdate, BulkTagUpdate,
     BulkExcludeUpdate, BulkReviewUpdate, BulkEnrichUpdate, SetGroupBody, BatchSetGroupBody,
-    GroupRepUpdate,
+    BatchSetSourceUrl, GroupRepUpdate,
 )
 from app.services.thumbnails import ThumbnailDownloadError, download_thumbnail, fetch_image_bytes, store_thumbnail
 from app.services.variant_sync import propagate_source_url
+from app.services.scrapers.base import detect_site
+from urllib.parse import urlparse
 from app.services.tag_sync import sync_model_tags
 from app.services import scanner
 from app.services.scanner import resolve_creator
@@ -1053,6 +1055,59 @@ def batch_set_group(body: BatchSetGroupBody, db: Session = Depends(get_db)):
     return {
         "ok": True,
         "character": character,
+        "updated": [m.id for m in models],
+        "missing": [mid for mid in requested if mid not in found],
+    }
+
+
+def _host_label(url: str) -> str | None:
+    """Bare hostname (sans leading 'www.') for store URLs we don't scrape, so a
+    Patreon/Etsy/personal store page still records *some* source_site."""
+    host = (urlparse(url if "//" in url else f"https://{url}").hostname or "").lower()
+    return host[4:] if host.startswith("www.") else host or None
+
+
+@router.post("/group/source-url")
+def batch_set_source_url(body: BatchSetSourceUrl, db: Session = Depends(get_db)):
+    """Set one store-page URL on a selected set of variants (#500).
+
+    Selection-scoped and overwriting: writes `source_url`/`source_site` to
+    exactly the given ids, replacing any existing URL. Unlike the single-model
+    paths it does NOT call `propagate_source_url` — the user picked these
+    variants, so unselected siblings are deliberately left untouched.
+
+    `source_site` is derived from the URL: a known storefront key when the host
+    matches (`detect_site`), else the bare hostname so non-scraped stores still
+    carry a label. Unknown ids are skipped and reported. 409 if a scan is
+    running (it would overwrite fields on commit). Registered under `/group/`
+    so the literal segment isn't captured as a `{model_id}`."""
+    if scanner.get_status()["running"]:
+        raise HTTPException(status_code=409, detail="A scan is running — try again after it completes.")
+
+    if not body.model_ids:
+        raise HTTPException(status_code=400, detail="model_ids must not be empty.")
+
+    url = body.source_url.strip()
+    if not url:
+        raise HTTPException(status_code=400, detail="source_url must not be empty.")
+    source_site = detect_site(url) or _host_label(url)
+    if not source_site:
+        raise HTTPException(status_code=400, detail="source_url must be a valid URL.")
+
+    requested = list(dict.fromkeys(body.model_ids))  # de-dupe, preserve order
+    models = db.query(Model).filter(Model.id.in_(requested)).all()
+    found = {m.id for m in models}
+
+    for model in models:
+        model.source_url = url
+        model.source_site = source_site
+        model.source_last_fetched = utcnow()
+        model.updated_at = utcnow()
+    db.commit()
+
+    return {
+        "ok": True,
+        "source_site": source_site,
         "updated": [m.id for m in models],
         "missing": [mid for mid in requested if mid not in found],
     }
