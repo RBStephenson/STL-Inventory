@@ -660,6 +660,56 @@ class TestRealCorpus:
         assert isinstance(report.unmapped_nodes, list)
 
 
+class TestSeriesBadge:
+    """#271: the hero .series-badge (active + sibling cross-link chips) is captured
+    on import and re-emitted on export, so sibling links round-trip."""
+
+    def _hero(self, badge: str) -> str:
+        return (f'<html><body><div class="hero">'
+                f'<h1><span>Presto</span> the Magician</h1>{badge}</div></body></html>')
+
+    def test_importer_captures_active_and_sibling_chips(self):
+        badge = ('<div class="series-badge">'
+                 '<a href="hank-ranger-dnd-painting-guide.html">Hank</a>'
+                 '<span class="active">Presto</span></div>')
+        draft, _ = import_guide_html(self._hero(badge), slug="presto", resolve_paint=lambda n, b: None)
+        assert draft["series_badge"] == [
+            {"label": "Hank", "filename": "hank-ranger-dnd-painting-guide.html", "active": False},
+            {"label": "Presto", "active": True},
+        ]
+
+    def test_no_badge_omits_field(self):
+        draft, _ = import_guide_html(self._hero(""), slug="p", resolve_paint=lambda n, b: None)
+        assert "series_badge" not in draft
+
+    def test_dangerous_href_dropped_to_linkless_chip(self):
+        badge = ('<div class="series-badge">'
+                 '<a href="javascript:alert(1)">Evil</a>'
+                 '<span class="active">Presto</span></div>')
+        draft, _ = import_guide_html(self._hero(badge), slug="p", resolve_paint=lambda n, b: None)
+        assert draft["series_badge"][0] == {"label": "Evil", "filename": None, "active": False}
+
+    def test_round_trips_through_export_import(self, client, paint):
+        body = presto_body(paint["id"])
+        body["series_badge"] = [
+            {"label": "Hank", "filename": "hank-ranger-dnd-painting-guide.html", "active": False},
+            {"label": "Presto", "active": True},
+        ]
+        g = client.post("/painting/guides", json=body).json()
+        html = client.get(f"/painting/guides/{g['id']}/export").text
+        assert '<a href="hank-ranger-dnd-painting-guide.html">Hank</a>' in html
+        assert '<span class="active">Presto</span>' in html
+        draft, _ = import_guide_html(html, slug="presto2", resolve_paint=lambda n, b: None)
+        assert draft["series_badge"][0]["filename"] == "hank-ranger-dnd-painting-guide.html"
+        assert draft["series_badge"][1]["active"] is True
+
+    def test_export_without_badge_falls_back_to_active_span(self, client, paint):
+        g = client.post("/painting/guides", json=presto_body(paint["id"])).json()
+        html = client.get(f"/painting/guides/{g['id']}/export").text
+        assert '<div class="series-badge">' in html
+        assert "<a href=" not in html.split('series-badge')[1].split("</div>")[0]
+
+
 class TestGuideThinningImport:
     """#271: the importer parses the real-corpus GUIDE_THINNING JS object literal
     (unquoted keys, single quotes, trailing commas), not just strict JSON."""

@@ -650,6 +650,28 @@ def _js_object_to_json(src: str) -> str:
     return "".join(out)
 
 
+def _parse_series_badge(hero: Tag) -> list[dict]:
+    """The hero .series-badge chips, in document order (#271): the active chip is
+    a <span class="active"> (current guide, no link); sibling chips are <a> links
+    carrying the legacy filename. Captured verbatim so cross-links round-trip."""
+    badge = hero.select_one(".series-badge")
+    if badge is None:
+        return []
+    chips: list[dict] = []
+    for el in badge.find_all(["a", "span"], recursive=False):
+        label = _txt(el)
+        if not label:
+            continue
+        if el.name == "a":
+            # Sanitize the href like creator-credit (#440): a relative sibling
+            # filename passes; a javascript:/data: href is dropped to a link-less
+            # chip so it can never reach the exporter's <a> sink.
+            chips.append({"label": label, "filename": sanitize_url(el.get("href")), "active": False})
+        else:
+            chips.append({"label": label, "active": "active" in _classes(el)})
+    return chips
+
+
 def _parse_thinning(soup: BeautifulSoup, report: ImportReport) -> Optional[dict]:
     script = soup.find("script", string=re.compile(r"window\.GUIDE_THINNING"))
     if script is None:
@@ -702,6 +724,9 @@ def import_guide_html(html: str, *, slug: str,
             credit = _parse_creator_credit(cc)
             if credit:
                 draft["creator_credit"] = credit
+        badge = _parse_series_badge(hero)
+        if badge:
+            draft["series_badge"] = badge
 
     style = soup.find("style")
     if style is not None and style.string:

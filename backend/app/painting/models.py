@@ -125,6 +125,9 @@ class Guide(Base):
     category_label = Column(String, nullable=True)   # .hero .category text
     quote = Column(Text, nullable=True)              # .film-ref <em> quote
     head_style = Column(Text, nullable=True)         # verbatim <style> body (theme vars + custom rules)
+    # .series-badge chips, ordered: [{label, filename, active}]. Captured verbatim
+    # so sibling cross-links round-trip (#271); the active chip carries no filename.
+    series_badge = Column(JSON, nullable=True)
 
     # JSON display blocks (spec §6.4)
     character_brief = Column(JSON, nullable=True)    # {philosophy, light_source, priority_materials}
