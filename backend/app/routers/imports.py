@@ -75,32 +75,6 @@ def _collapse(values: list) -> object | None:
     return next(iter(distinct)) if len(distinct) == 1 else None
 
 
-def _count_stls(folder: Path, db: Session) -> int:
-    """Recursive count of STL-family files under a folder (#456), so a pack card
-    shows its size before import. Reuses the scanner's extension set so it matches
-    what an inbox scan would actually ingest.
-
-    The folder is already confined by the caller, but the containment barrier is
-    re-applied inline here (realpath + commonpath against `_allowed_bases`, the
-    same expression the endpoint guards with) so CodeQL sees the sanitizer at the
-    walk sink — a tainted path that escaped the allowlist returns 0, never walks."""
-    real = os.path.realpath(str(folder))
-    contained = False
-    for base in _allowed_bases(db):
-        try:
-            if os.path.commonpath([real, base]) == base:
-                contained = True
-                break
-        except ValueError:
-            continue  # different drives (Windows)
-    if not contained:
-        return 0
-    return sum(
-        1 for f in Path(real).rglob("*")
-        if f.is_file() and f.suffix.lower() in scanner.STL_EXTENSIONS
-    )
-
-
 @router.get("/source-contents", response_model=SourceContentsResponse)
 def source_contents(source: str, db: Session = Depends(get_db)):
     """List a source folder's immediate subfolders as browse-first pack cards (#452).
@@ -135,9 +109,24 @@ def source_contents(source: str, db: Session = Depends(get_db)):
     # A source whose root holds STLs directly is a single flat pack (mirrors the
     # inbox scanner's flat-layout branch).
     is_flat = scanner._has_stls(p, recurse=False)
-    # Root count only feeds the flat single-card; for the subfolder layout each
-    # entry carries its own recursive count, so the root walk would be wasted.
-    root_file_count = _count_stls(p, db) if is_flat else 0
+
+    # Recursive STL-family counts (#456) in one walk rooted at the already-confined
+    # `p` (the raising barrier above dominates this sink, so no tainted path is
+    # walked): the running total feeds the flat single-card, and each top-level
+    # child accumulates its whole subtree for that pack's card.
+    total_stls = 0
+    child_stls: dict[str, int] = {}
+    for dirpath, _dirnames, filenames in os.walk(p):
+        n = sum(1 for f in filenames if os.path.splitext(f)[1].lower() in scanner.STL_EXTENSIONS)
+        if not n:
+            continue
+        total_stls += n
+        rel = os.path.relpath(dirpath, src)
+        if rel != ".":
+            top = rel.replace("\\", "/").split("/", 1)[0]
+            cp = os.path.normpath(os.path.join(src, top))
+            child_stls[cp] = child_stls.get(cp, 0) + n
+    root_file_count = total_stls if is_flat else 0
 
     # Inbox model folder_paths already under this source, for the imported flag.
     prefix = src + os.sep
@@ -158,7 +147,7 @@ def source_contents(source: str, db: Session = Depends(get_db)):
             already = any(m == dp or m.startswith(child_prefix) for m in imported)
             entries.append(SourceContentsEntry(
                 name=d.name, path=dp, already_imported=already,
-                file_count=_count_stls(d, db),
+                file_count=child_stls.get(dp, 0),
             ))
 
     return SourceContentsResponse(
