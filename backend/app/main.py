@@ -43,6 +43,7 @@ def _migrate_schema():
         ("guides", "category_label", "TEXT"),
         ("guides", "quote", "TEXT"),
         ("guides", "head_style", "TEXT"),
+        ("guides", "series_badge", "JSON"),
         ("guide_tabs", "dom_id", "TEXT"),
         ("guide_tabs", "subtabs", "JSON DEFAULT '[]'"),
         ("guide_tabs", "method_block", "JSON"),

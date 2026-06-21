@@ -445,9 +445,19 @@ def _render_hero(buf: _Buf, db: Session, guide: Guide) -> None:
         buf.add(f'<div class="subtitle">{_t(guide.subtitle)}</div>')
     if guide.quote:
         buf.add(f'<div class="film-ref">\n  <em>"{_t(guide.quote)}"</em>\n</div>')
-    # Series badge — active chip only (sibling cross-links need legacy filenames).
+    # Series badge — re-emit captured chips (sibling cross-links + active) when the
+    # guide carries them (#271); otherwise fall back to the active chip alone.
     buf.add('<div class="series-badge">')
-    buf.add(f'<span class="active">{_t(guide.title_lead or guide.title)}</span>')
+    chips = guide.series_badge or []
+    if chips:
+        for chip in chips:
+            label = _t(chip.get("label", ""))
+            if chip.get("active") or not chip.get("filename"):
+                buf.add(f'<span class="active">{label}</span>')
+            else:
+                buf.add(f'<a href="{_attr(chip["filename"])}">{label}</a>')
+    else:
+        buf.add(f'<span class="active">{_t(guide.title_lead or guide.title)}</span>')
     buf.add("</div>")
     credit = guide.creator_credit or {}
     if credit.get("name"):

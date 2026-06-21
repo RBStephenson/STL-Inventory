@@ -482,6 +482,16 @@ class TabRead(BaseModel):
 
 # --- Guide header / create / update / read ---------------------------------
 
+class SeriesBadgeChip(BaseModel):
+    """One chip in the hero .series-badge (#271). The active chip is the current
+    guide (no filename); sibling chips carry the legacy filename they link to."""
+    label: str
+    filename: Optional[str] = None
+    active: bool = False
+
+    model_config = {"extra": "forbid"}
+
+
 class GuideCreate(BaseModel):
     slug: str = Field(min_length=1)
     title: str = Field(min_length=1)
@@ -504,6 +514,7 @@ class GuideCreate(BaseModel):
     character_brief: Optional[CharacterBrief] = None
     theme: Optional[GuideTheme] = None
     head_style: Optional[str] = None
+    series_badge: Optional[list[SeriesBadgeChip]] = None
     thinning_config: Optional[ThinningConfig] = None
     tabs: list[TabIn] = []
 
@@ -535,6 +546,7 @@ class GuideUpdate(BaseModel):
     character_brief: Optional[CharacterBrief] = None
     theme: Optional[GuideTheme] = None
     head_style: Optional[str] = None
+    series_badge: Optional[list[SeriesBadgeChip]] = None
     thinning_config: Optional[ThinningConfig] = None
     tabs: Optional[list[TabIn]] = None
 
@@ -564,6 +576,7 @@ class GuideRead(BaseModel):
     character_brief: Optional[CharacterBrief] = None
     theme: Optional[GuideTheme] = None
     head_style: Optional[str] = None
+    series_badge: Optional[list[SeriesBadgeChip]] = None
     thinning_config: Optional[ThinningConfig] = None
     tabs: list[TabRead] = []
     created_at: Optional[datetime] = None
