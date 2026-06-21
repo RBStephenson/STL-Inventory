@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft, Layers, MoveRight, X, Keyboard, Pencil, Check, Image as ImageIcon, GripVertical, ListRestart } from "lucide-react";
+import { ArrowLeft, Layers, MoveRight, X, Keyboard, Pencil, Check, Image as ImageIcon, GripVertical, ListRestart, Link as LinkIcon } from "lucide-react";
 import {
   DndContext, PointerSensor, KeyboardSensor, useSensor, useSensors,
   closestCenter, DragStartEvent, DragEndEvent,
@@ -282,6 +282,73 @@ function BulkSetImage({ onApply }: { onApply: (url: string) => void | Promise<vo
   );
 }
 
+// Bulk "set store page for selected" control (#500): paste a store URL, applied
+// to exactly the selected variants (overwriting any existing URL). Selection is
+// the scope — unselected siblings are left untouched (no fill-empty propagation,
+// unlike the single-model edit path #202). Module-scope to avoid the
+// define-component-in-render remount/focus-loss trap.
+function BulkSetStoreLink({ onApply }: { onApply: (url: string) => void | Promise<void> }) {
+  const [open, setOpen] = useState(false);
+  const [url, setUrl] = useState("");
+  const [saving, setSaving] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const openInput = () => {
+    setUrl("");
+    setOpen(true);
+    setTimeout(() => inputRef.current?.focus(), 0);
+  };
+
+  const submit = async () => {
+    if (!url.trim() || saving) return;
+    setSaving(true);
+    await onApply(url.trim());
+    setSaving(false);
+    setOpen(false);
+  };
+
+  if (!open) {
+    return (
+      <button
+        onClick={openInput}
+        aria-label="Set store page for selected"
+        className="flex items-center gap-1 px-2.5 py-1 rounded bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-400 hover:text-gray-200 transition-colors"
+      >
+        <LinkIcon size={13} />
+        Set store page
+      </button>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-1">
+      <input
+        ref={inputRef}
+        type="url"
+        value={url}
+        onChange={(e) => setUrl(e.target.value)}
+        onKeyDown={(e) => { if (e.key === "Enter") submit(); if (e.key === "Escape") setOpen(false); }}
+        placeholder="Store page URL…"
+        aria-label="Store page URL"
+        className="px-2 py-1 rounded bg-gray-900 border border-gray-700 focus:border-indigo-500 text-xs text-gray-200 outline-none w-56"
+      />
+      <button
+        onClick={submit}
+        disabled={saving || !url.trim()}
+        className="px-2 py-1 rounded bg-indigo-700 hover:bg-indigo-600 text-xs text-white disabled:opacity-40"
+      >
+        {saving ? "…" : "Apply"}
+      </button>
+      <button
+        onClick={() => setOpen(false)}
+        className="px-2 py-1 rounded bg-gray-800 hover:bg-gray-700 border border-gray-700 text-xs text-gray-400"
+      >
+        Cancel
+      </button>
+    </div>
+  );
+}
+
 // Sortable wrapper for one variant card (#399). Drag listeners live on a small
 // grip handle (top-left) so card clicks, the selection checkbox, and the link
 // still work; the handle is keyboard-operable (Space to pick up, arrows to move).
@@ -480,6 +547,30 @@ export default function VariantGroup() {
     }
   };
 
+  // Set one store-page URL on every selected member (#500). Selection-scoped +
+  // overwriting; the backend touches only these ids (no propagation to the
+  // rest of the group). Refetch on success so the grid reflects the change;
+  // selection is preserved.
+  const setStoreUrlForSelected = async (url: string) => {
+    if (selectedIds.length === 0) return;
+    try {
+      const res = await api.models.batchSetSourceUrl(selectedIds, url);
+      const n = res.updated.length;
+      const noun = n === 1 ? "model" : "models";
+      const skipped = res.missing.length;
+      toast(
+        skipped > 0
+          ? `Store page set on ${n} ${noun}; ${skipped} skipped.`
+          : `Store page set on ${n} ${noun}.`,
+        "success",
+      );
+      const data = await api.models.variants(numCreatorId, decodedCharacter);
+      setVariants(data.items);
+    } catch (e: any) {
+      toast(e?.message || "Couldn't set the store page — try again.", "error");
+    }
+  };
+
   // --- Rename (applies to the whole group) -----------------------------------
   const [renaming, setRenaming] = useState(false);
   const [renameValue, setRenameValue] = useState("");
@@ -635,6 +726,7 @@ export default function VariantGroup() {
               <span className="text-gray-400">{selected.size} selected</span>
               <BulkMove creatorId={numCreatorId} currentGroup={decodedCharacter} onMove={moveSelected} />
               <BulkSetImage onApply={setImageForSelected} />
+              <BulkSetStoreLink onApply={setStoreUrlForSelected} />
               <button
                 onClick={ungroupSelected}
                 className="flex items-center gap-1 px-2.5 py-1 rounded bg-gray-800 hover:bg-red-900/40 border border-gray-700 hover:border-red-600 text-gray-400 hover:text-red-400 transition-colors"
