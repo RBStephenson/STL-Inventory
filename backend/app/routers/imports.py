@@ -75,15 +75,25 @@ def _collapse(values: list) -> object | None:
     return next(iter(distinct)) if len(distinct) == 1 else None
 
 
+def _count_stls(folder: Path) -> int:
+    """Recursive count of STL-family files under a folder (#456), so a pack card
+    shows its size before import. Reuses the scanner's extension set so it matches
+    what an inbox scan would actually ingest. A pure filesystem walk — no DB."""
+    return sum(
+        1 for f in folder.rglob("*")
+        if f.is_file() and f.suffix.lower() in scanner.STL_EXTENSIONS
+    )
+
+
 @router.get("/source-contents", response_model=SourceContentsResponse)
 def source_contents(source: str, db: Session = Depends(get_db)):
     """List a source folder's immediate subfolders as browse-first pack cards (#452).
 
     `already_imported` flags a subfolder that already has inbox models ingested,
     so a re-listing ("Scan for New Files") distinguishes new packs from imported
-    ones. File counts are deferred (#456). The source is resolved and confined to
-    the allowed roots (configured scan roots + bootstrap allowlist) before any
-    disk access."""
+    ones. Each entry carries a recursive STL-family file count from disk (#456).
+    The source is resolved and confined to the allowed roots (configured scan
+    roots + bootstrap allowlist) before any disk access."""
     if not source.strip():
         raise HTTPException(status_code=400, detail="source is required")
 
@@ -109,6 +119,9 @@ def source_contents(source: str, db: Session = Depends(get_db)):
     # A source whose root holds STLs directly is a single flat pack (mirrors the
     # inbox scanner's flat-layout branch).
     is_flat = scanner._has_stls(p, recurse=False)
+    # Root count only feeds the flat single-card; for the subfolder layout each
+    # entry carries its own recursive count, so the root walk would be wasted.
+    root_file_count = _count_stls(p) if is_flat else 0
 
     # Inbox model folder_paths already under this source, for the imported flag.
     prefix = src + os.sep
@@ -127,9 +140,14 @@ def source_contents(source: str, db: Session = Depends(get_db)):
             dp = os.path.normpath(str(d))
             child_prefix = dp + os.sep
             already = any(m == dp or m.startswith(child_prefix) for m in imported)
-            entries.append(SourceContentsEntry(name=d.name, path=dp, already_imported=already))
+            entries.append(SourceContentsEntry(
+                name=d.name, path=dp, already_imported=already,
+                file_count=_count_stls(d),
+            ))
 
-    return SourceContentsResponse(source=src, is_flat=is_flat, entries=entries)
+    return SourceContentsResponse(
+        source=src, is_flat=is_flat, entries=entries, file_count=root_file_count,
+    )
 
 
 @router.post("/scan-folder", response_model=dict)
