@@ -21,7 +21,9 @@ from app.painting.services.importing import (
     ImportReport, _js_object_to_json, _parse_swatch, _parse_thinning,
     import_guide_html, make_db_resolver, with_overrides,
 )
-from app.painting.services.rendering import PaintInfo, _render_mix
+from app.painting.services.rendering import (
+    PaintInfo, SKILLS_JS_SRC, SKILLS_TABS, _render_mix,
+)
 from tests.test_painting_guides import mk_paint
 from tests.test_painting_guide_schema import presto_body
 
@@ -658,6 +660,48 @@ class TestRealCorpus:
         assert len(report.unresolved_paints) > 0
         # unmapped_nodes is the schema-coverage to-do list (may be non-empty)
         assert isinstance(report.unmapped_nodes, list)
+
+
+class TestSkillsTabContract:
+    """#271 (3/3): the shared skills tabs (airbrush-skills / brush-skills /
+    thinning-ref) are runtime furniture built by skills-reference.js from static
+    templates + window.GUIDE_THINNING — not guide data. The exporter emits empty
+    placeholders + the script ref; the importer skips them. This locks that
+    contract so the round-trip stays clean without storing reproducible HTML
+    (which could drift from the live JS). The one guide-specific input,
+    GUIDE_THINNING, already round-trips (1/3)."""
+
+    def _export(self, client, paint):
+        g = client.post("/painting/guides", json=presto_body(paint["id"])).json()
+        return client.get(f"/painting/guides/{g['id']}/export").text
+
+    def test_export_emits_empty_placeholder_per_skills_tab(self, client, paint):
+        html = self._export(client, paint)
+        for _label, dom_id in SKILLS_TABS:
+            assert f'<div class="tab-content" id="{dom_id}">' in html
+        # The bodies are injected at runtime, not serialized.
+        assert "Content injected by skills-reference.js" in html
+
+    def test_export_references_the_skills_script(self, client, paint):
+        html = self._export(client, paint)
+        assert f'<script src="{SKILLS_JS_SRC}"></script>' in html
+
+    def test_export_emits_skills_nav_buttons(self, client, paint):
+        html = self._export(client, paint)
+        for label, dom_id in SKILLS_TABS:
+            assert f"showTab('{dom_id}', this)" in html
+            assert f">{label}</div>" in html
+
+    def test_reimport_skips_skills_tabs(self, client, paint):
+        """Re-importing our own export drops the skills tabs (no placeholder body
+        becomes a structured tab), so the round-trip is clean."""
+        html = self._export(client, paint)
+        draft, report = import_guide_html(html, slug="rt", resolve_paint=lambda n, b: None)
+        dom_ids = {t["dom_id"] for t in draft["tabs"]}
+        for _label, dom_id in SKILLS_TABS:
+            assert dom_id not in dom_ids
+        # Empty placeholders contribute nothing to the schema-coverage gap list.
+        assert not any(d in n for d in (i for _l, i in SKILLS_TABS) for n in report.unmapped_nodes)
 
 
 class TestSeriesBadge:
