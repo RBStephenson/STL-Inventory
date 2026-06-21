@@ -137,19 +137,41 @@ class TestRoundTrip:
 
 class TestOverrideResolver:
     """with_overrides layers user resolutions on top of the base resolver (#417),
-    keyed on the canonicalized swatch name; empty overrides are a no-op."""
+    keyed on the canonicalized (name, brand) identity (#443); empty overrides are
+    a no-op."""
 
     def test_override_wins_before_base(self):
         base = lambda n, b: 1 if n.lower() == "coal black" else None
-        resolve = with_overrides(base, {"Mystery Paint": 99})
+        resolve = with_overrides(base, [("Mystery Paint", None, 99)])
         assert resolve("Mystery Paint", None) == 99       # override
-        assert resolve("mystery paint", "X") == 99        # canonicalized match
+        assert resolve("mystery paint", None) == 99       # canonicalized match
         assert resolve("Coal Black", None) == 1           # falls through to base
         assert resolve("Unknown", None) is None
 
     def test_empty_overrides_returns_base_unchanged(self):
         base = lambda n, b: 7
-        assert with_overrides(base, {}) is base
+        assert with_overrides(base, []) is base
+
+    def test_same_name_different_brand_resolve_independently(self):
+        base = lambda n, b: None
+        resolve = with_overrides(base, [
+            ("Gunmetal", "Vallejo", 10),
+            ("Gunmetal", "Citadel", 20),
+        ])
+        assert resolve("Gunmetal", "Vallejo") == 10
+        assert resolve("Gunmetal", "Citadel") == 20
+        # An identity with neither override brand stays unresolved, not collapsed.
+        assert resolve("Gunmetal", "Army Painter") is None
+
+    def test_brandless_override_independent_of_branded(self):
+        base = lambda n, b: None
+        resolve = with_overrides(base, [
+            ("Gunmetal", None, 10),
+            ("Gunmetal", "Citadel", 20),
+        ])
+        assert resolve("Gunmetal", None) == 10            # brandless identity
+        assert resolve("Gunmetal", "Citadel") == 20       # branded identity
+        assert resolve("Gunmetal", "Vallejo") is None     # neither
 
 
 class TestImportResolution:
@@ -184,9 +206,16 @@ class TestImportResolution:
 
     def test_override_resolves_and_commits(self, client, paint):
         html = self._unresolved_html(client, paint)
+        # Echo the reported (name, brand) identity so the override keys correctly (#443).
+        dry = client.post("/painting/guides/import",
+                          json={"html": html, "slug": "r", "dry_run": True}).json()
+        entry = next(u for u in dry["report"]["unresolved_paints"]
+                     if u["name"] == "Mystery Unknown XYZ")
         r = client.post("/painting/guides/import", json={
             "html": html, "slug": "resolved",
-            "paint_overrides": [{"name": "Mystery Unknown XYZ", "paint_id": paint["id"]}],
+            "paint_overrides": [
+                {"name": "Mystery Unknown XYZ", "brand": entry["brand"], "paint_id": paint["id"]}
+            ],
         })
         assert r.status_code == 201, r.text
         body = r.json()
@@ -200,6 +229,21 @@ class TestImportResolution:
             for st in ph["steps"] for s in st["swatches"]
         ]
         assert paint["id"] in swatch_ids
+
+    def test_override_with_wrong_brand_does_not_resolve(self, client, paint):
+        """An override keyed on a different brand must not capture a branded
+        swatch — same-name/different-brand entries stay independent (#443)."""
+        html = self._unresolved_html(client, paint)
+        r = client.post("/painting/guides/import", json={
+            "html": html, "slug": "mismatch",
+            "paint_overrides": [
+                {"name": "Mystery Unknown XYZ", "brand": "Some Other Brand", "paint_id": paint["id"]}
+            ],
+        })
+        assert r.status_code == 201, r.text
+        # Brand mismatch → the override doesn't apply, swatch stays unresolved.
+        assert any(u["name"] == "Mystery Unknown XYZ"
+                   for u in r.json()["report"]["unresolved_paints"])
 
 
 class TestForceAddPaint:

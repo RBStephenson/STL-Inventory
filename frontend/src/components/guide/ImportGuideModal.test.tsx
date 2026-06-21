@@ -104,7 +104,7 @@ describe("ImportGuideModal", () => {
     await waitFor(() =>
       expect(importMock).toHaveBeenLastCalledWith(
         expect.any(String), expect.any(String),
-        { paintOverrides: [{ name: "Mystery Silver", paint_id: 55 }] },
+        { paintOverrides: [{ name: "Mystery Silver", brand: null, paint_id: 55 }] },
       )
     );
     expect(await screen.findByTestId("import-report")).toBeInTheDocument();
@@ -130,6 +130,110 @@ describe("ImportGuideModal", () => {
       )
     );
     expect(await screen.findByTestId("import-report")).toBeInTheDocument();
+  });
+
+  it("disables import until every unresolved paint is decided (#444)", async () => {
+    importMock.mockResolvedValue({
+      guide: null,
+      report: emptyReport({ unresolved_paints: [{ name: "Mystery Silver", brand: null, step: "Metals", hex: null }] }),
+    });
+
+    renderModal();
+    await userEvent.upload(screen.getByTestId("guide-file-input"), htmlFile("g.html"));
+    await screen.findByTestId("resolve-paints");
+
+    // Undecided → import blocked, summary nudges the user.
+    expect(screen.getByTestId("commit-import")).toBeDisabled();
+    expect(screen.getByTestId("decision-summary")).toHaveTextContent(/1 paint\(s\) still need/i);
+
+    await userEvent.click(screen.getByRole("button", { name: /skip/i }));
+    expect(screen.getByTestId("commit-import")).toBeEnabled();
+    expect(screen.getByTestId("decision-summary")).toHaveTextContent(/all paints decided/i);
+  });
+
+  it("keeps same-name different-brand paints independently decidable (#443)", async () => {
+    importMock.mockImplementation((_html, _slug, opts: { dryRun?: boolean } = {}) =>
+      opts.dryRun
+        ? Promise.resolve({ guide: null, report: emptyReport({ unresolved_paints: [
+            { name: "Gunmetal", brand: "Vallejo", step: "Metals", hex: null },
+            { name: "Gunmetal", brand: "Citadel", step: "Metals", hex: null },
+          ] }) })
+        : Promise.resolve({ guide: { id: 9, title: "Done", status: "draft" }, report: emptyReport() })
+    );
+    forceAddMock.mockResolvedValue({ id: 55, name: "Gunmetal", code: "GM", hex: "#444" });
+
+    renderModal();
+    await userEvent.upload(screen.getByTestId("guide-file-input"), htmlFile("g.html"));
+    await screen.findByTestId("resolve-paints");
+
+    // Two separate entries despite the shared name.
+    expect(screen.getAllByText("Gunmetal")).toHaveLength(2);
+
+    // Deciding the first leaves the second undecided → still blocked.
+    await userEvent.click(screen.getAllByRole("button", { name: /add/i })[0]);
+    await screen.findByText(/Added to shelf/);
+    expect(screen.getByTestId("commit-import")).toBeDisabled();
+    expect(screen.getByTestId("decision-summary")).toHaveTextContent(/1 paint\(s\) still need/i);
+
+    // Skip the second (Vallejo decided via add, Citadel skipped) → enabled, one override carries brand.
+    await userEvent.click(screen.getByRole("button", { name: /skip/i }));
+    expect(screen.getByTestId("commit-import")).toBeEnabled();
+
+    await userEvent.click(screen.getByTestId("commit-import"));
+    await waitFor(() =>
+      expect(importMock).toHaveBeenLastCalledWith(
+        expect.any(String), expect.any(String),
+        { paintOverrides: [{ name: "Gunmetal", brand: "Vallejo", paint_id: 55 }] },
+      )
+    );
+  });
+
+  it("enables import when every paint is skipped and commits no overrides (#444)", async () => {
+    importMock.mockImplementation((_html, _slug, opts: { dryRun?: boolean } = {}) =>
+      opts.dryRun
+        ? Promise.resolve({ guide: null, report: emptyReport({ unresolved_paints: [
+            { name: "A", brand: null, step: "S", hex: null },
+            { name: "B", brand: null, step: "S", hex: null },
+          ] }) })
+        : Promise.resolve({ guide: { id: 9, title: "Done", status: "draft" }, report: emptyReport() })
+    );
+
+    renderModal();
+    await userEvent.upload(screen.getByTestId("guide-file-input"), htmlFile("g.html"));
+    await screen.findByTestId("resolve-paints");
+
+    const skips = screen.getAllByRole("button", { name: /skip/i });
+    await userEvent.click(skips[0]);
+    expect(screen.getByTestId("commit-import")).toBeDisabled(); // one still undecided
+    await userEvent.click(screen.getAllByRole("button", { name: /skip/i })[1]);
+    expect(screen.getByTestId("commit-import")).toBeEnabled();
+    expect(screen.getByTestId("decision-summary")).toHaveTextContent(/2 will be dropped/i);
+
+    await userEvent.click(screen.getByTestId("commit-import"));
+    await waitFor(() =>
+      expect(importMock).toHaveBeenLastCalledWith(
+        expect.any(String), expect.any(String), { paintOverrides: [] },
+      )
+    );
+  });
+
+  it("resetting via Back clears decisions (#444)", async () => {
+    importMock.mockResolvedValue({
+      guide: null,
+      report: emptyReport({ unresolved_paints: [{ name: "Mystery Silver", brand: null, step: "Metals", hex: null }] }),
+    });
+
+    renderModal();
+    await userEvent.upload(screen.getByTestId("guide-file-input"), htmlFile("g.html"));
+    await screen.findByTestId("resolve-paints");
+    await userEvent.click(screen.getByRole("button", { name: /skip/i }));
+    expect(screen.getByTestId("commit-import")).toBeEnabled();
+
+    await userEvent.click(screen.getByRole("button", { name: /^back$/i }));
+    // Re-enter the resolution step; the prior skip decision is gone → blocked again.
+    await userEvent.upload(screen.getByTestId("guide-file-input"), htmlFile("g.html"));
+    await screen.findByTestId("resolve-paints");
+    expect(screen.getByTestId("commit-import")).toBeDisabled();
   });
 
   it("surfaces a slug-conflict (409) on the dry-run clearly", async () => {
