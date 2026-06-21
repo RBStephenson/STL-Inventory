@@ -291,9 +291,9 @@ class TestUnlabeledPhase:
 
 
 class TestImportEndpoint:
-    def test_unresolved_swatch_dropped_and_reported(self, client):
-        # Export a guide, then rewrite a swatch name to one not on the shelf:
-        # the draft drops it and the report lists it, but the guide still imports.
+    def test_unresolved_swatch_kept_by_name_and_reported(self, client):
+        # Export a guide, then rewrite a swatch name to one not on the shelf: the
+        # swatch is kept by name (#477, not dropped) and still listed in the report.
         brand = client.post("/painting/brands", json={"name": "X"}).json()
         line = client.post(
             "/painting/lines", json={"brand_id": brand["id"], "name": "L"}
@@ -304,7 +304,15 @@ class TestImportEndpoint:
         html = html.replace("Ghost Z9", "Nonexistent Paint NX1")
         r = client.post("/painting/guides/import", json={"html": html, "slug": "imp"})
         assert r.status_code == 201, r.text
-        assert r.json()["report"]["unresolved_paints"]
+        body = r.json()
+        assert any(u["name"] == "Nonexistent Paint NX1" for u in body["report"]["unresolved_paints"])
+        # The swatch survives as a name-only row (paint_id None).
+        guide = client.get(f"/painting/guides/{body['guide']['id']}").json()
+        swatches = [
+            s for tab in guide["tabs"] for ph in tab["phases"]
+            for st in ph["steps"] for s in st["swatches"]
+        ]
+        assert any(s["paint_id"] is None and s["name"] == "Nonexistent Paint NX1" for s in swatches)
 
 
 class TestSmartResolver:
@@ -532,6 +540,63 @@ class TestMixComponents:
         swatches, mix = _parse_swatch(self._swatch("Coal Black 002"), resolve, rep, "S")
         assert swatches == [{"paint_id": 9, "value_pct": 40, "role_label": "base"}]
         assert mix == []
+
+
+class TestSingleSwatchNullable:
+    """#477: a single swatch that doesn't resolve to a shelf paint is kept by name
+    (paint_id None) instead of dropped, mirroring the #425 mix work."""
+
+    def _swatch(self, name, value="~40% value — base", brand="Pro Acryl"):
+        html = (f'<div class="swatch"><div class="swatch-name">{name}</div>'
+                f'<div class="swatch-brand">{brand}</div>'
+                f'<div class="swatch-value">{value}</div></div>')
+        return BeautifulSoup(html, "html.parser").select_one(".swatch")
+
+    def test_unresolved_single_swatch_kept_by_name(self):
+        rep = ImportReport()
+        swatches, mix = _parse_swatch(self._swatch("Nonexistent NX1"), lambda n, b: None, rep, "S")
+        assert mix == []
+        assert swatches == [{"name": "Nonexistent NX1", "value_pct": 40, "role_label": "base"}]
+        assert any(u["name"] == "Nonexistent NX1" for u in rep.unresolved_paints)
+        assert rep.resolved_paints == 0
+
+    def test_render_swatch_uses_name_when_unresolved(self):
+        from app.painting.services.rendering import _render_swatch
+        sw = SimpleNamespace(paint_id=None, name="Nonexistent NX1", value_pct=40, role_label="base")
+        html = _render_swatch(sw, {})
+        assert "Nonexistent NX1" in html
+        assert "swatch-brand" not in html  # no brand for a name-only swatch
+
+    def test_round_trip_preserves_name_only_swatch(self, client, paint):
+        body = {
+            "slug": "sw-rt", "title": "SW RT",
+            "tabs": [{"name": "T", "sort_order": 0, "phases": [{"label": "P", "steps": [{
+                "title": "Step",
+                "swatches": [
+                    {"paint_id": paint["id"], "sort_order": 0},
+                    {"name": "Nonexistent NX1", "value_pct": 30, "sort_order": 1},
+                ],
+            }]}]}],
+        }
+        g = client.post("/painting/guides", json=body)
+        assert g.status_code == 201, g.text
+        gid = g.json()["id"]
+        sw = client.get(f"/painting/guides/{gid}").json()["tabs"][0]["phases"][0]["steps"][0]["swatches"]
+        assert [(s["paint_id"], s["name"]) for s in sw] == [(paint["id"], None), (None, "Nonexistent NX1")]
+        html = client.get(f"/painting/guides/{gid}/export").text
+        assert "Nonexistent NX1" in html
+        draft, _ = import_guide_html(html, slug="sw-rt2", resolve_paint=lambda n, b: None)
+        out = draft["tabs"][0]["phases"][0]["steps"][0]["swatches"]
+        assert any(s.get("name") == "Nonexistent NX1" and s.get("paint_id") is None for s in out)
+
+    def test_swatch_without_paint_or_name_rejected(self, client):
+        body = {
+            "slug": "bad-sw", "title": "Bad",
+            "tabs": [{"name": "T", "sort_order": 0, "phases": [{"label": "P", "steps": [{
+                "title": "S", "swatches": [{"value_pct": 10, "sort_order": 0}],
+            }]}]}],
+        }
+        assert client.post("/painting/guides", json=body).status_code == 422
 
 
 class TestMixRoundTrip:

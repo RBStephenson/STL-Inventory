@@ -336,13 +336,17 @@ def _parse_swatch(node: Tag, resolve: PaintResolver, report: ImportReport,
     # ('+ Khaki 061 (2:1)') and trailing ratio parens are handled too.
     single = parts[0] if parts else name
     paint_id = resolve(single, brand)
+    sw: dict = {}
     if paint_id is None:
+        # Keep the swatch by name (#477) instead of dropping it, so it round-trips.
+        # Still reported as an inventory gap.
         report.unresolved_paints.append(
             {"name": single, "brand": brand, "step": step_title, "hex": swatch_hex}
         )
-        return [], []
-    report.resolved_paints += 1
-    sw: dict = {"paint_id": paint_id}
+        sw["name"] = single
+    else:
+        report.resolved_paints += 1
+        sw["paint_id"] = paint_id
     if value_pct is not None:
         sw["value_pct"] = value_pct
     if role:

@@ -358,12 +358,21 @@ class PaintSummary(BaseModel):
 
 
 class SwatchIn(BaseModel):
-    paint_id: int
+    # paint_id is optional (#477): a swatch that doesn't resolve to a shelf paint
+    # is kept by `name` so it round-trips. One of the two is required.
+    paint_id: Optional[int] = None
+    name: Optional[str] = None
     value_pct: Optional[int] = Field(None, ge=0, le=100)
     role_label: Optional[str] = None
     sort_order: int = 0
 
     model_config = {"extra": "forbid"}
+
+    @model_validator(mode="after")
+    def _require_paint_or_name(self):
+        if self.paint_id is None and not (self.name and self.name.strip()):
+            raise ValueError("a swatch needs a paint_id or a name")
+        return self
 
 
 class SwatchRead(SwatchIn):

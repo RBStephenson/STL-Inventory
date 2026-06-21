@@ -42,7 +42,26 @@ describe("GuideSpineEditor", () => {
     expect(tabs[0]).toMatchObject({ name: "Skin", sort_order: 0, section: { heading: "Flesh tones", intro: null } });
     const step = tabs[0].phases[0].steps[0];
     expect(step).toMatchObject({ title: "Basecoat", technique_tag: "brush", sort_order: 0 });
-    expect(step.swatches).toEqual([{ paint_id: 7, value_pct: 50, role_label: "base", sort_order: 0 }]);
+    expect(step.swatches).toEqual([{ paint_id: 7, name: null, value_pct: 50, role_label: "base", sort_order: 0 }]);
+  });
+
+  it("preserves a name-only swatch through edit + save (#477)", async () => {
+    const onSave = vi.fn();
+    const tab = oneTab();
+    // An unresolved (name-only) swatch from import — no shelf paint.
+    (tab as unknown as { phases: { steps: { swatches: unknown[] }[] }[] })
+      .phases[0].steps[0].swatches.push(
+        { id: 2, paint_id: null, name: "Nonexistent NX1", value_pct: 30, role_label: null, sort_order: 1, paint: null },
+      );
+    render(<GuideSpineEditor initialTabs={[tab]} onSave={onSave} onCancel={vi.fn()} />);
+
+    expect(screen.getByText(/Nonexistent NX1/)).toBeInTheDocument(); // shown read-only
+    await userEvent.click(screen.getByRole("button", { name: "Save content" }));
+
+    const swatches = onSave.mock.calls[0][0][0].phases[0].steps[0].swatches;
+    expect(swatches).toContainEqual(
+      { paint_id: null, name: "Nonexistent NX1", value_pct: 30, role_label: null, sort_order: 1 },
+    );
   });
 
   it("blocks save when a step has no title", async () => {

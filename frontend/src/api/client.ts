@@ -324,7 +324,8 @@ export interface PaintSummary {
 
 export interface GuideSwatch {
   id: number;
-  paint_id: number;
+  paint_id: number | null; // null when the swatch is kept by name only (#477)
+  name: string | null;     // raw swatch text when unresolved
   value_pct: number | null;
   role_label: string | null;
   sort_order: number;
@@ -514,7 +515,8 @@ export interface GuideCreateInput {
 export type StepTechnique = "airbrush" | "brush" | "wash" | "finish" | "effects" | "filter";
 
 export interface SwatchInput {
-  paint_id: number;
+  paint_id?: number | null; // omit/null when kept by name only (#477)
+  name?: string | null;
   value_pct?: number | null;
   role_label?: string | null;
   sort_order?: number;
