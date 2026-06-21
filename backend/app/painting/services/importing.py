@@ -197,19 +197,28 @@ def make_db_resolver(db: Session) -> PaintResolver:
     return resolve
 
 
-def with_overrides(resolver: PaintResolver, overrides: dict[str, int]) -> PaintResolver:
-    """Layer user-supplied resolutions on top of a base resolver (#417). Keyed on
-    the swatch name (the same string the importer passes to resolve and reports
-    as unresolved); names are canonicalized here so the caller can pass them raw.
-    A user's chosen paint_id wins before catalog matching. Empty overrides return
-    the base resolver unchanged."""
+def _override_key(name: Optional[str], brand: Optional[str]) -> tuple[str, str]:
+    """Stable identity for a user override / unresolved swatch (#443): the
+    canonicalized (name, brand) pair. A brandless entry keys on '' for the brand
+    slot, so it resolves independently of any same-named branded entry."""
+    return (_canon(" ".join((name or "").split())), _canon(brand))
+
+
+def with_overrides(
+    resolver: PaintResolver, overrides: list[tuple[str, Optional[str], int]]
+) -> PaintResolver:
+    """Layer user-supplied resolutions on top of a base resolver (#417, #443).
+    Keyed on the canonical (name, brand) identity — the same pair the importer
+    passes to resolve and reports as unresolved — so two same-named paints from
+    different brands map independently. A user's chosen paint_id wins before
+    catalog matching. Empty overrides return the base resolver unchanged."""
     if not overrides:
         return resolver
 
-    canon_map = {_canon(" ".join(name.split())): pid for name, pid in overrides.items()}
+    canon_map = {_override_key(name, brand): pid for name, brand, pid in overrides}
 
     def resolve(swatch_name: str, brand: Optional[str]) -> Optional[int]:
-        override = canon_map.get(_canon(" ".join((swatch_name or "").split())))
+        override = canon_map.get(_override_key(swatch_name, brand))
         if override is not None:
             return override
         return resolver(swatch_name, brand)

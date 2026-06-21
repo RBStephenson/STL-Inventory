@@ -27,14 +27,23 @@ type Decision =
   | { type: "forced"; paint: PickedPaint }
   | { type: "skip" };
 
-// First occurrence of each unresolved name (the resolver keys on name, so one
-// decision applies to every occurrence).
-function uniqueByName(unresolved: UnresolvedPaint[]): UnresolvedPaint[] {
+// Stable identity for an unresolved paint: (name, brand). The resolver keys
+// overrides on this pair (#443), so two same-named paints from different brands
+// resolve independently. A brandless entry keys on "" and stays separate from
+// any branded same-named entry. The newline separator can't occur in either.
+export function identityKey(u: Pick<UnresolvedPaint, "name" | "brand">): string {
+  return `${u.name}\n${u.brand ?? ""}`;
+}
+
+// First occurrence of each unresolved identity (one decision applies to every
+// occurrence of the same name AND brand).
+function uniqueByIdentity(unresolved: UnresolvedPaint[]): UnresolvedPaint[] {
   const seen = new Set<string>();
   const out: UnresolvedPaint[] = [];
   for (const u of unresolved) {
-    if (!seen.has(u.name)) {
-      seen.add(u.name);
+    const key = identityKey(u);
+    if (!seen.has(key)) {
+      seen.add(key);
       out.push(u);
     }
   }
@@ -109,12 +118,13 @@ export default function ImportGuideModal({
   };
 
   const forceAdd = async (u: UnresolvedPaint) => {
-    setForcing(u.name);
+    const key = identityKey(u);
+    setForcing(key);
     try {
       const paint = await api.painting.paints.forceAdd(u.name, u.hex);
       setDecisions((d) => ({
         ...d,
-        [u.name]: { type: "forced", paint: { id: paint.id, name: paint.name, code: paint.code, hex: paint.hex } },
+        [key]: { type: "forced", paint: { id: paint.id, name: paint.name, code: paint.code, hex: paint.hex } },
       }));
     } catch {
       setError(`Couldn't add "${u.name}" to the shelf — try again.`);
@@ -125,9 +135,17 @@ export default function ImportGuideModal({
 
   const commitImport = async () => {
     if (!preview) return;
-    const paintOverrides: PaintOverrideInput[] = Object.entries(decisions)
-      .filter(([, d]) => d.type !== "skip")
-      .map(([name, d]) => ({ name, paint_id: (d as { paint: PickedPaint }).paint.id }));
+    // Brand-aware overrides (#443): each identity carries its own (name, brand)
+    // so same-named paints from different brands map independently. Only
+    // non-skip decisions become overrides; skips intentionally drop the swatch.
+    const paintOverrides: PaintOverrideInput[] = unresolved
+      .map((u) => ({ u, d: decisions[identityKey(u)] }))
+      .filter(({ d }) => d && d.type !== "skip")
+      .map(({ u, d }) => ({
+        name: u.name,
+        brand: u.brand,
+        paint_id: (d as { paint: PickedPaint }).paint.id,
+      }));
     setBusy(true);
     setError(null);
     try {
@@ -142,8 +160,17 @@ export default function ImportGuideModal({
   };
 
   const report = result?.report;
-  const unresolved = preview ? uniqueByName(preview.report.unresolved_paints) : [];
-  const mappedCount = Object.values(decisions).filter((d) => d.type !== "skip").length;
+  const unresolved = preview ? uniqueByIdentity(preview.report.unresolved_paints) : [];
+  // #444: every unresolved identity needs an explicit map / force-add / skip
+  // before import, so undecided swatches can't be silently dropped.
+  const decidedCount = unresolved.filter((u) => decisions[identityKey(u)]).length;
+  const mappedCount = unresolved.filter((u) => {
+    const d = decisions[identityKey(u)];
+    return d && d.type !== "skip";
+  }).length;
+  const skippedCount = unresolved.filter((u) => decisions[identityKey(u)]?.type === "skip").length;
+  const undecidedCount = unresolved.length - decidedCount;
+  const allDecided = undecidedCount === 0;
 
   return (
     <div
@@ -219,9 +246,10 @@ export default function ImportGuideModal({
 
               <ul className="space-y-2 max-h-72 overflow-y-auto mb-4">
                 {unresolved.map((u) => {
-                  const decision = decisions[u.name];
+                  const key = identityKey(u);
+                  const decision = decisions[key];
                   return (
-                    <li key={u.name} className="border border-gray-800 rounded-lg p-2.5">
+                    <li key={key} className="border border-gray-800 rounded-lg p-2.5">
                       <div className="flex items-center gap-2 mb-2">
                         <span
                           className="w-3.5 h-3.5 rounded-full border border-gray-600 shrink-0"
@@ -239,7 +267,7 @@ export default function ImportGuideModal({
                             {decision.paint.name} {decision.paint.code}
                           </span>
                           <button
-                            onClick={() => setDecisions((d) => { const n = { ...d }; delete n[u.name]; return n; })}
+                            onClick={() => setDecisions((d) => { const n = { ...d }; delete n[key]; return n; })}
                             className="text-gray-500 hover:text-gray-300"
                           >
                             Change
@@ -250,20 +278,20 @@ export default function ImportGuideModal({
                           <div className="flex-1">
                             <PaintPicker
                               value={null}
-                              onChange={(p) => p && setDecisions((d) => ({ ...d, [u.name]: { type: "map", paint: p } }))}
+                              onChange={(p) => p && setDecisions((d) => ({ ...d, [key]: { type: "map", paint: p } }))}
                             />
                           </div>
                           <button
                             onClick={() => forceAdd(u)}
-                            disabled={forcing === u.name}
+                            disabled={forcing === key}
                             title="Add this paint to your shelf"
                             className="flex items-center gap-1 text-xs px-2 py-1.5 rounded bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-200 disabled:opacity-50 shrink-0"
                           >
-                            {forcing === u.name ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />}
+                            {forcing === key ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />}
                             Add
                           </button>
                           <button
-                            onClick={() => setDecisions((d) => ({ ...d, [u.name]: { type: "skip" } }))}
+                            onClick={() => setDecisions((d) => ({ ...d, [key]: { type: "skip" } }))}
                             title="Skip — drop this paint from the guide"
                             className={`flex items-center gap-1 text-xs px-2 py-1.5 rounded border shrink-0 ${
                               decision?.type === "skip"
@@ -287,22 +315,37 @@ export default function ImportGuideModal({
                 </p>
               )}
 
-              <div className="flex justify-end gap-2 pt-1">
-                <button
-                  onClick={() => { setPreview(null); setDecisions({}); setError(null); }}
-                  className="text-sm bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 px-3 py-1.5 rounded"
-                >
-                  Back
-                </button>
-                <button
-                  onClick={commitImport}
-                  disabled={busy}
-                  data-testid="commit-import"
-                  className="flex items-center gap-1.5 text-sm bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded disabled:opacity-50"
-                >
-                  {busy && <Loader2 size={13} className="animate-spin" />}
-                  Import ({mappedCount} resolved)
-                </button>
+              <div className="flex items-center justify-between gap-2 pt-1">
+                <p className="text-xs text-gray-500" data-testid="decision-summary">
+                  {allDecided ? (
+                    <span className="text-emerald-400">All paints decided</span>
+                  ) : (
+                    <span className="text-amber-400">
+                      {undecidedCount} paint(s) still need a decision
+                    </span>
+                  )}
+                  {skippedCount > 0 && (
+                    <span className="text-gray-500"> · {skippedCount} will be dropped</span>
+                  )}
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => { setPreview(null); setDecisions({}); setError(null); }}
+                    className="text-sm bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 px-3 py-1.5 rounded"
+                  >
+                    Back
+                  </button>
+                  <button
+                    onClick={commitImport}
+                    disabled={busy || !allDecided}
+                    data-testid="commit-import"
+                    title={allDecided ? undefined : "Decide every unresolved paint before importing"}
+                    className="flex items-center gap-1.5 text-sm bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {busy && <Loader2 size={13} className="animate-spin" />}
+                    Import ({mappedCount} resolved)
+                  </button>
+                </div>
               </div>
             </div>
           )}

@@ -276,7 +276,7 @@ def import_guide(body: GuideImportRequest, db: Session = Depends(get_db)):
     `dry_run` parses + reports without persisting so the UI can resolve
     unresolved paints first; `paint_overrides` then maps those names to chosen
     shelf paints on the committing call (#417)."""
-    overrides = {o.name: o.paint_id for o in body.paint_overrides}
+    overrides = [(o.name, o.brand, o.paint_id) for o in body.paint_overrides]
     resolver = with_overrides(make_db_resolver(db), overrides)
     draft, report = import_guide_html(body.html, slug=body.slug, resolve_paint=resolver)
     if body.dry_run:
