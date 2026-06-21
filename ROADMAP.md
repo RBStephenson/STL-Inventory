@@ -209,6 +209,22 @@ Follow-up polish (backlog): [#458](https://github.com/RBStephenson/STL-Inventory
 (Notes / Source URL + Fetch / Collections on pack cards),
 [#456](https://github.com/RBStephenson/STL-Inventory/issues/456) (per-pack file counts).
 
+**Post-release hardening** (v0.12.1 – v0.12.3) — bulk-enrich and painting-guide
+fixes shipped after the feature line:
+[#437](https://github.com/RBStephenson/STL-Inventory/issues/437) /
+[#438](https://github.com/RBStephenson/STL-Inventory/issues/438) /
+[#439](https://github.com/RBStephenson/STL-Inventory/issues/439) (bulk-enrich
+rescan overwrite, clearing character/title, whitespace-only creator),
+[#440](https://github.com/RBStephenson/STL-Inventory/issues/440) (sanitize
+imported guide HTML/CSS/URLs),
+[#441](https://github.com/RBStephenson/STL-Inventory/issues/441) /
+[#442](https://github.com/RBStephenson/STL-Inventory/issues/442) /
+[#445](https://github.com/RBStephenson/STL-Inventory/issues/445) (PaintRack CSV
+removal/duplicate-identity guards),
+[#443](https://github.com/RBStephenson/STL-Inventory/issues/443) /
+[#444](https://github.com/RBStephenson/STL-Inventory/issues/444) (brand-aware
+guide-import overrides + no silent drop of undecided paints).
+
 ---
 
 ## v1.0 — Planned

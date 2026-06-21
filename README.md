@@ -136,7 +136,7 @@ Enable under **Settings → Painting Guides** — adds **Guides** and **Paint Sh
 **Paint Shelf** — opt-in paint inventory: search/filter by brand, line, finish, and owned state, with color chips for swatches. Per-line **code patterns** (regex) validate paint codes on entry. **PaintRack CSV import/export** with a diff preview (never a blind overwrite); optional `Color` column (`#RRGGBB`, `"rgb(r,g,b)"`, or `"hsv(h,s,v)"`) pre-populates swatches on import.
 
 **Painting Guides** — step-by-step guides tied to your Paint Shelf:
-- Import an HTML guide file (click or drag-and-drop). Unresolved paints trigger a **Paint resolution** step — map each to a shelf paint, force-add it, or skip — so nothing is silently dropped.
+- Import an HTML guide file (click or drag-and-drop). Unresolved paints trigger a **Paint resolution** step — map each to a shelf paint, force-add it, or skip. Import stays disabled until *every* unresolved paint has a decision, so nothing is silently dropped; same-named paints from different brands resolve independently.
 - **Mix swatches** (*Paint A + Paint B, 3:1*) import, render as blended chips, and round-trip cleanly.
 - In-app structured editor for tabs, phases, steps, and swatches.
 - **Print** or **Export PDF** the whole guide in one pass — the print stylesheet preserves dark backgrounds and paint chip colors so swatches render correctly on paper.
