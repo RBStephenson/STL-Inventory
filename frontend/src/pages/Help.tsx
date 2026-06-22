@@ -472,10 +472,10 @@ const SECTIONS: Section[] = [
     body: (
       <>
         <p>
-          An opt-in module for tracking your paint inventory and reading
-          step-by-step painting guides. Turn it on under{" "}
-          <strong>Settings → Painting Guides</strong>; the nav then gains{" "}
-          <strong>Guides</strong> and <strong>Paint Shelf</strong> entries.
+          The <strong>Paint Shelf</strong> is always in the nav — it's standalone
+          paint inventory. Turning on <strong>Settings → Painting Guides</strong>{" "}
+          additionally adds the <strong>Guides</strong> entry for authoring and
+          reading step-by-step painting guides.
         </p>
         <p>
           The <strong>Paint Shelf</strong> is a table of every paint you own (or
@@ -552,13 +552,38 @@ const SECTIONS: Section[] = [
           or <strong>Delete</strong> it.
         </p>
         <p>
-          <strong>New guide</strong> (top of the Guides page) creates a guide from
-          scratch, and <strong>Edit</strong> (on an open guide) changes its title,
-          subtitle, scale, franchise, technique tags, creator credit and other
-          details. <strong>Edit content</strong> opens a structured editor for the
-          guide's tabs, phases, steps and paint swatches — add, remove and reorder
-          each, and pick swatch paints from your shelf. Saving content replaces the
-          guide's tab tree; saving metadata leaves the content untouched.
+          <strong>New guide</strong> (top of the Guides page) opens a short
+          <strong> wizard</strong> — title, scale, category, and an optional link to
+          a model in your library — then drops you into the editor. <strong>Edit</strong>{" "}
+          (on an open guide) changes its title, subtitle, scale, franchise, technique
+          tags, creator credit and other details. <strong>Edit content</strong> opens
+          a structured editor for the guide's tabs, phases, steps and paint swatches —
+          add, remove and <strong>drag to reorder</strong> at every level, pick swatch
+          paints from your shelf, and watch a <strong>live preview</strong> update as
+          you go. Saving content replaces the guide's tab tree; saving metadata leaves
+          the content untouched.
+        </p>
+        <p>
+          A <strong>validation panel</strong> flags problems as you edit: blocking
+          issues (a swatch paint you don't own, or a code that fails its line's
+          pattern) must be fixed before you can <strong>publish</strong>, while
+          warnings (an empty tab, a step with no swatches) are advisory.
+        </p>
+        <p>
+          <strong>Theming</strong> — the editor's <strong>Theme</strong> section has
+          colour pickers for the guide's background, surfaces, text and accent (plus a
+          hero gradient) with a live preview. Leave a field blank to inherit the{" "}
+          <strong>default guide theme</strong> from{" "}
+          <strong>Settings → Painting Guides</strong>, which every new guide starts
+          from. Themes apply in the reader and the exported PDF.
+        </p>
+        <p>
+          <strong>Exporting</strong> — the <strong>Export PDF</strong> menu adds
+          per-export <strong>reward stamping</strong>: a Patreon-exclusive footer (on
+          by default), an optional tier label, and a watermark (off by default). If a
+          guide belongs to a <strong>series</strong>, <strong>Export series bundle</strong>{" "}
+          renders every published guide in that series into one PDF with an optional
+          cover page.
         </p>
       </>
     ),

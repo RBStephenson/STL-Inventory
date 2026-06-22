@@ -268,19 +268,35 @@ Released as **v0.14.0**.
 
 ---
 
-## v0.15 — In-app guide authoring 🗓 Planned
+## v0.15 — In-app guide authoring ✅ Complete
 
-Extends the structured guide editor (shipped in v0.8) into a complete
-from-scratch authoring path, so a guide can be built and published entirely in
-the app without hand-writing HTML.
+Released as **v0.15.0**. Extended the structured guide editor (shipped in v0.8)
+into a complete from-scratch authoring path, so a guide can be built and
+published entirely in the app without hand-writing HTML.
 
 | Issue | Item |
 |-------|------|
 | [#484](https://github.com/RBStephenson/STL-Inventory/issues/484) | **Epic — in-app authoring & validation** |
 | [#487](https://github.com/RBStephenson/STL-Inventory/issues/487) | Guide-start wizard |
-| [#488](https://github.com/RBStephenson/STL-Inventory/issues/488) | Structured editor — inventory-backed swatch picker, value%/reorder |
+| [#488](https://github.com/RBStephenson/STL-Inventory/issues/488) | Structured editor — inventory-backed swatch picker, value%/reorder + live preview |
+| [#503](https://github.com/RBStephenson/STL-Inventory/issues/503) | Drag-reorder tabs/phases/steps/swatches in the editor |
 | [#489](https://github.com/RBStephenson/STL-Inventory/issues/489) | Validation panel — wire the validator; block publish on errors |
 | [#490](https://github.com/RBStephenson/STL-Inventory/issues/490) | Series-bundle PDF + reward stamping |
+| [#511](https://github.com/RBStephenson/STL-Inventory/issues/511) | Guide export UI — series-bundle download + stamping controls |
+
+---
+
+## v0.15.1 — Guide theming & Paint Shelf independence ✅ Complete
+
+Make guides customizable to each user's style before the AI work lands, and
+decouple the Paint Shelf from the guides feature so it's always available.
+
+| Issue | Item |
+|-------|------|
+| [#513](https://github.com/RBStephenson/STL-Inventory/issues/513) | **Epic — guide theming & Paint Shelf independence** |
+| [#514](https://github.com/RBStephenson/STL-Inventory/issues/514) | App-level default guide theme + new-guide inheritance |
+| [#515](https://github.com/RBStephenson/STL-Inventory/issues/515) | Guide theme editor UI (colour pickers + live preview) + PDF theme rendering |
+| [#516](https://github.com/RBStephenson/STL-Inventory/issues/516) | Paint Shelf made independent of the guides feature flag (always visible) |
 
 ---
 
@@ -299,6 +315,9 @@ from a reference image. Domain rules are captured in
 | [#493](https://github.com/RBStephenson/STL-Inventory/issues/493) | Color-match studio — Lab / CIEDE2000 / k-means (`colormatch.py`) |
 | [#494](https://github.com/RBStephenson/STL-Inventory/issues/494) | Reference-image pipeline — fallback chain + provenance (`images.py`) |
 | [#498](https://github.com/RBStephenson/STL-Inventory/issues/498) | Port domain rules + reference tables into the prompt/validator |
+| [#517](https://github.com/RBStephenson/STL-Inventory/issues/517) | AI/Painting settings — capture + encrypt the API key (shown only when guides are enabled) |
+| [#504](https://github.com/RBStephenson/STL-Inventory/issues/504) | Guide editor — author/edit mix-component swatches (ratios) |
+| [#506](https://github.com/RBStephenson/STL-Inventory/issues/506) | Validation — skin-anchor band + highlight-direction colour checks |
 
 All AI capabilities are bring-your-own-API-key; no keys ship in the repo or build.
 
