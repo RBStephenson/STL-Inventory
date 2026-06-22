@@ -111,15 +111,20 @@ def test_generates_and_persists_as_draft(client, db):
     assert refreshed["tabs"][0]["name"] == "Skin"
 
 
-def test_default_generator_surfaces_error(client, db):
+def test_generator_failure_surfaces_as_error(client, db):
     secrets.set_ai_api_key(db, "sk-test-key")
     guide = _make_guide(client)
-    # Default generator isn't wired yet → job ends in error, not a crash.
+
+    def boom(_db, _guide):
+        raise RuntimeError("model exploded")
+    draft_jobs.set_generator(boom)
+
+    # A generator failure ends the job in error state, never a crash.
     r = client.post(f"/painting/guides/{guide['id']}/draft")
     assert r.status_code == 202
     status = _wait(client, guide["id"])
     assert status["status"] == "error"
-    assert "#526" in status["error"]
+    assert "model exploded" in status["error"]
 
 
 def test_single_flight_409_while_running(client, db):

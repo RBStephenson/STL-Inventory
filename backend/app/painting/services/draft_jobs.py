@@ -31,9 +31,11 @@ _jobs: dict[int, dict] = {}
 
 
 def _default_generator(db: Session, guide: Guide) -> GuideDraft:
-    raise NotImplementedError(
-        "AI guide generation isn't available yet — wired up in #526."
-    )
+    # Lazy import avoids a module-load cycle and keeps the anthropic import off
+    # code paths that never generate. Wired up in #526.
+    from app.painting.services.generation import generate_guide_draft
+
+    return generate_guide_draft(db, guide)
 
 
 _generator: Generator = _default_generator
