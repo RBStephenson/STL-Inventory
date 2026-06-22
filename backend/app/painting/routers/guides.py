@@ -32,6 +32,8 @@ from app.painting.services.pdf import (
 )
 from app.painting.services.rendering import attach_resolved_paints, render_guide_html
 from app.painting.services.validation import validate_guide
+from app.painting.services import draft_jobs
+from app.services import secrets
 from app.utils import utcnow
 
 router = APIRouter()
@@ -297,6 +299,36 @@ async def export_series_pdf(
         media_type="application/pdf",
         headers={"Content-Disposition": f'attachment; filename="{series.slug}-bundle.pdf"'},
     )
+
+
+_NO_AI_KEY_DETAIL = (
+    "No AI API key is configured. Add one under Settings → Painting Guides "
+    "before generating a draft."
+)
+
+
+@router.post("/guides/{guide_id}/draft", status_code=202)
+def start_guide_draft(guide_id: int, db: Session = Depends(get_db)):
+    """Kick off async AI draft generation for a guide (#524, spec §8.3).
+
+    Returns 202 + the initial job status; poll the status endpoint. 503 when no
+    API key is set, 409 when a draft is already generating for this guide. The
+    result is always a draft — generation never publishes."""
+    guide = _get_or_404(db, Guide, guide_id, "Guide")
+    if secrets.get_ai_api_key(db) is None:
+        raise HTTPException(status_code=503, detail=_NO_AI_KEY_DETAIL)
+    if not draft_jobs.start_generation(guide.id):
+        raise HTTPException(
+            status_code=409, detail="A draft is already generating for this guide."
+        )
+    return draft_jobs.get_status(guide.id)
+
+
+@router.get("/guides/{guide_id}/draft/status")
+def guide_draft_status(guide_id: int, db: Session = Depends(get_db)):
+    """Poll the draft-generation job status for a guide (#524)."""
+    _get_or_404(db, Guide, guide_id, "Guide")
+    return draft_jobs.get_status(guide_id)
 
 
 @router.post("/guides", response_model=GuideRead, status_code=201)
