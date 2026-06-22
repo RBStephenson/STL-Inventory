@@ -15,4 +15,3 @@ type: reference
 - **Method 3 Wash Tinting "red wash" step:** Use undiluted and wipe back rather than pre-thinning. If flow is needed, thin FW Crimson Ink — not PA Transparent Red.
 
 [[skin-painting-methods]]
-[[paint-inventory]]

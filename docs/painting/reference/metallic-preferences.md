@@ -77,4 +77,4 @@ VMC is pre-thinned for 0.4mm nozzle:
 - **No Flow Improver needed** — VMC has very low surface tension
 - **Agitate frequently** — pigment settles within minutes
 
-[[paint-inventory]] · [[airbrush-thinning-rule]]
+[[airbrush-thinning-rule]]
