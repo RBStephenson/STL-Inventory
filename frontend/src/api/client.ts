@@ -728,6 +728,15 @@ export interface ScrapePreview {
   download_count: number | null;
 }
 
+// Result of setting a store page + fetch/apply across selected variants (#545).
+export interface GroupScrapeResult {
+  applied: number;
+  scraped: boolean;
+  source_site: string | null;
+  missing: number[];
+  message: string;
+}
+
 // --- Library reorganize, Phase 1 preview (#323) ---
 export type ReorganizeMoveKind = "move" | "rename" | "case_rename" | "in_place" | "merge";
 export type ReorganizeCollisionKind =
@@ -1045,6 +1054,14 @@ export const api = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
+      }),
+    // Set a store page on selected variants and fetch+apply its metadata in one
+    // step (#545). Scrapes once and fans out to all ids.
+    applyGroup: (modelIds: number[], url: string) =>
+      request<GroupScrapeResult>(`/scrape/apply-group`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model_ids: modelIds, url }),
       }),
   },
   scan: {
