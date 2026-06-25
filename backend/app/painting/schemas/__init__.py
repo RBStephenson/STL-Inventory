@@ -763,6 +763,22 @@ class ReferenceImageRead(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class ReferenceCandidateList(BaseModel):
+    """Linked-model folder images offered as reference candidates (#494 rung 0)."""
+    candidates: list[str]
+
+
+class ReferenceFromModel(BaseModel):
+    """Pick one of the linked model's folder images by index (#494 rung 0).
+
+    An index into `ReferenceCandidateList.candidates` — never a raw path — so the
+    request can't steer the server to an arbitrary file."""
+    index: int = Field(ge=0)
+    alt_text: Optional[str] = None
+
+    model_config = {"extra": "forbid"}
+
+
 # ---------------------------------------------------------------------------
 # Color-match studio (spec §8.6, #493)
 # ---------------------------------------------------------------------------
