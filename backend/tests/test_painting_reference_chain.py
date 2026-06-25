@@ -1,11 +1,14 @@
-"""Reference-image fallback chain — STL-folder (rung 0) + from-URL (rung 4),
-with provenance (#494, spec §4.4 / §8.5).
+"""Reference-image fallback chain — STL-folder rung 0 + provenance
+(#494, spec §4.4 / §8.5).
+
+Candidates are selected by index into a server-built, scan-root-validated list,
+so no request value ever reaches the filesystem. The network rungs (URL / web
+search / AI-gen) are deferred to #563.
 
 The data dir is redirected to a tmp path so stored copies don't touch the real
 volume; model folder images live under the test STL root (conftest sets
 STL_ROOTS=/tmp) so the scan-root safety guard accepts them.
 """
-import asyncio
 import io
 
 import pytest
@@ -14,7 +17,6 @@ from PIL import Image
 from app.models import Model
 from app.painting.models import Guide, GuideReferenceImage
 from app.painting.services import images
-from app.services.thumbnails import ThumbnailDownloadError
 
 
 @pytest.fixture(autouse=True)
@@ -105,7 +107,7 @@ class TestStoreFromModel:
         model = _model_with_images(db, tmp_path, thumb=True)
         guide = _guide(db, model)
 
-        row = images.store_from_model(db, guide, model.thumbnail_path, alt_text="box art")
+        row = images.store_from_model(db, guide, 0, alt_text="box art")
         db.commit()
 
         assert row.provenance == "stl_model_folder"
@@ -114,84 +116,17 @@ class TestStoreFromModel:
         assert guide.reference_image_id == row.id
         assert (tmp_path / row.storage_key).exists()
 
-    def test_rejects_path_not_in_candidates(self, db, tmp_path):
-        model = _model_with_images(db, tmp_path, thumb=True)
+    def test_rejects_out_of_range_index(self, db, tmp_path):
+        model = _model_with_images(db, tmp_path, thumb=True)  # one candidate
         guide = _guide(db, model)
-        sneaky = _write_image(tmp_path / "models" / "creator" / "fig" / "other.png")
 
         with pytest.raises(images.ReferenceImageError):
-            images.store_from_model(db, guide, sneaky)
+            images.store_from_model(db, guide, 5)
 
-
-# ---------------------------------------------------------------------------
-# Rung 4 — user-supplied URL
-# ---------------------------------------------------------------------------
-
-@pytest.fixture
-def _allow_url(monkeypatch):
-    """Bypass the SSRF resolver so fetch-focused tests don't hit real DNS."""
-    monkeypatch.setattr(images, "_assert_fetchable_url", lambda url: None)
-
-
-def _fake_addrinfo(ip):
-    return lambda host, port, **kw: [(None, None, None, "", (ip, 0))]
-
-
-class TestStoreFromUrl:
-    def test_stores_with_attribution(self, db, monkeypatch, _allow_url):
-        guide = _guide(db)
-
-        async def fake_fetch(url, **kw):
-            return ".png", _png_bytes((20, 10))
-
-        monkeypatch.setattr(images, "fetch_image_bytes", fake_fetch)
-        row = asyncio.run(
-            images.store_from_url(db, guide, "https://example.com/fig.png")
-        )
-        db.commit()
-
-        assert row.provenance == "web_research"
-        assert row.source_url == "https://example.com/fig.png"
-        assert (row.width, row.height) == (20, 10)
-        assert guide.reference_image_id == row.id
-
-    def test_download_failure_becomes_reference_error(self, db, monkeypatch, _allow_url):
-        guide = _guide(db)
-
-        async def boom(url, **kw):
-            raise ThumbnailDownloadError("nope")
-
-        monkeypatch.setattr(images, "fetch_image_bytes", boom)
-        with pytest.raises(images.ReferenceImageError, match="nope"):
-            asyncio.run(images.store_from_url(db, guide, "https://x/y.png"))
-
-
-class TestSsrfGuard:
-    def test_rejects_non_http_scheme(self, db):
-        with pytest.raises(images.ReferenceImageError, match="http"):
-            images._assert_fetchable_url("file:///etc/passwd")
-
-    @pytest.mark.parametrize("ip", ["127.0.0.1", "10.0.0.5", "169.254.169.254", "::1"])
-    def test_rejects_non_public_addresses(self, db, monkeypatch, ip):
-        # Covers loopback, private, the cloud metadata endpoint, and IPv6 loopback.
-        monkeypatch.setattr(images.socket, "getaddrinfo", _fake_addrinfo(ip))
-        with pytest.raises(images.ReferenceImageError, match="non-public"):
-            images._assert_fetchable_url("https://evil.test/a.png")
-
-    def test_allows_public_address(self, db, monkeypatch):
-        monkeypatch.setattr(images.socket, "getaddrinfo", _fake_addrinfo("93.184.216.34"))
-        images._assert_fetchable_url("https://example.com/a.png")  # no raise
-
-    def test_store_from_url_blocks_internal_target(self, db, monkeypatch):
-        guide = _guide(db)
-        monkeypatch.setattr(images.socket, "getaddrinfo", _fake_addrinfo("127.0.0.1"))
-
-        async def fetched(url, **kw):  # must never be reached
-            raise AssertionError("fetch attempted on a blocked URL")
-
-        monkeypatch.setattr(images, "fetch_image_bytes", fetched)
-        with pytest.raises(images.ReferenceImageError, match="non-public"):
-            asyncio.run(images.store_from_url(db, guide, "http://localhost/admin"))
+    def test_rejects_when_no_candidates(self, db, tmp_path):
+        guide = _guide(db, model=None)
+        with pytest.raises(images.ReferenceImageError):
+            images.store_from_model(db, guide, 0)
 
 
 # ---------------------------------------------------------------------------
@@ -215,39 +150,18 @@ class TestEndpoints:
 
         resp = client.post(
             f"/painting/guides/{guide.id}/reference-image/from-model",
-            json={"path": model.thumbnail_path},
+            json={"index": 0},
         )
         assert resp.status_code == 201
         assert resp.json()["provenance"] == "stl_model_folder"
 
-    def test_from_url_endpoint(self, client, db, tmp_path, monkeypatch, _allow_url):
+    def test_from_model_endpoint_rejects_bad_index(self, client, db, tmp_path, monkeypatch):
         monkeypatch.setattr(images, "data_dir", lambda: tmp_path)
-        guide = _guide(db)
+        model = _model_with_images(db, tmp_path, thumb=True)
+        guide = _guide(db, model)
 
-        async def fake_fetch(url, **kw):
-            return ".png", _png_bytes()
-
-        monkeypatch.setattr(images, "fetch_image_bytes", fake_fetch)
         resp = client.post(
-            f"/painting/guides/{guide.id}/reference-image/from-url",
-            json={"url": "https://example.com/a.png", "alt_text": "ref"},
-        )
-        assert resp.status_code == 201
-        body = resp.json()
-        assert body["provenance"] == "web_research"
-        assert body["source_url"] == "https://example.com/a.png"
-
-    def test_from_url_endpoint_surfaces_fetch_failure(
-        self, client, db, monkeypatch, _allow_url
-    ):
-        guide = _guide(db)
-
-        async def boom(url, **kw):
-            raise ThumbnailDownloadError("bad url")
-
-        monkeypatch.setattr(images, "fetch_image_bytes", boom)
-        resp = client.post(
-            f"/painting/guides/{guide.id}/reference-image/from-url",
-            json={"url": "https://x/y.png"},
+            f"/painting/guides/{guide.id}/reference-image/from-model",
+            json={"index": 99},
         )
         assert resp.status_code == 422

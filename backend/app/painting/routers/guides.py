@@ -20,7 +20,7 @@ from app.painting.schemas import (
     CategoryCreate, CategoryRead,
     GuideCreate, GuideImportRequest, GuideImportResult, GuideList, GuideListItem,
     GuideRead, GuideUpdate, GuideValidationResult,
-    ReferenceCandidateList, ReferenceFromModel, ReferenceFromUrl, ReferenceImageRead,
+    ReferenceCandidateList, ReferenceFromModel, ReferenceImageRead,
     SeriesCreate, SeriesRead,
 )
 from app.painting.services import images
@@ -386,29 +386,12 @@ def list_reference_candidates(guide_id: int, db: Session = Depends(get_db)):
 def reference_from_model(
     guide_id: int, body: ReferenceFromModel, db: Session = Depends(get_db)
 ):
-    """Adopt one of the linked model's folder images as the reference (#494 rung 0)."""
+    """Adopt one of the linked model's folder images as the reference (#494 rung 0).
+
+    `index` refers to the candidates list from the GET endpoint."""
     guide = _get_or_404(db, Guide, guide_id, "Guide")
     try:
-        row = images.store_from_model(db, guide, body.path, alt_text=body.alt_text)
-    except images.ReferenceImageError as exc:
-        raise HTTPException(status_code=422, detail=str(exc))
-    db.commit()
-    db.refresh(row)
-    return row
-
-
-@router.post(
-    "/guides/{guide_id}/reference-image/from-url",
-    response_model=ReferenceImageRead,
-    status_code=201,
-)
-async def reference_from_url(
-    guide_id: int, body: ReferenceFromUrl, db: Session = Depends(get_db)
-):
-    """Fetch a user-supplied image URL as the reference, with attribution (#494 rung 4)."""
-    guide = _get_or_404(db, Guide, guide_id, "Guide")
-    try:
-        row = await images.store_from_url(db, guide, body.url, alt_text=body.alt_text)
+        row = images.store_from_model(db, guide, body.index, alt_text=body.alt_text)
     except images.ReferenceImageError as exc:
         raise HTTPException(status_code=422, detail=str(exc))
     db.commit()

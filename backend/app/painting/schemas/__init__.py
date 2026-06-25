@@ -769,16 +769,11 @@ class ReferenceCandidateList(BaseModel):
 
 
 class ReferenceFromModel(BaseModel):
-    """Pick one of the linked model's folder images (#494 rung 0)."""
-    path: str
-    alt_text: Optional[str] = None
+    """Pick one of the linked model's folder images by index (#494 rung 0).
 
-    model_config = {"extra": "forbid"}
-
-
-class ReferenceFromUrl(BaseModel):
-    """Fetch a user-supplied image URL with attribution (#494 rung 4)."""
-    url: str = Field(min_length=1)
+    An index into `ReferenceCandidateList.candidates` — never a raw path — so the
+    request can't steer the server to an arbitrary file."""
+    index: int = Field(ge=0)
     alt_text: Optional[str] = None
 
     model_config = {"extra": "forbid"}

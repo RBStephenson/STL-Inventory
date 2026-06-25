@@ -1,25 +1,23 @@
-"""Reference-image acquisition: upload, STL-model-folder sourcing, and
-user-supplied URL, with provenance tracking (spec §4.4 / §8.5).
+"""Reference-image acquisition: upload + STL-model-folder sourcing, with
+provenance tracking (spec §4.4 / §8.5).
 
-The dependable spine of the spec's fallback chain (#535 + #494):
+The dependable, fully-local spine of the spec's fallback chain (#535 + #494):
 
 * **user_upload** — `store_upload` (the original #535 rung).
 * **stl_model_folder** — `list_model_candidates` / `store_from_model`: the
-  linked model's already-indexed folder images, zero-cost (rung 0).
-* **web_research** — `store_from_url`: a user-supplied URL (the "paste a Google
-  image result" rung 4), fetched server-side with attribution recorded.
+  linked model's already-indexed folder images, zero-cost (rung 0). The caller
+  picks a candidate by index, so no request value ever reaches the filesystem.
 
-The flaky accelerators (assisted web search, AI generation — rungs 2 & 3) need a
-pluggable external provider and stay out of this module for now.
+The rungs that fetch from the network — user-supplied URL (rung 4), assisted
+web search (rung 2), AI generation (rung 3) — are deferred to #563, where the
+SSRF surface gets a dedicated IP-pinned guard rather than riding the shared
+thumbnail downloader.
 """
 from __future__ import annotations
 
 import io
-import ipaddress
-import socket
 import uuid
 from pathlib import Path
-from urllib.parse import urlparse
 
 from PIL import Image, UnidentifiedImageError
 from sqlalchemy.orm import Session
@@ -27,7 +25,6 @@ from sqlalchemy.orm import Session
 from app.models import Model
 from app.painting.models import Guide, GuideReferenceImage
 from app.routers.files import _is_safe_path
-from app.services.thumbnails import ThumbnailDownloadError, fetch_image_bytes
 from app.services.write_lock import data_dir
 
 # Subdirectory under the local data dir (next to the SQLite DB) where uploaded
@@ -194,84 +191,24 @@ def list_model_candidates(db: Session, guide: Guide) -> list[str]:
 def store_from_model(
     db: Session,
     guide: Guide,
-    path: str,
+    index: int,
     *,
     alt_text: str | None = None,
 ) -> GuideReferenceImage:
     """Copy a linked-model folder image into the guide's reference store (rung 0).
 
-    `path` must be one of `list_model_candidates(db, guide)` — guards against
-    path traversal and against pulling an arbitrary file off the drive. Raises
-    ReferenceImageError otherwise or when the bytes aren't a readable image.
+    `index` selects from `list_model_candidates(db, guide)`. Because the read
+    target is taken from that server-built, scan-root-validated list — never
+    from a request-supplied path — there is no path-injection surface. Raises
+    ReferenceImageError on an out-of-range index or unreadable bytes.
     """
-    if path not in set(list_model_candidates(db, guide)):
+    candidates = list_model_candidates(db, guide)
+    if not 0 <= index < len(candidates):
         raise ReferenceImageError(
-            "That image isn't one of the linked model's folder images."
+            "That isn't one of the linked model's folder images."
         )
-    # Re-validate at the read site: resolve and confirm scan-root containment
-    # immediately before opening, so the file we read can only ever be one
-    # inside an allowed root (defence in depth over the allowlist check above).
-    resolved = Path(path).resolve()
-    if not _is_safe_path(resolved):
-        raise ReferenceImageError("That image path is not allowed.")
-    raw = resolved.read_bytes()
+    raw = Path(candidates[index]).read_bytes()
     return _persist(db, guide, raw, provenance="stl_model_folder", alt_text=alt_text)
-
-
-def _assert_fetchable_url(url: str) -> None:
-    """Reject non-http(s) URLs and any host that resolves to a non-public IP.
-
-    SSRF guard for the user-supplied URL rung: blocks loopback, private,
-    link-local (incl. the cloud metadata endpoint 169.254.169.254), reserved,
-    multicast, and unspecified addresses across every A/AAAA record the host
-    resolves to. Raises ReferenceImageError when the URL is unsafe.
-
-    Note: this validates at resolve time; it does not pin the IP through to the
-    fetch, so a determined DNS-rebinding attacker is out of scope here — but the
-    common SSRF vectors (metadata service, internal hosts) are closed.
-    """
-    parsed = urlparse(url)
-    if parsed.scheme not in ("http", "https"):
-        raise ReferenceImageError("Only http(s) image URLs are supported.")
-    host = parsed.hostname
-    if not host:
-        raise ReferenceImageError("That URL has no host.")
-    try:
-        infos = socket.getaddrinfo(host, parsed.port or None, proto=socket.IPPROTO_TCP)
-    except socket.gaierror as exc:
-        raise ReferenceImageError("Could not resolve that URL's host.") from exc
-    for info in infos:
-        ip = ipaddress.ip_address(info[4][0])
-        if (
-            ip.is_private or ip.is_loopback or ip.is_link_local
-            or ip.is_reserved or ip.is_multicast or ip.is_unspecified
-        ):
-            raise ReferenceImageError("That URL points to a non-public address.")
-
-
-async def store_from_url(
-    db: Session,
-    guide: Guide,
-    url: str,
-    *,
-    alt_text: str | None = None,
-) -> GuideReferenceImage:
-    """Fetch a user-supplied image URL and store it with attribution (rung 4).
-
-    The "paste a Google image result" fallback. The URL is SSRF-checked
-    (`_assert_fetchable_url`) and then fetched via the hardened thumbnail
-    downloader (http(s) only, size-capped, follows a product page's og:image
-    one level). Records the URL as `source_url` for the hero credit. Raises
-    ReferenceImageError on an unsafe/bad URL/fetch or unreadable image.
-    """
-    _assert_fetchable_url(url)
-    try:
-        _, raw = await fetch_image_bytes(url)
-    except ThumbnailDownloadError as exc:
-        raise ReferenceImageError(str(exc)) from exc
-    return _persist(
-        db, guide, raw, provenance="web_research", source_url=url, alt_text=alt_text
-    )
 
 
 def load_reference(db: Session, guide: Guide) -> tuple[bytes, str] | None:
