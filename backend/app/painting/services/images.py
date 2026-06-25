@@ -15,8 +15,11 @@ pluggable external provider and stay out of this module for now.
 from __future__ import annotations
 
 import io
+import ipaddress
+import socket
 import uuid
 from pathlib import Path
+from urllib.parse import urlparse
 
 from PIL import Image, UnidentifiedImageError
 from sqlalchemy.orm import Session
@@ -205,8 +208,45 @@ def store_from_model(
         raise ReferenceImageError(
             "That image isn't one of the linked model's folder images."
         )
-    raw = Path(path).read_bytes()
+    # Re-validate at the read site: resolve and confirm scan-root containment
+    # immediately before opening, so the file we read can only ever be one
+    # inside an allowed root (defence in depth over the allowlist check above).
+    resolved = Path(path).resolve()
+    if not _is_safe_path(resolved):
+        raise ReferenceImageError("That image path is not allowed.")
+    raw = resolved.read_bytes()
     return _persist(db, guide, raw, provenance="stl_model_folder", alt_text=alt_text)
+
+
+def _assert_fetchable_url(url: str) -> None:
+    """Reject non-http(s) URLs and any host that resolves to a non-public IP.
+
+    SSRF guard for the user-supplied URL rung: blocks loopback, private,
+    link-local (incl. the cloud metadata endpoint 169.254.169.254), reserved,
+    multicast, and unspecified addresses across every A/AAAA record the host
+    resolves to. Raises ReferenceImageError when the URL is unsafe.
+
+    Note: this validates at resolve time; it does not pin the IP through to the
+    fetch, so a determined DNS-rebinding attacker is out of scope here — but the
+    common SSRF vectors (metadata service, internal hosts) are closed.
+    """
+    parsed = urlparse(url)
+    if parsed.scheme not in ("http", "https"):
+        raise ReferenceImageError("Only http(s) image URLs are supported.")
+    host = parsed.hostname
+    if not host:
+        raise ReferenceImageError("That URL has no host.")
+    try:
+        infos = socket.getaddrinfo(host, parsed.port or None, proto=socket.IPPROTO_TCP)
+    except socket.gaierror as exc:
+        raise ReferenceImageError("Could not resolve that URL's host.") from exc
+    for info in infos:
+        ip = ipaddress.ip_address(info[4][0])
+        if (
+            ip.is_private or ip.is_loopback or ip.is_link_local
+            or ip.is_reserved or ip.is_multicast or ip.is_unspecified
+        ):
+            raise ReferenceImageError("That URL points to a non-public address.")
 
 
 async def store_from_url(
@@ -218,11 +258,13 @@ async def store_from_url(
 ) -> GuideReferenceImage:
     """Fetch a user-supplied image URL and store it with attribution (rung 4).
 
-    The "paste a Google image result" fallback. Reuses the hardened thumbnail
+    The "paste a Google image result" fallback. The URL is SSRF-checked
+    (`_assert_fetchable_url`) and then fetched via the hardened thumbnail
     downloader (http(s) only, size-capped, follows a product page's og:image
     one level). Records the URL as `source_url` for the hero credit. Raises
-    ReferenceImageError on a bad URL/fetch or unreadable image. Caller commits.
+    ReferenceImageError on an unsafe/bad URL/fetch or unreadable image.
     """
+    _assert_fetchable_url(url)
     try:
         _, raw = await fetch_image_bytes(url)
     except ThumbnailDownloadError as exc:

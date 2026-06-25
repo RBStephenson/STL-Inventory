@@ -127,8 +127,18 @@ class TestStoreFromModel:
 # Rung 4 — user-supplied URL
 # ---------------------------------------------------------------------------
 
+@pytest.fixture
+def _allow_url(monkeypatch):
+    """Bypass the SSRF resolver so fetch-focused tests don't hit real DNS."""
+    monkeypatch.setattr(images, "_assert_fetchable_url", lambda url: None)
+
+
+def _fake_addrinfo(ip):
+    return lambda host, port, **kw: [(None, None, None, "", (ip, 0))]
+
+
 class TestStoreFromUrl:
-    def test_stores_with_attribution(self, db, monkeypatch):
+    def test_stores_with_attribution(self, db, monkeypatch, _allow_url):
         guide = _guide(db)
 
         async def fake_fetch(url, **kw):
@@ -145,7 +155,7 @@ class TestStoreFromUrl:
         assert (row.width, row.height) == (20, 10)
         assert guide.reference_image_id == row.id
 
-    def test_download_failure_becomes_reference_error(self, db, monkeypatch):
+    def test_download_failure_becomes_reference_error(self, db, monkeypatch, _allow_url):
         guide = _guide(db)
 
         async def boom(url, **kw):
@@ -154,6 +164,34 @@ class TestStoreFromUrl:
         monkeypatch.setattr(images, "fetch_image_bytes", boom)
         with pytest.raises(images.ReferenceImageError, match="nope"):
             asyncio.run(images.store_from_url(db, guide, "https://x/y.png"))
+
+
+class TestSsrfGuard:
+    def test_rejects_non_http_scheme(self, db):
+        with pytest.raises(images.ReferenceImageError, match="http"):
+            images._assert_fetchable_url("file:///etc/passwd")
+
+    @pytest.mark.parametrize("ip", ["127.0.0.1", "10.0.0.5", "169.254.169.254", "::1"])
+    def test_rejects_non_public_addresses(self, db, monkeypatch, ip):
+        # Covers loopback, private, the cloud metadata endpoint, and IPv6 loopback.
+        monkeypatch.setattr(images.socket, "getaddrinfo", _fake_addrinfo(ip))
+        with pytest.raises(images.ReferenceImageError, match="non-public"):
+            images._assert_fetchable_url("https://evil.test/a.png")
+
+    def test_allows_public_address(self, db, monkeypatch):
+        monkeypatch.setattr(images.socket, "getaddrinfo", _fake_addrinfo("93.184.216.34"))
+        images._assert_fetchable_url("https://example.com/a.png")  # no raise
+
+    def test_store_from_url_blocks_internal_target(self, db, monkeypatch):
+        guide = _guide(db)
+        monkeypatch.setattr(images.socket, "getaddrinfo", _fake_addrinfo("127.0.0.1"))
+
+        async def fetched(url, **kw):  # must never be reached
+            raise AssertionError("fetch attempted on a blocked URL")
+
+        monkeypatch.setattr(images, "fetch_image_bytes", fetched)
+        with pytest.raises(images.ReferenceImageError, match="non-public"):
+            asyncio.run(images.store_from_url(db, guide, "http://localhost/admin"))
 
 
 # ---------------------------------------------------------------------------
@@ -182,7 +220,7 @@ class TestEndpoints:
         assert resp.status_code == 201
         assert resp.json()["provenance"] == "stl_model_folder"
 
-    def test_from_url_endpoint(self, client, db, tmp_path, monkeypatch):
+    def test_from_url_endpoint(self, client, db, tmp_path, monkeypatch, _allow_url):
         monkeypatch.setattr(images, "data_dir", lambda: tmp_path)
         guide = _guide(db)
 
@@ -199,7 +237,9 @@ class TestEndpoints:
         assert body["provenance"] == "web_research"
         assert body["source_url"] == "https://example.com/a.png"
 
-    def test_from_url_endpoint_surfaces_fetch_failure(self, client, db, monkeypatch):
+    def test_from_url_endpoint_surfaces_fetch_failure(
+        self, client, db, monkeypatch, _allow_url
+    ):
         guide = _guide(db)
 
         async def boom(url, **kw):
