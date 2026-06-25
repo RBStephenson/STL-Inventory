@@ -34,7 +34,10 @@ _REFERENCE_INSTRUCTION = (
 
 # Sensible default; the user can override via the `ai_model` app setting (#517).
 DEFAULT_MODEL = "claude-sonnet-4-6"
-_MAX_TOKENS = 8192
+# A full multi-tab guide's JSON runs well past 8k output tokens; 8192 truncated
+# the reply mid-JSON and surfaced as a cryptic parse error. 16384 gives a whole
+# guide room to complete — comfortably under Sonnet's 64K / Opus's 128K ceiling.
+_MAX_TOKENS = 16384
 
 # Generation effort → extended-thinking budget (tokens). "low" disables thinking
 # for speed/cost; medium/high spend reasoning budget for richer guides.
@@ -137,9 +140,22 @@ def generate_guide_draft(db: Session, guide: Guide) -> GuideDraft:
         # max_tokens must exceed the thinking budget.
         kwargs["max_tokens"] = _MAX_TOKENS + budget
     try:
-        resp = client.messages.create(**kwargs)
+        # Stream and collect the final message: at these output sizes (and with
+        # the thinking budget added on top) a non-streaming request risks the
+        # SDK's long-request timeout. get_final_message() reassembles the whole
+        # reply regardless.
+        with client.messages.stream(**kwargs) as stream:
+            resp = stream.get_final_message()
     except Exception as exc:  # anthropic.APIError and friends
         raise GenerationError(f"AI request failed: {exc}") from exc
+
+    # A truncated reply (hit the output ceiling) yields invalid JSON; surface it
+    # as an actionable error instead of a cryptic parse failure deep in the text.
+    if getattr(resp, "stop_reason", None) == "max_tokens":
+        raise GenerationError(
+            "The guide was too long and got cut off before completing. "
+            "Try lowering the generation effort or simplifying the figure, then retry."
+        )
 
     data = _parse_json_object(_text_from_response(resp))
     try:

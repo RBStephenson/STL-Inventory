@@ -29,14 +29,35 @@ def _guide(db):
     return g
 
 
-def _fake_anthropic(text: str):
-    """A drop-in for the Anthropic class returning a canned text block."""
+class _StreamCM:
+    """Mimics the SDK's `with client.messages.stream(...) as s: s.get_final_message()`."""
+    def __init__(self, response, captured=None, kwargs=None):
+        self._response = response
+        if captured is not None and kwargs is not None:
+            captured.update(kwargs)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+    def get_final_message(self):
+        return self._response
+
+
+def _response(text: str, *, stop_reason: str | None = None):
     block = types.SimpleNamespace(type="text", text=text)
-    response = types.SimpleNamespace(content=[block])
+    return types.SimpleNamespace(content=[block], stop_reason=stop_reason)
+
+
+def _fake_anthropic(text: str, *, stop_reason: str | None = None):
+    """A drop-in for the Anthropic class streaming a canned text block."""
+    response = _response(text, stop_reason=stop_reason)
 
     class _Client:
         def __init__(self, *a, **k):
-            self.messages = types.SimpleNamespace(create=lambda **kw: response)
+            self.messages = types.SimpleNamespace(stream=lambda **kw: _StreamCM(response))
 
     return _Client
 
@@ -97,7 +118,7 @@ def test_api_error_wrapped(client, db, monkeypatch):
     class _Boom:
         def __init__(self, *a, **k):
             self.messages = types.SimpleNamespace(
-                create=lambda **kw: (_ for _ in ()).throw(RuntimeError("429 rate limit"))
+                stream=lambda **kw: (_ for _ in ()).throw(RuntimeError("429 rate limit"))
             )
     monkeypatch.setattr(generation, "Anthropic", _Boom)
 
@@ -112,13 +133,11 @@ def test_model_setting_overrides_default(client, db, monkeypatch):
 
     class _Client:
         def __init__(self, *a, **k):
-            self.messages = types.SimpleNamespace(create=self._create)
+            self.messages = types.SimpleNamespace(stream=self._stream)
 
-        def _create(self, **kw):
+        def _stream(self, **kw):
             captured["model"] = kw["model"]
-            return types.SimpleNamespace(
-                content=[types.SimpleNamespace(type="text", text=_VALID_DRAFT)]
-            )
+            return _StreamCM(_response(_VALID_DRAFT))
     monkeypatch.setattr(generation, "Anthropic", _Client)
 
     generation.generate_guide_draft(db, _guide(db))
@@ -128,13 +147,10 @@ def test_model_setting_overrides_default(client, db, monkeypatch):
 def _capture_kwargs_client(captured: dict):
     class _Client:
         def __init__(self, *a, **k):
-            self.messages = types.SimpleNamespace(create=self._create)
+            self.messages = types.SimpleNamespace(stream=self._stream)
 
-        def _create(self, **kw):
-            captured.update(kw)
-            return types.SimpleNamespace(
-                content=[types.SimpleNamespace(type="text", text=_VALID_DRAFT)]
-            )
+        def _stream(self, **kw):
+            return _StreamCM(_response(_VALID_DRAFT), captured=captured, kwargs=kw)
     return _Client
 
 
@@ -202,3 +218,14 @@ def test_reference_image_adds_image_block(client, db, tmp_path, monkeypatch):
     image_block = next(b for b in content if b["type"] == "image")
     assert image_block["source"]["media_type"] == "image/png"
     assert image_block["source"]["type"] == "base64"
+
+
+def test_truncated_output_raises_clear_error(client, db, monkeypatch):
+    secrets.set_ai_api_key(db, "sk-test")
+    # A reply cut off at the token ceiling: partial JSON + stop_reason max_tokens.
+    monkeypatch.setattr(
+        generation, "Anthropic",
+        _fake_anthropic(_VALID_DRAFT[:100], stop_reason="max_tokens"),
+    )
+    with pytest.raises(generation.GenerationError, match="cut off"):
+        generation.generate_guide_draft(db, _guide(db))
