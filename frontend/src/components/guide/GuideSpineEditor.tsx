@@ -238,22 +238,23 @@ function SortableItem({ id, children }: { id: string; children: (handle: ReactNo
 // --- Swatch / Step / Phase / Tab editors (module scope, not nested) ---------
 
 function SwatchRow({ value, onChange, dragHandle, ...ctl }: { value: DraftSwatch; onChange: (v: DraftSwatch) => void; dragHandle?: ReactNode } & RowControls) {
-  // A name-only swatch (unresolved import, #477) has no shelf paint to pick —
-  // show its name read-only so editing preserves rather than drops it.
+  // A name-only swatch (unresolved import or generated draft, #477/#554) carries
+  // no shelf paint. Show its name as context AND a picker so the user can bind it
+  // to the right paint; picking sets `paint`, and save serializes paint_id +
+  // clears the name. Until then it's preserved by name rather than dropped.
   const nameOnly = !value.paint && !!value.name;
   return (
     <div className="flex items-center gap-2 flex-wrap">
       {dragHandle}
-      {nameOnly ? (
+      {nameOnly && (
         <span
-          className="px-2 py-1 text-xs rounded bg-gray-800 border border-gray-700 text-gray-300"
-          title="Unresolved paint — preserved by name"
+          className="px-2 py-1 text-xs rounded bg-gray-800 border border-amber-800/60 text-amber-300"
+          title="Unresolved paint — pick a shelf paint to bind it, or leave it preserved by name"
         >
-          {value.name} <span className="text-gray-500">(unresolved)</span>
+          {value.name} <span className="text-amber-500/70">(unresolved)</span>
         </span>
-      ) : (
-        <PaintPicker value={value.paint} onChange={(p) => onChange({ ...value, paint: p })} />
       )}
+      <PaintPicker value={value.paint} onChange={(p) => onChange({ ...value, paint: p })} />
       <input
         aria-label="Value %" type="number" min={0} max={100} placeholder="val%"
         className="w-16 bg-gray-900 border border-gray-700 rounded px-2 py-1 text-xs text-gray-100 focus:border-indigo-600 focus:outline-none"
