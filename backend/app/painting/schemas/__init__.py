@@ -763,6 +763,27 @@ class ReferenceImageRead(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class ReferenceCandidateList(BaseModel):
+    """Linked-model folder images offered as reference candidates (#494 rung 0)."""
+    candidates: list[str]
+
+
+class ReferenceFromModel(BaseModel):
+    """Pick one of the linked model's folder images (#494 rung 0)."""
+    path: str
+    alt_text: Optional[str] = None
+
+    model_config = {"extra": "forbid"}
+
+
+class ReferenceFromUrl(BaseModel):
+    """Fetch a user-supplied image URL with attribution (#494 rung 4)."""
+    url: str = Field(min_length=1)
+    alt_text: Optional[str] = None
+
+    model_config = {"extra": "forbid"}
+
+
 # ---------------------------------------------------------------------------
 # Color-match studio (spec §8.6, #493)
 # ---------------------------------------------------------------------------
