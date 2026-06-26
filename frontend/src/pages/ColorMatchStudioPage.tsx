@@ -161,7 +161,7 @@ function RegionCard({
  * only: nothing is ever auto-assigned to a guide.
  */
 // Preview cap (px) for the canvas the reference is drawn into.
-const PREVIEW_MAX_W = 240;
+const PREVIEW_MAX_W = 560; // canvas bitmap resolution; CSS scales it to the column
 
 export default function ColorMatchStudioPage() {
   const { toast } = useToast();
@@ -258,9 +258,9 @@ export default function ColorMatchStudioPage() {
         from your shelf — value first, hue second.
       </p>
 
-      <div className="grid gap-6 md:grid-cols-[260px_1fr]">
+      <div className="grid gap-6 md:grid-cols-[minmax(360px,420px)_1fr]">
         {/* Upload + preview */}
-        <div className="space-y-3">
+        <div className="space-y-3 md:sticky md:top-4 md:self-start">
           <label
             data-testid="colormatch-dropzone"
             onDragOver={(e) => { e.preventDefault(); if (!busy) setDragOver(true); }}
