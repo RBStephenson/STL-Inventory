@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { Pipette, Loader2, ImagePlus, Eye, Droplet } from "lucide-react";
 import {
-  api, ApiError, ColorBand, ColorMatchCandidate, ColorMatchResult,
+  api, ApiError, ColorBand, ColorMatchCandidate, ColorMatchRegion, ColorMatchResult,
 } from "../api/client";
 import { useToast } from "../context/ToastContext";
 import { ColorChip } from "./PaintShelfPage";
@@ -87,6 +87,73 @@ function CandidateList({
   );
 }
 
+/** A sampled region (palette cluster or eyedropper point) with its suggestions. */
+function RegionCard({
+  region, valueMode, title, subtitle, highlight,
+}: {
+  region: ColorMatchRegion;
+  valueMode: boolean;
+  title: string;
+  subtitle: string;
+  highlight?: boolean;
+}) {
+  return (
+    <section
+      data-testid="colormatch-region"
+      className={`rounded-lg border p-4 space-y-4 ${
+        highlight ? "border-indigo-700 bg-indigo-950/20" : "border-gray-800 bg-gray-900/40"
+      }`}
+    >
+      <header className="flex items-center gap-3">
+        <span
+          data-testid="region-swatch"
+          className="inline-block rounded border border-gray-600"
+          style={{
+            width: 32, height: 32, backgroundColor: region.hex,
+            filter: valueMode ? "grayscale(1)" : undefined,
+          }}
+          title={region.hex}
+        />
+        <div>
+          <div className="text-sm text-gray-200">{title}</div>
+          <div className="text-xs text-gray-500">{subtitle}</div>
+        </div>
+      </header>
+
+      {/* Value-first ordering per spec §8.6. Value mode desaturates every swatch
+          (preview, region, and paint chips) so the whole view reads as values. */}
+      <CandidateList
+        title="Value match"
+        hint="ranked by L* — includes metallics"
+        items={region.value_candidates}
+        metric="delta_l"
+        grayscale={valueMode}
+      />
+      <CandidateList
+        title="Hue match"
+        hint="opaque paints, ΔE2000"
+        items={region.hue_candidates}
+        metric="delta_e"
+        grayscale={valueMode}
+      />
+      {region.glaze_options.length > 0 && (
+        <div className="pt-1">
+          <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-1">
+            <Droplet size={12} /> Glaze / shade options — transparent, color depends on what&apos;s beneath
+          </div>
+          <CandidateList
+            title="Glazes & washes"
+            items={region.glaze_options}
+            metric="delta_e"
+            grayscale={valueMode}
+          />
+        </div>
+      )}
+    </section>
+  );
+}
+
+
 /**
  * Color-match studio (#561, spec §8.6). Upload a reference image, sample it into
  * a k-means palette, and surface owned-paint suggestions per region — value
@@ -102,8 +169,11 @@ export default function ColorMatchStudioPage() {
   const [busy, setBusy] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const [result, setResult] = useState<ColorMatchResult | null>(null);
+  const [point, setPoint] = useState<ColorMatchRegion | null>(null);
+  const [marker, setMarker] = useState<{ x: number; y: number } | null>(null);
   const [valueMode, setValueMode] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fileRef = useRef<File | null>(null);
 
   // Draw the reference into a canvas via createImageBitmap — the file bytes
   // never reach a DOM src/HTML sink, so an uploaded SVG can't smuggle script
@@ -134,6 +204,9 @@ export default function ColorMatchStudioPage() {
       return;
     }
     setBusy(true);
+    fileRef.current = file;
+    setPoint(null);
+    setMarker(null);
     void drawPreview(file);
     try {
       const res = await api.painting.colorMatch(file);
@@ -144,6 +217,23 @@ export default function ColorMatchStudioPage() {
       setResult(null);
     } finally {
       setBusy(false);
+    }
+  };
+
+  // Eyedropper: click the preview to match that exact spot (skin, hair, leather…).
+  const samplePoint = async (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const file = fileRef.current;
+    if (!file || busy) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    setMarker({ x, y });
+    try {
+      const res = await api.painting.colorMatchPoint(file, x, y);
+      setPoint(res.regions[0] ?? null);
+    } catch (err) {
+      const msg = err instanceof ApiError ? err.message : "Couldn't sample that point.";
+      toast(msg, "error");
     }
   };
 
@@ -195,12 +285,29 @@ export default function ColorMatchStudioPage() {
             />
           </label>
 
-          <canvas
-            ref={canvasRef}
-            aria-label="Reference preview"
-            style={valueMode ? { filter: "grayscale(1)" } : undefined}
-            className={`w-full rounded-lg border border-gray-700 ${hasPreview ? "" : "hidden"}`}
-          />
+          {/* Canvas stays mounted (single ref target); visibility toggles so the
+              drawn preview isn't lost when hasPreview flips. */}
+          <div className={`space-y-1 ${hasPreview ? "" : "hidden"}`}>
+            <div className="relative inline-block w-full">
+              <canvas
+                ref={canvasRef}
+                aria-label="Reference preview"
+                data-testid="colormatch-preview"
+                onClick={samplePoint}
+                style={valueMode ? { filter: "grayscale(1)" } : undefined}
+                className="w-full rounded-lg border border-gray-700 cursor-crosshair"
+              />
+              {marker && (
+                <span
+                  className="absolute w-3 h-3 -ml-1.5 -mt-1.5 rounded-full border-2 border-white ring-1 ring-black/60 pointer-events-none"
+                  style={{ left: `${marker.x * 100}%`, top: `${marker.y * 100}%` }}
+                />
+              )}
+            </div>
+            <p className="text-[11px] text-gray-600 leading-snug">
+              Click the preview to sample a specific spot — skin, hair, leather…
+            </p>
+          </div>
 
           {result && (
             <div className="space-y-1">
@@ -230,68 +337,38 @@ export default function ColorMatchStudioPage() {
             <p className="text-sm text-gray-600">No image yet — your matches will appear here.</p>
           )}
 
-          {result && (
+          {(result || point) && (
             <>
               <p className="text-xs text-amber-300/90 bg-amber-950/30 border border-amber-900/50 rounded px-3 py-2">
-                {result.caveat}
+                {result?.caveat}
               </p>
 
-              {result.regions.map((r, i) => (
-                <section
-                  key={i}
-                  data-testid="colormatch-region"
-                  className="rounded-lg border border-gray-800 bg-gray-900/40 p-4 space-y-4"
-                >
-                  <header className="flex items-center gap-3">
-                    <span
-                      data-testid="region-swatch"
-                      className="inline-block rounded border border-gray-600"
-                      style={{
-                        width: 32, height: 32, backgroundColor: r.hex,
-                        filter: valueMode ? "grayscale(1)" : undefined,
-                      }}
-                      title={r.hex}
-                    />
-                    <div>
-                      <div className="text-sm text-gray-200">Region {i + 1}</div>
-                      <div className="text-xs text-gray-500">
-                        {Math.round(r.weight * 100)}% of image · value L* {r.value_l.toFixed(0)}
-                      </div>
-                    </div>
-                  </header>
+              {point && (
+                <RegionCard
+                  region={point}
+                  valueMode={valueMode}
+                  title="Sampled point"
+                  subtitle={`value L* ${point.value_l.toFixed(0)} — from where you clicked`}
+                  highlight
+                />
+              )}
 
-                  {/* Value-first ordering per spec §8.6. Value mode desaturates
-                      every swatch (preview, region, and paint chips) so the whole
-                      view reads as values. */}
-                  <CandidateList
-                    title="Value match"
-                    hint="ranked by L* — includes metallics"
-                    items={r.value_candidates}
-                    metric="delta_l"
-                    grayscale={valueMode}
-                  />
-                  <CandidateList
-                    title="Hue match"
-                    hint="opaque paints, ΔE2000"
-                    items={r.hue_candidates}
-                    metric="delta_e"
-                    grayscale={valueMode}
-                  />
-                  {r.glaze_options.length > 0 && (
-                    <div className="pt-1">
-                      <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-1">
-                        <Droplet size={12} /> Glaze / shade options — transparent, color depends on what&apos;s beneath
-                      </div>
-                      <CandidateList
-                        title="Glazes & washes"
-                        items={r.glaze_options}
-                        metric="delta_e"
-                        grayscale={valueMode}
-                      />
-                    </div>
-                  )}
-                </section>
-              ))}
+              {result && (
+                <>
+                  <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500 pt-1">
+                    Palette overview
+                  </h3>
+                  {result.regions.map((r, i) => (
+                    <RegionCard
+                      key={i}
+                      region={r}
+                      valueMode={valueMode}
+                      title={`Region ${i + 1}`}
+                      subtitle={`${Math.round(r.weight * 100)}% of image · value L* ${r.value_l.toFixed(0)}`}
+                    />
+                  ))}
+                </>
+              )}
             </>
           )}
         </div>

@@ -61,6 +61,17 @@ _KMEANS_SEED = 0  # fixed → deterministic palette for a given image
 _NEUTRAL_CHROMA = 12.0      # C* below this = treat as neutral (hue unreliable)
 _VALUE_HUE_TOL_DEG = 40.0   # max hue-angle gap for a chromatic value match
 
+# Background exclusion for the auto palette: the backdrop is the single largest
+# area in most product shots and would otherwise eat a region. Estimate it from
+# the image corners and drop pixels close to it before clustering.
+_BG_CORNER_FRAC = 0.06      # fraction of each side sampled at each corner
+_BG_EXCLUDE_DE = 12.0       # drop pixels within this ΔE2000 of the backdrop
+_BG_MIN_KEEP_FRAC = 0.05    # if exclusion leaves fewer than this, skip it
+
+# Point ("eyedropper") sampling: average a small square patch around the click
+# so a single noisy pixel doesn't drive the match.
+_POINT_PATCH_FRAC = 0.02    # patch half-size as a fraction of the short side
+
 
 class ColorMatchError(ValueError):
     """The supplied image was missing, too large, or not a readable image."""
@@ -199,11 +210,11 @@ def _kmeans(pixels: np.ndarray, k: int) -> tuple[np.ndarray, np.ndarray]:
     return centroids[keep], counts[keep]
 
 
-def _sample_palette(raw: bytes, k: int) -> list[tuple[np.ndarray, float]]:
-    """Decode image, downsample, and k-means into (lab_centroid, weight) pairs.
+def _decode_lab_grid(raw: bytes) -> np.ndarray:
+    """Decode + downsample an upload to an (H, W, 3) CIE Lab grid.
 
-    Averaging happens in Lab space (perceptually correct). Pairs are returned
-    sorted by weight descending.
+    Shared by the palette and point-sample paths. Raises ColorMatchError on a
+    missing/oversize/unreadable image.
     """
     if not raw:
         raise ColorMatchError("The uploaded file is empty.")
@@ -220,9 +231,40 @@ def _sample_palette(raw: bytes, k: int) -> list[tuple[np.ndarray, float]]:
 
     image = image.convert("RGB")
     image.thumbnail((_DOWNSAMPLE_MAX_DIM, _DOWNSAMPLE_MAX_DIM))
-    rgb = np.asarray(image, dtype=float).reshape(-1, 3) / 255.0
-    lab = rgb2lab(rgb.reshape(1, -1, 3)).reshape(-1, 3)
+    rgb = np.asarray(image, dtype=float) / 255.0
+    return rgb2lab(rgb)
 
+
+def _without_background(grid: np.ndarray) -> np.ndarray:
+    """Flatten an (H, W, 3) Lab grid to (N, 3), dropping backdrop pixels.
+
+    The backdrop is estimated from the four corners; pixels within
+    `_BG_EXCLUDE_DE` of it are removed so the studio backdrop doesn't claim a
+    region. Falls back to keeping everything if exclusion would gut the image
+    (e.g. the figure fills the frame, or the corners aren't background).
+    """
+    h, w, _ = grid.shape
+    flat = grid.reshape(-1, 3)
+    p = max(1, int(min(h, w) * _BG_CORNER_FRAC))
+    corners = np.concatenate([
+        grid[:p, :p].reshape(-1, 3), grid[:p, -p:].reshape(-1, 3),
+        grid[-p:, :p].reshape(-1, 3), grid[-p:, -p:].reshape(-1, 3),
+    ])
+    backdrop = corners.mean(axis=0)
+    de = deltaE_ciede2000(flat, np.broadcast_to(backdrop, flat.shape))
+    kept = flat[de >= _BG_EXCLUDE_DE]
+    if len(kept) < max(1, int(len(flat) * _BG_MIN_KEEP_FRAC)):
+        return flat
+    return kept
+
+
+def _sample_palette(raw: bytes, k: int) -> list[tuple[np.ndarray, float]]:
+    """Decode, drop the background, and k-means into (lab_centroid, weight) pairs.
+
+    Averaging happens in Lab space (perceptually correct). Pairs are returned
+    sorted by weight descending.
+    """
+    lab = _without_background(_decode_lab_grid(raw))
     centroids, counts = _kmeans(lab, k)
     total = float(counts.sum())
     pairs = [(centroids[i], float(counts[i]) / total) for i in range(len(centroids))]
@@ -290,8 +332,55 @@ def _rank_region(
     return value[:top_n], hue[:top_n], glaze[:top_n]
 
 
+PaintPool = tuple[
+    list[tuple[Paint, tuple[float, float, float]]],
+    list[tuple[Paint, tuple[float, float, float]]],
+]
+
+
+def _load_pools(db: Session) -> PaintPool:
+    """Owned paints split into (value/hue pool, glaze pool), hexes pre-converted.
+
+    Brand/line are eager-loaded so candidate building issues no per-paint query.
+    Paints without a usable hex are skipped; inks/washes form the glaze pool.
+    """
+    owned = (
+        db.query(Paint)
+        .options(joinedload(Paint.line).joinedload(PaintLine.brand))
+        .filter(Paint.owned.is_(True))
+        .all()
+    )
+    paints_lab: list[tuple[Paint, tuple[float, float, float]]] = []
+    glazes_lab: list[tuple[Paint, tuple[float, float, float]]] = []
+    for paint in owned:
+        if not paint.hex:
+            continue
+        lab = _hex_to_lab(paint.hex)
+        if lab is None:
+            continue
+        (glazes_lab if paint.finish in _GLAZE_FINISHES else paints_lab).append((paint, lab))
+    return paints_lab, glazes_lab
+
+
+def _region_from_lab(
+    centroid: np.ndarray, weight: float, pools: PaintPool, top_n: int,
+) -> RegionMatch:
+    paints_lab, glazes_lab = pools
+    value, hue, glaze = _rank_region(centroid, paints_lab, glazes_lab, top_n)
+    return RegionMatch(
+        hex=_lab_to_hex(centroid),
+        lab=(round(float(centroid[0]), 2), round(float(centroid[1]), 2),
+             round(float(centroid[2]), 2)),
+        value_l=round(float(centroid[0]), 2),
+        weight=round(weight, 4),
+        value_candidates=value,
+        hue_candidates=hue,
+        glaze_options=glaze,
+    )
+
+
 # ---------------------------------------------------------------------------
-# Public entry point
+# Public entry points
 # ---------------------------------------------------------------------------
 
 def match_image(
@@ -303,53 +392,43 @@ def match_image(
 ) -> ColorMatchResult:
     """Sample an uploaded reference image and suggest owned paints per region.
 
-    `k` palette regions (clamped to 1..MAX_K), each with value-first and hue
-    candidate lists plus labelled glaze options. Raises ColorMatchError on a
-    missing/oversize/unreadable image.
+    `k` palette regions (clamped to 1..MAX_K, background excluded), each with
+    value-first and hue candidate lists plus labelled glaze options. Raises
+    ColorMatchError on a missing/oversize/unreadable image.
     """
     k = max(1, min(int(k), _MAX_K))
     top_n = max(1, int(candidates_per_region))
-
+    pools = _load_pools(db)
     pairs = _sample_palette(raw, k)
-
-    # Load the owned inventory once, with brand/line eager so candidate building
-    # doesn't issue per-paint queries.
-    owned = (
-        db.query(Paint)
-        .options(joinedload(Paint.line).joinedload(PaintLine.brand))
-        .filter(Paint.owned.is_(True))
-        .all()
+    return ColorMatchResult(
+        regions=[_region_from_lab(c, w, pools, top_n) for c, w in pairs]
     )
 
-    # Pre-convert hexes to Lab. value/hue pool = any owned paint with a usable
-    # hex; glaze pool = owned inks/washes with a usable hex.
-    paints_lab: list[tuple[Paint, tuple[float, float, float]]] = []
-    glazes_lab: list[tuple[Paint, tuple[float, float, float]]] = []
-    for paint in owned:
-        if not paint.hex:
-            continue
-        lab = _hex_to_lab(paint.hex)
-        if lab is None:
-            continue
-        if paint.finish in _GLAZE_FINISHES:
-            glazes_lab.append((paint, lab))
-        else:
-            paints_lab.append((paint, lab))
 
-    regions: list[RegionMatch] = []
-    for centroid, weight in pairs:
-        value, hue, glaze = _rank_region(centroid, paints_lab, glazes_lab, top_n)
-        regions.append(
-            RegionMatch(
-                hex=_lab_to_hex(centroid),
-                lab=(round(float(centroid[0]), 2), round(float(centroid[1]), 2),
-                     round(float(centroid[2]), 2)),
-                value_l=round(float(centroid[0]), 2),
-                weight=round(weight, 4),
-                value_candidates=value,
-                hue_candidates=hue,
-                glaze_options=glaze,
-            )
-        )
+def match_point(
+    db: Session,
+    raw: bytes,
+    x: float,
+    y: float,
+    *,
+    candidates_per_region: int = _DEFAULT_CANDIDATES,
+) -> ColorMatchResult:
+    """Suggest paints for a single point ("eyedropper") on the image.
 
-    return ColorMatchResult(regions=regions)
+    `x`/`y` are normalized [0, 1] from the image's top-left. A small patch
+    around the point is averaged in Lab so one noisy pixel doesn't drive the
+    match — giving per-component control (sample the skin, then the hair, …).
+    Returns a single-region result. Raises ColorMatchError on a bad image.
+    """
+    top_n = max(1, int(candidates_per_region))
+    grid = _decode_lab_grid(raw)
+    h, w, _ = grid.shape
+
+    cx = min(w - 1, max(0, int(round(min(1.0, max(0.0, x)) * (w - 1)))))
+    cy = min(h - 1, max(0, int(round(min(1.0, max(0.0, y)) * (h - 1)))))
+    r = max(1, int(round(min(h, w) * _POINT_PATCH_FRAC)))
+    patch = grid[max(0, cy - r):cy + r + 1, max(0, cx - r):cx + r + 1].reshape(-1, 3)
+    centroid = patch.mean(axis=0)
+
+    pools = _load_pools(db)
+    return ColorMatchResult(regions=[_region_from_lab(centroid, 1.0, pools, top_n)])

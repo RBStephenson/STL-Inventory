@@ -1429,6 +1429,26 @@ export const api = {
       }
       return res.json() as Promise<ColorMatchResult>;
     },
+    // Eyedropper (#561): match a single point. x/y are normalized [0,1] from the
+    // image's top-left. Returns a single-region result.
+    colorMatchPoint: async (
+      file: File, x: number, y: number,
+      opts: { candidatesPerRegion?: number } = {},
+    ): Promise<ColorMatchResult> => {
+      const form = new FormData();
+      form.append("file", file);
+      form.append("x", String(x));
+      form.append("y", String(y));
+      if (opts.candidatesPerRegion !== undefined)
+        form.append("candidates_per_region", String(opts.candidatesPerRegion));
+      const res = await fetch(`${BASE}/painting/colormatch/point`, { method: "POST", body: form });
+      if (!res.ok) {
+        let detail = `${res.status} ${res.statusText}`;
+        try { detail = (await res.json()).detail || detail; } catch { /* ignore */ }
+        throw new ApiError(res.status, detail);
+      }
+      return res.json() as Promise<ColorMatchResult>;
+    },
   },
   database: {
     backup: async () => {
