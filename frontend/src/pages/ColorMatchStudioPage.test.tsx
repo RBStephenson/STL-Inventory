@@ -30,11 +30,25 @@ const matchResult = {
   ],
 };
 
+const pointResult = {
+  caveat: matchResult.caveat,
+  regions: [{ ...matchResult.regions[0], hex: "#E8B98A", value_l: 70 }],
+};
+
 const colorMatch = vi.fn().mockResolvedValue(matchResult);
+const colorMatchPoint = vi.fn().mockResolvedValue(pointResult);
 
 vi.mock("../api/client", async (importOriginal) => {
   const orig = await importOriginal<typeof import("../api/client")>();
-  return { ...orig, api: { painting: { colorMatch: (...a: unknown[]) => colorMatch(...a) } } };
+  return {
+    ...orig,
+    api: {
+      painting: {
+        colorMatch: (...a: unknown[]) => colorMatch(...a),
+        colorMatchPoint: (...a: unknown[]) => colorMatchPoint(...a),
+      },
+    },
+  };
 });
 
 vi.mock("../context/ToastContext", () => ({ useToast: () => ({ toast: vi.fn() }) }));
@@ -94,5 +108,15 @@ describe("ColorMatchStudioPage", () => {
     await uploadImage();
     await screen.findByTestId("colormatch-region");
     expect(screen.queryByRole("button", { name: /assign|apply/i })).toBeNull();
+  });
+
+  it("samples a clicked point via the eyedropper", async () => {
+    renderPage();
+    await uploadImage();
+    await screen.findByTestId("colormatch-region");
+
+    await userEvent.click(screen.getByTestId("colormatch-preview"));
+    expect(colorMatchPoint).toHaveBeenCalledOnce();
+    expect(await screen.findByText("Sampled point")).toBeInTheDocument();
   });
 });

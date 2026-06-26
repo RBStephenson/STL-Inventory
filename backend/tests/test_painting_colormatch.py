@@ -186,6 +186,70 @@ class TestValueHueFamily:
 
 
 # ---------------------------------------------------------------------------
+# Background exclusion + eyedropper (#561 review)
+# ---------------------------------------------------------------------------
+
+def bordered_png(bg, fg, size=(48, 48), margin=10) -> bytes:
+    """An image that's `bg` at the edges with an `fg` block in the centre."""
+    img = Image.new("RGB", size, bg)
+    img.paste(Image.new("RGB", (size[0] - 2 * margin, size[1] - 2 * margin), fg),
+              (margin, margin))
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    return buf.getvalue()
+
+
+def post_point(client, png, x, y):
+    return client.post(
+        "/painting/colormatch/point",
+        files={"file": ("ref.png", png, "image/png")},
+        data={"x": x, "y": y},
+    )
+
+
+class TestBackgroundExclusion:
+    def test_corner_backdrop_dropped_so_subject_leads(self, client, line):
+        # Near-black border (the studio backdrop) surrounds a green subject. With
+        # the backdrop excluded, the dominant region is the green, not the black.
+        mk_paint(client, line, "G01", "Deep Green", "#0F5A14")
+        mk_paint(client, line, "K01", "Coal Black", "#101010")
+
+        body = post_match(client, bordered_png((8, 8, 8), (40, 170, 60)), k=1).json()
+        region = body["regions"][0]
+        assert region["value_l"] > 30  # green, not the ~near-black backdrop
+        assert region["hue_candidates"][0]["name"] == "Deep Green"
+
+
+class TestEyedropper:
+    def test_point_sample_matches_clicked_color(self, client, line):
+        mk_paint(client, line, "R01", "Bold Red", "#C81E1E")
+        mk_paint(client, line, "B01", "Deep Blue", "#1E3CC8")
+
+        body = post_point(client, solid_png((200, 30, 30)), 0.5, 0.5).json()
+        assert len(body["regions"]) == 1
+        assert body["regions"][0]["hue_candidates"][0]["name"] == "Bold Red"
+
+    def test_point_samples_the_region_under_the_click(self, client, line):
+        mk_paint(client, line, "R01", "Bold Red", "#C81E1E")
+        mk_paint(client, line, "B01", "Deep Blue", "#1E3CC8")
+        # Red top half, blue bottom half — clicking each half picks that colour.
+        png = two_block_png((200, 30, 30), (30, 30, 200))
+
+        top = post_point(client, png, 0.5, 0.1).json()["regions"][0]
+        bottom = post_point(client, png, 0.5, 0.9).json()["regions"][0]
+        assert top["hue_candidates"][0]["name"] == "Bold Red"
+        assert bottom["hue_candidates"][0]["name"] == "Deep Blue"
+
+    def test_point_rejects_bad_image(self, client, line):
+        resp = client.post(
+            "/painting/colormatch/point",
+            files={"file": ("x.png", b"not an image", "image/png")},
+            data={"x": 0.5, "y": 0.5},
+        )
+        assert resp.status_code == 422
+
+
+# ---------------------------------------------------------------------------
 # Validation / edge cases
 # ---------------------------------------------------------------------------
 
