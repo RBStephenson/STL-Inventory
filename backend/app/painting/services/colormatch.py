@@ -51,6 +51,16 @@ _DOWNSAMPLE_MAX_DIM = 200
 _KMEANS_ITERS = 25
 _KMEANS_SEED = 0  # fixed → deterministic palette for a given image
 
+# Value-match hue gate. The value ranking is value-first (spec §8.6), but a paint
+# from a wildly different hue at the same L* is a misleading "value match" (a red
+# offered for a green region). So chromatic paints are gated to the region's hue
+# family; the genuinely hue-less ones are kept regardless:
+#   * metallics — value-only by design (their hex hue is meaningless);
+#   * near-neutrals (low chroma) — greys/black/white are universal value refs;
+#   * any paint when the region itself is near-neutral — hue is meaningless there.
+_NEUTRAL_CHROMA = 12.0      # C* below this = treat as neutral (hue unreliable)
+_VALUE_HUE_TOL_DEG = 40.0   # max hue-angle gap for a chromatic value match
+
 
 class ColorMatchError(ValueError):
     """The supplied image was missing, too large, or not a readable image."""
@@ -112,6 +122,31 @@ def _lab_to_hex(lab: np.ndarray) -> str:
     rgb = np.clip(lab2rgb(lab.reshape(1, 1, 3)).reshape(3), 0.0, 1.0)
     r, g, b = (int(round(c * 255)) for c in rgb)
     return f"#{r:02X}{g:02X}{b:02X}"
+
+
+def _chroma(lab) -> float:
+    """CIE C* — distance from the neutral axis in the a*/b* plane."""
+    return float(np.hypot(lab[1], lab[2]))
+
+
+def _hue_deg(lab) -> float:
+    """CIE hue angle h° (0–360) from a*/b*."""
+    return float(np.degrees(np.arctan2(lab[2], lab[1])) % 360.0)
+
+
+def _in_value_family(region_lab, paint_lab, finish: str) -> bool:
+    """Whether `paint_lab` is a non-misleading value match for `region_lab`.
+
+    Metallics and near-neutrals (on either side) always qualify — their hue is
+    meaningless. Otherwise the paint's hue must sit within `_VALUE_HUE_TOL_DEG`
+    of the region's, so we never offer a red as a value match for a green.
+    """
+    if finish == "metallic":
+        return True
+    if _chroma(region_lab) < _NEUTRAL_CHROMA or _chroma(paint_lab) < _NEUTRAL_CHROMA:
+        return True
+    dh = abs(_hue_deg(region_lab) - _hue_deg(paint_lab))
+    return min(dh, 360.0 - dh) <= _VALUE_HUE_TOL_DEG
 
 
 def _band(distance: float) -> str:
@@ -229,8 +264,14 @@ def _rank_region(
     glazes_lab: list[tuple[Paint, tuple[float, float, float]]],
     top_n: int,
 ) -> tuple[list[Candidate], list[Candidate], list[Candidate]]:
-    # Value: every paint with a value signal, ranked by |ΔL*| (metallics included).
-    value = [_candidate(p, region_lab, lab, hue=False) for p, lab in paints_lab]
+    # Value: paints at this L*, ranked by |ΔL*|. Gated to the region's hue family
+    # so a same-value but off-hue paint isn't offered as a misleading match;
+    # metallics and neutrals stay in (hue-less by nature). See _in_value_family.
+    value = [
+        _candidate(p, region_lab, lab, hue=False)
+        for p, lab in paints_lab
+        if _in_value_family(region_lab, lab, p.finish)
+    ]
     value.sort(key=lambda c: c.delta_l)
 
     # Hue: owned AND matchable only, ranked by CIEDE2000.
