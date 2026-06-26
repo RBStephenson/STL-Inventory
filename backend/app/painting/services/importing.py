@@ -62,11 +62,24 @@ _TOKEN_RE = re.compile(r"[a-z0-9]+")
 # US/EU spelling variants normalized so 'Warm Gray' matches shelf 'Warm Grey'.
 _SPELL = ((r"\bgray\b", "grey"), (r"\bcolour", "color"))
 
+# Common abbreviations used in guide swatch names that differ from shelf names.
+# Applied after lowercasing so keys are lowercase.
+_ABBREV = (
+    (r"\btw\b", "titanium white"),   # 'Bold TW 001' -> 'Bold Titanium White 001'
+    (r"\bfw\b", ""),                  # 'FW Crimson Ink' -> 'Crimson Ink' (brand prefix)
+)
+
+# Suffixes appended in guide names but absent from shelf paint names.
+_SUFFIX_RE = re.compile(r"\s+ink\s*$")
+
 
 def _canon(s: Optional[str]) -> str:
     s = (s or "").lower()
     for pat, repl in _SPELL:
         s = re.sub(pat, repl, s)
+    for pat, repl in _ABBREV:
+        s = re.sub(pat, repl, s)
+    s = _SUFFIX_RE.sub("", s).strip()
     return s
 
 

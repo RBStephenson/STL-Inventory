@@ -526,6 +526,17 @@ class TestMixComponents:
         }
         assert client.post("/painting/guides", json=body).status_code == 422
 
+    def test_canon_expands_tw_abbreviation(self):
+        from app.painting.services.importing import _canon
+        assert _canon("Bold TW 001") == "bold titanium white 001"
+        assert _canon("TW") == "titanium white"
+
+    def test_canon_strips_fw_prefix_and_ink_suffix(self):
+        from app.painting.services.importing import _canon
+        assert _canon("FW Crimson Ink") == "crimson"
+        assert _canon("Payne's Gray Ink") == "payne's grey"
+        assert _canon("FW Payne's Gray Ink") == "payne's grey"
+
     def test_trailing_zero_code_matches_shelf_code_without_zero(self):
         # Shelf stores '77.72' (PaintRack strips trailing zeros); swatch says
         # 'VMC Gunmetal Grey 77.720' — the extra zero must not block resolution.
