@@ -306,7 +306,7 @@ export default function Settings() {
   // Load Cults3D credential status on mount.
   useEffect(() => {
     let alive = true;
-    api.settings.cults3d.get()
+    api.settings.cults3d?.get()
       .then((s) => { if (alive) setCults3dSettings(s); })
       .catch(() => { /* non-fatal */ });
     return () => { alive = false; };
@@ -701,7 +701,7 @@ export default function Settings() {
         </h2>
         <Link
           to="/reorganize"
-          className="flex items-center gap-2 text-sm text-gray-300 hover:text-indigo-300 bg-gray-900 border border-gray-800 hover:border-indigo-700 rounded-lg px-4 py-3 self-start transition-colors w-fit"
+          className="flex items-center gap-2 text-sm text-gray-300 hover:text-indigo-300 bg-gray-900 border border-gray-800 hover:border-indigo-700 rounded-lg px-4 py-3 self-start transition-colo[...]"
         >
           <FolderTree size={15} className="text-indigo-400" />
           Reorganize Library
@@ -822,7 +822,7 @@ export default function Settings() {
           )}
           {appSettings.scan_tag_rules.map((r) => (
             <div
-              key={`${r.keyword} ${r.tag}`}
+              key={`${r.keyword} ${r.tag}`}
               className="flex items-center justify-between gap-3 bg-gray-900 border border-gray-800 rounded-lg px-4 py-2 self-start min-w-[18rem]"
             >
               <span className="text-sm text-gray-200">
@@ -1141,7 +1141,7 @@ export default function Settings() {
           <button
             onClick={backup}
             disabled={busy !== null}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-200 text-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed self-start"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-200 text-sm transition-colors disabled:opacity-40 disabled:cu[...]"
           >
             <Download size={15} />
             {busy === "backup" ? "Preparing backup…" : "Download Backup"}
@@ -1160,14 +1160,14 @@ export default function Settings() {
               <button
                 onClick={openRestore}
                 disabled={busy !== null}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-950/60 hover:bg-red-900/60 border border-red-800 text-red-200 text-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-950/60 hover:bg-red-900/60 border border-red-800 text-red-200 text-sm transition-colors disabled:opacity-40 disable[...]"
               >
                 <Upload size={15} /> Restore from Backup…
               </button>
               <button
                 onClick={() => { setAck(""); setRestoreFile(null); setDanger("reset"); }}
                 disabled={busy !== null}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-700 hover:bg-red-600 border border-red-600 text-white text-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-700 hover:bg-red-600 border border-red-600 text-white text-sm transition-colors disabled:opacity-40 disabled:cursor[...]"
               >
                 <Trash2 size={15} /> Delete All Data
               </button>
@@ -1222,7 +1222,7 @@ export default function Settings() {
               value={ack}
               onChange={(e) => setAck(e.target.value)}
               placeholder={ACK_PHRASE}
-              className="w-full bg-gray-950 border border-gray-700 focus:border-red-500 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-700 focus:outline-none font-mono tracking-wider mb-4"
+              className="w-full bg-gray-950 border border-gray-700 focus:border-red-500 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-700 focus:outline-none font-mono tracking-wider m[...]"
             />
 
             {dangerError && (
