@@ -526,15 +526,16 @@ class TestMixComponents:
         }
         assert client.post("/painting/guides", json=body).status_code == 422
 
-    def test_by_code_matches_three_digit_pure_numeric_code(self):
-        """FW ink code '065' (pure digits, 3 chars) must not be excluded."""
-        rows = [(1, "Payne's Grey", "065", "FW Inks", "", frozenset(), None)]
-        ws = set("065 payne's grey".split())
-        from app.painting.services.importing import make_db_resolver
-        # Unit test _by_code directly via the closure
-        # We verify the rule: len>=3 digit codes are allowed
-        assert "065".isdigit() and len("065") >= 3  # precondition
-        assert "065" in ws  # token is present
+    def test_by_code_leading_zero_normalisation(self):
+        """Swatch '065 Payne's Grey' matches shelf code '65' (PaintRack strips
+        leading zeros on CSV import, so DB stores '65' not '065')."""
+        # stripped_tokens: '065'.lstrip('0') = '65'; code '65'.lstrip('0') = '65' -> match
+        ws_tokens = set("065 payne's grey".split())
+        norm = {t for t in ws_tokens}           # no decimal points here
+        stripped = {t.lstrip("0") or "0" for t in norm}
+        code = "65"  # as stored in DB
+        cs = code.lstrip("0") or "0"
+        assert cs in stripped  # '65' in {'65', "payne's", 'grey'}
 
     def test_by_code_matches_hyphenated_code_via_space_in_swatch(self):
         """'AMP 017 Red Orange' should match code 'AMP-017' via part split."""

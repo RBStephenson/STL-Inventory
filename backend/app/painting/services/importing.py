@@ -185,13 +185,20 @@ def make_db_resolver(db: Session) -> PaintResolver:
         Trailing-zero normalisation: '77.720' in the swatch matches shelf code
         '77.72' (PaintRack strips trailing zeros on import)."""
         norm_tokens = {_strip_decimal_zeros(t) for t in ws_tokens}
+        # Leading-zero normalised: swatch '065' -> '65' matches shelf code '65'
+        # (PaintRack strips leading zeros on CSV import).
+        stripped_tokens = {t.lstrip("0") or "0" for t in norm_tokens}
         hits = set()
         for pid, _n, code, _b, _l, _nt, _cn in rows_:
-            if not code or (code.isdigit() and len(code) < 3):
-                continue  # skip empty or 1-2 digit codes (too ambiguous)
+            if not code:
+                continue
             cl = code.lower()
             cn = _strip_decimal_zeros(cl)
-            if cl in ws_tokens or cn in norm_tokens:
+            cs = cn.lstrip("0") or "0"
+            # Skip pure single-digit codes — too ambiguous as tokens.
+            if code.isdigit() and len(cs) < 2:
+                continue
+            if cl in ws_tokens or cn in norm_tokens or cs in stripped_tokens:
                 hits.add(pid)
             elif "-" in cl:
                 # 'AMP-017' -> parts ['amp','017']; match if all parts are tokens
