@@ -271,21 +271,21 @@ function SortableItem({ id, children }: { id: string; children: (handle: ReactNo
 // --- Swatch / Step / Phase / Tab editors (module scope, not nested) ---------
 
 function SwatchRow({ value, onChange, dragHandle, ...ctl }: { value: DraftSwatch; onChange: (v: DraftSwatch) => void; dragHandle?: ReactNode } & RowControls) {
-  // A name-only swatch (unresolved import, #477) has no shelf paint to pick —
-  // show its name read-only so editing preserves rather than drops it.
+  // A name-only swatch (unresolved import, #477) has no shelf paint yet —
+  // seed the picker with the preserved name so the user can resolve it (#554).
   const nameOnly = !value.paint && !!value.name;
   return (
     <div className="flex items-center gap-2 flex-wrap">
       {dragHandle}
-      {nameOnly ? (
-        <span
-          className="px-2 py-1 text-xs rounded bg-gray-800 border border-gray-700 text-gray-300"
-          title="Unresolved paint — preserved by name"
-        >
-          {value.name} <span className="text-gray-500">(unresolved)</span>
+      <PaintPicker
+        value={value.paint}
+        defaultSearch={nameOnly ? (value.name ?? undefined) : undefined}
+        onChange={(p) => onChange({ ...value, paint: p, name: p ? null : value.name })}
+      />
+      {nameOnly && (
+        <span className="text-xs text-amber-400" title="Unresolved — pick a shelf paint to resolve">
+          {value.name} (unresolved)
         </span>
-      ) : (
-        <PaintPicker value={value.paint} onChange={(p) => onChange({ ...value, paint: p })} />
       )}
       <input
         aria-label="Value %" type="number" min={0} max={100} placeholder="val%"
@@ -308,15 +308,15 @@ function MixCompRow({ value, onChange, onRemove }: { value: DraftMixComp; onChan
   const nameOnly = !value.paint && !!value.name;
   return (
     <div className="flex items-center gap-2 flex-wrap">
-      {nameOnly ? (
-        <span
-          className="px-2 py-1 text-xs rounded bg-gray-800 border border-gray-700 text-gray-300"
-          title="Unresolved paint — preserved by name"
-        >
-          {value.name} <span className="text-gray-500">(unresolved)</span>
+      <PaintPicker
+        value={value.paint}
+        defaultSearch={nameOnly ? (value.name ?? undefined) : undefined}
+        onChange={(p) => onChange({ ...value, paint: p, name: p ? null : value.name })}
+      />
+      {nameOnly && (
+        <span className="text-xs text-amber-400" title="Unresolved — pick a shelf paint to resolve">
+          {value.name} (unresolved)
         </span>
-      ) : (
-        <PaintPicker value={value.paint} onChange={(p) => onChange({ ...value, paint: p })} />
       )}
       <input
         aria-label="Parts" type="number" min={1} step="any" placeholder="parts"
