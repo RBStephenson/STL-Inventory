@@ -146,6 +146,46 @@ class TestMatching:
 
 
 # ---------------------------------------------------------------------------
+# Value-match hue family gate (#561 review)
+# ---------------------------------------------------------------------------
+
+class TestValueHueFamily:
+    def test_offhue_chromatic_paint_excluded_from_value(self, client, line):
+        # A green region must not offer a red as a "value match", but a same-hue
+        # green at a different value should still appear.
+        mk_paint(client, line, "R01", "Bold Red", "#C81E1E")       # off-hue
+        mk_paint(client, line, "G01", "Deep Green", "#0F5A14")     # same family
+
+        body = post_match(client, solid_png((40, 170, 60)), k=1).json()
+        value_names = {c["name"] for c in body["regions"][0]["value_candidates"]}
+        assert "Deep Green" in value_names
+        assert "Bold Red" not in value_names
+
+    def test_metallic_kept_regardless_of_hue(self, client, line):
+        # Metallics are value-only by design — hue gate must not drop them.
+        mk_paint(client, line, "M01", "Warm Steel", "#9A6A50", finish="metallic")
+
+        body = post_match(client, solid_png((40, 170, 60)), k=1).json()
+        value_names = {c["name"] for c in body["regions"][0]["value_candidates"]}
+        assert "Warm Steel" in value_names
+
+    def test_neutral_paint_kept_regardless_of_hue(self, client, line):
+        mk_paint(client, line, "GY1", "Neutral Grey", "#808080")
+
+        body = post_match(client, solid_png((40, 170, 60)), k=1).json()
+        value_names = {c["name"] for c in body["regions"][0]["value_candidates"]}
+        assert "Neutral Grey" in value_names
+
+    def test_neutral_region_keeps_all_hues(self, client, line):
+        # A grey region has no meaningful hue → full value ladder, any hue.
+        mk_paint(client, line, "R01", "Bold Red", "#C81E1E")
+
+        body = post_match(client, solid_png((130, 130, 130)), k=1).json()
+        value_names = {c["name"] for c in body["regions"][0]["value_candidates"]}
+        assert "Bold Red" in value_names
+
+
+# ---------------------------------------------------------------------------
 # Validation / edge cases
 # ---------------------------------------------------------------------------
 
