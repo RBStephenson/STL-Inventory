@@ -185,14 +185,20 @@ def make_db_resolver(db: Session) -> PaintResolver:
         Trailing-zero normalisation: '77.720' in the swatch matches shelf code
         '77.72' (PaintRack strips trailing zeros on import)."""
         norm_tokens = {_strip_decimal_zeros(t) for t in ws_tokens}
-        hits = {
-            pid
-            for pid, _n, code, _b, _l, _nt, _cn in rows_
-            if code and not code.isdigit() and (
-                code.lower() in ws_tokens
-                or _strip_decimal_zeros(code.lower()) in norm_tokens
-            )
-        }
+        hits = set()
+        for pid, _n, code, _b, _l, _nt, _cn in rows_:
+            if not code or (code.isdigit() and len(code) < 3):
+                continue  # skip empty or 1-2 digit codes (too ambiguous)
+            cl = code.lower()
+            cn = _strip_decimal_zeros(cl)
+            if cl in ws_tokens or cn in norm_tokens:
+                hits.add(pid)
+            elif "-" in cl:
+                # 'AMP-017' -> parts ['amp','017']; match if all parts are tokens
+                parts = cl.split("-")
+                if all(_strip_decimal_zeros(p) in norm_tokens or p in ws_tokens
+                       for p in parts):
+                    hits.add(pid)
         return next(iter(hits)) if len(hits) == 1 else None
 
     def resolve(swatch_name: str, brand: Optional[str]) -> Optional[int]:
