@@ -174,3 +174,51 @@ def cults_credentials_hint(db: Session) -> str | None:
     username, api_key = creds
     tail = api_key[-4:] if len(api_key) >= 4 else api_key
     return f"{username} / …{tail}"
+
+
+# --- MyMiniFactory API key ------------------------------------------------
+# Single encrypted key (simple ?key= query auth), mirroring the AI key.
+
+MMF_API_KEY_ENC = "mmf_api_key_enc"
+
+
+def set_mmf_api_key(db: Session, raw_key: str) -> None:
+    """Encrypt and store the MMF API key. Empty/blank input clears it instead."""
+    raw_key = raw_key.strip()
+    if not raw_key:
+        clear_mmf_api_key(db)
+        return
+    token = _get_fernet().encrypt(raw_key.encode()).decode()
+    row = db.get(AppSetting, MMF_API_KEY_ENC)
+    if row is None:
+        db.add(AppSetting(key=MMF_API_KEY_ENC, value=token))
+    else:
+        row.value = token
+    db.commit()
+
+
+def get_mmf_api_key(db: Session) -> str | None:
+    """Decrypt and return the stored MMF API key, or None if unset/undecryptable."""
+    row = db.get(AppSetting, MMF_API_KEY_ENC)
+    if row is None or not isinstance(row.value, str):
+        return None
+    try:
+        return _get_fernet().decrypt(row.value.encode()).decode()
+    except InvalidToken:
+        return None
+
+
+def clear_mmf_api_key(db: Session) -> None:
+    row = db.get(AppSetting, MMF_API_KEY_ENC)
+    if row is not None:
+        db.delete(row)
+        db.commit()
+
+
+def mmf_api_key_hint(db: Session) -> str | None:
+    """A masked hint for display (e.g. `…wxyz`), never the full key."""
+    key = get_mmf_api_key(db)
+    if not key:
+        return None
+    tail = key[-4:] if len(key) >= 4 else key
+    return f"…{tail}"

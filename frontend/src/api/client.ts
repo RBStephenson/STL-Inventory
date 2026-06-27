@@ -279,6 +279,12 @@ export interface CultsSettings {
   hint: string | null;
 }
 
+// MyMiniFactory API key status — key is write-only, never returned in full.
+export interface MmfSettings {
+  key_set: boolean;
+  key_hint: string | null;
+}
+
 export interface ScanTagRule {
   keyword: string;
   tag: string;
@@ -1258,6 +1264,17 @@ export const api = {
         }),
       clearCredentials: () =>
         request<CultsSettings>("/settings/cults/credentials", { method: "DELETE" }),
+    },
+    mmf: {
+      get: () => request<MmfSettings>("/settings/mmf"),
+      setKey: (key: string) =>
+        request<MmfSettings>("/settings/mmf/key", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ key }),
+        }),
+      clearKey: () =>
+        request<MmfSettings>("/settings/mmf/key", { method: "DELETE" }),
     },
   },
   painting: {

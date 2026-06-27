@@ -20,6 +20,7 @@ from app.schemas import (
     CultsSettingsRead,
     EnvReloadResult,
     FilterPreset,
+    MmfSettingsRead,
 )
 from app.services import secrets
 
@@ -173,3 +174,28 @@ def set_cults_credentials(body: CultsCredentialsUpdate, db: Session = Depends(ge
 def clear_cults_credentials(db: Session = Depends(get_db)):
     secrets.clear_cults_credentials(db)
     return _cults_settings(db)
+
+
+# --- MyMiniFactory settings -----------------------------------------------
+# Write-only API key, same pattern as the AI key.
+
+def _mmf_settings(db: Session) -> MmfSettingsRead:
+    hint = secrets.mmf_api_key_hint(db)
+    return MmfSettingsRead(key_set=hint is not None, key_hint=hint)
+
+
+@router.get("/mmf", response_model=MmfSettingsRead)
+def get_mmf_settings(db: Session = Depends(get_db)):
+    return _mmf_settings(db)
+
+
+@router.put("/mmf/key", response_model=MmfSettingsRead)
+def set_mmf_key(body: AiKeyUpdate, db: Session = Depends(get_db)):
+    secrets.set_mmf_api_key(db, body.key)
+    return _mmf_settings(db)
+
+
+@router.delete("/mmf/key", response_model=MmfSettingsRead)
+def clear_mmf_key(db: Session = Depends(get_db)):
+    secrets.clear_mmf_api_key(db)
+    return _mmf_settings(db)

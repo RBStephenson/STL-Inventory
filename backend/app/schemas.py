@@ -495,6 +495,15 @@ class CultsSettingsRead(BaseModel):
     hint: Optional[str] = None
 
 
+# --- MyMiniFactory settings -----------------------------------------------
+
+class MmfSettingsRead(BaseModel):
+    """MyMiniFactory API key status. The key is write-only — never returned in
+    full, only whether one is set and a masked hint (e.g. `…wxyz`)."""
+    key_set: bool
+    key_hint: Optional[str] = None
+
+
 class CultsCredentialsUpdate(BaseModel):
     username: str = Field(min_length=1, max_length=200)
     api_key: str = Field(min_length=1, max_length=400)

@@ -56,6 +56,11 @@ vi.mock("../api/client", () => ({
         setCredentials: vi.fn().mockResolvedValue({ credentials_set: true, hint: "user / …ExDH" }),
         clearCredentials: vi.fn().mockResolvedValue({ credentials_set: false, hint: null }),
       },
+      mmf: {
+        get: vi.fn().mockResolvedValue({ key_set: false, key_hint: null }),
+        setKey: vi.fn().mockResolvedValue({ key_set: true, key_hint: "…wxyz" }),
+        clearKey: vi.fn().mockResolvedValue({ key_set: false, key_hint: null }),
+      },
     },
   },
 }));
