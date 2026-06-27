@@ -926,6 +926,7 @@ def _merge_auto_tags(detected: list[str], layout_tags: list[str] | None) -> list
 
 
 def _has_stls(folder: Path, recurse: bool = False) -> bool:
+    folder = folder.resolve()
     if recurse:
         return any(f.suffix.lower() in STL_EXTENSIONS for f in folder.rglob("*") if f.is_file())
     return any(f.suffix.lower() in STL_EXTENSIONS for f in folder.iterdir() if f.is_file())

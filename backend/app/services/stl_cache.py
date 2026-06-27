@@ -81,6 +81,7 @@ def cached_stl(src: Path) -> Path:
     the cache.
     """
     try:
+        src = src.resolve()
         stat = src.stat()
         cache_dir = stl_cache_dir()
         dest = cache_dir / f"{_cache_key(src, stat)}.stl"

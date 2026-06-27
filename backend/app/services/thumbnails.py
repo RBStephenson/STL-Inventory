@@ -38,6 +38,7 @@ _CONTENT_TYPE_EXT = {
     "image/gif": ".gif",
 }
 _URL_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+_THUMB_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 
 
 class ThumbnailDownloadError(Exception):
@@ -194,8 +195,12 @@ def store_thumbnail(model_id: int, ext: str, data: bytes) -> Path:
     Drops any previous thumbnail saved with a different extension so it can't
     be picked up again or leak disk space.
     """
+    if ext not in _THUMB_EXTS:
+        raise ValueError(f"Unsafe thumbnail extension: {ext!r}")
     out_dir = thumbnails_dir()
-    out = out_dir / f"{model_id}{ext}"
+    out = (out_dir / f"{model_id}{ext}").resolve()
+    if out.parent != out_dir.resolve():
+        raise ValueError("Thumbnail path escaped directory")
     for stale in out_dir.glob(f"{model_id}.*"):
         if stale != out:
             try:

@@ -161,7 +161,11 @@ class _UndoLog:
     move could relocate), so a kill mid-batch leaves a replayable partial log."""
 
     def __init__(self, manifest_id: str):
-        self.path = undo_log_path(manifest_id)
+        _path = undo_log_path(manifest_id)
+        base = write_lock.data_dir().resolve()
+        self.path = _path.resolve()
+        if self.path.parent != base:
+            raise ApplyError("Invalid manifest id", status=400)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self._fh = open(self.path, "a", encoding="utf-8")
 
@@ -427,7 +431,10 @@ def undo_log_path(manifest_id: str) -> Path:
     traverse out (belt and braces, and a sanitizer CodeQL recognizes)."""
     safe = _validate_manifest_id(manifest_id)
     base = write_lock.data_dir().resolve()
-    candidate = (base / f"reorg_undo_{safe}.log").resolve()
+    # os.path.basename makes it explicit to CodeQL that no directory component
+    # can survive — only the bare filename part of `safe` is used.
+    filename = "reorg_undo_" + os.path.basename(safe) + ".log"
+    candidate = (base / filename).resolve()
     # The log is a single file directly under the data dir; its resolved parent
     # must be exactly that dir. resolve() + parent-equality is the path-traversal
     # barrier CodeQL models (plain normpath/startswith was not recognized).
@@ -437,7 +444,10 @@ def undo_log_path(manifest_id: str) -> Path:
 
 
 def _read_undo_log(manifest_id: str) -> list[dict]:
-    path = undo_log_path(manifest_id)
+    base = write_lock.data_dir().resolve()
+    path = undo_log_path(manifest_id).resolve()
+    if path.parent != base:
+        raise ApplyError("Invalid manifest id", status=400)
     if not path.exists():
         raise ApplyError("No undo log for this manifest — nothing to undo", status=404)
     records: list[dict] = []

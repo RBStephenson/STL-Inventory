@@ -136,6 +136,7 @@ def serve_image(path: str, v: str | None = None):
         raise HTTPException(status_code=400, detail="Not an image file")
     if not _is_safe_path(p):
         raise HTTPException(status_code=403, detail="Path not allowed")
+    p = p.resolve()
     if not p.exists():
         raise HTTPException(status_code=404, detail="File not found")
     # Captured/downloaded thumbnails are rewritten in place at a fixed path
@@ -170,6 +171,7 @@ def serve_stl(path: str, v: str | None = None):
         raise HTTPException(status_code=400, detail="Not an STL/3MF/OBJ file")
     if not _is_safe_path(p):
         raise HTTPException(status_code=403, detail="Path not allowed")
+    p = p.resolve()
     if not p.exists():
         raise HTTPException(status_code=404, detail="File not found")
     served = cached_stl(p)
@@ -274,7 +276,7 @@ def download_zip(
     try:
         with zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as zf:
             for f in files:
-                p = Path(f.path)
+                p = Path(f.path).resolve()
                 if not _is_safe_path(p) or not p.exists():
                     continue
                 zf.write(p, arcname=_unique_arcname(f.filename, used_arcnames))
@@ -316,6 +318,7 @@ def open_folder(path: str):
     p = Path(path)
     if not _is_safe_path(p):
         raise HTTPException(status_code=403, detail="Path not allowed")
+    p = p.resolve()
     if not p.exists():
         raise HTTPException(status_code=404, detail="Folder not found")
     if not p.is_dir():

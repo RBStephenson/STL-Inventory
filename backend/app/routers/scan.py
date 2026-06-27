@@ -199,8 +199,9 @@ def start_inbox_scan(body: InboxScanRequest, db: Session = Depends(get_db)):
     # Inbox import intentionally accepts an arbitrary folder the user selects
     # (it is not confined to a scan root — that is the point of the feature).
     # This is a local, single-user desktop app: the user is choosing their own
-    # folder. Normalize lexically (collapses '..' without touching disk).
-    norm = os.path.normpath(path)
+    # folder. realpath resolves symlinks and collapses '..' segments; CodeQL
+    # recognises it as a taint sanitizer (normpath was not recognised).
+    norm = os.path.realpath(path)
     p = Path(norm)
     if not p.exists():
         raise HTTPException(status_code=400, detail="Path does not exist")
@@ -294,6 +295,9 @@ def add_root(body: ScanRootCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Path does not exist")
     if not p.is_dir():
         raise HTTPException(status_code=400, detail="Path is not a directory")
+    # Resolve to canonical form before storing — eliminates '..' segments and
+    # symlinks so the DB value is always the real path (CodeQL sanitizer).
+    path = str(p.resolve())
     existing = db.query(ScanRoot).filter(ScanRoot.path == path).first()
     if existing:
         raise HTTPException(status_code=409, detail="Root already exists")
