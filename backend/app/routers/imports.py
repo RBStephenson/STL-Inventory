@@ -407,7 +407,8 @@ def download_images(body: DownloadImagesRequest, db: Session = Depends(get_db)):
                     logger.warning("gallery image %d skipped — unexpected ext %r", n, ext)
                     continue
                 dest = pack_dir / f"gallery_{n:02d}{ext}"
-                dest.write_bytes(r.content)
+                validated_dest = Path(_validated_path_within_root(str(pack_dir), str(dest)))
+                validated_dest.write_bytes(r.content)
                 downloaded += 1
             except Exception as e:
                 logger.warning("gallery image %d download failed: %s", n, e)
