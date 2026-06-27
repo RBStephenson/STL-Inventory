@@ -6,8 +6,8 @@ so no request value ever reaches the filesystem. The network rungs (URL / web
 search / AI-gen) are deferred to #563.
 
 The data dir is redirected to a tmp path so stored copies don't touch the real
-volume; model folder images live under the test STL root (conftest sets
-STL_ROOTS=/tmp) so the scan-root safety guard accepts them.
+volume; model folder images live under tmp_path which is registered as an
+allowed root in the autouse fixture so the scan-root safety guard accepts them.
 """
 import io
 
@@ -17,14 +17,16 @@ from PIL import Image
 from app.models import Model
 from app.painting.models import Guide, GuideReferenceImage
 from app.painting.services import images
-from app.routers import files as files_router
 
 
 @pytest.fixture(autouse=True)
 def _tmp_data_dir(tmp_path, monkeypatch):
     monkeypatch.setattr(images, "data_dir", lambda: tmp_path)
-    # Allow any path under tmp_path so _is_safe_path passes for test images.
-    monkeypatch.setattr(files_router, "_is_safe_path", lambda p: str(p).startswith(str(tmp_path)))
+    # Treat tmp_path as a valid scan root so _is_safe_path accepts model files.
+    # Patch _allowed_roots (not _is_safe_path directly) because images.py holds
+    # its own imported reference to _is_safe_path; patching the root list affects
+    # both that reference and the one in files.py at call time.
+    monkeypatch.setattr("app.routers.files._allowed_roots", lambda: [tmp_path])
     return tmp_path
 
 
