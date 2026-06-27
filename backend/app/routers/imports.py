@@ -352,21 +352,24 @@ def _image_ext(url: str, content_type: str) -> str:
 def download_images(body: DownloadImagesRequest, db: Session = Depends(get_db)):
     """Download CDN image URLs into the pack folder so they travel with the pack
     during apply. Called from the import UI after enrichment, before apply."""
-    pack_path = os.path.realpath(body.pack_path.strip())
-    if not pack_path:
+    raw_pack_path = body.pack_path.strip()
+    if not raw_pack_path:
         raise HTTPException(status_code=400, detail="pack_path is required")
+    pack_dir = Path(raw_pack_path).expanduser().resolve(strict=False)
+
     # Path guard: must be within a configured or bootstrap-allowed root.
     contained = False
     for base in _allowed_bases(db):
         try:
-            if os.path.commonpath([pack_path, base]) == base:
-                contained = True
-                break
+            base_dir = Path(base).expanduser().resolve(strict=False)
+            pack_dir.relative_to(base_dir)
+            contained = True
+            break
         except ValueError:
             continue
     if not contained:
         raise HTTPException(status_code=403, detail="Path is outside the allowed folders")
-    if not os.path.isdir(pack_path):
+    if not pack_dir.is_dir():
         raise HTTPException(status_code=404, detail="Pack folder not found")
 
     downloaded = 0
@@ -381,7 +384,7 @@ def download_images(body: DownloadImagesRequest, db: Session = Depends(get_db)):
                     logger.warning("gallery image %d skipped — unsupported content-type %r", n, ct)
                     continue
                 ext = _image_ext(url, ct)
-                dest = os.path.join(pack_path, f"gallery_{n:02d}{ext}")
+                dest = os.path.join(str(pack_dir), f"gallery_{n:02d}{ext}")
                 with open(dest, "wb") as fh:
                     fh.write(r.content)
                 downloaded += 1
