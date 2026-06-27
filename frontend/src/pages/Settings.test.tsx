@@ -240,6 +240,9 @@ describe("Settings – AI generation section (#517)", () => {
     const { api } = await import("../api/client");
     vi.mocked(api.settings.get).mockResolvedValue(mkSettings({ painting_guides_enabled: true }));
     vi.mocked(api.settings.update).mockResolvedValue(mkSettings({ painting_guides_enabled: true }));
+    // clearAllMocks resets call history but NOT implementations — a prior test
+    // left ai.get returning key_set:true, which hides the API-key input.
+    vi.mocked(api.settings.ai.get).mockResolvedValue({ key_set: false, key_hint: null, model: "", effort: "low" });
 
     render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
     await goTab(/ai & integrations/i);
