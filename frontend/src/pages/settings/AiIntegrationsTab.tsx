@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Bot, Link2 } from "lucide-react";
-import { api, AiEffort, AiSettings, CultsSettings } from "../../api/client";
+import { Bot, Link2, Boxes } from "lucide-react";
+import { api, AiEffort, AiSettings, CultsSettings, MmfSettings } from "../../api/client";
 import { useAppSettings } from "../../context/AppSettingsContext";
 import FlashBanner from "./FlashBanner";
 import { useSettingsFlash } from "./useSettingsFlash";
@@ -20,6 +20,11 @@ export default function AiIntegrationsTab() {
   const [cultsKey, setCultsKey] = useState("");
   const [editingCults, setEditingCults] = useState(false);
 
+  // MyMiniFactory
+  const [mmfSettings, setMmfSettings] = useState<MmfSettings | null>(null);
+  const [mmfKeyDraft, setMmfKeyDraft] = useState("");
+  const [editingMmf, setEditingMmf] = useState(false);
+
   useEffect(() => {
     let alive = true;
     api.settings.ai.get()
@@ -27,6 +32,9 @@ export default function AiIntegrationsTab() {
       .catch(() => {});
     api.settings.cults.get()
       .then((s) => { if (alive) setCultsSettings(s); })
+      .catch(() => {});
+    api.settings.mmf.get()
+      .then((s) => { if (alive) setMmfSettings(s); })
       .catch(() => {});
     return () => { alive = false; };
   }, []);
@@ -90,6 +98,28 @@ export default function AiIntegrationsTab() {
       flash("Cults3D credentials cleared", "ok");
     } catch (e: any) {
       flash(e?.message || "Could not clear Cults3D credentials", "err");
+    }
+  };
+
+  const saveMmfKey = async () => {
+    const key = mmfKeyDraft.trim();
+    if (!key) return;
+    try {
+      setMmfSettings(await api.settings.mmf.setKey(key));
+      setMmfKeyDraft("");
+      setEditingMmf(false);
+      flash("MyMiniFactory key saved", "ok");
+    } catch (e: any) {
+      flash(e?.message || "Could not save the MyMiniFactory key", "err");
+    }
+  };
+
+  const clearMmfKey = async () => {
+    try {
+      setMmfSettings(await api.settings.mmf.clearKey());
+      flash("MyMiniFactory key cleared", "ok");
+    } catch (e: any) {
+      flash(e?.message || "Could not clear the MyMiniFactory key", "err");
     }
   };
 
@@ -259,6 +289,70 @@ export default function AiIntegrationsTab() {
                 </button>
               )}
             </div>
+          </div>
+        )}
+      </section>
+
+      {/* MyMiniFactory */}
+      <section className="mt-10">
+        <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+          <Boxes size={14} /> MyMiniFactory
+        </h2>
+        <p className="text-xs text-gray-600 mb-4">
+          Add a MyMiniFactory API key to enrich your STL library from their API — richer
+          model metadata, images, tags and designer details than page scraping. Register an
+          app at MyMiniFactory Settings → Developer to get a key. Stored encrypted and never
+          shown again.
+        </p>
+
+        {mmfSettings?.key_set && !editingMmf ? (
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-300 bg-gray-900 border border-gray-800 rounded px-3 py-2">
+              Key set <span className="text-gray-500">••••{mmfSettings.key_hint?.replace(/^…/, "")}</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => { setEditingMmf(true); setMmfKeyDraft(""); }}
+              className="text-sm text-gray-300 hover:text-white border border-gray-700 rounded px-3 py-2"
+            >
+              Replace
+            </button>
+            <button
+              type="button"
+              onClick={clearMmfKey}
+              className="text-sm text-rose-300 hover:text-rose-200 border border-gray-700 hover:border-rose-800 rounded px-3 py-2"
+            >
+              Clear
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 max-w-sm">
+            <input
+              type="password"
+              aria-label="MyMiniFactory API key"
+              value={mmfKeyDraft}
+              onChange={(e) => setMmfKeyDraft(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") saveMmfKey(); }}
+              placeholder="API key"
+              className="flex-1 bg-gray-900 border border-gray-800 rounded px-3 py-2 text-sm text-gray-100 focus:border-indigo-600 focus:outline-none"
+            />
+            <button
+              type="button"
+              onClick={saveMmfKey}
+              disabled={!mmfKeyDraft.trim()}
+              className="text-sm bg-indigo-600 hover:bg-indigo-500 text-white rounded px-3 py-2 disabled:opacity-50"
+            >
+              Save
+            </button>
+            {mmfSettings?.key_set && (
+              <button
+                type="button"
+                onClick={() => { setEditingMmf(false); setMmfKeyDraft(""); }}
+                className="text-sm text-gray-400 hover:text-gray-200 px-2 py-2"
+              >
+                Cancel
+              </button>
+            )}
           </div>
         )}
       </section>
