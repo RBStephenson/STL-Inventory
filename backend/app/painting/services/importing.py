@@ -195,13 +195,10 @@ def make_db_resolver(db: Session) -> PaintResolver:
             cl = code.lower()
             cn = _strip_decimal_zeros(cl)
             cs = cn.lstrip("0") or "0"
-            # Pure-digit codes must not match via stripped_tokens — a bare number
-            # collides with per-line numbering guides use ('065' in "Mystery Colour
-            # 065" vs shelf code 065). Verbatim exact match (cl in ws_tokens) is
-            # still allowed because a literal "065" in the swatch is unambiguous.
+            # Pure-digit codes (e.g. '065') must not match via any token path —
+            # a bare number collides with per-line numbering guides use.
+            # _exact and _smart still catch them when brand-scoped.
             if code.isdigit():
-                if cl in ws_tokens or cn in norm_tokens:
-                    hits.add(pid)
                 continue
             if cl in ws_tokens or cn in norm_tokens or cs in stripped_tokens:
                 hits.add(pid)
