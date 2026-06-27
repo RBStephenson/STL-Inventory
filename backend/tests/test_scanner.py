@@ -840,6 +840,174 @@ class TestPruneStaleModels:
 
 
 # ---------------------------------------------------------------------------
+# Mount-detach guard — never destructively prune an offline root
+# ---------------------------------------------------------------------------
+
+class TestRootAvailable:
+    def test_existing_nonempty_dir_is_available(self, tmp_path):
+        (tmp_path / "creator").mkdir()
+        assert scanner._root_available(str(tmp_path)) is True
+
+    def test_empty_dir_is_unavailable(self, tmp_path):
+        """A detached bind/network mount leaves an empty mountpoint behind —
+        emptiness is the unmount signal, not absence."""
+        empty = tmp_path / "mnt"
+        empty.mkdir()
+        assert scanner._root_available(str(empty)) is False
+
+    def test_missing_path_is_unavailable(self, tmp_path):
+        assert scanner._root_available(str(tmp_path / "gone")) is False
+
+
+class TestPruneStalePaths:
+    def _model(self, db, creator, name, folder: Path, on_disk: bool = True):
+        m = Model(name=name, folder_path=str(folder), creator_id=creator.id)
+        db.add(m)
+        db.flush()
+        db.add(STLFile(model_id=m.id, path=str(folder / "a.stl"), filename="a.stl"))
+        if on_disk:
+            _stl(folder)
+        db.commit()
+        return m
+
+    def test_renamed_folder_under_online_root_is_pruned(self, db, tmp_path):
+        """Legit behaviour preserved: under a mounted root, a model whose folder
+        was renamed away (now missing) is pruned, siblings kept."""
+        creator = make_creator(db, "Creator")
+        self._model(db, creator, "kept1", tmp_path / "kept1")
+        self._model(db, creator, "kept2", tmp_path / "kept2")
+        self._model(db, creator, "renamed", tmp_path / "old_name", on_disk=False)
+
+        assert scanner._prune_stale_paths(db, [str(tmp_path)]) == 1
+        names = {m.name for m in db.query(Model).all()}
+        assert names == {"kept1", "kept2"}
+
+    def test_detached_mount_prunes_nothing(self, db, tmp_path):
+        """The incident: an offline (empty/missing) root must yield NO available
+        paths, so every model under it is protected even though its folder is gone."""
+        creator = make_creator(db, "Creator")
+        root = tmp_path / "mnt" / "drive1"
+        for i in range(3):
+            self._model(db, creator, f"m{i}", root / f"m{i}", on_disk=False)
+
+        # No available roots passed (mount detached) → nothing pruned.
+        assert scanner._prune_stale_paths(db, []) == 0
+        assert db.query(Model).count() == 3
+        assert db.query(STLFile).count() == 3
+
+    def test_collection_links_survive_detached_mount(self, db, tmp_path):
+        """Direct regression for the data loss: collection memberships must not be
+        cascade-deleted when a mount detaches."""
+        from app.models import Collection, CollectionModel
+        creator = make_creator(db, "Creator")
+        root = tmp_path / "mnt" / "drive1"
+        m = self._model(db, creator, "m", root / "m", on_disk=False)
+        coll = Collection(name="Favourites")
+        db.add(coll)
+        db.flush()
+        db.add(CollectionModel(collection_id=coll.id, model_id=m.id))
+        db.commit()
+
+        scanner._prune_stale_paths(db, [])  # offline root → no available paths
+
+        assert db.query(CollectionModel).count() == 1
+        assert db.query(Model).count() == 1
+
+    def test_only_offline_root_models_protected_others_pruned(self, db, tmp_path):
+        """Two roots: the online one still gets its legit rename cleanup; the
+        offline one's models are left untouched."""
+        creator = make_creator(db, "Creator")
+        online = tmp_path / "online"
+        offline = tmp_path / "offline"
+        # online root: 1 missing (rename) + 2 present → 33%, below cap → pruned
+        self._model(db, creator, "on_kept1", online / "k1")
+        self._model(db, creator, "on_kept2", online / "k2")
+        self._model(db, creator, "on_renamed", online / "old", on_disk=False)
+        # offline root models (folders gone with the mount)
+        self._model(db, creator, "off1", offline / "o1", on_disk=False)
+        self._model(db, creator, "off2", offline / "o2", on_disk=False)
+
+        # Only the online root is reported available.
+        removed = scanner._prune_stale_paths(db, [str(online)])
+        assert removed == 1
+        names = {m.name for m in db.query(Model).all()}
+        assert names == {"on_kept1", "on_kept2", "off1", "off2"}
+
+    def test_safety_cap_blocks_mass_delete(self, db, tmp_path):
+        """Even under an online root, deleting >50% looks like a botched run, so
+        the shared cap blocks it."""
+        creator = make_creator(db, "Creator")
+        self._model(db, creator, "kept", tmp_path / "kept")
+        self._model(db, creator, "gone1", tmp_path / "g1", on_disk=False)
+        self._model(db, creator, "gone2", tmp_path / "g2", on_disk=False)
+
+        assert scanner._prune_stale_paths(db, [str(tmp_path)]) == 0
+        assert db.query(Model).count() == 3
+
+    def test_models_outside_any_online_root_untouched(self, db, tmp_path):
+        """A model whose folder is gone but sits under no available root is left
+        alone (errs toward keeping data)."""
+        creator = make_creator(db, "Creator")
+        online = tmp_path / "online"
+        self._model(db, creator, "kept1", online / "k1")
+        self._model(db, creator, "kept2", online / "k2")
+        orphan = tmp_path / "elsewhere"
+        self._model(db, creator, "orphan", orphan / "o", on_disk=False)
+
+        assert scanner._prune_stale_paths(db, [str(online)]) == 0
+        assert "orphan" in {m.name for m in db.query(Model).all()}
+
+
+class TestScanAllRootsMountGate:
+    """The gate lives in scan_all_roots: only roots confirmed online may feed the
+    destructive prunes. _scan_root and the prunes are stubbed so we can assert the
+    paths handed to them without spinning up worker-thread DB sessions."""
+
+    def _wire(self, db, monkeypatch):
+        captured: dict = {}
+
+        def _cap(key):
+            def _fn(_db, *args):
+                captured[key] = args[-1]
+                return 0
+            return _fn
+
+        monkeypatch.setattr(scanner, "_scan_root", lambda *a, **k: None)
+        monkeypatch.setattr(scanner, "_prune_stale_models", _cap("stale_models"))
+        monkeypatch.setattr(scanner, "_prune_stale_paths", _cap("stale_paths"))
+        monkeypatch.setattr(scanner, "_prune_ignored", _cap("ignored"))
+        monkeypatch.setattr(scanner, "_prune_slicer_files", lambda *a, **k: None)
+        monkeypatch.setattr(scanner, "_prune_phantoms", lambda *a, **k: 0)
+        monkeypatch.setattr(scanner, "_prune_empty_creators", lambda *a, **k: None)
+        return captured
+
+    def test_offline_root_excluded_from_prunes(self, db, tmp_path, monkeypatch):
+        from app.models import ScanRoot
+        db.add(ScanRoot(path=str(tmp_path), enabled=True))  # empty → offline
+        db.commit()
+        captured = self._wire(db, monkeypatch)
+
+        scanner.scan_all_roots(db)
+
+        assert captured["stale_paths"] == []
+        assert captured["stale_models"] == []
+        assert captured["ignored"] == []
+        assert scanner.get_status()["offline_roots"] == [str(tmp_path)]
+
+    def test_online_root_feeds_prunes(self, db, tmp_path, monkeypatch):
+        from app.models import ScanRoot
+        (tmp_path / "creator").mkdir()  # non-empty → online
+        db.add(ScanRoot(path=str(tmp_path), enabled=True))
+        db.commit()
+        captured = self._wire(db, monkeypatch)
+
+        scanner.scan_all_roots(db)
+
+        assert captured["stale_paths"] == [str(tmp_path)]
+        assert captured["stale_models"] == [str(tmp_path)]
+
+
+# ---------------------------------------------------------------------------
 # Per-creator bootstrap (#50)
 # ---------------------------------------------------------------------------
 
