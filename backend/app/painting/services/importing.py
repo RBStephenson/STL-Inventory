@@ -195,8 +195,13 @@ def make_db_resolver(db: Session) -> PaintResolver:
             cl = code.lower()
             cn = _strip_decimal_zeros(cl)
             cs = cn.lstrip("0") or "0"
-            # Skip pure single-digit codes — too ambiguous as tokens.
-            if code.isdigit() and len(cs) < 2:
+            # Pure-digit codes must not match via stripped_tokens — a bare number
+            # collides with per-line numbering guides use ('065' in "Mystery Colour
+            # 065" vs shelf code 065). Verbatim exact match (cl in ws_tokens) is
+            # still allowed because a literal "065" in the swatch is unambiguous.
+            if code.isdigit():
+                if cl in ws_tokens or cn in norm_tokens:
+                    hits.add(pid)
                 continue
             if cl in ws_tokens or cn in norm_tokens or cs in stripped_tokens:
                 hits.add(pid)
