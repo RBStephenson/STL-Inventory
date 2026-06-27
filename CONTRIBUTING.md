@@ -10,15 +10,26 @@ Thanks for your interest in contributing!
 
 ## Development Setup
 
-**Backend (Python 3.12 + FastAPI)**
+**1. Install root dependencies (required once — activates the pre-commit hook)**
 
 ```bash
-cd backend
-pip install -r requirements-test.txt
-pytest          # run the test suite
+npm install
 ```
 
-**Frontend (React + TypeScript)**
+This installs [Husky](https://typicode.github.io/husky/) at the repo root and
+wires a pre-commit hook that runs the full test suite before every commit.
+
+**2. Build the backend image (required for the pytest hook to run)**
+
+```bash
+docker compose build backend
+```
+
+If Docker is not running or the image hasn't been built, the pytest step is
+skipped with a warning so offline commits aren't blocked. Build it once and
+keep Docker running during development.
+
+**3. Frontend (React + TypeScript)**
 
 ```bash
 cd frontend
@@ -26,7 +37,7 @@ npm ci
 npm run dev     # starts Vite dev server on :3000
 ```
 
-**Full stack via Docker**
+**4. Full stack via Docker**
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up
@@ -35,9 +46,34 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 The dev overlay bind-mounts the source and runs `uvicorn --reload`, so Python
 edits take effect without a rebuild.
 
+## Running Tests
+
+**Vitest (frontend)**
+
+```bash
+npm --prefix frontend test
+```
+
+**Pytest (backend)**
+
+The suite requires no local Python environment — it runs inside the backend
+Docker image with the source mounted in:
+
+```bash
+docker run --rm --workdir /app \
+  -e DATABASE_URL="sqlite:///:memory:" \
+  -v "$(pwd)/backend:/app" \
+  -v "$(pwd)/packaging:/packaging" \
+  stl-inventory-backend:latest \
+  sh -c "pip install -q pytest==9.0.3 pytest-cov==7.1.0 && pytest tests/ -q --tb=short"
+```
+
+Both suites run automatically via the pre-commit hook. To skip in an emergency:
+`git commit --no-verify` (use sparingly).
+
 ## Pull Request Checklist
 
-- [ ] Tests pass (`pytest` in `backend/`)
+- [ ] Pre-commit hook passed (vitest + pytest both green)
 - [ ] New backend logic has corresponding tests
 - [ ] No secrets, credentials, or local paths committed
 - [ ] PR description explains *why*, not just *what*

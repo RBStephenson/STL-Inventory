@@ -195,15 +195,27 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 
 ## Tests
 
-The backend suite lives in `backend/tests` (pytest, in-memory SQLite — no
-external services needed). Run it locally:
+Tests run automatically on every commit via a [Husky](https://typicode.github.io/husky/)
+pre-commit hook. After cloning, run `npm install` at the repo root once to wire it up,
+then `docker compose build backend` so the pytest step has an image to run in.
+
+**Frontend (vitest)**
+```bash
+npm --prefix frontend test
 ```
-cd backend
-pip install -r requirements-test.txt
-pytest
+
+**Backend (pytest — runs in Docker, no local Python env required)**
+```bash
+docker run --rm --workdir /app \
+  -e DATABASE_URL="sqlite:///:memory:" \
+  -v "$(pwd)/backend:/app" \
+  -v "$(pwd)/packaging:/packaging" \
+  stl-inventory-backend:latest \
+  sh -c "pip install -q pytest==9.0.3 pytest-cov==7.1.0 && pytest tests/ -q --tb=short"
 ```
-Every PR to `main` (and every push to `main`) runs the suite via the **Tests**
-workflow, so logic regressions are caught alongside the binary **Build Check**.
+
+Every PR to `main` (and every push to `main`) also runs the suite via the **Tests**
+workflow, so regressions are caught alongside the binary **Build Check**.
 
 ## Releasing
 
