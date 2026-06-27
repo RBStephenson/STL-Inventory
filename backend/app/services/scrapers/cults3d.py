@@ -33,6 +33,8 @@ query FetchCreation($slug: String!) {
     shortUrl
     illustrationImageUrl
     tags(locale: EN)
+    license { name code }
+    category { name }
     likesCount
     downloadsCount
     creator {
@@ -138,6 +140,8 @@ def _to_scraped_model(creation: dict, source_url: str, slug: str) -> ScrapedMode
     description = creation.get("description")
     thumbnail = creation.get("illustrationImageUrl")
     tags = creation.get("tags") or []
+    license_name = (creation.get("license") or {}).get("name")
+    category = (creation.get("category") or {}).get("name")
     likes = creation.get("likesCount")
     downloads = creation.get("downloadsCount")
     creator_nick = (creation.get("creator") or {}).get("nick")
@@ -168,6 +172,8 @@ def _to_scraped_model(creation: dict, source_url: str, slug: str) -> ScrapedMode
         thumbnail_url=thumbnail,
         image_urls=images,
         tags=tags,
+        category=category,
+        license=license_name,
         like_count=likes,
         download_count=downloads,
     )
