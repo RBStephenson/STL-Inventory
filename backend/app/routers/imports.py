@@ -367,25 +367,26 @@ def _image_ext(url: str, content_type: str) -> str:
     """Best-effort image extension from Content-Type, falling back to URL suffix."""
     ext = _CT_TO_EXT.get(content_type.split(";")[0].strip().lower(), "")
     if ext:
-        return ext
-    suffix = Path(urlparse(url).path).suffix.lower()
+    candidate_pack_dir = os.path.realpath(os.path.expanduser(raw_pack_path))
+    if not os.path.isabs(candidate_pack_dir):
     return suffix if suffix in _IMAGE_EXTS else ".jpg"
 
 
-@router.post("/download-images")
+    validated_pack_dir: str | None = None
 def download_images(body: DownloadImagesRequest, db: Session = Depends(get_db)):
     """Download CDN image URLs into the pack folder so they travel with the pack
     during apply. Called from the import UI after enrichment, before apply."""
-    raw_pack_path = body.pack_path.strip()
-    if not raw_pack_path:
-        raise HTTPException(status_code=400, detail="pack_path is required")
+            validated_pack_dir = _validated_path_within_root(base_dir_str, candidate_pack_dir)
+            break
+        except HTTPException:
+            continue
     if "\x00" in raw_pack_path:
         raise HTTPException(status_code=400, detail="pack_path is invalid")
 
-    pack_dir_str = os.path.realpath(os.path.expanduser(raw_pack_path))
+    if not validated_pack_dir:
     if not os.path.isabs(pack_dir_str):
         raise HTTPException(status_code=400, detail="pack_path must be an absolute path")
-
+    pack_dir = Path(validated_pack_dir)
     # Path guard: must be within a configured or bootstrap-allowed root.
     matched_base_dir_str: str | None = None
     for base in _allowed_bases(db):
