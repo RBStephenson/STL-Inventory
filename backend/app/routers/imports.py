@@ -355,7 +355,16 @@ def download_images(body: DownloadImagesRequest, db: Session = Depends(get_db)):
     raw_pack_path = body.pack_path.strip()
     if not raw_pack_path:
         raise HTTPException(status_code=400, detail="pack_path is required")
-    pack_dir = Path(raw_pack_path).expanduser().resolve(strict=False)
+    if "\x00" in raw_pack_path:
+        raise HTTPException(status_code=400, detail="pack_path is invalid")
+
+    candidate_pack_path = Path(raw_pack_path)
+    if not candidate_pack_path.is_absolute():
+        raise HTTPException(status_code=400, detail="pack_path must be an absolute path")
+    if ".." in candidate_pack_path.parts:
+        raise HTTPException(status_code=400, detail="pack_path is invalid")
+
+    pack_dir = candidate_pack_path.expanduser().resolve(strict=False)
 
     # Path guard: must be within a configured or bootstrap-allowed root.
     contained = False
