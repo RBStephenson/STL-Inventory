@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { ReactElement } from "react";
-import { render as rtlRender, screen } from "@testing-library/react";
+import { render as rtlRender, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import Settings from "./Settings";
@@ -209,7 +209,9 @@ describe("Settings – AI generation section (#517)", () => {
 
     const input = await screen.findByLabelText("Anthropic API key");
     await userEvent.type(input, "sk-ant-secret-wxyz");
-    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+    // Use the Save button in the same flex container as the API key input.
+    const keyRow = input.closest("div") as HTMLElement;
+    await userEvent.click(within(keyRow).getByRole("button", { name: "Save" }));
 
     expect(api.settings.ai.setKey).toHaveBeenCalledWith("sk-ant-secret-wxyz");
     expect(await screen.findByText(/key set/i)).toBeInTheDocument();

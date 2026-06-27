@@ -17,11 +17,14 @@ from PIL import Image
 from app.models import Model
 from app.painting.models import Guide, GuideReferenceImage
 from app.painting.services import images
+from app.routers import files as files_router
 
 
 @pytest.fixture(autouse=True)
 def _tmp_data_dir(tmp_path, monkeypatch):
     monkeypatch.setattr(images, "data_dir", lambda: tmp_path)
+    # Allow any path under tmp_path so _is_safe_path passes for test images.
+    monkeypatch.setattr(files_router, "_is_safe_path", lambda p: str(p).startswith(str(tmp_path)))
     return tmp_path
 
 
