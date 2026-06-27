@@ -7,9 +7,11 @@ import Settings from "./Settings";
 import { AppSettingsProvider } from "../context/AppSettingsContext";
 import { mkSettings } from "../test/settings";
 
-// Settings now contains a <Link> (Library Tools → /reorganize), so every render
-// needs a Router context.
-const render = (ui: ReactElement) => rtlRender(<MemoryRouter>{ui}</MemoryRouter>);
+const render = (ui: ReactElement) => rtlRender(<MemoryRouter initialEntries={["/settings"]}>{ui}</MemoryRouter>);
+
+const goTab = async (label: RegExp | string) => {
+  await userEvent.click(await screen.findByRole("button", { name: label }));
+};
 
 vi.mock("../api/client", () => ({
   api: {
@@ -45,6 +47,11 @@ vi.mock("../api/client", () => ({
         setKey: vi.fn().mockResolvedValue({ key_set: true, key_hint: "…wxyz", model: "", effort: "low" }),
         clearKey: vi.fn().mockResolvedValue({ key_set: false, key_hint: null, model: "", effort: "low" }),
       },
+      cults: {
+        get: vi.fn().mockResolvedValue({ credentials_set: false, hint: null }),
+        setCredentials: vi.fn().mockResolvedValue({ credentials_set: true, hint: "user / …ExDH" }),
+        clearCredentials: vi.fn().mockResolvedValue({ credentials_set: false, hint: null }),
+      },
     },
   },
 }));
@@ -59,6 +66,7 @@ vi.mock("../components/FolderPicker", () => ({
 }));
 
 vi.mock("../components/HelpLink", () => ({ default: () => null }));
+vi.mock("../components/guide/ThemeEditor", () => ({ default: () => null }));
 
 describe("Settings – Add Folder button", () => {
   beforeEach(() => { vi.clearAllMocks(); });
@@ -145,6 +153,7 @@ describe("Settings – Painting Guides toggle (#180)", () => {
     vi.mocked(api.settings.update).mockResolvedValue(mkSettings({ painting_guides_enabled: true }));
 
     render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
+    await goTab(/painting/i);
 
     const checkbox = await screen.findByRole("checkbox", { name: /enable painting guides/i });
     expect(checkbox).not.toBeChecked();
@@ -162,9 +171,9 @@ describe("Settings – Painting Guides toggle (#180)", () => {
     vi.mocked(api.settings.update).mockResolvedValue(mkSettings({ painting_guides_enabled: false }));
 
     render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
+    await goTab(/painting/i);
 
-    const checkbox = await screen.findByRole("checkbox", { name: /enable painting guides/i });
-    await screen.findByRole("checkbox", { name: /enable painting guides/i, checked: true });
+    const checkbox = await screen.findByRole("checkbox", { name: /enable painting guides/i, checked: true });
 
     await userEvent.click(checkbox);
 
@@ -178,6 +187,7 @@ describe("Settings – Painting Guides toggle (#180)", () => {
     vi.mocked(api.settings.update).mockRejectedValueOnce(new Error("DB locked"));
 
     render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
+    await goTab(/painting/i);
 
     const checkbox = await screen.findByRole("checkbox", { name: /enable painting guides/i });
     await userEvent.click(checkbox);
@@ -190,22 +200,12 @@ describe("Settings – Painting Guides toggle (#180)", () => {
 describe("Settings – AI generation section (#517)", () => {
   beforeEach(() => { vi.clearAllMocks(); });
 
-  it("is hidden when painting guides are disabled", async () => {
-    const { api } = await import("../api/client");
-    vi.mocked(api.settings.get).mockResolvedValue(mkSettings({ painting_guides_enabled: false }));
-
-    render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
-
-    await screen.findByRole("checkbox", { name: /enable painting guides/i });
-    expect(screen.queryByLabelText("Anthropic API key")).toBeNull();
-    expect(api.settings.ai.get).not.toHaveBeenCalled();
-  });
-
   it("saves a typed key and then shows the masked, key-set state", async () => {
     const { api } = await import("../api/client");
     vi.mocked(api.settings.get).mockResolvedValue(mkSettings({ painting_guides_enabled: true }));
 
     render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
+    await goTab(/ai & integrations/i);
 
     const input = await screen.findByLabelText("Anthropic API key");
     await userEvent.type(input, "sk-ant-secret-wxyz");
@@ -222,6 +222,7 @@ describe("Settings – AI generation section (#517)", () => {
     vi.mocked(api.settings.ai.get).mockResolvedValue({ key_set: true, key_hint: "…wxyz", model: "", effort: "low" });
 
     render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
+    await goTab(/ai & integrations/i);
 
     expect(await screen.findByText(/key set/i)).toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Clear" }));
@@ -232,10 +233,10 @@ describe("Settings – AI generation section (#517)", () => {
   it("saves model and effort from the dropdowns (#517)", async () => {
     const { api } = await import("../api/client");
     vi.mocked(api.settings.get).mockResolvedValue(mkSettings({ painting_guides_enabled: true }));
-    // update must keep painting enabled so the AI section stays mounted.
     vi.mocked(api.settings.update).mockResolvedValue(mkSettings({ painting_guides_enabled: true }));
 
     render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
+    await goTab(/ai & integrations/i);
 
     await screen.findByLabelText("Anthropic API key");
     await userEvent.selectOptions(screen.getByLabelText("Model"), "claude-opus-4-8");
@@ -282,10 +283,10 @@ describe("Settings – Scan ignore patterns (#31)", () => {
     );
 
     render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
+    await goTab(/scanning/i);
 
     await screen.findByText("WIP");
     await userEvent.type(screen.getByPlaceholderText(/_archive/i), "_archive");
-    // First "Add" is the ignore-pattern one (a second exists for tag rules).
     await userEvent.click(screen.getAllByRole("button", { name: /^add$/i })[0]);
 
     expect(api.settings.update).toHaveBeenCalledWith({
@@ -299,6 +300,7 @@ describe("Settings – Scan ignore patterns (#31)", () => {
     vi.mocked(api.settings.get).mockResolvedValue(mkSettings({ scan_ignore_patterns: ["WIP"] }));
 
     render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
+    await goTab(/scanning/i);
 
     await screen.findByText("WIP");
     await userEvent.type(screen.getByPlaceholderText(/_archive/i), "WIP");
@@ -317,6 +319,7 @@ describe("Settings – Scan ignore patterns (#31)", () => {
     );
 
     render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
+    await goTab(/scanning/i);
 
     await userEvent.click(await screen.findByRole("button", { name: /remove WIP/i }));
 
@@ -335,11 +338,10 @@ describe("Settings – Scan tag rules (#31)", () => {
     );
 
     render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
+    await goTab(/scanning/i);
 
     await userEvent.type(await screen.findByPlaceholderText(/keyword/i), "Aztec");
     await userEvent.type(screen.getByPlaceholderText(/tag \(/i), "civ");
-    // Two "Add" buttons on the page (ignore patterns + tag rules); the tag-rule
-    // one is the second.
     await userEvent.click(screen.getAllByRole("button", { name: /^add$/i })[1]);
 
     expect(api.settings.update).toHaveBeenCalledWith({
@@ -355,6 +357,7 @@ describe("Settings – Scan tag rules (#31)", () => {
     vi.mocked(api.settings.update).mockResolvedValue(mkSettings({ scan_tag_rules: [] }));
 
     render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
+    await goTab(/scanning/i);
 
     await userEvent.click(await screen.findByRole("button", { name: /remove Aztec to civ/i }));
 
@@ -373,9 +376,9 @@ describe("Settings – Scan parts names (#31)", () => {
     );
 
     render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
+    await goTab(/scanning/i);
 
     await userEvent.type(await screen.findByPlaceholderText(/Sprues/i), "Sprues");
-    // Third "Add" button on the page (ignore patterns, tag rules, parts names).
     await userEvent.click(screen.getAllByRole("button", { name: /^add$/i })[2]);
 
     expect(api.settings.update).toHaveBeenCalledWith({ scan_parts_names: ["Sprues"] });
@@ -387,6 +390,7 @@ describe("Settings – Scan parts names (#31)", () => {
     vi.mocked(api.settings.update).mockResolvedValue(mkSettings({ scan_parts_names: [] }));
 
     render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
+    await goTab(/scanning/i);
 
     await userEvent.click(await screen.findByRole("button", { name: /remove Sprues/i }));
 
@@ -403,6 +407,7 @@ describe("Settings – Library page size (#32)", () => {
     vi.mocked(api.settings.update).mockResolvedValue(mkSettings({ library_page_size: 96 }));
 
     render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
+    await goTab(/preferences/i);
 
     await userEvent.click(await screen.findByRole("button", { name: "96" }));
 
