@@ -15,7 +15,7 @@ services:
       # - "${LIBRARY_DIR:-./data/library}:/library"
       - "${STL_DRIVE_1:-/dev/null}:/mnt/drive1"
       - "${STL_DRIVE_2:-/dev/null}:/mnt/drive2"
-      - "${IMPORT_DIR:-./dev/null}:/import"
+      - "${IMPORT_DIR:-/dev/null}:/import"
     environment:
       - DATABASE_URL=sqlite:////data/stl_inventory.db
       - REORGANIZE_WRITE_ENABLED=true
