@@ -161,11 +161,7 @@ class _UndoLog:
     move could relocate), so a kill mid-batch leaves a replayable partial log."""
 
     def __init__(self, manifest_id: str):
-        _path = undo_log_path(manifest_id)
-        base = write_lock.data_dir().resolve()
-        self.path = _path.resolve()
-        if self.path.parent != base:
-            raise ApplyError("Invalid manifest id", status=400)
+        self.path = undo_log_path(manifest_id)
         self.path.parent.mkdir(parents=True, exist_ok=True)
         self._fh = open(self.path, "a", encoding="utf-8")
 
@@ -444,10 +440,7 @@ def undo_log_path(manifest_id: str) -> Path:
 
 
 def _read_undo_log(manifest_id: str) -> list[dict]:
-    base = write_lock.data_dir().resolve()
-    path = undo_log_path(manifest_id).resolve()
-    if path.parent != base:
-        raise ApplyError("Invalid manifest id", status=400)
+    path = undo_log_path(manifest_id)
     if not path.exists():
         raise ApplyError("No undo log for this manifest — nothing to undo", status=404)
     records: list[dict] = []

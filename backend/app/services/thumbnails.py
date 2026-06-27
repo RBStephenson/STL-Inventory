@@ -5,6 +5,7 @@ from <img> tags, so the frontend can't display them directly. Instead we
 fetch the image here — with browser-like headers, the same trick the
 scrapers use — and store it locally next to the DB, setting thumbnail_path.
 """
+import os
 import tempfile
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
@@ -198,9 +199,11 @@ def store_thumbnail(model_id: int, ext: str, data: bytes) -> Path:
     if ext not in _THUMB_EXTS:
         raise ValueError(f"Unsafe thumbnail extension: {ext!r}")
     out_dir = thumbnails_dir()
-    out = (out_dir / f"{model_id}{ext}").resolve()
-    if out.parent != out_dir.resolve():
+    out_dir_real = os.path.realpath(str(out_dir))
+    out_str = os.path.realpath(os.path.join(out_dir_real, f"{model_id}{ext}"))
+    if os.path.commonpath([out_str, out_dir_real]) != out_dir_real:
         raise ValueError("Thumbnail path escaped directory")
+    out = Path(out_str)
     for stale in out_dir.glob(f"{model_id}.*"):
         if stale != out:
             try:

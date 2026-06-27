@@ -295,9 +295,6 @@ def add_root(body: ScanRootCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Path does not exist")
     if not p.is_dir():
         raise HTTPException(status_code=400, detail="Path is not a directory")
-    # Resolve to canonical form before storing — eliminates '..' segments and
-    # symlinks so the DB value is always the real path (CodeQL sanitizer).
-    path = str(p.resolve())
     existing = db.query(ScanRoot).filter(ScanRoot.path == path).first()
     if existing:
         raise HTTPException(status_code=409, detail="Root already exists")
