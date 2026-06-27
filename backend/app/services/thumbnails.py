@@ -31,15 +31,16 @@ MAX_BYTES = 15 * 1024 * 1024
 HTML_MAX_BYTES = 3 * 1024 * 1024
 _HTML_TYPES = {"text/html", "application/xhtml+xml"}
 
-_CONTENT_TYPE_EXT = {
+# Canonical image content-type → extension map and the allowed image-extension
+# set. Shared with routers.imports so CDN-image handling stays consistent.
+CONTENT_TYPE_EXT = {
     "image/jpeg": ".jpg",
     "image/jpg": ".jpg",
     "image/png": ".png",
     "image/webp": ".webp",
     "image/gif": ".gif",
 }
-_URL_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
-_THUMB_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 
 
 class ThumbnailDownloadError(Exception):
@@ -63,13 +64,13 @@ def thumbnails_dir() -> Path:
 
 def _pick_extension(content_type: str, url: str) -> str:
     ct = content_type.split(";")[0].strip().lower()
-    if ct in _CONTENT_TYPE_EXT:
-        return _CONTENT_TYPE_EXT[ct]
+    if ct in CONTENT_TYPE_EXT:
+        return CONTENT_TYPE_EXT[ct]
     # Some CDNs serve images with a generic or unusual content type — fall
     # back to the URL's own extension when it looks like an image.
     url_ext = Path(urlparse(url).path).suffix.lower()
     generic = not ct or ct == "application/octet-stream" or ct.startswith("image/")
-    if generic and url_ext in _URL_EXTS:
+    if generic and url_ext in IMAGE_EXTS:
         return ".jpg" if url_ext == ".jpeg" else url_ext
     raise ThumbnailDownloadError(
         f"URL did not return an image (content type: {content_type or 'unknown'})"
@@ -196,7 +197,7 @@ def store_thumbnail(model_id: int, ext: str, data: bytes) -> Path:
     Drops any previous thumbnail saved with a different extension so it can't
     be picked up again or leak disk space.
     """
-    if ext not in _THUMB_EXTS:
+    if ext not in IMAGE_EXTS:
         raise ValueError(f"Unsafe thumbnail extension: {ext!r}")
     out_dir = thumbnails_dir()
     out_dir_real = os.path.realpath(str(out_dir))

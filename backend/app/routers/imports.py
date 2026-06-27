@@ -33,6 +33,7 @@ from app.schemas import (
 )
 from app.services import reorganize_apply, scanner, write_lock
 from app.services.reorganize_apply import ApplyError
+from app.services.thumbnails import CONTENT_TYPE_EXT, IMAGE_EXTS
 
 router = APIRouter(prefix="/import", tags=["import"])
 
@@ -332,20 +333,13 @@ def set_source_mapping(body: SourceMappingSet, db: Session = Depends(get_db)):
     return mapping
 
 
-_CT_TO_EXT: dict[str, str] = {
-    "image/jpeg": ".jpg", "image/jpg": ".jpg",
-    "image/png": ".png", "image/webp": ".webp", "image/gif": ".gif",
-}
-_IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
-
-
 def _image_ext(url: str, content_type: str) -> str:
     """Best-effort image extension from Content-Type, falling back to URL suffix."""
-    ext = _CT_TO_EXT.get(content_type.split(";")[0].strip().lower(), "")
+    ext = CONTENT_TYPE_EXT.get(content_type.split(";")[0].strip().lower(), "")
     if ext:
         return ext
     suffix = Path(urlparse(url).path).suffix.lower()
-    return suffix if suffix in _IMAGE_EXTS else ".jpg"
+    return suffix if suffix in IMAGE_EXTS else ".jpg"
 
 
 @router.post("/download-images")
@@ -394,7 +388,7 @@ def download_images(body: DownloadImagesRequest, db: Session = Depends(get_db)):
                 ext = _image_ext(url, ct)
                 # Guard: ext must be a known-safe image extension — reject anything
                 # that could escape the filename (e.g. a crafted URL suffix).
-                if ext not in _IMAGE_EXTS:
+                if ext not in IMAGE_EXTS:
                     logger.warning("gallery image %d skipped — unexpected ext %r", n, ext)
                     continue
                 dest = pack_dir / f"gallery_{n:02d}{ext}"
@@ -445,7 +439,7 @@ def _move_non_stl_files(
             try:
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 shutil.move(str(src), str(dst))
-                if ext in _IMAGE_EXTS:
+                if ext in IMAGE_EXTS:
                     new_images.append(str(dst))
                 else:
                     new_others.append(str(dst))
