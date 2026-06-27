@@ -8,7 +8,7 @@ import logging
 import platform
 import subprocess
 import zipfile
-from pathlib import Path, PurePath
+from pathlib import Path
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
@@ -210,30 +210,20 @@ def serve_document(path: str):
     if _ext in ALLOWED_STL_EXTENSIONS:
         raise HTTPException(status_code=400, detail="Use /files/stl for STL files")
 
-    normalized_input = path.replace("\\", "/")
-    rel_candidate = Path(normalized_input)
-    rel_pure = PurePath(rel_path)
-    if not rel_path or rel_pure.is_absolute() or ".." in rel_pure.parts:
-        raise HTTPException(status_code=403, detail="Path not allowed")
-    if rel_candidate.is_absolute():
-        raise HTTPException(status_code=400, detail="Absolute paths are not allowed")
-    rel_parts = rel_candidate.parts
-    if not rel_parts or any(part in ("", ".", "..") for part in rel_parts):
-        raise HTTPException(status_code=400, detail="Invalid path")
-
-    resolved: Path | None = None
+    # other_files stores absolute paths, so this endpoint validates an absolute
+    # path the same way serve_image / serve_stl do: realpath + commonpath
+    # containment against the configured roots (the guard CodeQL recognises).
+    real = os.path.realpath(path)
     for _root in _allowed_roots():
-        root_resolved = Path(_root).resolve(strict=False)
-        candidate = (root_resolved / Path(*rel_parts)).resolve(strict=False)
+        _rs = os.path.realpath(str(_root))
         try:
-            if os.path.commonpath([str(candidate), str(root_resolved)]) == str(root_resolved):
-                resolved = candidate
+            if os.path.commonpath([real, _rs]) == _rs:
                 break
         except ValueError:
             continue
-
-    if resolved is None:
+    else:
         raise HTTPException(status_code=403, detail="Path not allowed")
+    resolved = Path(real)
     if not resolved.exists() or not resolved.is_file():
         raise HTTPException(status_code=404, detail="File not found")
     # Strip characters that would break the Content-Disposition header value.

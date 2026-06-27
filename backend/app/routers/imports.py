@@ -589,8 +589,21 @@ def import_apply(body: ImportApplyRequest, db: Session = Depends(get_db)):
     except Exception:
         logger.exception("Non-STL file move/cleanup failed; STL files were already moved successfully")
 
+    # Resolve the configured root that contains `src` (already an abs realpath).
+    matched_root = None
+    for _base in _allowed_bases(db):
+        _b = os.path.realpath(os.path.expanduser(_base))
+        try:
+            if os.path.commonpath([src, _b]) == _b:
+                matched_root = _b
+                break
+        except ValueError:
+            continue
+
     # Clean up any stale empty directories left in the source root.
     try:
+        if not matched_root:
+            raise ValueError("source not within a configured scan root")
         resolved_root = os.path.realpath(matched_root)
         rel_src = os.path.relpath(src, resolved_root)
         if rel_src == ".." or rel_src.startswith(".." + os.sep):
