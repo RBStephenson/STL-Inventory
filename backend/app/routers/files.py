@@ -210,11 +210,18 @@ def serve_document(path: str):
     if _ext in ALLOWED_STL_EXTENSIONS:
         raise HTTPException(status_code=400, detail="Use /files/stl for STL files")
 
+    normalized_input = path.replace("\\", "/")
+    rel_candidate = Path(normalized_input)
+    if rel_candidate.is_absolute():
+        raise HTTPException(status_code=400, detail="Absolute paths are not allowed")
+    rel_parts = rel_candidate.parts
+    if not rel_parts or any(part in ("", ".", "..") for part in rel_parts):
+        raise HTTPException(status_code=400, detail="Invalid path")
+
     resolved: Path | None = None
-    rel_path = path.lstrip("/\\")
     for _root in _allowed_roots():
         root_resolved = Path(_root).resolve(strict=False)
-        candidate = (root_resolved / rel_path).resolve(strict=False)
+        candidate = (root_resolved / Path(*rel_parts)).resolve(strict=False)
         try:
             if os.path.commonpath([str(candidate), str(root_resolved)]) == str(root_resolved):
                 resolved = candidate
