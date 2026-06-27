@@ -209,17 +209,21 @@ def serve_document(path: str):
         raise HTTPException(status_code=400, detail="Use /files/image for image files")
     if _ext in ALLOWED_STL_EXTENSIONS:
         raise HTTPException(status_code=400, detail="Use /files/stl for STL files")
-    real = os.path.realpath(path)
+
+    resolved: Path | None = None
+    rel_path = path.lstrip("/\\")
     for _root in _allowed_roots():
-        _rs = os.path.realpath(str(_root))
+        root_resolved = Path(_root).resolve(strict=False)
+        candidate = (root_resolved / rel_path).resolve(strict=False)
         try:
-            if os.path.commonpath([real, _rs]) == _rs:
+            if os.path.commonpath([str(candidate), str(root_resolved)]) == str(root_resolved):
+                resolved = candidate
                 break
         except ValueError:
             continue
-    else:
+
+    if resolved is None:
         raise HTTPException(status_code=403, detail="Path not allowed")
-    resolved = Path(real)
     if not resolved.exists() or not resolved.is_file():
         raise HTTPException(status_code=404, detail="File not found")
     # Strip characters that would break the Content-Disposition header value.
