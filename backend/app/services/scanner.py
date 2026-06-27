@@ -67,7 +67,7 @@ _state_lock = threading.Lock()
 # slow rglob I/O block each other past busy_timeout -> "database is locked", which
 # aborts a creator's walk and silently drops its models.
 _db_lock = threading.Lock()
-_scan_state: dict = {"running": False, "message": "idle", "models_found": 0, "files_found": 0, "cancelled": False}
+_scan_state: dict = {"running": False, "message": "idle", "models_found": 0, "files_found": 0, "cancelled": False, "offline_roots": []}
 _cancel_requested = False
 # Folders the user has explicitly split into per-child models (see PackOverride).
 # Loaded from the DB at the start of every scan; the walk treats these as
@@ -87,6 +87,26 @@ _ignore_matcher: IgnoreMatcher = IgnoreMatcher(())
 def get_status() -> dict:
     with _state_lock:
         return dict(_scan_state)
+
+
+def _root_available(path: str) -> bool:
+    """A scan root counts as 'available' only if it exists on disk AND holds at
+    least one entry.
+
+    A detached bind/network mount typically leaves an EMPTY mountpoint directory
+    behind — it still passes ``.exists()``, so absence alone is not a reliable
+    unmount signal; emptiness is. Pruning must never treat a model as deleted just
+    because its drive went offline, so every destructive prune is gated on this:
+    models under an unavailable root are protected, not removed.
+    """
+    try:
+        p = Path(path)
+        if not p.is_dir():
+            return False
+        with os.scandir(p) as it:
+            return next(it, None) is not None
+    except OSError:
+        return False
 
 
 def _load_pack_overrides(db: Session) -> None:
@@ -119,7 +139,7 @@ def scan_all_roots(db: Session | None = None):
         return
     _cancel_requested = False
     with _state_lock:
-        _scan_state.update(running=True, message="starting", models_found=0, files_found=0, cancelled=False)
+        _scan_state.update(running=True, message="starting", models_found=0, files_found=0, cancelled=False, offline_roots=[])
     try:
         _db = db or SessionLocal()
         own_db = db is None
@@ -156,10 +176,26 @@ def scan_all_roots(db: Session | None = None):
                 _db.commit()
 
             if not _cancel_requested:
-                removed = _prune_stale_models(_db, scan_start, root_paths)
-                removed += _prune_stale_paths(_db)
+                # Mount-detach guard: a root that has unmounted presents as a
+                # missing OR empty directory. Treat such roots as offline and
+                # prune nothing beneath them — otherwise one transient mount drop
+                # makes every path under it look deleted and cascades away the
+                # whole library (models, STL rows, tags, collection memberships).
+                # Only roots we can confirm are online feed the destructive prunes.
+                available_paths = [p for p in root_paths if _root_available(p)]
+                offline_paths = [p for p in root_paths if p not in available_paths]
+                if offline_paths:
+                    logger.warning(
+                        "Scan root(s) offline (missing or empty) — pruning skipped "
+                        f"for everything beneath them to avoid data loss: {offline_paths}"
+                    )
+                    with _state_lock:
+                        _scan_state["offline_roots"] = list(offline_paths)
+
+                removed = _prune_stale_models(_db, scan_start, available_paths)
+                removed += _prune_stale_paths(_db, available_paths)
                 # Drop models that a newly-added ignore pattern now covers (#31).
-                removed += _prune_ignored(_db, root_paths)
+                removed += _prune_ignored(_db, available_paths)
                 # Slicer rows must go before the phantom prune so a model whose
                 # only "STL" was a slicer project is removed in the same scan.
                 _prune_slicer_files(_db)
@@ -220,19 +256,38 @@ def _exceeds_prune_cap(stale_count: int, total: int, reason: str) -> bool:
     return False
 
 
-def _prune_stale_paths(db: Session):
-    """Remove models whose folder_path no longer exists on disk.
+def _prune_stale_paths(db: Session, available_root_paths: list[str]):
+    """Remove models whose folder_path no longer exists on disk — cleans up rows
+    left behind after a creator/character folder is renamed under a still-mounted
+    root (e.g. 'polyminds studios' → 'PolyMind Studios'). The scanner never visits
+    the old path again, so the rows survive the phantom prune.
 
-    This cleans up orphaned DB rows left behind after a creator folder is
-    renamed (e.g. 'polyminds studios' → 'PolyMind Studios'). The scanner
-    never visits the old path again, so the rows survive the phantom prune.
-    After removal, orphaned Creator rows (no remaining models) are also deleted.
+    Mount-detach safety: a model is pruned only when its folder is missing AND it
+    lives under a root confirmed ONLINE this run. A detached mount makes every path
+    beneath it report missing; without this gate the prune would wipe the entire
+    library (cascading away STL rows, tags, and collection links) the moment a drive
+    dropped. Models not attributable to any online root are left untouched. The 50%
+    cap (shared with the other prunes) is a second safety net against a botched run.
 
     Returns the number of models pruned (for the scan completion summary, #223).
     """
-    all_models = db.query(Model.id, Model.folder_path, Model.creator_id).all()
-    stale_ids = [m.id for m in all_models if m.folder_path and not Path(m.folder_path).exists()]
+    if not available_root_paths:
+        return 0
+    roots_norm = [os.path.normcase(os.path.normpath(p)) for p in available_root_paths]
+
+    def _under_online_root(folder_path: str | None) -> bool:
+        if not folder_path:
+            return False
+        n = os.path.normcase(os.path.normpath(folder_path))
+        return any(n == r or n.startswith(r + os.sep) for r in roots_norm)
+
+    rows = db.query(Model.id, Model.folder_path).all()
+    under = [r for r in rows if _under_online_root(r.folder_path)]
+    total = len(under)
+    stale_ids = [r.id for r in under if r.folder_path and not Path(r.folder_path).exists()]
     if not stale_ids:
+        return 0
+    if _exceeds_prune_cap(len(stale_ids), total, "folder path missing on disk"):
         return 0
 
     _cascade_delete_models(db, stale_ids)
