@@ -61,10 +61,10 @@ def update_settings(body: AppSettingsUpdate, db: Session = Depends(get_db)):
 def reload_env_settings():
     """Re-read the .env / environment config without a full restart (#140).
 
-    Useful after editing scan roots or drive mappings in .env. Values read
-    dynamically (scan roots, drive translations) take effect immediately; keys
-    in RESTART_REQUIRED_KEYS (e.g. database_url, bound once at startup) are
-    reported back so the user knows a restart is still needed for those.
+    Useful after editing drive mappings in .env. Values read dynamically
+    (drive translations) take effect immediately; keys in RESTART_REQUIRED_KEYS
+    (e.g. database_url, bound once at startup) are reported back so the user
+    knows a restart is still needed for those.
     """
     try:
         settings.reload()
@@ -78,7 +78,6 @@ def reload_env_settings():
     import app.routers.files as files_module
     files_module._roots_cache = None
     return EnvReloadResult(
-        scan_roots=settings.stl_root_list,
         drive_mappings={"drive1": settings.stl_drive_1, "drive2": settings.stl_drive_2},
         restart_required=list(RESTART_REQUIRED_KEYS),
     )

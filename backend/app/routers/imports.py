@@ -5,9 +5,16 @@ Children B/C/D extend it with the pack-grouped preview projection, scoped
 ingest, and batch apply. Module is named `imports` because `import` is a
 reserved word.
 """
+import logging
 import os
+import shutil
 import threading
 from pathlib import Path
+from urllib.parse import urlparse
+
+import httpx
+
+logger = logging.getLogger(__name__)
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import func
@@ -18,6 +25,7 @@ from app.models import ImportSourceMapping, Model, ScanRoot, STLFile
 from app.routers.reorganize import _build_and_persist
 from app.routers.scan import _bootstrap_roots, _configured_roots
 from app.schemas import (
+    DownloadImagesRequest,
     ImportApplyIneligible, ImportApplyRequest, ImportApplyResponse,
     ImportPreviewPack, ImportPreviewResponse, InboxScanRequest,
     SourceContentsEntry, SourceContentsResponse,
@@ -25,6 +33,7 @@ from app.schemas import (
 )
 from app.services import reorganize_apply, scanner, write_lock
 from app.services.reorganize_apply import ApplyError
+from app.services.thumbnails import CONTENT_TYPE_EXT, IMAGE_EXTS
 
 router = APIRouter(prefix="/import", tags=["import"])
 
@@ -324,16 +333,171 @@ def set_source_mapping(body: SourceMappingSet, db: Session = Depends(get_db)):
     return mapping
 
 
+def _image_ext(url: str, content_type: str) -> str:
+    """Best-effort image extension from Content-Type, falling back to URL suffix."""
+    ext = CONTENT_TYPE_EXT.get(content_type.split(";")[0].strip().lower(), "")
+    if ext:
+        return ext
+    suffix = Path(urlparse(url).path).suffix.lower()
+    return suffix if suffix in IMAGE_EXTS else ".jpg"
+
+
+@router.post("/download-images")
+def download_images(body: DownloadImagesRequest, db: Session = Depends(get_db)):
+    """Download CDN image URLs into the pack folder so they travel with the pack
+    during apply. Called from the import UI after enrichment, before apply."""
+    raw_pack_path = body.pack_path.strip()
+    if not raw_pack_path:
+        raise HTTPException(status_code=400, detail="pack_path is required")
+    if "\x00" in raw_pack_path:
+        raise HTTPException(status_code=400, detail="pack_path is invalid")
+
+    pack_dir_str = os.path.realpath(os.path.expanduser(raw_pack_path))
+    if not os.path.isabs(pack_dir_str):
+        raise HTTPException(status_code=400, detail="pack_path must be an absolute path")
+
+    # Path guard: must be within a configured or bootstrap-allowed root.
+    contained = False
+    for base in _allowed_bases(db):
+        base_dir_str = os.path.realpath(os.path.expanduser(base))
+        try:
+            if os.path.commonpath([pack_dir_str, base_dir_str]) == base_dir_str:
+                contained = True
+                break
+        except ValueError:
+            continue
+
+    if not contained:
+        raise HTTPException(status_code=403, detail="Path is outside the allowed folders")
+
+    pack_dir = Path(pack_dir_str)
+    if not pack_dir.is_dir():
+        raise HTTPException(status_code=404, detail="Pack folder not found")
+
+    downloaded = 0
+    with httpx.Client(timeout=30, follow_redirects=True,
+                      headers={"User-Agent": "STL-Inventory/1.0"}) as client:
+        for n, url in enumerate(body.image_urls[:30]):  # cap at 30 images
+            try:
+                r = client.get(url)
+                r.raise_for_status()
+                ct = r.headers.get("content-type", "").split(";")[0].strip().lower()
+                if ct in ("image/svg+xml", "text/html", "application/json"):
+                    logger.warning("gallery image %d skipped — unsupported content-type %r", n, ct)
+                    continue
+                ext = _image_ext(url, ct)
+                # Guard: ext must be a known-safe image extension — reject anything
+                # that could escape the filename (e.g. a crafted URL suffix).
+                if ext not in IMAGE_EXTS:
+                    logger.warning("gallery image %d skipped — unexpected ext %r", n, ext)
+                    continue
+                dest = pack_dir / f"gallery_{n:02d}{ext}"
+                dest.write_bytes(r.content)
+                downloaded += 1
+            except Exception as e:
+                logger.warning("gallery image %d download failed: %s", n, e)
+    return {"downloaded": downloaded}
+
+
+def _move_non_stl_files(
+    old_folder: str,
+    new_folder: str,
+    models: list,
+    db: Session,
+) -> None:
+    """Move every non-STL file from old_folder to new_folder (preserving relative
+    paths) and update image_paths / other_files on all models in that folder.
+
+    Called after the reorganize engine has already moved the STL files, so only
+    non-tracked files remain. Images go into model.image_paths; everything else
+    into model.other_files."""
+    if not os.path.isdir(old_folder):
+        return
+
+    new_images: list[str] = []
+    new_others: list[str] = []
+
+    for dirpath, dirnames, filenames in os.walk(old_folder):
+        dirnames[:] = [d for d in dirnames if not d.startswith(".")]
+        for filename in filenames:
+            if filename.startswith("."):
+                continue
+            ext = os.path.splitext(filename)[1].lower()
+            if ext in scanner.STL_EXTENSIONS:
+                continue  # already moved by the reorganize engine
+
+            src = Path(os.path.join(dirpath, filename)).resolve()
+            rel = os.path.relpath(str(src), old_folder)
+            dst = (Path(new_folder) / rel).resolve()
+
+            # Verify the resolved destination is still inside new_folder to
+            # prevent symlink-based traversal escaping the target directory.
+            if not dst.is_relative_to(Path(new_folder).resolve()):
+                logger.warning("Skipping %r — resolved outside target folder", str(src))
+                continue
+
+            try:
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.move(str(src), str(dst))
+                if ext in IMAGE_EXTS:
+                    new_images.append(str(dst))
+                else:
+                    new_others.append(str(dst))
+            except Exception as e:
+                logger.warning("Could not move %r → %r: %s", src, dst, e)
+
+    for m in models:
+        if new_images:
+            m.image_paths = new_images
+        if new_others:
+            m.other_files = new_others
+        # Remap thumbnail_path if it pointed into the old folder (stale after move).
+        if m.thumbnail_path and m.thumbnail_path.startswith(old_folder + os.sep):
+            rel = os.path.relpath(m.thumbnail_path, old_folder)
+            remapped = os.path.join(new_folder, rel)
+            m.thumbnail_path = remapped if os.path.exists(remapped) else None
+
+
+def _cleanup_non_stl_folders(old_to_new: dict[str, str], db: Session) -> None:
+    """Move non-STL files from import folders to their library destinations and
+    remove the source folder. Only runs when the destination already exists on
+    disk — handles the case where STLs were moved by a prior import session but
+    the gallery images were left behind."""
+    for old_folder, new_folder in old_to_new.items():
+        if not os.path.isdir(old_folder):
+            continue
+        if not os.path.isdir(new_folder):
+            logger.warning(
+                "Destination %r does not exist; skipping non-STL cleanup for %r",
+                new_folder, old_folder,
+            )
+            continue
+        # Find the library model at the destination so we can update image_paths.
+        dest_models = db.query(Model).filter(Model.folder_path == new_folder).all()
+        try:
+            _move_non_stl_files(old_folder, new_folder, dest_models, db)
+            db.commit()
+            old_resolved = os.path.realpath(old_folder)
+            try:
+                shutil.rmtree(old_resolved)
+            except Exception as e:
+                logger.warning("Could not remove old pack folder %r: %s", old_resolved, e)
+        except Exception:
+            logger.exception("Non-STL cleanup failed for %r → %r", old_folder, new_folder)
+
+
 @router.post("/apply", response_model=ImportApplyResponse)
 def import_apply(body: ImportApplyRequest, db: Session = Depends(get_db)):
     """Batch-move the ingested inbox packs under a source into their mapped
     library (#453). Builds a manifest scoped to those inbox models (destination =
     mapped library via the source→library mapping) and runs it through the
     existing reorganize apply engine — drift verification + crash-safe undo log,
-    is_inbox cleared on move (#324). No second mover."""
-    src = os.path.realpath(body.source.strip())
+    is_inbox cleared on move (#324). After the STL move, all remaining files
+    (images, PDFs, etc.) are moved to the library folder and the old pack folder
+    is removed."""
     if not body.source.strip():
         raise HTTPException(status_code=400, detail="source is required")
+    src = os.path.realpath(body.source.strip())
 
     mapping = (
         db.query(ImportSourceMapping)
@@ -343,7 +507,11 @@ def import_apply(body: ImportApplyRequest, db: Session = Depends(get_db)):
     if not mapping:
         raise HTTPException(status_code=400, detail="No destination library mapped for this source.")
 
-    resp = _build_and_persist(db, None, None, None, inbox_source=src)
+    # Use {creator}/{title} template so imports land in creator/slug-of-title.
+    # slugify_title=True converts the {title} segment to a lowercase-dashes slug.
+    resp = _build_and_persist(
+        db, "{creator}/{title}", None, None, inbox_source=src, slugify_title=True
+    )
     eligible_ids = [e.model_id for e in resp.entries if e.eligible]
     ineligible = [
         ImportApplyIneligible(
@@ -352,11 +520,33 @@ def import_apply(body: ImportApplyRequest, db: Session = Depends(get_db)):
         for e in resp.entries if not e.eligible
     ]
 
+    # Capture old folder paths for ALL manifest entries (eligible + ineligible) so
+    # we can move non-STL files and remove old pack folders regardless of eligibility.
+    all_model_ids = [e.model_id for e in resp.entries]
+    all_folder_map: dict[int, str] = {
+        m.id: m.folder_path
+        for m in db.query(Model).filter(Model.id.in_(all_model_ids)).all()
+        if m.folder_path
+    }
+    # old→new from ALL manifest entries; we only move non-STL files when the
+    # destination already exists on disk (covers "files missing on disk" ineligible
+    # models whose STLs were already moved by a prior import).
+    all_old_to_new: dict[str, str] = {}
+    for entry in resp.entries:
+        old = all_folder_map.get(entry.model_id, "")
+        if old and old not in all_old_to_new and entry.proposed_dir:
+            all_old_to_new[old] = entry.proposed_dir
+
     if not eligible_ids:
+        # No STLs to move, but still clean up non-STL files (gallery images, etc.)
+        # that were downloaded into the import folder before eligibility was checked.
+        _cleanup_non_stl_folders(all_old_to_new, db)
         return ImportApplyResponse(
             manifest_id=resp.manifest_id, moved_models=0, moved_files=0,
             skipped=len(ineligible), ineligible=ineligible,
         )
+
+    eligible_set = set(eligible_ids)
 
     try:
         result = reorganize_apply.apply_manifest(db, resp.manifest_id, eligible_ids)
@@ -364,6 +554,74 @@ def import_apply(body: ImportApplyRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=409, detail=str(e))
     except ApplyError as e:
         raise HTTPException(status_code=e.status, detail={"message": str(e), **e.detail})
+
+    # Move all remaining non-STL files (images, PDFs, etc.) from each old folder
+    # to the new library folder, then remove the now-empty source folder.
+    try:
+        model_by_id = {
+            m.id: m
+            for m in db.query(Model).filter(Model.id.in_(eligible_ids)).all()
+        }
+        for old_folder, new_folder in all_old_to_new.items():
+            # For ineligible packs only move non-STL files if the destination
+            # already exists; eligible packs always get moved.
+            if not os.path.isdir(new_folder):
+                continue
+            models_here = [
+                model_by_id[mid]
+                for mid, old in all_folder_map.items()
+                if old == old_folder and mid in model_by_id
+            ]
+            _move_non_stl_files(old_folder, new_folder, models_here, db)
+            # Resolve before rmtree so any symlink traversal is collapsed first.
+            old_resolved = os.path.realpath(old_folder)
+            try:
+                shutil.rmtree(old_resolved)
+            except Exception as rmtree_err:
+                logger.warning("Could not remove old pack folder %r: %s", old_resolved, rmtree_err)
+        db.commit()
+    except Exception:
+        logger.exception("Non-STL file move/cleanup failed; STL files were already moved successfully")
+
+    # Resolve the configured root that contains `src` (already an abs realpath).
+    matched_root = None
+    for _base in _allowed_bases(db):
+        _b = os.path.realpath(os.path.expanduser(_base))
+        try:
+            if os.path.commonpath([src, _b]) == _b:
+                matched_root = _b
+                break
+        except ValueError:
+            continue
+
+    # Clean up any stale empty directories left in the source root.
+    try:
+        if not matched_root:
+            raise ValueError("source not within a configured scan root")
+        resolved_root = os.path.realpath(matched_root)
+        rel_src = os.path.relpath(src, resolved_root)
+        if rel_src == ".." or rel_src.startswith(".." + os.sep):
+            raise HTTPException(status_code=400, detail="source must be within a configured scan root")
+        safe_src = os.path.realpath(os.path.join(resolved_root, rel_src))
+        if os.path.commonpath([safe_src, resolved_root]) != resolved_root:
+            raise HTTPException(status_code=400, detail="source must be within a configured scan root")
+        if not os.path.isdir(safe_src):
+            raise HTTPException(status_code=400, detail="source must be an existing directory")
+        for dirpath, _, filenames in os.walk(safe_src, topdown=False):
+            if not filenames:
+                dirpath_resolved = os.path.realpath(dirpath)
+                if os.path.commonpath([dirpath_resolved, safe_src]) != safe_src:
+                    logger.warning(
+                        "Skipping cleanup outside source root: %r (source: %r)",
+                        dirpath_resolved, safe_src,
+                    )
+                    continue
+                try:
+                    os.rmdir(dirpath_resolved)
+                except OSError:
+                    pass
+    except Exception:
+        pass
 
     return ImportApplyResponse(
         manifest_id=result.manifest_id,

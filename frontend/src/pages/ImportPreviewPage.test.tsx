@@ -15,6 +15,7 @@ vi.mock("../api/client", () => ({
       apply: vi.fn().mockResolvedValue({
         manifest_id: "m1", moved_models: 1, moved_files: 2, skipped: 0, ineligible: [], undo_log: null,
       }),
+      downloadImages: vi.fn().mockResolvedValue(undefined),
     },
     scan: {
       libraries: vi.fn(),
@@ -29,6 +30,7 @@ vi.mock("../api/client", () => ({
     },
     collections: {
       list: vi.fn(),
+      create: vi.fn().mockResolvedValue({ id: 99, name: "New Col" }),
       bulkAddModels: vi.fn().mockResolvedValue(undefined),
     },
   },
@@ -41,7 +43,7 @@ import { api } from "../api/client";
 
 const PACK = {
   name: "PackA", source_path: "/src/PackA", file_count: 0, model_ids: [1, 2],
-  creator_name: null, title: null, character: null, notes: null, source_url: null, tags: [],
+  creator_name: null, title: null, character: null, notes: null, source_url: null, tags: [], images: [],
 };
 
 function setup(opts: { mapping?: { source_path: string; library_id: number } | null } = {}) {
@@ -65,42 +67,49 @@ function setup(opts: { mapping?: { source_path: string; library_id: number } | n
   );
 }
 
+/** Click "Scan for New Files" and wait for the pack card to appear. */
+async function scan() {
+  fireEvent.click(await screen.findByRole("button", { name: /scan for new files/i }));
+  return screen.findByText("PackA", {}, { timeout: 5000 });
+}
+
 describe("ImportPreviewPage (#452 C2)", () => {
   beforeEach(() => { vi.clearAllMocks(); });
 
   it("renders a card per pack from source-contents", async () => {
     setup();
-    expect(await screen.findByText("PackA")).toBeInTheDocument();
+    await scan();
+    expect(screen.getByText("PackA")).toBeInTheDocument();
     expect(screen.getByText("/src/PackA")).toBeInTheDocument();
   });
 
   it("shows the recursive STL file count on each pack card (#456)", async () => {
     setup();
-    await screen.findByText("PackA");
+    await scan();
     expect(screen.getByTestId("pack-file-count")).toHaveTextContent("212 files");
   });
 
   it("lists writable libraries in the destination dropdown", async () => {
     setup();
-    await screen.findByText("PackA");
+    await scan();
     expect(screen.getByRole("option", { name: "minis" })).toBeInTheDocument();
   });
 
   it("prefills the destination from the saved mapping", async () => {
     setup({ mapping: { source_path: "/src", library_id: 1 } });
-    await screen.findByText("PackA");
+    await scan();
     expect((screen.getByLabelText("Library") as HTMLSelectElement).value).toBe("1");
   });
 
   it("Import is disabled until a library is chosen", async () => {
     setup();
-    await screen.findByText("PackA");
+    await scan();
     expect(screen.getByRole("button", { name: /^import$/i })).toBeDisabled();
   });
 
   it("persists the mapping when a library is selected", async () => {
     setup();
-    await screen.findByText("PackA");
+    await scan();
     fireEvent.change(screen.getByLabelText("Library"), { target: { value: "1" } });
     await waitFor(() => expect(api.import.setMapping).toHaveBeenCalledWith("/src", 1));
   });
@@ -129,7 +138,7 @@ describe("ImportPreviewPage (#452 C2)", () => {
 
   it("imports a pack: scan, then enrich the ingested models", async () => {
     setup({ mapping: { source_path: "/src", library_id: 1 } });
-    await screen.findByText("PackA");
+    await scan();
 
     // Expand and set a creator so bulkEnrich receives a field.
     fireEvent.click(screen.getByLabelText("Expand"));
@@ -147,7 +156,7 @@ describe("ImportPreviewPage (#452 C2)", () => {
 
   it("persists notes and source_url through bulkEnrich on import (#458)", async () => {
     setup({ mapping: { source_path: "/src", library_id: 1 } });
-    await screen.findByText("PackA");
+    await scan();
     fireEvent.click(screen.getByLabelText("Expand"));
 
     fireEvent.change(await screen.findByPlaceholderText("Notes about this pack…"), { target: { value: "Pack notes" } });
@@ -170,7 +179,7 @@ describe("ImportPreviewPage (#452 C2)", () => {
       like_count: null, download_count: null,
     });
     setup({ mapping: { source_path: "/src", library_id: 1 } });
-    await screen.findByText("PackA");
+    await scan();
     fireEvent.click(screen.getByLabelText("Expand"));
 
     fireEvent.change(await screen.findByPlaceholderText("https://…"), { target: { value: "https://cults3d.com/x" } });
@@ -183,7 +192,7 @@ describe("ImportPreviewPage (#452 C2)", () => {
 
   it("assigns the pack to a selected collection after ingest (#458)", async () => {
     setup({ mapping: { source_path: "/src", library_id: 1 } });
-    await screen.findByText("PackA");
+    await scan();
     fireEvent.click(screen.getByLabelText("Expand"));
 
     fireEvent.click(await screen.findByRole("button", { name: "Heroes" }));

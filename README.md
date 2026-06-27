@@ -50,11 +50,15 @@ Your library database is stored in your user data folder and survives app update
 
 ### Docker (for advanced users)
 
-1. Copy `.env.example` to `.env` and set your drive path (forward slashes, even
+1. Copy `.env.example` to `.env` and set your drive paths (forward slashes, even
    on Windows):
    ```
    STL_DRIVE_1=D:/3D STLs
+   STL_DRIVE_2=E:/More STLs   # optional second drive
+   STL_ROOTS=/mnt/drive1,/mnt/drive2
    ```
+   `STL_DRIVE_1` mounts at `/mnt/drive1`, `STL_DRIVE_2` at `/mnt/drive2`. Both are
+   seeded as scan roots automatically on first boot.
 
 2. Start everything:
    ```
@@ -65,7 +69,7 @@ Your library database is stored in your user data folder and survives app update
 
 4. Click **Scan Library** to index your files.
 
-> Got models on more than one drive, or need to change mounts? See
+> Got models on more than two drives, or need to change mounts? See
 > [docs/docker.md](docs/docker.md) — Docker can't be configured purely from the
 > Settings page the way the standalone app can.
 
@@ -195,15 +199,27 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 
 ## Tests
 
-The backend suite lives in `backend/tests` (pytest, in-memory SQLite — no
-external services needed). Run it locally:
+Tests run automatically on every commit via a [Husky](https://typicode.github.io/husky/)
+pre-commit hook. After cloning, run `npm install` at the repo root once to wire it up,
+then `docker compose build backend` so the pytest step has an image to run in.
+
+**Frontend (vitest)**
+```bash
+npm --prefix frontend test
 ```
-cd backend
-pip install -r requirements-test.txt
-pytest
+
+**Backend (pytest — runs in Docker, no local Python env required)**
+```bash
+docker run --rm --workdir /app \
+  -e DATABASE_URL="sqlite:///:memory:" \
+  -v "$(pwd)/backend:/app" \
+  -v "$(pwd)/packaging:/packaging" \
+  stl-inventory-backend:latest \
+  sh -c "pip install -q pytest==9.0.3 pytest-cov==7.1.0 && pytest tests/ -q --tb=short"
 ```
-Every PR to `main` (and every push to `main`) runs the suite via the **Tests**
-workflow, so logic regressions are caught alongside the binary **Build Check**.
+
+Every PR to `main` (and every push to `main`) also runs the suite via the **Tests**
+workflow, so regressions are caught alongside the binary **Build Check**.
 
 ## Releasing
 

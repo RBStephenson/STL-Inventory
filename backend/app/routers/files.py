@@ -86,11 +86,8 @@ def _allowed_roots() -> list[Path]:
     if _roots_cache is not None and now - _roots_cache[0] < _ROOTS_TTL:
         return _roots_cache[1]
 
-    roots = [Path(r) for r in settings.stl_root_list]
+    roots: list[Path] = []
 
-    # Roots added through the Settings UI live in the scan_roots table, not the
-    # STL_ROOTS env var. Include them so file serving works in standalone mode
-    # (where STL_ROOTS is empty and drives are added entirely through the UI).
     try:
         from app.database import SessionLocal
         db = SessionLocal()
@@ -134,11 +131,21 @@ def _is_safe_path(p: Path) -> bool:
 
 @router.get("/image")
 def serve_image(path: str, v: str | None = None):
-    p = Path(path)
-    if p.suffix.lower() not in ALLOWED_IMAGE_EXTENSIONS:
+    if Path(path).suffix.lower() not in ALLOWED_IMAGE_EXTENSIONS:
         raise HTTPException(status_code=400, detail="Not an image file")
-    if not _is_safe_path(p):
+    # Path-injection barrier: realpath + commonpath containment, inline so CodeQL
+    # can verify the guard at the sink (opaque helper calls are not recognised).
+    real = os.path.realpath(path)
+    for _root in _allowed_roots():
+        _rs = os.path.realpath(str(_root))
+        try:
+            if os.path.commonpath([real, _rs]) == _rs:
+                break
+        except ValueError:
+            continue
+    else:
         raise HTTPException(status_code=403, detail="Path not allowed")
+    p = Path(real)
     if not p.exists():
         raise HTTPException(status_code=404, detail="File not found")
     # Captured/downloaded thumbnails are rewritten in place at a fixed path
@@ -168,17 +175,67 @@ def serve_stl(path: str, v: str | None = None):
     """
     from app.services.stl_cache import cached_stl
 
-    p = Path(path)
-    if p.suffix.lower() not in ALLOWED_STL_EXTENSIONS:
+    if Path(path).suffix.lower() not in ALLOWED_STL_EXTENSIONS:
         raise HTTPException(status_code=400, detail="Not an STL/3MF/OBJ file")
-    if not _is_safe_path(p):
+    real = os.path.realpath(path)
+    for _root in _allowed_roots():
+        _rs = os.path.realpath(str(_root))
+        try:
+            if os.path.commonpath([real, _rs]) == _rs:
+                break
+        except ValueError:
+            continue
+    else:
         raise HTTPException(status_code=403, detail="Path not allowed")
+    p = Path(real)
     if not p.exists():
         raise HTTPException(status_code=404, detail="File not found")
     served = cached_stl(p)
     cache_control = "public, max-age=31536000, immutable" if v else "no-cache"
     return FileResponse(served, media_type="application/octet-stream",
                         headers={"Cache-Control": cache_control})
+
+
+@router.get("/document")
+def serve_document(path: str):
+    """Serve a non-STL, non-image pack file (PDF, TXT, ZIP, etc.) as a download.
+
+    Restricted to configured scan roots — the same allowlist as /files/image.
+    Rejects STL and image extensions (those have dedicated endpoints). The
+    filename is taken from the path and set in the Content-Disposition header
+    so the browser downloads rather than navigating."""
+    _ext = Path(path).suffix.lower()
+    if _ext in ALLOWED_IMAGE_EXTENSIONS:
+        raise HTTPException(status_code=400, detail="Use /files/image for image files")
+    if _ext in ALLOWED_STL_EXTENSIONS:
+        raise HTTPException(status_code=400, detail="Use /files/stl for STL files")
+
+    # other_files stores absolute paths, so this endpoint validates an absolute
+    # path the same way serve_image / serve_stl do: realpath + commonpath
+    # containment against the configured roots (the guard CodeQL recognises).
+    real = os.path.realpath(path)
+    for _root in _allowed_roots():
+        _rs = os.path.realpath(str(_root))
+        try:
+            if os.path.commonpath([real, _rs]) == _rs:
+                break
+        except ValueError:
+            continue
+    else:
+        raise HTTPException(status_code=403, detail="Path not allowed")
+    resolved = Path(real)
+    if not resolved.exists() or not resolved.is_file():
+        raise HTTPException(status_code=404, detail="File not found")
+    # Strip characters that would break the Content-Disposition header value.
+    safe_name = resolved.name.replace('"', "").replace("\n", "").replace("\r", "")
+    return FileResponse(
+        resolved,
+        filename=safe_name,
+        headers={
+            "Content-Disposition": f'attachment; filename="{safe_name}"',
+            "Cache-Control": "no-cache",
+        },
+    )
 
 
 def _unique_arcname(filename: str, used: set[str]) -> str:
@@ -230,8 +287,20 @@ def download_zip(
     try:
         with zipfile.ZipFile(tmp, "w", zipfile.ZIP_DEFLATED) as zf:
             for f in files:
-                p = Path(f.path)
-                if not _is_safe_path(p) or not p.exists():
+                _real = os.path.realpath(f.path)
+                _ok = False
+                for _root in _allowed_roots():
+                    _rs = os.path.realpath(str(_root))
+                    try:
+                        if os.path.commonpath([_real, _rs]) == _rs:
+                            _ok = True
+                            break
+                    except ValueError:
+                        continue
+                if not _ok:
+                    continue
+                p = Path(_real)
+                if not p.exists():
                     continue
                 zf.write(p, arcname=_unique_arcname(f.filename, used_arcnames))
     except Exception:
@@ -269,9 +338,17 @@ def open_folder(path: str):
     POST, not GET: it has a side effect, and a GET could be triggered by a
     plain <img> tag on a malicious page (#213).
     """
-    p = Path(path)
-    if not _is_safe_path(p):
+    real = os.path.realpath(path)
+    for _root in _allowed_roots():
+        _rs = os.path.realpath(str(_root))
+        try:
+            if os.path.commonpath([real, _rs]) == _rs:
+                break
+        except ValueError:
+            continue
+    else:
         raise HTTPException(status_code=403, detail="Path not allowed")
+    p = Path(real)
     if not p.exists():
         raise HTTPException(status_code=404, detail="Folder not found")
     if not p.is_dir():

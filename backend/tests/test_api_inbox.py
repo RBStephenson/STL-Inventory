@@ -90,7 +90,6 @@ class TestInboxScanConflict:
         """Lock acquired synchronously in endpoint — 409 before thread starts."""
         from unittest.mock import MagicMock
         mock_settings = MagicMock()
-        mock_settings.stl_root_list = []
         with patch("app.services.scanner.prepare_inbox_scan", return_value=False), \
              patch("app.routers.scan._configured_roots", return_value=[]), \
              patch("app.routers.scan.settings", mock_settings):
@@ -131,7 +130,7 @@ class TestIsInboxFilter:
         assert "Normal Model" in names
         assert "Inbox Model" not in names
 
-    def test_no_filter_returns_all(self, client, db):
+    def test_no_filter_excludes_inbox(self, client, db):
         creator = make_creator(db)
         inbox_m = make_model(db, creator, name="Inbox Model")
         inbox_m.is_inbox = True
@@ -141,7 +140,8 @@ class TestIsInboxFilter:
         r = client.get("/models")
         assert r.status_code == 200
         names = {m["name"] for m in r.json()["items"]}
-        assert "Inbox Model" in names
+        # Default view hides inbox models; they require ?is_inbox=true.
+        assert "Inbox Model" not in names
         assert "Normal Model" in names
 
     def test_is_inbox_field_in_model_response(self, client, db):
@@ -150,7 +150,7 @@ class TestIsInboxFilter:
         m.is_inbox = True
         db.commit()
 
-        r = client.get("/models")
+        r = client.get("/models?is_inbox=true")
         assert r.status_code == 200
         item = next(i for i in r.json()["items"] if i["name"] == "Test")
         assert item["is_inbox"] is True

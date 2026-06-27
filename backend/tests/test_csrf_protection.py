@@ -65,12 +65,14 @@ def test_open_folder_get_is_gone(client):
     assert client.get("/files/open-folder?path=/tmp").status_code == 405
 
 
-def test_open_folder_is_post(client):
-    # 403 would mean blocked; anything else (501 no GUI in CI, 404, 200) means
-    # the route exists as POST and passed the middleware.
-    r = client.post("/files/open-folder?path=/tmp")
+def test_open_folder_is_post(client, tmp_path):
+    # Register a scan root so _is_safe_path passes; then verify CSRF didn't
+    # block the request (which would set detail="Cross-origin request blocked").
+    client.post("/scan/roots", json={"path": str(tmp_path), "layout": "{creator}"})
+    r = client.post(f"/files/open-folder?path={tmp_path}")
     assert r.status_code != 405
-    assert r.status_code != 403
+    if r.status_code == 403:
+        assert "Cross-origin" not in r.json().get("detail", "")
 
 
 # ---------------------------------------------------------------------------

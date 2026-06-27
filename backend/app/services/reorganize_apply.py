@@ -427,7 +427,10 @@ def undo_log_path(manifest_id: str) -> Path:
     traverse out (belt and braces, and a sanitizer CodeQL recognizes)."""
     safe = _validate_manifest_id(manifest_id)
     base = write_lock.data_dir().resolve()
-    candidate = (base / f"reorg_undo_{safe}.log").resolve()
+    # os.path.basename makes it explicit to CodeQL that no directory component
+    # can survive — only the bare filename part of `safe` is used.
+    filename = "reorg_undo_" + os.path.basename(safe) + ".log"
+    candidate = (base / filename).resolve()
     # The log is a single file directly under the data dir; its resolved parent
     # must be exactly that dir. resolve() + parent-equality is the path-traversal
     # barrier CodeQL models (plain normpath/startswith was not recognized).

@@ -14,19 +14,15 @@ from tests.conftest import make_creator, make_model, make_stl_file
 
 class TestAllowedRoots:
     @pytest.fixture(autouse=True)
-    def _isolate_env_roots(self, monkeypatch):
-        """The conftest sets STL_ROOTS=/tmp, and pytest's tmp_path lives under
-        /tmp — which would mask the scan_roots logic under test. Clear the
-        env-based roots so only the DB scan_roots decide the allowlist."""
+    def _isolate_env_roots(self):
+        """Clear the file-serving roots cache so only DB scan_roots decide the allowlist."""
         import app.routers.files as files_module
-        monkeypatch.setattr(files_module.settings, "stl_roots", "")
         files_module._roots_cache = None
         yield
         files_module._roots_cache = None
 
     def test_scan_roots_from_db_are_allowed(self, db, tmp_path):
-        """Roots added via the Settings UI (scan_roots table) must be served,
-        even when the STL_ROOTS env var doesn't include them (standalone mode)."""
+        """Roots added via the Settings UI (scan_roots table) must be served."""
         import app.routers.files as files_module
         from app.models import ScanRoot
 
@@ -75,7 +71,7 @@ class TestServeStl:
     def test_rejects_path_outside_allowed_roots(self, client, monkeypatch):
         """An STL outside the allowlist must be refused, not served."""
         import app.routers.files as files_module
-        monkeypatch.setattr(files_module, "_is_safe_path", lambda p: False)
+        monkeypatch.setattr(files_module, "_allowed_roots", lambda: [])
 
         resp = client.get("/files/stl", params={"path": "/etc/secret.stl"})
         assert resp.status_code == 403
@@ -83,7 +79,7 @@ class TestServeStl:
     def test_serves_allowed_stl(self, client, tmp_path, monkeypatch):
         import app.routers.files as files_module
         from app.services import stl_cache
-        monkeypatch.setattr(files_module, "_is_safe_path", lambda p: True)
+        monkeypatch.setattr(files_module, "_allowed_roots", lambda: [tmp_path])
         monkeypatch.setattr(stl_cache, "stl_cache_dir", lambda: tmp_path / "c")
         (tmp_path / "c").mkdir()
 
@@ -102,7 +98,7 @@ class TestServeStl:
     def test_versioned_stl_is_immutable(self, client, tmp_path, monkeypatch):
         import app.routers.files as files_module
         from app.services import stl_cache
-        monkeypatch.setattr(files_module, "_is_safe_path", lambda p: True)
+        monkeypatch.setattr(files_module, "_allowed_roots", lambda: [tmp_path])
         monkeypatch.setattr(stl_cache, "stl_cache_dir", lambda: tmp_path / "c")
         (tmp_path / "c").mkdir()
 
@@ -127,7 +123,7 @@ class TestServeImageCaching:
 
     def test_unversioned_request_is_no_cache(self, client, tmp_path, monkeypatch):
         import app.routers.files as files_module
-        monkeypatch.setattr(files_module, "_is_safe_path", lambda p: True)
+        monkeypatch.setattr(files_module, "_allowed_roots", lambda: [tmp_path])
         img = self._write_png(tmp_path)
 
         resp = client.get("/files/image", params={"path": str(img)})
@@ -136,7 +132,7 @@ class TestServeImageCaching:
 
     def test_versioned_request_is_immutable(self, client, tmp_path, monkeypatch):
         import app.routers.files as files_module
-        monkeypatch.setattr(files_module, "_is_safe_path", lambda p: True)
+        monkeypatch.setattr(files_module, "_allowed_roots", lambda: [tmp_path])
         img = self._write_png(tmp_path)
 
         resp = client.get("/files/image", params={"path": str(img), "v": "2026-06-15T00:00:00"})
@@ -158,9 +154,8 @@ class TestDownloadZip:
         assert resp.status_code == 404
 
     def test_returns_zip_content_type(self, client, db, tmp_path, monkeypatch):
-        # Bypass path-safety check so tmp_path files are served
         import app.routers.files as files_module
-        monkeypatch.setattr(files_module, "_is_safe_path", lambda p: True)
+        monkeypatch.setattr(files_module, "_allowed_roots", lambda: [tmp_path])
 
         stl = tmp_path / "Head_01.stl"
         stl.write_bytes(b"solid head\nendsolid head\n")
@@ -179,7 +174,7 @@ class TestDownloadZip:
 
     def test_zip_contains_correct_files(self, client, db, tmp_path, monkeypatch):
         import app.routers.files as files_module
-        monkeypatch.setattr(files_module, "_is_safe_path", lambda p: True)
+        monkeypatch.setattr(files_module, "_allowed_roots", lambda: [tmp_path])
 
         creator = make_creator(db)
         model = make_model(db, creator)
@@ -204,7 +199,7 @@ class TestDownloadZip:
 
     def test_zip_filename_header(self, client, db, tmp_path, monkeypatch):
         import app.routers.files as files_module
-        monkeypatch.setattr(files_module, "_is_safe_path", lambda p: True)
+        monkeypatch.setattr(files_module, "_allowed_roots", lambda: [tmp_path])
 
         stl = tmp_path / "test.stl"
         stl.write_bytes(b"solid\nendsolid\n")
@@ -225,7 +220,7 @@ class TestDownloadZip:
     def test_missing_files_skipped_gracefully(self, client, db, monkeypatch):
         """Files whose paths don't exist on disk are silently skipped."""
         import app.routers.files as files_module
-        monkeypatch.setattr(files_module, "_is_safe_path", lambda p: True)
+        monkeypatch.setattr(files_module, "_allowed_roots", lambda: [Path("/")])
 
         creator = make_creator(db)
         model = make_model(db, creator)
@@ -245,7 +240,7 @@ class TestDownloadZip:
         """Two files sharing a basename in different folders must both survive in
         the archive — the second is suffixed, not silently overwritten (#219)."""
         import app.routers.files as files_module
-        monkeypatch.setattr(files_module, "_is_safe_path", lambda p: True)
+        monkeypatch.setattr(files_module, "_allowed_roots", lambda: [tmp_path])
 
         creator = make_creator(db)
         model = make_model(db, creator)
@@ -272,7 +267,7 @@ class TestDownloadZip:
     def test_zip_name_sanitized(self, client, db, tmp_path, monkeypatch):
         """Special characters in zip_name are sanitized in the filename header."""
         import app.routers.files as files_module
-        monkeypatch.setattr(files_module, "_is_safe_path", lambda p: True)
+        monkeypatch.setattr(files_module, "_allowed_roots", lambda: [tmp_path])
 
         stl = tmp_path / "test.stl"
         stl.write_bytes(b"solid\nendsolid\n")

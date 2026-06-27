@@ -24,6 +24,10 @@ from app.models import AppSetting
 # whitelist, so the plain settings GET never echoes it).
 AI_API_KEY_ENC = "ai_api_key_enc"
 
+# Cults3D credentials: username is stored as plaintext (it's public), API key encrypted.
+CULTS3D_USERNAME_KEY = "cults3d_username"
+CULTS3D_API_KEY_ENC = "cults3d_api_key_enc"
+
 _SECRET_KEY_ENV = "STL_SECRET_KEY"
 _SECRET_KEY_FILENAME = ".secret_key"
 

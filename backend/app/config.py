@@ -4,11 +4,16 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     database_url: str = "sqlite:////data/stl_inventory.db"
+
+    # Comma-separated list of container paths to auto-seed as scan roots on
+    # first boot.  Set via STL_ROOTS in .env / docker-compose environment.
+    # Each entry must correspond to a volume mounted into the container.
     stl_roots: str = "/mnt/drive1,/mnt/drive2"
 
-    # Native (host) paths for the two drive mounts — used to translate
-    # Docker container paths back to Windows/Mac paths for display.
-    # Set these to match STL_DRIVE_1 / STL_DRIVE_2 in your .env file.
+    # Native (host) paths for the drive mounts — used to translate Docker
+    # container paths back to Windows/Mac paths for display.
+    # Set STL_DRIVE_1 / STL_DRIVE_2 in your .env to match the host paths
+    # mounted at /mnt/drive1 and /mnt/drive2 respectively.
     stl_drive_1: str = ""
     stl_drive_2: str = ""
 
@@ -44,7 +49,7 @@ class Settings(BaseSettings):
         Modules import the shared ``settings`` object by reference, so we mutate
         the existing instance rather than rebinding it: a fresh ``Settings()``
         re-reads the sources, then its field values are copied over. Only values
-        read dynamically (e.g. ``stl_roots`` on the next scan / file-serve) take
+        read dynamically (e.g. drive mappings on the next file-serve) take
         effect live; ``database_url`` is bound once at engine creation and still
         needs a restart — see RESTART_REQUIRED_KEYS.
         """

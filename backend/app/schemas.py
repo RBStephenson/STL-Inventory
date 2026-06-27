@@ -66,7 +66,14 @@ class ModelRead(ModelBase):
     print_count: int = 0
     thumbnail_path: Optional[str] = None
     thumbnail_url: Optional[str] = None
-    image_paths: list = []
+    image_paths: list = Field(default_factory=list)
+    other_files: list = Field(default_factory=list)
+    primary_image_path: Optional[str] = None
+
+    @field_validator("image_paths", "other_files", mode="before")
+    @classmethod
+    def _coerce_list(cls, v: object) -> list:
+        return v if isinstance(v, list) else []
     rating: Optional[float] = None
     download_count: Optional[int] = None
     creator_id: Optional[int] = None
@@ -139,6 +146,8 @@ class ModelUpdate(BaseModel):
     nsfw: Optional[bool] = None
     needs_review: Optional[bool] = None
     thumbnail_url: Optional[str] = None
+    primary_image_path: Optional[str] = None
+    image_paths: Optional[list] = None
     creator_name: Optional[str] = None
 
 
@@ -239,6 +248,16 @@ class BulkEnrichUpdate(BaseModel):
     source_url: Optional[str] = None
 
 
+class BulkDeleteRequest(BaseModel):
+    ids: list[int]
+    delete_files: bool = False
+
+
+class BulkDeleteResponse(BaseModel):
+    deleted: int
+    folders_removed: int
+
+
 class SetGroupBody(BaseModel):
     character: Optional[str] = None  # None = explicitly ungroup; string = target group name
 
@@ -334,6 +353,11 @@ class ImportApplyRequest(BaseModel):
     source: str
 
 
+class DownloadImagesRequest(BaseModel):
+    pack_path: str
+    image_urls: list[str] = []
+
+
 class ImportApplyIneligible(BaseModel):
     model_id: int
     proposed_dir: str
@@ -361,7 +385,6 @@ class EnvReloadResult(BaseModel):
     """Outcome of re-reading the .env / environment config (#140). Carries only
     the live-effective values that are safe to show — never secrets."""
     ok: bool = True
-    scan_roots: list[str] = []
     drive_mappings: dict[str, str] = {}
     restart_required: list[str] = []
 

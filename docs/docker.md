@@ -13,41 +13,47 @@ mounts are wired and how to add or change them.
 
 ---
 
-## How a drive mount is wired
+## How drive mounts are wired
 
-There are three places a drive has to line up for Docker mode to see it:
+There are three things you need to set for Docker mode to see your library:
 
 | Where | What it does |
 |-------|--------------|
-| `.env` → `STL_DRIVE_1` | The **host** path to your drive (e.g. `F:/3DModelLibrary`). |
-| `docker-compose.yml` → `volumes` | Mounts that host path to a **container** path (`/mnt/drive1`), read-only. |
-| `docker-compose.yml` → `STL_ROOTS` | Tells the scanner which **container** paths to walk (`/mnt/drive1`). |
+| `.env` → `STL_DRIVE_1` | The **host** path to your first library drive (e.g. `F:/3DModelLibrary`). |
+| `.env` → `STL_DRIVE_2` | The **host** path to a second drive (optional). |
+| `.env` → `STL_ROOTS` | Comma-separated **container** paths to auto-register as scan roots on first boot. |
 
-The default `docker-compose.yml` ships with **one** drive wired up:
+The `docker-compose.yml` mounts these into the container at fixed paths:
 
-```yaml
-services:
-  backend:
-    volumes:
-      - ./data:/data
-      - "${STL_DRIVE_1:-/mnt/drive1}:/mnt/drive1:ro"
-    environment:
-      - STL_ROOTS=/mnt/drive1
-      - STL_DRIVE_1=${STL_DRIVE_1:-}
-```
+- `STL_DRIVE_1` → `/mnt/drive1`
+- `STL_DRIVE_2` → `/mnt/drive2`
+- `IMPORT_DIR` → `/import` (your import staging area — optional)
 
-So you set one value in `.env`:
+On first boot the backend seeds every path listed in `STL_ROOTS` as a scan root
+automatically — you don't need to add them in Settings.
+
+---
+
+## Setting up your `.env`
+
+Copy `.env.example` to `.env` and fill in your paths:
 
 ```
 STL_DRIVE_1=F:/3DModelLibrary
+STL_DRIVE_2=G:/MoreModels
+STL_ROOTS=/mnt/drive1,/mnt/drive2
+IMPORT_DIR=F:/Downloads/STL-Imports
 ```
 
 > **Windows / macOS paths:** use **forward slashes** in `.env`
 > (`D:/3D STLs`, not `D:\3D STLs`). On macOS your drive lives under
 > `/Volumes`, e.g. `STL_DRIVE_1=/Volumes/MyDrive/STLs`.
 
-Your drives are always mounted **read-only** (`:ro`) — the app can browse and
-index them but can never modify your source files.
+Then start the stack:
+
+```
+docker compose up -d
+```
 
 ---
 
@@ -56,69 +62,50 @@ index them but can never modify your source files.
 In Docker mode the Settings page and folder browser operate **inside the
 container**, so they show container paths like `/mnt/drive1/...` — not host
 paths like `F:/...`. A scan root you add there must point at something that is
-already mounted into the container (i.e. under `/mnt/drive1`). Typing a raw host
-path such as `F:/3DModelLibrary` will not work, because the container has no
-`F:` drive.
+already mounted into the container. Typing a raw host path such as
+`F:/3DModelLibrary` will not work, because the container has no `F:` drive.
 
 The rule of thumb: **mount it in `docker-compose.yml` first, then point Settings
 at the container path.**
 
 ---
 
-## Host-path translation (Location / "Open folder")
+## Adding a third (or more) library drive
 
-So the app can still show you the *real* location of a model — and so the
-"Open folder" action makes sense — the backend translates container paths back
-to host paths using the `STL_DRIVE_1` value from your `.env`:
+The default `docker-compose.yml` supports two drives out of the box. To add more:
 
-```
-/mnt/drive1/Creator/Model   →   F:/3DModelLibrary/Creator/Model
-```
-
-This is why `STL_DRIVE_1` is passed into the backend environment as well as used
-for the volume mount: the volume makes the files *visible*, and the env var lets
-the app *name* them in host terms. If you leave `STL_DRIVE_1` unset, the app
-falls back to showing the container path.
-
----
-
-## Adding another drive
-
-Say you keep models on a second drive and want both indexed. You need to add the
-new drive in **all three** places, then recreate the container.
-
-1. **`.env`** — add the host path:
+1. **`.env`** — add the new host path:
 
    ```
-   STL_DRIVE_1=F:/3DModelLibrary
-   STL_DRIVE_2=G:/MoreModels
+   STL_DRIVE_3=H:/EvenMoreModels
    ```
 
-2. **`docker-compose.yml`** — add a volume mount and pass the env var, and add
-   the new container path to `STL_ROOTS`:
+2. **`docker-compose.yml`** — add a volume mount under `backend.volumes`:
 
    ```yaml
-   services:
-     backend:
-       volumes:
-         - ./data:/data
-         - "${STL_DRIVE_1:-/mnt/drive1}:/mnt/drive1:ro"
-         - "${STL_DRIVE_2:-/mnt/drive2}:/mnt/drive2:ro"   # add this
-       environment:
-         - STL_ROOTS=/mnt/drive1,/mnt/drive2              # add /mnt/drive2
-         - STL_DRIVE_1=${STL_DRIVE_1:-}
-         - STL_DRIVE_2=${STL_DRIVE_2:-}                   # add this
+   - "${STL_DRIVE_3:-/dev/null}:/mnt/drive3"
    ```
 
-3. **Recreate the container** so the new mount and env take effect:
+   And add `STL_DRIVE_3` to the `environment` block:
+
+   ```yaml
+   environment:
+     - STL_DRIVE_3=${STL_DRIVE_3:-}
+   ```
+
+3. **`.env`** — add `/mnt/drive3` to `STL_ROOTS`:
+
+   ```
+   STL_ROOTS=/mnt/drive1,/mnt/drive2,/mnt/drive3
+   ```
+
+4. **Recreate the container** so the new mount takes effect:
 
    ```
    docker compose up -d
    ```
 
-The backend already understands `/mnt/drive2` ↔ `STL_DRIVE_2` for host-path
-translation, so the Location/Open-folder display works for the second drive too.
-Add `/mnt/drive3`, `/mnt/drive4`, … the same way if you have more.
+The new root is seeded automatically on next boot — no manual Settings step needed.
 
 > **Heads-up:** changing `docker-compose.yml` requires a `docker compose up -d`
 > to recreate the container — a running container does not pick up new mounts on
