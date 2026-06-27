@@ -194,13 +194,18 @@ def serve_document(path: str):
         raise HTTPException(status_code=400, detail="Use /files/stl for STL files")
     if not _is_safe_path(p):
         raise HTTPException(status_code=403, detail="Path not allowed")
-    if not p.exists() or not p.is_file():
+    # Resolve after the allowlist check so the path handed to FileResponse is
+    # normalised and free of traversal sequences (satisfies CodeQL path-injection).
+    resolved = p.resolve()
+    if not resolved.exists() or not resolved.is_file():
         raise HTTPException(status_code=404, detail="File not found")
+    # Strip characters that would break the Content-Disposition header value.
+    safe_name = resolved.name.replace('"', "").replace("\n", "").replace("\r", "")
     return FileResponse(
-        p,
-        filename=p.name,
+        resolved,
+        filename=safe_name,
         headers={
-            "Content-Disposition": f'attachment; filename="{p.name}"',
+            "Content-Disposition": f'attachment; filename="{safe_name}"',
             "Cache-Control": "no-cache",
         },
     )

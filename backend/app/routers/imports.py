@@ -393,9 +393,13 @@ def download_images(body: DownloadImagesRequest, db: Session = Depends(get_db)):
                     logger.warning("gallery image %d skipped — unsupported content-type %r", n, ct)
                     continue
                 ext = _image_ext(url, ct)
-                dest = os.path.join(str(pack_dir), f"gallery_{n:02d}{ext}")
-                with open(dest, "wb") as fh:
-                    fh.write(r.content)
+                # Guard: ext must be a known-safe image extension — reject anything
+                # that could escape the filename (e.g. a crafted URL suffix).
+                if ext not in _IMAGE_EXTS:
+                    logger.warning("gallery image %d skipped — unexpected ext %r", n, ext)
+                    continue
+                dest = pack_dir / f"gallery_{n:02d}{ext}"
+                dest.write_bytes(r.content)
                 downloaded += 1
             except Exception as e:
                 logger.warning("gallery image %d download failed: %s", n, e)
@@ -429,17 +433,23 @@ def _move_non_stl_files(
             if ext in scanner.STL_EXTENSIONS:
                 continue  # already moved by the reorganize engine
 
-            src = os.path.join(dirpath, filename)
-            rel = os.path.relpath(src, old_folder)
-            dst = os.path.join(new_folder, rel)
+            src = Path(os.path.join(dirpath, filename)).resolve()
+            rel = os.path.relpath(str(src), old_folder)
+            dst = (Path(new_folder) / rel).resolve()
+
+            # Verify the resolved destination is still inside new_folder to
+            # prevent symlink-based traversal escaping the target directory.
+            if not dst.is_relative_to(Path(new_folder).resolve()):
+                logger.warning("Skipping %r — resolved outside target folder", str(src))
+                continue
 
             try:
-                os.makedirs(os.path.dirname(dst), exist_ok=True)
-                shutil.move(src, dst)
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.move(str(src), str(dst))
                 if ext in _IMAGE_EXTS:
-                    new_images.append(dst)
+                    new_images.append(str(dst))
                 else:
-                    new_others.append(dst)
+                    new_others.append(str(dst))
             except Exception as e:
                 logger.warning("Could not move %r → %r: %s", src, dst, e)
 
@@ -474,10 +484,11 @@ def _cleanup_non_stl_folders(old_to_new: dict[str, str], db: Session) -> None:
         try:
             _move_non_stl_files(old_folder, new_folder, dest_models, db)
             db.commit()
+            old_resolved = os.path.realpath(old_folder)
             try:
-                shutil.rmtree(old_folder)
+                shutil.rmtree(old_resolved)
             except Exception as e:
-                logger.warning("Could not remove old pack folder %r: %s", old_folder, e)
+                logger.warning("Could not remove old pack folder %r: %s", old_resolved, e)
         except Exception:
             logger.exception("Non-STL cleanup failed for %r → %r", old_folder, new_folder)
 
@@ -569,10 +580,12 @@ def import_apply(body: ImportApplyRequest, db: Session = Depends(get_db)):
                 if old == old_folder and mid in model_by_id
             ]
             _move_non_stl_files(old_folder, new_folder, models_here, db)
+            # Resolve before rmtree so any symlink traversal is collapsed first.
+            old_resolved = os.path.realpath(old_folder)
             try:
-                shutil.rmtree(old_folder)
+                shutil.rmtree(old_resolved)
             except Exception as rmtree_err:
-                logger.warning("Could not remove old pack folder %r: %s", old_folder, rmtree_err)
+                logger.warning("Could not remove old pack folder %r: %s", old_resolved, rmtree_err)
         db.commit()
     except Exception:
         logger.exception("Non-STL file move/cleanup failed; STL files were already moved successfully")
