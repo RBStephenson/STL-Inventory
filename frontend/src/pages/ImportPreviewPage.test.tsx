@@ -115,6 +115,7 @@ describe("ImportPreviewPage (#452 C2)", () => {
   });
 
   it("applies already-imported packs via /import/apply when Import is clicked", async () => {
+    setup({ mapping: { source_path: "/src", library_id: 1 } });
     vi.mocked(api.import.sourceContents).mockResolvedValue({
       source: "/src", is_flat: false, file_count: 0,
       entries: [{ name: "PackA", path: "/src/PackA", already_imported: true, file_count: 5 }],
@@ -122,15 +123,8 @@ describe("ImportPreviewPage (#452 C2)", () => {
     vi.mocked(api.scan.libraries).mockResolvedValue([
       { id: 1, path: "/lib", name: "minis", is_writable: true, write_enabled: true },
     ]);
-    vi.mocked(api.import.getMapping).mockResolvedValue({ source_path: "/src", library_id: 1 });
     vi.mocked(api.import.preview).mockResolvedValue({ source: "/src", library_id: 1, packs: [PACK] });
     vi.mocked(api.collections.list).mockResolvedValue([]);
-
-    render(
-      <MemoryRouter initialEntries={["/import/preview?source=/src"]}>
-        <ImportPreviewPage />
-      </MemoryRouter>
-    );
 
     await scan();
     fireEvent.click(screen.getByRole("button", { name: /^import$/i }));
