@@ -18,6 +18,12 @@ interface MatchResult {
   product: Product;
 }
 
+interface ApplyResult {
+  applied: number;
+  enriched_deep: number;
+  fallback_shallow: number;
+}
+
 interface Props {
   creatorId: number;
   creatorName: string;
@@ -87,6 +93,7 @@ export default function StorefrontEnrich({ creatorId, creatorName, onDone }: Pro
   const [applying, setApplying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const [result, setResult] = useState<ApplyResult | null>(null);
   const [showLow, setShowLow] = useState(false);
 
   const runMatch = async () => {
@@ -149,9 +156,10 @@ export default function StorefrontEnrich({ creatorId, creatorName, onDone }: Pro
         body: JSON.stringify({ items }),
       });
       if (!r.ok) throw new Error("Apply failed");
-      const result = await r.json();
+      setResult(await r.json());
       setDone(true);
-      setTimeout(onDone, 1500);
+      // A shallow fallback is worth seeing, so linger longer when some occurred.
+      setTimeout(onDone, 2500);
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -200,7 +208,16 @@ export default function StorefrontEnrich({ creatorId, creatorName, onDone }: Pro
 
       {done && (
         <p className="text-sm text-emerald-400 bg-emerald-950/40 border border-emerald-800 rounded px-3 py-2 flex items-center gap-2">
-          <Check size={14} /> Applied! Models updated.
+          <Check size={14} />
+          {result
+            ? <span>
+                Applied to {result.applied} model{result.applied === 1 ? "" : "s"} —{" "}
+                {result.enriched_deep} fully enriched
+                {result.fallback_shallow > 0 && (
+                  <>, {result.fallback_shallow} basic <span className="text-emerald-600">(couldn't fetch full detail)</span></>
+                )}.
+              </span>
+            : <span>Applied! Models updated.</span>}
         </p>
       )}
 
