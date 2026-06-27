@@ -8,7 +8,7 @@ import logging
 import platform
 import subprocess
 import zipfile
-from pathlib import Path
+from pathlib import Path, PurePath
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
@@ -212,6 +212,9 @@ def serve_document(path: str):
 
     normalized_input = path.replace("\\", "/")
     rel_candidate = Path(normalized_input)
+    rel_pure = PurePath(rel_path)
+    if not rel_path or rel_pure.is_absolute() or ".." in rel_pure.parts:
+        raise HTTPException(status_code=403, detail="Path not allowed")
     if rel_candidate.is_absolute():
         raise HTTPException(status_code=400, detail="Absolute paths are not allowed")
     rel_parts = rel_candidate.parts
