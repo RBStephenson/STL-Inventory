@@ -37,30 +37,6 @@ from app.services.reorganize_apply import ApplyError
 router = APIRouter(prefix="/import", tags=["import"])
 
 
-def _validated_path_within_root(root: str, candidate: str) -> str:
-    """Return canonical candidate path if it is contained within canonical root."""
-    resolved_root = os.path.realpath(root)
-    resolved_candidate = os.path.realpath(candidate)
-    if os.path.commonpath([resolved_candidate, resolved_root]) != resolved_root:
-        raise HTTPException(status_code=400, detail="source must be within a configured scan root")
-    return resolved_candidate
-
-
-def _safe_path_from_root_and_relative(root: str, relative_candidate: str) -> str:
-    """Build a canonical path under root from a relative user-controlled segment."""
-    resolved_root = os.path.realpath(root)
-    if os.path.isabs(relative_candidate):
-        raise HTTPException(status_code=400, detail="source must be within a configured scan root")
-    normalized_relative = os.path.normpath(relative_candidate)
-    if normalized_relative == ".." or normalized_relative.startswith(f"..{os.sep}"):
-        raise HTTPException(status_code=400, detail="source must be within a configured scan root")
-    joined = os.path.join(resolved_root, normalized_relative)
-    resolved_candidate = os.path.realpath(joined)
-    if os.path.commonpath([resolved_candidate, resolved_root]) != resolved_root:
-        raise HTTPException(status_code=400, detail="source must be within a configured scan root")
-    return resolved_candidate
-
-
 # Entry flags (Phase 1) that make a pack ineligible to move, mapped to a reason.
 _INELIGIBLE_FLAGS = [
     ("unclassifiable", "missing creator/character"),
@@ -367,42 +343,40 @@ def _image_ext(url: str, content_type: str) -> str:
     """Best-effort image extension from Content-Type, falling back to URL suffix."""
     ext = _CT_TO_EXT.get(content_type.split(";")[0].strip().lower(), "")
     if ext:
-    candidate_pack_dir = os.path.realpath(os.path.expanduser(raw_pack_path))
-    if not os.path.isabs(candidate_pack_dir):
+        return ext
+    suffix = Path(urlparse(url).path).suffix.lower()
     return suffix if suffix in _IMAGE_EXTS else ".jpg"
 
 
-    validated_pack_dir: str | None = None
+@router.post("/download-images")
 def download_images(body: DownloadImagesRequest, db: Session = Depends(get_db)):
     """Download CDN image URLs into the pack folder so they travel with the pack
     during apply. Called from the import UI after enrichment, before apply."""
-            validated_pack_dir = _validated_path_within_root(base_dir_str, candidate_pack_dir)
-            break
-        except HTTPException:
-            continue
+    raw_pack_path = body.pack_path.strip()
+    if not raw_pack_path:
+        raise HTTPException(status_code=400, detail="pack_path is required")
     if "\x00" in raw_pack_path:
         raise HTTPException(status_code=400, detail="pack_path is invalid")
 
-    if not validated_pack_dir:
+    pack_dir_str = os.path.realpath(os.path.expanduser(raw_pack_path))
     if not os.path.isabs(pack_dir_str):
         raise HTTPException(status_code=400, detail="pack_path must be an absolute path")
-    pack_dir = Path(validated_pack_dir)
+
     # Path guard: must be within a configured or bootstrap-allowed root.
-    matched_base_dir_str: str | None = None
+    contained = False
     for base in _allowed_bases(db):
         base_dir_str = os.path.realpath(os.path.expanduser(base))
         try:
             if os.path.commonpath([pack_dir_str, base_dir_str]) == base_dir_str:
-                matched_base_dir_str = base_dir_str
+                contained = True
                 break
         except ValueError:
             continue
 
-    if matched_base_dir_str is None:
+    if not contained:
         raise HTTPException(status_code=403, detail="Path is outside the allowed folders")
 
-    canonical_pack_dir_str = _validated_path_within_root(matched_base_dir_str, pack_dir_str)
-    pack_dir = Path(canonical_pack_dir_str)
+    pack_dir = Path(pack_dir_str)
     if not pack_dir.is_dir():
         raise HTTPException(status_code=404, detail="Pack folder not found")
 
@@ -424,8 +398,7 @@ def download_images(body: DownloadImagesRequest, db: Session = Depends(get_db)):
                     logger.warning("gallery image %d skipped — unexpected ext %r", n, ext)
                     continue
                 dest = pack_dir / f"gallery_{n:02d}{ext}"
-                validated_dest = Path(_validated_path_within_root(str(pack_dir), str(dest)))
-                validated_dest.write_bytes(r.content)
+                dest.write_bytes(r.content)
                 downloaded += 1
             except Exception as e:
                 logger.warning("gallery image %d download failed: %s", n, e)
@@ -619,18 +592,21 @@ def import_apply(body: ImportApplyRequest, db: Session = Depends(get_db)):
     # Clean up any stale empty directories left in the source root.
     try:
         resolved_root = os.path.realpath(matched_root)
-        src_relative = os.path.relpath(src, resolved_root)
-        safe_src = _safe_path_from_root_and_relative(resolved_root, src_relative)
+        rel_src = os.path.relpath(src, resolved_root)
+        if rel_src == ".." or rel_src.startswith(".." + os.sep):
+            raise HTTPException(status_code=400, detail="source must be within a configured scan root")
+        safe_src = os.path.realpath(os.path.join(resolved_root, rel_src))
+        if os.path.commonpath([safe_src, resolved_root]) != resolved_root:
+            raise HTTPException(status_code=400, detail="source must be within a configured scan root")
         if not os.path.isdir(safe_src):
             raise HTTPException(status_code=400, detail="source must be an existing directory")
         for dirpath, _, filenames in os.walk(safe_src, topdown=False):
             if not filenames:
-                try:
-                    dirpath_resolved = _validated_path_within_root(safe_src, dirpath)
-                except HTTPException:
+                dirpath_resolved = os.path.realpath(dirpath)
+                if os.path.commonpath([dirpath_resolved, safe_src]) != safe_src:
                     logger.warning(
                         "Skipping cleanup outside source root: %r (source: %r)",
-                        dirpath, safe_src,
+                        dirpath_resolved, safe_src,
                     )
                     continue
                 try:
