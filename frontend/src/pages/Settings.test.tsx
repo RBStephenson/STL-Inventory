@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { ReactElement } from "react";
-import { render as rtlRender, screen } from "@testing-library/react";
+import { render as rtlRender, screen, within, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import Settings from "./Settings";
@@ -10,7 +10,11 @@ import { mkSettings } from "../test/settings";
 const render = (ui: ReactElement) => rtlRender(<MemoryRouter initialEntries={["/settings"]}>{ui}</MemoryRouter>);
 
 const goTab = async (label: RegExp | string) => {
-  await userEvent.click(await screen.findByRole("button", { name: label }));
+  const btn = await screen.findByRole("button", { name: label });
+  await userEvent.click(btn);
+  // Wait for the tab to become active — navigate() + useEffect chain may span
+  // two React render cycles, so we wait until the button reflects active state.
+  await waitFor(() => expect(btn).toHaveClass("border-indigo-500"));
 };
 
 vi.mock("../api/client", () => ({
@@ -209,7 +213,9 @@ describe("Settings – AI generation section (#517)", () => {
 
     const input = await screen.findByLabelText("Anthropic API key");
     await userEvent.type(input, "sk-ant-secret-wxyz");
-    await userEvent.click(screen.getByRole("button", { name: "Save" }));
+    // Scope Save to the Anthropic key row — avoids ambiguity with Cults3D's Save.
+    const keyRow = input.closest("div") as HTMLElement;
+    await userEvent.click(within(keyRow).getByRole("button", { name: "Save" }));
 
     expect(api.settings.ai.setKey).toHaveBeenCalledWith("sk-ant-secret-wxyz");
     expect(await screen.findByText(/key set/i)).toBeInTheDocument();
@@ -285,7 +291,9 @@ describe("Settings – Scan ignore patterns (#31)", () => {
     render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
     await goTab(/scanning/i);
 
-    await screen.findByText("WIP");
+    // Scope to the ignore-patterns list — "WIP" also appears in the example text.
+    const patternsList = await screen.findByTestId("ignore-patterns");
+    await within(patternsList).findByText("WIP");
     await userEvent.type(screen.getByPlaceholderText(/_archive/i), "_archive");
     await userEvent.click(screen.getAllByRole("button", { name: /^add$/i })[0]);
 
@@ -302,7 +310,8 @@ describe("Settings – Scan ignore patterns (#31)", () => {
     render(<AppSettingsProvider><Settings /></AppSettingsProvider>);
     await goTab(/scanning/i);
 
-    await screen.findByText("WIP");
+    const patternsList = await screen.findByTestId("ignore-patterns");
+    await within(patternsList).findByText("WIP");
     await userEvent.type(screen.getByPlaceholderText(/_archive/i), "WIP");
     await userEvent.click(screen.getAllByRole("button", { name: /^add$/i })[0]);
 

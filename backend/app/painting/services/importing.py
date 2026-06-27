@@ -195,8 +195,10 @@ def make_db_resolver(db: Session) -> PaintResolver:
             cl = code.lower()
             cn = _strip_decimal_zeros(cl)
             cs = cn.lstrip("0") or "0"
-            # Skip pure single-digit codes — too ambiguous as tokens.
-            if code.isdigit() and len(cs) < 2:
+            # Pure-digit codes (e.g. '065') must not match via any token path —
+            # a bare number collides with per-line numbering guides use.
+            # _exact and _smart still catch them when brand-scoped.
+            if code.isdigit():
                 continue
             if cl in ws_tokens or cn in norm_tokens or cs in stripped_tokens:
                 hits.add(pid)
