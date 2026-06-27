@@ -7,11 +7,13 @@ services:
       - "127.0.0.1:8000:8000"
     volumes:
       - ./data:/data
-      # Mount your external drives here — adjust paths for Windows/Mac
-      # Windows example: "D:/3D STLs:/library"
-      # Mac example:    "/Volumes/MyDrive1:/library"
-      - "${LIBRARY_DIR}:/library"
-      - "${IMPORT_DIR}:/import"
+      # Mount your external drives here — set LIBRARY_DIR / IMPORT_DIR in .env
+      # (see .env.example). Windows example: LIBRARY_DIR=D:/3D STLs
+      # Mac example:    LIBRARY_DIR=/Volumes/MyDrive1
+      # The :-./data/... defaults keep `docker compose` from failing when .env
+      # is absent; replace them with real paths to actually index your library.
+      - "${LIBRARY_DIR:-./data/library}:/library"
+      - "${IMPORT_DIR:-./data/import}:/import"
     environment:
       - DATABASE_URL=sqlite:////data/stl_inventory.db
       - REORGANIZE_WRITE_ENABLED=true
