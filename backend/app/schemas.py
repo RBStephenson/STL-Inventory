@@ -41,6 +41,7 @@ class ModelRead(ModelBase):
     native_folder_path: Optional[str] = None
     title: Optional[str] = None
     character: Optional[str] = None
+    variant_group_id: Optional[int] = None
     variant_count: int = 1
     description: Optional[str] = None
     notes: Optional[str] = None
