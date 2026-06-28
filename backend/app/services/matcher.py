@@ -104,21 +104,42 @@ def _confidence(score: float) -> str:
     return "low"
 
 
+def _strip_creator(tokens: set[str], creator_tokens: set[str]) -> set[str]:
+    """Drop creator-name tokens from a side — but only when that side contains the
+    creator's *whole* name, so a lone shared word ("Dragon" from creator "Dragon
+    Studios" vs a "Red Dragon" character) is never removed. Falls back to the
+    original set if stripping would empty it. (#630)"""
+    if creator_tokens and creator_tokens <= tokens:
+        stripped = tokens - creator_tokens
+        return stripped or tokens
+    return tokens
+
+
 def match_products_to_models(
     products: list[StorefrontProduct],
     models: list[dict],           # [{"id": int, "name": str, "folder_path": str, ...}]
     min_score: float = 0.20,
+    creator_name: str | None = None,
 ) -> list[MatchCandidate]:
     """
     For each local model, find the best-matching storefront product.
     Returns one candidate per local model (best match only), filtered
     by min_score. Sorted by score descending.
+
+    When creator_name is given, its tokens are removed from both sides before
+    scoring — the creator appears in nearly every product title, so it adds
+    constant overlap that flattens discrimination between products.
     """
     candidates: list[MatchCandidate] = []
+    creator_tokens = _tokens(creator_name) if creator_name else set()
 
     # Tokenize each product title once up front (#57), denoised so support/format/
-    # file cruft in store titles doesn't dilute or fake overlap (#629).
-    product_tokens = [(product, _denoise_tokens(product.title)) for product in products]
+    # file cruft in store titles doesn't dilute or fake overlap (#629), and with
+    # the creator name removed so it doesn't inflate every score (#630).
+    product_tokens = [
+        (product, _strip_creator(_denoise_tokens(product.title), creator_tokens))
+        for product in products
+    ]
 
     for m in models:
         best_score = 0.0
@@ -132,12 +153,12 @@ def match_products_to_models(
         # Denoise local names too (old/user-edited names may still carry cruft),
         # so both sides normalise the same way.
         name_token_sets = [
-            _denoise_tokens(name)
+            _strip_creator(_denoise_tokens(name), creator_tokens)
             for name in (m.get("name", ""), m.get("title") or "")
             if name
         ]
         if char_tokens:
-            name_token_sets.append(char_tokens)
+            name_token_sets.append(_strip_creator(char_tokens, creator_tokens))
 
         # Re-add scale as a match signal by augmenting each name set (never as a
         # standalone set — scale alone would false-match every same-scale product).
