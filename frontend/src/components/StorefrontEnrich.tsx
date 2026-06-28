@@ -65,31 +65,31 @@ function MatchCard({ m, selected, toggle, expanded, onToggleExpand, detail }: Ma
       }`}
     >
       <div onClick={() => toggle(m.local_model_id)} className="cursor-pointer">
-        {/* Scraped thumbnail — large, with selection + score overlaid. */}
+        {/* Scraped thumbnail with selection + score overlaid. */}
         <div className="relative aspect-square bg-gray-800">
           {m.product.thumbnail_url
             ? <img src={m.product.thumbnail_url} alt="" className="w-full h-full object-cover" />
-            : <div className="w-full h-full flex items-center justify-center text-gray-700"><Zap size={28} /></div>
+            : <div className="w-full h-full flex items-center justify-center text-gray-700"><Zap size={16} /></div>
           }
           {/* Checkbox */}
-          <div className={`absolute top-2 left-2 w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
+          <div className={`absolute top-1 left-1 w-4 h-4 rounded border flex items-center justify-center transition-colors ${
             isSelected ? "bg-indigo-600 border-indigo-600" : "border-gray-400 bg-gray-900/70"
           }`}>
-            {isSelected && <Check size={14} />}
+            {isSelected && <Check size={10} />}
           </div>
           {/* Score */}
-          <div className={`absolute top-2 right-2 text-xs px-2 py-0.5 rounded border ${CONFIDENCE_STYLES[m.confidence]}`}>
+          <div className={`absolute top-1 right-1 text-[10px] leading-none px-1 py-0.5 rounded border ${CONFIDENCE_STYLES[m.confidence]}`}>
             {Math.round(m.score * 100)}%
           </div>
         </div>
 
         {/* Names */}
-        <div className="p-3 pb-2">
-          <p className="text-xs text-gray-500 truncate" title={m.local_folder}>
-            Local: <span className="text-gray-300">{m.local_name}</span>
+        <div className="px-1.5 py-1">
+          <p className="text-[11px] leading-tight text-gray-400 truncate" title={`Local: ${m.local_folder}`}>
+            {m.local_name}
           </p>
-          <p className="text-xs text-gray-500 truncate" title={m.product.title}>
-            Match: <span className="text-gray-300">{m.product.title}</span>
+          <p className="text-[10px] leading-tight text-gray-600 truncate" title={`Match: ${m.product.title}`}>
+            {m.product.title}
           </p>
         </div>
       </div>
@@ -100,9 +100,9 @@ function MatchCard({ m, selected, toggle, expanded, onToggleExpand, detail }: Ma
         aria-label={expanded ? "Hide details" : "Preview details"}
         aria-expanded={expanded}
         onClick={(e) => { e.stopPropagation(); onToggleExpand(); }}
-        className="flex items-center justify-center gap-1 px-3 py-1.5 text-xs text-gray-500 hover:text-gray-300 hover:bg-gray-800/40 border-t border-gray-800/70 transition-colors"
+        className="flex items-center justify-center px-1 py-0.5 text-gray-600 hover:text-gray-300 hover:bg-gray-800/40 border-t border-gray-800/70 transition-colors"
       >
-        {expanded ? <><ChevronUp size={14} /> Hide details</> : <><ChevronDown size={14} /> Preview details</>}
+        {expanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
       </button>
 
       {expanded && (
@@ -336,7 +336,7 @@ export default function StorefrontEnrich({ creatorId, creatorName, onDone }: Pro
                   <p className="text-xs font-medium text-emerald-400">High confidence ({high.length})</p>
                   <button onClick={() => selectAll("high")} className="text-xs text-gray-600 hover:text-gray-400">Select all</button>
                 </div>
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 items-start">{high.map((m) => <MatchCard key={m.local_model_id} m={m} selected={selected} toggle={toggle} expanded={expanded.has(m.local_model_id)} onToggleExpand={() => toggleExpand(m)} detail={details[m.product.source_url]} />)}</div>
+                <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2 items-start">{high.map((m) => <MatchCard key={m.local_model_id} m={m} selected={selected} toggle={toggle} expanded={expanded.has(m.local_model_id)} onToggleExpand={() => toggleExpand(m)} detail={details[m.product.source_url]} />)}</div>
               </div>
             )}
             {medium.length > 0 && (
@@ -345,7 +345,7 @@ export default function StorefrontEnrich({ creatorId, creatorName, onDone }: Pro
                   <p className="text-xs font-medium text-yellow-400">Medium confidence ({medium.length})</p>
                   <button onClick={() => selectAll("medium")} className="text-xs text-gray-600 hover:text-gray-400">Select all</button>
                 </div>
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 items-start">{medium.map((m) => <MatchCard key={m.local_model_id} m={m} selected={selected} toggle={toggle} expanded={expanded.has(m.local_model_id)} onToggleExpand={() => toggleExpand(m)} detail={details[m.product.source_url]} />)}</div>
+                <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2 items-start">{medium.map((m) => <MatchCard key={m.local_model_id} m={m} selected={selected} toggle={toggle} expanded={expanded.has(m.local_model_id)} onToggleExpand={() => toggleExpand(m)} detail={details[m.product.source_url]} />)}</div>
               </div>
             )}
             {low.length > 0 && (
@@ -358,7 +358,7 @@ export default function StorefrontEnrich({ creatorId, creatorName, onDone }: Pro
                   Low confidence ({low.length}) — review carefully
                 </button>
                 {showLow && (
-                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 items-start">{low.map((m) => <MatchCard key={m.local_model_id} m={m} selected={selected} toggle={toggle} expanded={expanded.has(m.local_model_id)} onToggleExpand={() => toggleExpand(m)} detail={details[m.product.source_url]} />)}</div>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2 items-start">{low.map((m) => <MatchCard key={m.local_model_id} m={m} selected={selected} toggle={toggle} expanded={expanded.has(m.local_model_id)} onToggleExpand={() => toggleExpand(m)} detail={details[m.product.source_url]} />)}</div>
                 )}
               </div>
             )}
