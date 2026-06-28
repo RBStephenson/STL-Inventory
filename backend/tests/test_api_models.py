@@ -1265,3 +1265,120 @@ class TestVariantGroupReadPath:
         db.refresh(a)
         assert a.variant_group_id is None
         assert a.character == "Renamed"
+
+
+class TestManualGroupEndpoints:
+    """P3 (#617): manual merge / split / relabel."""
+
+    def test_merge_creates_manual_group(self, client, db):
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A", character="Alpha")
+        b = make_model(db, creator, name="B", character="Beta")
+        commit_all(db)
+
+        resp = client.post("/models/groups/merge", json={"model_ids": [a.id, b.id], "label": "My Group"})
+        assert resp.status_code == 200
+        g = resp.json()
+        assert g["source"] == "manual"
+        assert g["label"] == "My Group"
+        db.refresh(a); db.refresh(b)
+        assert a.variant_group_id == g["id"] == b.variant_group_id
+
+    def test_merge_requires_two_without_group_id(self, client, db):
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A")
+        commit_all(db)
+        resp = client.post("/models/groups/merge", json={"model_ids": [a.id]})
+        assert resp.status_code == 400
+
+    def test_merge_rejects_cross_creator(self, client, db):
+        c1 = make_creator(db, "C1"); c2 = make_creator(db, "C2")
+        a = make_model(db, c1, name="A")
+        b = make_model(db, c2, name="B")
+        commit_all(db)
+        resp = client.post("/models/groups/merge", json={"model_ids": [a.id, b.id]})
+        assert resp.status_code == 400
+
+    def test_merge_prunes_orphaned_auto_group(self, client, db):
+        from app.models import VariantGroup
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A")
+        b = make_model(db, creator, name="B")
+        # a + b are in an auto group of two
+        auto = VariantGroup(creator_id=creator.id, label="Auto", source="auto")
+        db.add(auto); db.flush()
+        a.variant_group_id = auto.id; b.variant_group_id = auto.id
+        c = make_model(db, creator, name="C")
+        commit_all(db)
+
+        # Merge a + c into a new group → auto group drops to 1 member (b) → pruned.
+        resp = client.post("/models/groups/merge", json={"model_ids": [a.id, c.id]})
+        assert resp.status_code == 200
+        assert db.get(VariantGroup, auto.id) is None
+        db.refresh(b)
+        assert b.variant_group_id is None
+
+    def test_merge_locked_from_rescan(self, client, db):
+        from app.services import grouping
+        from app.models import VariantGroup
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A", character="Alpha")
+        b = make_model(db, creator, name="B", character="Beta")
+        commit_all(db)
+        gid = client.post("/models/groups/merge", json={"model_ids": [a.id, b.id]}).json()["id"]
+
+        grouping.regroup_creator(db, creator.id)
+        db.commit()
+
+        grp = db.get(VariantGroup, gid)
+        assert grp is not None and grp.source == "manual"
+        db.refresh(a); db.refresh(b)
+        assert a.variant_group_id == gid == b.variant_group_id
+
+    def test_split_removes_members_and_keeps_group(self, client, db):
+        from app.models import VariantGroup
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A"); b = make_model(db, creator, name="B"); c = make_model(db, creator, name="C")
+        commit_all(db)
+        gid = client.post("/models/groups/merge", json={"model_ids": [a.id, b.id, c.id]}).json()["id"]
+
+        resp = client.post(f"/models/groups/{gid}/split", json={"model_ids": [c.id]})
+        assert resp.status_code == 200
+        db.refresh(c)
+        assert c.variant_group_id is None
+        assert db.get(VariantGroup, gid) is not None  # 2 left → survives
+
+    def test_split_dissolves_group_below_two(self, client, db):
+        from app.models import VariantGroup
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A"); b = make_model(db, creator, name="B")
+        commit_all(db)
+        gid = client.post("/models/groups/merge", json={"model_ids": [a.id, b.id]}).json()["id"]
+
+        resp = client.post(f"/models/groups/{gid}/split", json={"model_ids": [b.id]})
+        assert resp.status_code == 200
+        assert db.get(VariantGroup, gid) is None
+        db.refresh(a)
+        assert a.variant_group_id is None
+
+    def test_patch_label_and_rep(self, client, db):
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A"); b = make_model(db, creator, name="B")
+        commit_all(db)
+        gid = client.post("/models/groups/merge", json={"model_ids": [a.id, b.id]}).json()["id"]
+
+        resp = client.patch(f"/models/groups/{gid}", json={"label": "Renamed", "rep_model_id": b.id})
+        assert resp.status_code == 200
+        g = resp.json()
+        assert g["label"] == "Renamed"
+        assert g["rep_model_id"] == b.id
+
+    def test_patch_rep_must_be_member(self, client, db):
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A"); b = make_model(db, creator, name="B")
+        outsider = make_model(db, creator, name="Z")
+        commit_all(db)
+        gid = client.post("/models/groups/merge", json={"model_ids": [a.id, b.id]}).json()["id"]
+
+        resp = client.patch(f"/models/groups/{gid}", json={"rep_model_id": outsider.id})
+        assert resp.status_code == 400

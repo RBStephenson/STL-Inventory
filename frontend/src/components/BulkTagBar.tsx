@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Tag, Trash2, X, Check, Loader2, FolderOpen, EyeOff, AlertCircle, Pencil, OctagonAlert } from "lucide-react";
+import { Tag, Trash2, X, Check, Loader2, FolderOpen, EyeOff, AlertCircle, Pencil, OctagonAlert, Layers } from "lucide-react";
 import { api, Collection } from "../api/client";
 import { useConfirm } from "../context/ConfirmContext";
 import { useToast } from "../context/ToastContext";
@@ -125,6 +125,23 @@ export default function BulkTagBar({ selectedIds, totalOnPage, onSelectAll, onCl
     } catch {
       setStatus("idle");
       toast("Couldn't hide the selected models — try again.", "error");
+    }
+  };
+
+  const mergeSelected = async () => {
+    if (selectedIds.length < 2) {
+      toast("Select at least two models to merge into a group.", "error");
+      return;
+    }
+    setStatus("loading");
+    try {
+      await api.models.mergeGroup(selectedIds);
+      toast(`Merged ${n} model${plural} into one variant group.`, "success");
+      onDone();
+      onClear();  // grid collapses to the group rep — drop the stale selection
+    } catch {
+      setStatus("idle");
+      toast("Couldn't merge the selected models — try again.", "error");
     }
   };
 
@@ -398,6 +415,15 @@ export default function BulkTagBar({ selectedIds, totalOnPage, onSelectAll, onCl
             >
               <Pencil size={13} />
               Enrich
+            </button>
+            <button
+              onClick={mergeSelected}
+              disabled={selectedIds.length < 2}
+              title="Merge the selected models into one variant group"
+              className="flex shrink-0 items-center gap-1.5 px-3 py-1.5 rounded text-sm bg-gray-800 border border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white disabled:opacity-40 transition-colors"
+            >
+              <Layers size={13} />
+              Merge
             </button>
             <button
               onClick={markReview}

@@ -31,6 +31,20 @@ class STLFileRead(BaseModel):
         from_attributes = True
 
 
+class VariantGroupRead(BaseModel):
+    """Durable variant group (#613) — surfaced for the explain tooltip + group views."""
+    id: int
+    creator_id: int
+    label: Optional[str] = None
+    rep_model_id: Optional[int] = None
+    source: str = "auto"            # "auto" | "manual"
+    reason: Optional[str] = None
+    confidence: Optional[float] = None
+
+    class Config:
+        from_attributes = True
+
+
 class ModelBase(BaseModel):
     name: str
     folder_path: str
@@ -42,6 +56,7 @@ class ModelRead(ModelBase):
     title: Optional[str] = None
     character: Optional[str] = None
     variant_group_id: Optional[int] = None
+    variant_group: Optional["VariantGroupRead"] = None  # explain: reason/confidence/source
     variant_count: int = 1
     description: Optional[str] = None
     notes: Optional[str] = None
@@ -274,6 +289,25 @@ class BatchSetGroupBody(BaseModel):
     Powers group rename / merge / split / ungroup on the VariantGroup page."""
     model_ids: list[int]
     character: Optional[str] = None  # None = explicitly ungroup all; string = target group name
+
+
+class GroupMergeBody(BaseModel):
+    """Merge models into one manual variant group (#617). Creates the group if
+    group_id is omitted; otherwise extends the existing group."""
+    model_ids: list[int]
+    group_id: Optional[int] = None
+    label: Optional[str] = None
+
+
+class GroupSplitBody(BaseModel):
+    """Remove members from a group (#617). They become ungrouped (variant_group_id
+    = NULL). The remaining group is marked manual so a rescan won't undo the split."""
+    model_ids: list[int]
+
+
+class GroupPatchBody(BaseModel):
+    label: Optional[str] = None
+    rep_model_id: Optional[int] = None
 
 
 class InboxScanRequest(BaseModel):

@@ -23,7 +23,7 @@ from collections import Counter, defaultdict
 
 from sqlalchemy.orm import Session
 
-from app.models import Model, STLFile, VariantGroup
+from app.models import Model, STLFile, VariantGroup, GroupOverride
 from app.services import name_parser
 
 # A file_hash shared by more than this many models is treated as a ubiquitous
@@ -75,7 +75,18 @@ def regroup_creator(db: Session, creator_id: int) -> None:
             VariantGroup.creator_id == creator_id, VariantGroup.source == "manual"
         )
     }
-    candidates = [m for m in models if m.variant_group_id not in manual_group_ids]
+    # Models the user has manually grouped/moved/ungrouped (a GroupOverride row)
+    # are off-limits too — their grouping is a deliberate decision the proposal
+    # engine must not overturn on rescan.
+    override_paths = {
+        p for (p,) in db.query(GroupOverride.path).filter(
+            GroupOverride.path.in_([m.folder_path for m in models])
+        )
+    }
+    candidates = [
+        m for m in models
+        if m.variant_group_id not in manual_group_ids and m.folder_path not in override_paths
+    ]
     if not candidates:
         _drop_auto_groups(db, creator_id, manual_group_ids)
         return
