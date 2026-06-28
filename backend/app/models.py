@@ -101,6 +101,12 @@ class Model(Base):
 
     # Hierarchy
     character = Column(String, nullable=True)     # inferred grouping above model level
+    # First-class variant grouping (#613 P0). NULL = ungrouped. Membership is the
+    # source of truth for grouping going forward; `character` stays as the display
+    # label during the phased migration. Indexed for the variant-collapse window.
+    variant_group_id = Column(
+        Integer, ForeignKey("variant_groups.id", ondelete="SET NULL"), nullable=True, index=True
+    )
 
     # Metadata — user-edited or scraped
     title = Column(String, nullable=True)
@@ -182,6 +188,38 @@ class Model(Base):
     creator = relationship("Creator", back_populates="models")
     stl_files = relationship("STLFile", back_populates="model")
     collection_links = relationship("CollectionModel", back_populates="model")
+    variant_group = relationship(
+        "VariantGroup", back_populates="models", foreign_keys=[variant_group_id]
+    )
+
+
+class VariantGroup(Base):
+    """A durable, first-class variant group (#613). Models point in via
+    `variant_group_id`. `source` distinguishes scanner-proposed ("auto") groups,
+    which a rescan may revise, from user-curated ("manual") groups, which it must
+    never touch."""
+    __tablename__ = "variant_groups"
+
+    id = Column(Integer, primary_key=True)
+    creator_id = Column(Integer, ForeignKey("creators.id", ondelete="CASCADE"), nullable=False, index=True)
+    label = Column(String, nullable=True)             # display name for the group
+    # use_alter breaks the models<->variant_groups FK cycle so create_all/drop_all
+    # can order the tables (rep_model_id -> models, models.variant_group_id -> here).
+    rep_model_id = Column(
+        Integer,
+        ForeignKey("models.id", ondelete="SET NULL", use_alter=True, name="fk_variant_groups_rep_model"),
+        nullable=True,
+    )
+    source = Column(String, nullable=False, default="auto", server_default="auto")  # "auto" | "manual"
+    reason = Column(String, nullable=True)            # why these grouped (proposal engine, P1)
+    confidence = Column(Float, nullable=True)
+    created_at = Column(DateTime, default=utcnow)
+
+    creator = relationship("Creator")
+    models = relationship(
+        "Model", back_populates="variant_group", foreign_keys="Model.variant_group_id"
+    )
+    rep_model = relationship("Model", foreign_keys=[rep_model_id])
 
 
 class STLFile(Base):
