@@ -239,6 +239,47 @@ class TestTitleDenoise:
 
 
 # ---------------------------------------------------------------------------
+# creator-name stripping (#630)
+# ---------------------------------------------------------------------------
+
+class TestCreatorStripping:
+    def test_creator_name_removed_sharpens_discrimination(self):
+        # Both products share the creator; only the distinctive word should decide.
+        products = [_product("Ghamak Barbarian"), _product("Ghamak Wizard")]
+        models = [_model(1, name="Ghamak Wizard")]
+        result = match_products_to_models(products, models, creator_name="Ghamak")
+        assert result[0].product.title == "Ghamak Wizard"
+
+    def test_creator_token_not_inflating_unrelated_match(self):
+        # Without stripping, the shared "Ghamak" lifts an unrelated product over
+        # the threshold; stripping it removes the spurious match entirely.
+        products = [_product("Ghamak Orc")]
+        models = [_model(1, name="Ghamak Elf")]
+        with_strip = match_products_to_models(products, models, creator_name="Ghamak")
+        without = match_products_to_models(products, models)
+        assert without and (not with_strip or with_strip[0].score < without[0].score)
+
+    def test_partial_creator_word_preserved(self):
+        # creator "Dragon Studios"; a "Red Dragon" character must keep "dragon"
+        # because the full creator name isn't present.
+        products = [_product("Red Dragon")]
+        models = [_model(1, name="Red Dragon")]
+        result = match_products_to_models(products, models, creator_name="Dragon Studios")
+        assert result[0].score >= 0.55  # "dragon" survived → strong match
+
+    def test_full_creator_name_stripped_both_sides(self):
+        products = [_product("Dragon Studios Barbarian")]
+        models = [_model(1, name="Barbarian Dragon Studios")]
+        result = match_products_to_models(products, models, creator_name="Dragon Studios")
+        assert result[0].score >= 0.55  # both reduce to "barbarian"
+
+    def test_no_creator_name_unchanged(self):
+        products = [_product("Ghamak Wizard")]
+        result = match_products_to_models(products, [_model(1, name="Ghamak Wizard")])
+        assert result[0].score >= 0.55
+
+
+# ---------------------------------------------------------------------------
 # #57 — pre-tokenization: each title/name tokenized once, not per comparison
 # ---------------------------------------------------------------------------
 

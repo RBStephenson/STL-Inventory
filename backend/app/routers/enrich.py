@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 from typing import Optional
 
 from app.database import get_db
-from app.models import Model
+from app.models import Model, Creator
 from app.services import scrapers, secrets
 from app.services.scrapers.base import ScrapedModel
 from app.services.scrapers.storefront import scrape_storefront
@@ -150,13 +150,18 @@ async def match_storefront(
     if not models:
         raise HTTPException(status_code=404, detail="No local models found for this creator.")
 
+    creator = db.get(Creator, creator_id)
+
     model_dicts = [
         {"id": m.id, "name": m.name, "title": m.title, "character": m.character,
          "auto_tags": m.auto_tags, "folder_path": m.folder_path}
         for m in models
     ]
 
-    candidates = match_products_to_models(products, model_dicts, min_score=min_score)
+    candidates = match_products_to_models(
+        products, model_dicts, min_score=min_score,
+        creator_name=creator.name if creator else None,
+    )
 
     # Collapse to one candidate per variant group (#628): variants share a store
     # listing, so keep the best-scoring member's match per group and let apply
