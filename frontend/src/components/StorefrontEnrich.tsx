@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Search, Check, X, ChevronDown, ChevronUp, Loader2, Zap } from "lucide-react";
+import RefreshEnrich from "./RefreshEnrich";
 
 interface Product {
   title: string;
@@ -59,58 +60,53 @@ function MatchCard({ m, selected, toggle, expanded, onToggleExpand, detail }: Ma
   const isSelected = selected.has(m.local_model_id);
   return (
     <div
-      className={`rounded-lg border transition-colors ${
+      className={`flex flex-col rounded-lg border overflow-hidden transition-colors ${
         isSelected ? "border-indigo-500 bg-indigo-950/30" : "border-gray-800 bg-gray-900 hover:border-gray-600"
       }`}
     >
-      <div
-        onClick={() => toggle(m.local_model_id)}
-        className="flex items-center gap-3 p-3 cursor-pointer"
-      >
-        {/* Checkbox */}
-        <div className={`w-5 h-5 rounded border-2 shrink-0 flex items-center justify-center transition-colors ${
-          isSelected ? "bg-indigo-600 border-indigo-600" : "border-gray-600"
-        }`}>
-          {isSelected && <Check size={12} />}
-        </div>
-
-        {/* Scraped thumbnail */}
-        <div className="w-12 h-12 rounded bg-gray-800 overflow-hidden shrink-0">
+      <div onClick={() => toggle(m.local_model_id)} className="cursor-pointer">
+        {/* Scraped thumbnail — large, with selection + score overlaid. */}
+        <div className="relative aspect-square bg-gray-800">
           {m.product.thumbnail_url
             ? <img src={m.product.thumbnail_url} alt="" className="w-full h-full object-cover" />
-            : <div className="w-full h-full bg-gray-800" />
+            : <div className="w-full h-full flex items-center justify-center text-gray-700"><Zap size={28} /></div>
           }
+          {/* Checkbox */}
+          <div className={`absolute top-2 left-2 w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
+            isSelected ? "bg-indigo-600 border-indigo-600" : "border-gray-400 bg-gray-900/70"
+          }`}>
+            {isSelected && <Check size={14} />}
+          </div>
+          {/* Score */}
+          <div className={`absolute top-2 right-2 text-xs px-2 py-0.5 rounded border ${CONFIDENCE_STYLES[m.confidence]}`}>
+            {Math.round(m.score * 100)}%
+          </div>
         </div>
 
         {/* Names */}
-        <div className="flex-1 min-w-0">
+        <div className="p-3 pb-2">
           <p className="text-xs text-gray-500 truncate" title={m.local_folder}>
             Local: <span className="text-gray-300">{m.local_name}</span>
           </p>
-          <p className="text-xs text-gray-500 truncate">
+          <p className="text-xs text-gray-500 truncate" title={m.product.title}>
             Match: <span className="text-gray-300">{m.product.title}</span>
           </p>
         </div>
-
-        {/* Score */}
-        <div className={`text-xs px-2 py-0.5 rounded border shrink-0 ${CONFIDENCE_STYLES[m.confidence]}`}>
-          {Math.round(m.score * 100)}%
-        </div>
-
-        {/* Expand toggle — preview the metadata this match would apply. */}
-        <button
-          type="button"
-          aria-label={expanded ? "Hide details" : "Preview details"}
-          aria-expanded={expanded}
-          onClick={(e) => { e.stopPropagation(); onToggleExpand(); }}
-          className="shrink-0 text-gray-500 hover:text-gray-300 p-1"
-        >
-          {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-        </button>
       </div>
 
+      {/* Expand toggle — preview the metadata this match would apply. */}
+      <button
+        type="button"
+        aria-label={expanded ? "Hide details" : "Preview details"}
+        aria-expanded={expanded}
+        onClick={(e) => { e.stopPropagation(); onToggleExpand(); }}
+        className="flex items-center justify-center gap-1 px-3 py-1.5 text-xs text-gray-500 hover:text-gray-300 hover:bg-gray-800/40 border-t border-gray-800/70 transition-colors"
+      >
+        {expanded ? <><ChevronUp size={14} /> Hide details</> : <><ChevronDown size={14} /> Preview details</>}
+      </button>
+
       {expanded && (
-        <div className="px-3 pb-3 pt-1 border-t border-gray-800/70 text-xs">
+        <div className="px-3 pb-3 pt-2 border-t border-gray-800/70 text-xs">
           {detail === undefined || detail === "loading" ? (
             <p className="text-gray-500 flex items-center gap-1.5">
               <Loader2 size={12} className="animate-spin" /> Loading details…
@@ -268,14 +264,20 @@ export default function StorefrontEnrich({ creatorId, creatorName, onDone }: Pro
 
   return (
     <div className="flex flex-col gap-4 bg-gray-900 border border-gray-800 rounded-xl p-5">
-      <div className="flex items-center gap-2">
-        <Zap size={16} className="text-indigo-400" />
-        <h3 className="font-semibold text-gray-200">Enrich from Storefront</h3>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Zap size={16} className="text-indigo-400" />
+          <h3 className="font-semibold text-gray-200">Enrich from Storefront</h3>
+        </div>
+        {/* Re-enrich models already matched to a listing — no URL needed. */}
+        <RefreshEnrich creatorId={creatorId} scopeLabel={creatorName} compact />
       </div>
       <p className="text-xs text-gray-500">
         Paste {creatorName}'s profile URL from MyMiniFactory, Gumroad, or Cults3D.
         We'll match their products to your local models and pull full metadata in bulk —
         descriptions, tags, category, license, and thumbnails — including across variant groups.
+        Already matched some? Use <span className="text-gray-400">Refresh</span> to re-pull the
+        latest listing data without re-matching.
       </p>
 
       <div className="flex gap-2">
@@ -334,7 +336,7 @@ export default function StorefrontEnrich({ creatorId, creatorName, onDone }: Pro
                   <p className="text-xs font-medium text-emerald-400">High confidence ({high.length})</p>
                   <button onClick={() => selectAll("high")} className="text-xs text-gray-600 hover:text-gray-400">Select all</button>
                 </div>
-                <div className="flex flex-col gap-2">{high.map((m) => <MatchCard key={m.local_model_id} m={m} selected={selected} toggle={toggle} expanded={expanded.has(m.local_model_id)} onToggleExpand={() => toggleExpand(m)} detail={details[m.product.source_url]} />)}</div>
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 items-start">{high.map((m) => <MatchCard key={m.local_model_id} m={m} selected={selected} toggle={toggle} expanded={expanded.has(m.local_model_id)} onToggleExpand={() => toggleExpand(m)} detail={details[m.product.source_url]} />)}</div>
               </div>
             )}
             {medium.length > 0 && (
@@ -343,7 +345,7 @@ export default function StorefrontEnrich({ creatorId, creatorName, onDone }: Pro
                   <p className="text-xs font-medium text-yellow-400">Medium confidence ({medium.length})</p>
                   <button onClick={() => selectAll("medium")} className="text-xs text-gray-600 hover:text-gray-400">Select all</button>
                 </div>
-                <div className="flex flex-col gap-2">{medium.map((m) => <MatchCard key={m.local_model_id} m={m} selected={selected} toggle={toggle} expanded={expanded.has(m.local_model_id)} onToggleExpand={() => toggleExpand(m)} detail={details[m.product.source_url]} />)}</div>
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 items-start">{medium.map((m) => <MatchCard key={m.local_model_id} m={m} selected={selected} toggle={toggle} expanded={expanded.has(m.local_model_id)} onToggleExpand={() => toggleExpand(m)} detail={details[m.product.source_url]} />)}</div>
               </div>
             )}
             {low.length > 0 && (
@@ -356,7 +358,7 @@ export default function StorefrontEnrich({ creatorId, creatorName, onDone }: Pro
                   Low confidence ({low.length}) — review carefully
                 </button>
                 {showLow && (
-                  <div className="flex flex-col gap-2">{low.map((m) => <MatchCard key={m.local_model_id} m={m} selected={selected} toggle={toggle} expanded={expanded.has(m.local_model_id)} onToggleExpand={() => toggleExpand(m)} detail={details[m.product.source_url]} />)}</div>
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 items-start">{low.map((m) => <MatchCard key={m.local_model_id} m={m} selected={selected} toggle={toggle} expanded={expanded.has(m.local_model_id)} onToggleExpand={() => toggleExpand(m)} detail={details[m.product.source_url]} />)}</div>
                 )}
               </div>
             )}
