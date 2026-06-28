@@ -308,9 +308,10 @@ const SECTIONS: Section[] = [
           <strong>Creators</strong> page: paste a creator's storefront URL and it matches
           their listings to your local models, then fetches each matched product's full
           detail and applies the complete metadata in one pass — across every variant in a
-          group, so you don't have to <em>Fetch</em> each model by hand. MyMiniFactory and
-          Cults3D use their APIs when configured under <strong>Settings → AI &amp;
-          Integrations</strong>; Gumroad is scraped.
+          group, so you don't have to <em>Fetch</em> each model by hand. Expand any match
+          (the chevron) to preview the description, tags, category, and license it would
+          apply before you commit. MyMiniFactory and Cults3D use their APIs when configured
+          under <strong>Settings → AI &amp; Integrations</strong>; Gumroad is scraped.
         </p>
       </>
     ),

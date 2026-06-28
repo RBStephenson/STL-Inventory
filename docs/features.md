@@ -380,9 +380,10 @@ can:
   bulk-apply the complete metadata set: title, description, tags, category,
   license, thumbnail, source URL, and external ID. One run enriches every
   matched model — including all variants in a group — so you no longer have to
-  open each model and run *Find on Web* by hand. MyMiniFactory and Cults3D use
-  their APIs when configured (see [Settings → AI & Integrations](#settings));
-  Gumroad is scraped. A product whose detail can't be fetched still receives the
+  open each model and run *Find on Web* by hand. Expand any match (the chevron)
+  to preview the description, tags, category, and license it would apply before
+  committing. MyMiniFactory and Cults3D use their APIs when configured (see
+  [Settings → AI & Integrations](#settings)); Gumroad is scraped. A product whose detail can't be fetched still receives the
   shallow fields, so nothing is lost.
 
 ## Paint Shelf (Painting Guides)
