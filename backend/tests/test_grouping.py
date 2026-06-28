@@ -142,6 +142,25 @@ class TestManualLock:
         assert len(_groups(db, creator)) == 1
 
 
+class TestOverrideRespected:
+    def test_group_override_excludes_model_from_proposals(self, db):
+        from app.models import GroupOverride
+        creator = make_creator(db)
+        a = make_model(db, creator, name="Goblin Supported")
+        b = make_model(db, creator, name="Goblin Unsupported")
+        db.flush()
+        # User explicitly ungrouped `a` (sticky GroupOverride, e.g. remove-from-group).
+        db.add(GroupOverride(path=a.folder_path, character=None))
+        db.flush()
+
+        _run(db, creator)
+
+        db.refresh(a)
+        assert a.variant_group_id is None  # not re-proposed into a group
+        # b alone is a singleton → no group either
+        assert _groups(db, creator) == []
+
+
 class TestRep:
     def test_rep_prefers_is_group_rep(self, db):
         creator = make_creator(db)
