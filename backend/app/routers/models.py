@@ -16,6 +16,7 @@ from app.schemas import (
     PrintStatusUpdate, ExcludeUpdate, STLFileUpdate, BulkTagUpdate,
     BulkExcludeUpdate, BulkReviewUpdate, BulkEnrichUpdate, SetGroupBody, BatchSetGroupBody,
     BatchSetSourceUrl, GroupRepUpdate, BulkDeleteRequest, BulkDeleteResponse,
+    GroupMergeBody, GroupSplitBody, GroupPatchBody, VariantGroupRead,
 )
 
 _log = logging.getLogger(__name__)
@@ -330,7 +331,13 @@ def list_models(
         q = _collapse_variants(q)
 
     total = q.count()
-    items = _apply_sort(q, sort).offset((page - 1) * page_size).limit(page_size).all()
+    items = (
+        _apply_sort(q, sort)
+        .options(joinedload(Model.variant_group))  # explain tooltip without N+1
+        .offset((page - 1) * page_size)
+        .limit(page_size)
+        .all()
+    )
 
     # Build variant count map for annotating group representatives, keyed by the
     # group key (vg:<id> or ch:<creator>:<char>). Scoped to the groups actually on
@@ -1201,6 +1208,122 @@ def batch_set_group(body: BatchSetGroupBody, db: Session = Depends(get_db)):
         "updated": [m.id for m in models],
         "missing": [mid for mid in requested if mid not in found],
     }
+
+
+# ---------------------------------------------------------------------------
+# Manual variant groups (#617): user-curated merge / split / relabel. These set
+# source="manual" so the scanner's proposal engine never reassigns the members.
+# ---------------------------------------------------------------------------
+
+def _prune_empty_group(db: Session, group_id: int | None) -> None:
+    """Delete a group that has dropped below 2 members; clear the lone member."""
+    if group_id is None:
+        return
+    remaining = db.query(Model).filter(Model.variant_group_id == group_id).all()
+    if len(remaining) < 2:
+        for m in remaining:
+            m.variant_group_id = None
+        grp = db.get(VariantGroup, group_id)
+        if grp is not None:
+            db.delete(grp)
+
+
+@router.post("/groups/merge", response_model=VariantGroupRead)
+def merge_group(body: GroupMergeBody, db: Session = Depends(get_db)):
+    """Merge models into one manual variant group. Creates the group when
+    group_id is omitted, else extends it. Marks the group manual so a rescan
+    won't undo it. 409 while a scan is running."""
+    if scanner.get_status()["running"]:
+        raise HTTPException(status_code=409, detail="A scan is running — try again after it completes.")
+    ids = list(dict.fromkeys(body.model_ids))
+    if len(ids) < 2 and body.group_id is None:
+        raise HTTPException(status_code=400, detail="Need at least two models to form a group.")
+
+    models = db.query(Model).filter(Model.id.in_(ids)).all()
+    if not models:
+        raise HTTPException(status_code=400, detail="No valid models to merge.")
+    creator_ids = {m.creator_id for m in models}
+    if len(creator_ids) > 1:
+        raise HTTPException(status_code=400, detail="Can't merge models from different creators.")
+    creator_id = next(iter(creator_ids))
+
+    if body.group_id is not None:
+        group = db.get(VariantGroup, body.group_id)
+        if group is None:
+            raise HTTPException(status_code=404, detail="Group not found.")
+        if body.label is not None:
+            group.label = body.label
+    else:
+        label = body.label or models[0].character or models[0].name
+        group = VariantGroup(
+            creator_id=creator_id, label=label, source="manual",
+            reason="manual", confidence=1.0,
+        )
+        db.add(group)
+        db.flush()
+    group.source = "manual"
+
+    orphaned = {m.variant_group_id for m in models if m.variant_group_id not in (None, group.id)}
+    for m in models:
+        m.variant_group_id = group.id
+    if group.rep_model_id is None:
+        group.rep_model_id = next((m.id for m in models if m.is_group_rep), models[0].id)
+    db.flush()
+    for gid in orphaned:
+        _prune_empty_group(db, gid)
+    db.commit()
+    db.refresh(group)
+    return group
+
+
+@router.post("/groups/{group_id}/split", response_model=dict)
+def split_group(group_id: int, body: GroupSplitBody, db: Session = Depends(get_db)):
+    """Remove members from a group (they become ungrouped). The remaining group is
+    marked manual so the split sticks across rescans. Dissolves the group if it
+    drops below two members. 409 while a scan is running."""
+    if scanner.get_status()["running"]:
+        raise HTTPException(status_code=409, detail="A scan is running — try again after it completes.")
+    group = db.get(VariantGroup, group_id)
+    if group is None:
+        raise HTTPException(status_code=404, detail="Group not found.")
+    ids = set(body.model_ids)
+    removed = (
+        db.query(Model)
+        .filter(Model.variant_group_id == group_id, Model.id.in_(ids))
+        .all()
+    )
+    for m in removed:
+        m.variant_group_id = None
+    group.source = "manual"
+    # If the designated rep left, fall back to a remaining member.
+    if group.rep_model_id in ids:
+        rest = db.query(Model).filter(Model.variant_group_id == group_id).first()
+        group.rep_model_id = rest.id if rest else None
+    db.flush()
+    _prune_empty_group(db, group_id)
+    db.commit()
+    return {"ok": True, "removed": [m.id for m in removed]}
+
+
+@router.patch("/groups/{group_id}", response_model=VariantGroupRead)
+def patch_group(group_id: int, body: GroupPatchBody, db: Session = Depends(get_db)):
+    """Relabel a group or set its representative. Marks the group manual."""
+    if scanner.get_status()["running"]:
+        raise HTTPException(status_code=409, detail="A scan is running — try again after it completes.")
+    group = db.get(VariantGroup, group_id)
+    if group is None:
+        raise HTTPException(status_code=404, detail="Group not found.")
+    if body.label is not None:
+        group.label = body.label
+    if body.rep_model_id is not None:
+        rep = db.get(Model, body.rep_model_id)
+        if rep is None or rep.variant_group_id != group_id:
+            raise HTTPException(status_code=400, detail="rep_model_id must be a member of the group.")
+        group.rep_model_id = body.rep_model_id
+    group.source = "manual"
+    db.commit()
+    db.refresh(group)
+    return group
 
 
 def _host_label(url: str) -> str | None:

@@ -87,6 +87,18 @@ export interface ParsedAttributes {
   version?: string;
 }
 
+/** Durable variant group (#613). `source` distinguishes scanner-proposed
+ *  ("auto") groups from user-curated ("manual") ones. */
+export interface VariantGroup {
+  id: number;
+  creator_id: number;
+  label: string | null;
+  rep_model_id: number | null;
+  source: "auto" | "manual";
+  reason: string | null;
+  confidence: number | null;
+}
+
 export interface Model {
   id: number;
   name: string;
@@ -94,6 +106,8 @@ export interface Model {
   description: string | null;
   notes: string | null;
   character: string | null;
+  variant_group_id: number | null;
+  variant_group: VariantGroup | null;
   variant_count?: number;
   folder_path: string;
   native_folder_path: string | null;
@@ -1074,6 +1088,26 @@ export const api = {
           body: JSON.stringify({ model_ids: modelIds, character }),
         },
       ),
+    // Manual variant groups (#617): merge selected models, split members out,
+    // relabel / set rep.
+    mergeGroup: (modelIds: number[], opts: { groupId?: number; label?: string } = {}) =>
+      request<VariantGroup>("/models/groups/merge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model_ids: modelIds, group_id: opts.groupId, label: opts.label }),
+      }),
+    splitGroup: (groupId: number, modelIds: number[]) =>
+      request<{ ok: boolean; removed: number[] }>(`/models/groups/${groupId}/split`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model_ids: modelIds }),
+      }),
+    patchGroup: (groupId: number, body: { label?: string; rep_model_id?: number }) =>
+      request<VariantGroup>(`/models/groups/${groupId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      }),
     // Persist a manual model order within a variant group (#399). Empty `ids`
     // resets the group to its heuristic order.
     reorderGroup: (creatorId: number, character: string, ids: number[]) =>

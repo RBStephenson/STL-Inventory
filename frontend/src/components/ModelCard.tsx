@@ -100,6 +100,15 @@ function ModelCard({ model, selected = false, onSelect, backTo, onMutate, exclud
   const variantCount = model.variant_count ?? 1;
   const isGroup = variantCount > 1;
 
+  // Explain why this group exists (#617): manual vs the scanner's reason/confidence.
+  const groupExplain = (() => {
+    const g = model.variant_group;
+    if (!g) return `${variantCount} variants`;
+    if (g.source === "manual") return "Grouped manually";
+    const pct = g.confidence != null ? ` (${Math.round(g.confidence * 100)}%)` : "";
+    return g.reason ? `Auto-grouped — ${g.reason}${pct}` : "Auto-grouped";
+  })();
+
   // Keep the optimistic name in sync if the parent reloads with fresh data.
   useEffect(() => { setLocalTitle(model.title ?? ""); }, [model.title]);
   useEffect(() => { setLocalCharacter(model.character ?? ""); }, [model.character]);
@@ -359,7 +368,10 @@ function ModelCard({ model, selected = false, onSelect, backTo, onMutate, exclud
             </span>
           )}
           {isGroup && (
-            <span className="flex items-center gap-1 bg-indigo-600/90 text-white text-xs px-1.5 py-0.5 rounded font-medium">
+            <span
+              title={groupExplain}
+              className="flex items-center gap-1 bg-indigo-600/90 text-white text-xs px-1.5 py-0.5 rounded font-medium"
+            >
               <Layers size={10} />
               {variantCount} variants
             </span>
