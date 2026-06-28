@@ -24,6 +24,16 @@ interface ApplyResult {
   fallback_shallow: number;
 }
 
+// Deep fields previewed on demand from /scrape/fetch (a subset of ScrapePreview).
+interface DeepDetail {
+  description: string | null;
+  tags: string[];
+  category: string | null;
+  license: string | null;
+}
+
+type DetailState = DeepDetail | "loading" | "error";
+
 interface Props {
   creatorId: number;
   creatorName: string;
@@ -40,47 +50,96 @@ interface MatchCardProps {
   m: MatchResult;
   selected: Set<number>;
   toggle: (id: number) => void;
+  expanded: boolean;
+  onToggleExpand: () => void;
+  detail: DetailState | undefined;
 }
 
-function MatchCard({ m, selected, toggle }: MatchCardProps) {
+function MatchCard({ m, selected, toggle, expanded, onToggleExpand, detail }: MatchCardProps) {
+  const isSelected = selected.has(m.local_model_id);
   return (
     <div
-      onClick={() => toggle(m.local_model_id)}
-      className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
-        selected.has(m.local_model_id)
-          ? "border-indigo-500 bg-indigo-950/30"
-          : "border-gray-800 bg-gray-900 hover:border-gray-600"
+      className={`rounded-lg border transition-colors ${
+        isSelected ? "border-indigo-500 bg-indigo-950/30" : "border-gray-800 bg-gray-900 hover:border-gray-600"
       }`}
     >
-      {/* Checkbox */}
-      <div className={`w-5 h-5 rounded border-2 shrink-0 flex items-center justify-center transition-colors ${
-        selected.has(m.local_model_id) ? "bg-indigo-600 border-indigo-600" : "border-gray-600"
-      }`}>
-        {selected.has(m.local_model_id) && <Check size={12} />}
+      <div
+        onClick={() => toggle(m.local_model_id)}
+        className="flex items-center gap-3 p-3 cursor-pointer"
+      >
+        {/* Checkbox */}
+        <div className={`w-5 h-5 rounded border-2 shrink-0 flex items-center justify-center transition-colors ${
+          isSelected ? "bg-indigo-600 border-indigo-600" : "border-gray-600"
+        }`}>
+          {isSelected && <Check size={12} />}
+        </div>
+
+        {/* Scraped thumbnail */}
+        <div className="w-12 h-12 rounded bg-gray-800 overflow-hidden shrink-0">
+          {m.product.thumbnail_url
+            ? <img src={m.product.thumbnail_url} alt="" className="w-full h-full object-cover" />
+            : <div className="w-full h-full bg-gray-800" />
+          }
+        </div>
+
+        {/* Names */}
+        <div className="flex-1 min-w-0">
+          <p className="text-xs text-gray-500 truncate" title={m.local_folder}>
+            Local: <span className="text-gray-300">{m.local_name}</span>
+          </p>
+          <p className="text-xs text-gray-500 truncate">
+            Match: <span className="text-gray-300">{m.product.title}</span>
+          </p>
+        </div>
+
+        {/* Score */}
+        <div className={`text-xs px-2 py-0.5 rounded border shrink-0 ${CONFIDENCE_STYLES[m.confidence]}`}>
+          {Math.round(m.score * 100)}%
+        </div>
+
+        {/* Expand toggle — preview the metadata this match would apply. */}
+        <button
+          type="button"
+          aria-label={expanded ? "Hide details" : "Preview details"}
+          aria-expanded={expanded}
+          onClick={(e) => { e.stopPropagation(); onToggleExpand(); }}
+          className="shrink-0 text-gray-500 hover:text-gray-300 p-1"
+        >
+          {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+        </button>
       </div>
 
-      {/* Scraped thumbnail */}
-      <div className="w-12 h-12 rounded bg-gray-800 overflow-hidden shrink-0">
-        {m.product.thumbnail_url
-          ? <img src={m.product.thumbnail_url} alt="" className="w-full h-full object-cover" />
-          : <div className="w-full h-full bg-gray-800" />
-        }
-      </div>
-
-      {/* Names */}
-      <div className="flex-1 min-w-0">
-        <p className="text-xs text-gray-500 truncate" title={m.local_folder}>
-          Local: <span className="text-gray-300">{m.local_name}</span>
-        </p>
-        <p className="text-xs text-gray-500 truncate">
-          Match: <span className="text-gray-300">{m.product.title}</span>
-        </p>
-      </div>
-
-      {/* Score */}
-      <div className={`text-xs px-2 py-0.5 rounded border shrink-0 ${CONFIDENCE_STYLES[m.confidence]}`}>
-        {Math.round(m.score * 100)}%
-      </div>
+      {expanded && (
+        <div className="px-3 pb-3 pt-1 border-t border-gray-800/70 text-xs">
+          {detail === undefined || detail === "loading" ? (
+            <p className="text-gray-500 flex items-center gap-1.5">
+              <Loader2 size={12} className="animate-spin" /> Loading details…
+            </p>
+          ) : detail === "error" ? (
+            <p className="text-rose-400">Couldn't load details for this product.</p>
+          ) : (
+            <div className="flex flex-col gap-2 text-gray-400">
+              {detail.description && (
+                <p className="line-clamp-3 whitespace-pre-wrap">{detail.description}</p>
+              )}
+              <div className="flex flex-wrap gap-x-4 gap-y-1">
+                {detail.category && <span>Category: <span className="text-gray-300">{detail.category}</span></span>}
+                {detail.license && <span>License: <span className="text-gray-300">{detail.license}</span></span>}
+              </div>
+              {detail.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {detail.tags.map((t) => (
+                    <span key={t} className="px-1.5 py-0.5 rounded bg-gray-800 text-gray-400">{t}</span>
+                  ))}
+                </div>
+              )}
+              {!detail.description && !detail.category && !detail.license && detail.tags.length === 0 && (
+                <p className="text-gray-600">No extra metadata available for this product.</p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -95,6 +154,9 @@ export default function StorefrontEnrich({ creatorId, creatorName, onDone }: Pro
   const [done, setDone] = useState(false);
   const [result, setResult] = useState<ApplyResult | null>(null);
   const [showLow, setShowLow] = useState(false);
+  const [expanded, setExpanded] = useState<Set<number>>(new Set());
+  // Deep-detail cache keyed by product URL so variants sharing a listing fetch once.
+  const [details, setDetails] = useState<Record<string, DetailState>>({});
 
   const runMatch = async () => {
     if (!url.trim()) return;
@@ -126,6 +188,39 @@ export default function StorefrontEnrich({ creatorId, creatorName, onDone }: Pro
     setSelected((prev) => {
       const next = new Set(prev);
       next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+
+  const fetchDetail = async (sourceUrl: string) => {
+    if (details[sourceUrl]) return;  // cached (incl. an in-flight "loading")
+    setDetails((prev) => ({ ...prev, [sourceUrl]: "loading" }));
+    try {
+      const r = await fetch(`/api/scrape/fetch?url=${encodeURIComponent(sourceUrl)}`);
+      if (!r.ok) throw new Error("fetch failed");
+      const d = await r.json();
+      setDetails((prev) => ({
+        ...prev,
+        [sourceUrl]: {
+          description: d.description ?? null,
+          tags: d.tags ?? [],
+          category: d.category ?? null,
+          license: d.license ?? null,
+        },
+      }));
+    } catch {
+      setDetails((prev) => ({ ...prev, [sourceUrl]: "error" }));
+    }
+  };
+
+  const toggleExpand = (m: MatchResult) =>
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(m.local_model_id)) {
+        next.delete(m.local_model_id);
+      } else {
+        next.add(m.local_model_id);
+        fetchDetail(m.product.source_url);  // lazy; cached after first open
+      }
       return next;
     });
 
@@ -239,7 +334,7 @@ export default function StorefrontEnrich({ creatorId, creatorName, onDone }: Pro
                   <p className="text-xs font-medium text-emerald-400">High confidence ({high.length})</p>
                   <button onClick={() => selectAll("high")} className="text-xs text-gray-600 hover:text-gray-400">Select all</button>
                 </div>
-                <div className="flex flex-col gap-2">{high.map((m) => <MatchCard key={m.local_model_id} m={m} selected={selected} toggle={toggle} />)}</div>
+                <div className="flex flex-col gap-2">{high.map((m) => <MatchCard key={m.local_model_id} m={m} selected={selected} toggle={toggle} expanded={expanded.has(m.local_model_id)} onToggleExpand={() => toggleExpand(m)} detail={details[m.product.source_url]} />)}</div>
               </div>
             )}
             {medium.length > 0 && (
@@ -248,7 +343,7 @@ export default function StorefrontEnrich({ creatorId, creatorName, onDone }: Pro
                   <p className="text-xs font-medium text-yellow-400">Medium confidence ({medium.length})</p>
                   <button onClick={() => selectAll("medium")} className="text-xs text-gray-600 hover:text-gray-400">Select all</button>
                 </div>
-                <div className="flex flex-col gap-2">{medium.map((m) => <MatchCard key={m.local_model_id} m={m} selected={selected} toggle={toggle} />)}</div>
+                <div className="flex flex-col gap-2">{medium.map((m) => <MatchCard key={m.local_model_id} m={m} selected={selected} toggle={toggle} expanded={expanded.has(m.local_model_id)} onToggleExpand={() => toggleExpand(m)} detail={details[m.product.source_url]} />)}</div>
               </div>
             )}
             {low.length > 0 && (
@@ -261,7 +356,7 @@ export default function StorefrontEnrich({ creatorId, creatorName, onDone }: Pro
                   Low confidence ({low.length}) — review carefully
                 </button>
                 {showLow && (
-                  <div className="flex flex-col gap-2">{low.map((m) => <MatchCard key={m.local_model_id} m={m} selected={selected} toggle={toggle} />)}</div>
+                  <div className="flex flex-col gap-2">{low.map((m) => <MatchCard key={m.local_model_id} m={m} selected={selected} toggle={toggle} expanded={expanded.has(m.local_model_id)} onToggleExpand={() => toggleExpand(m)} detail={details[m.product.source_url]} />)}</div>
                 )}
               </div>
             )}
