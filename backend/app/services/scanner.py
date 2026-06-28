@@ -33,7 +33,7 @@ from sqlalchemy import text as _sqltext, func, or_
 
 from app.database import SessionLocal
 from app.models import Creator, Model, STLFile, ScanRoot, ModelTag, CollectionModel, PackOverride, GroupOverride
-from app.services import name_parser, layout
+from app.services import name_parser, layout, grouping
 from app.services.scan_rules import (
     IgnoreMatcher, load_ignore_matcher, load_tag_rules, load_parts_names,
 )
@@ -721,6 +721,13 @@ def _scan_root(root: ScanRoot, db: Session):
                 layout_tags=layout_tags,
                 group_by_character=root.group_by_character,
             )
+            # Propose durable variant groups from blended signals (#615). Runs on
+            # this creator's freshly-indexed models; manual groups are preserved.
+            # Independent of group_by_character — display still rides `character`
+            # until the P2 read-path switchover.
+            with _db_lock:
+                grouping.regroup_creator(thread_db, creator_id)
+                thread_db.commit()
         except Exception:
             logger.exception(f"Error scanning creator: {creator_dir.name}")
         finally:
