@@ -3,7 +3,19 @@ Tests for name_parser — pure functions, no DB or network needed.
 """
 import pytest
 from app.services import name_parser
-from app.services.name_parser import parse, parse_folder, children_look_like_parts, extract_character_name, character_key
+from app.services.name_parser import (
+    parse,
+    parse_folder,
+    children_look_like_parts,
+    extract_character_name,
+    character_key,
+    support_status,
+    cut_status,
+    slicer,
+    version,
+    parsed_attributes,
+    display_name,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -76,11 +88,17 @@ class TestTypeDetection:
 
 class TestModifierDetection:
     @pytest.mark.parametrize("word", [
-        "pre-supported", "presupported", "presup", "pre sup", "Supported"
+        "pre-supported", "presupported", "presup", "pre sup"
     ])
     def test_presupported_variants(self, word):
         sig = parse(f"Dragon {word}")
         assert "pre-supported" in sig.modifiers
+
+    def test_plain_supported_is_not_presupported(self):
+        # Plain "Supported" is its own support status, not pre-supported. It is
+        # surfaced via support_status(), not as a "pre-supported" modifier tag.
+        sig = parse("Dragon Supported")
+        assert "pre-supported" not in sig.modifiers
 
     def test_nsfw_modifier(self):
         sig = parse("Elf NSFW")
@@ -362,3 +380,120 @@ class TestIsStructuralFolder:
     ])
     def test_character_names(self, name):
         assert name_parser.is_structural_folder(name) is False
+
+
+# ---------------------------------------------------------------------------
+# Structured attribute extractors
+# ---------------------------------------------------------------------------
+
+class TestSupportStatus:
+    @pytest.mark.parametrize("name,expected", [
+        ("Dragon Unsupported", "unsupported"),
+        ("Dragon UnSupported", "unsupported"),
+        ("Dragon un-supported", "unsupported"),
+        ("Dragon_No_Supports", "unsupported"),
+        ("Dragon NoSupport", "unsupported"),
+        ("Dragon Pre-Supported", "pre-supported"),
+        ("Dragon presupported", "pre-supported"),
+        ("Dragon_PreSup", "pre-supported"),
+        ("Dragon Supported", "supported"),
+        ("AleCask_32mm_Supported_Solid", "supported"),
+    ])
+    def test_status(self, name, expected):
+        assert support_status(name) == expected
+
+    def test_none_when_absent(self):
+        assert support_status("Akuma 28mm Bust") is None
+
+    def test_unsupported_not_read_as_supported(self):
+        # "supported" is a substring of "unsupported"; ordering must not misread it.
+        assert support_status("Crimson Wings APC unsupported") == "unsupported"
+
+
+class TestCutStatus:
+    @pytest.mark.parametrize("name,expected", [
+        ("Hero Solid", "solid"),
+        ("Hero Hollow", "hollow"),
+        ("Hero Hollowed", "hollow"),
+        ("Hero Split", "split"),
+        ("Hero Merged", "merged"),
+        ("Hero Merge", "merged"),
+        ("Hero Full_cut", "full-cut"),
+        ("Hero Full cutted", "full-cut"),
+        ("Hero fullcut", "full-cut"),
+    ])
+    def test_status(self, name, expected):
+        assert cut_status(name) == expected
+
+    def test_none_when_absent(self):
+        assert cut_status("Akuma 28mm") is None
+
+
+class TestSlicer:
+    @pytest.mark.parametrize("name,expected", [
+        ("Dragon Lychee", "lychee"),
+        ("Dragon_Chitubox", "chitubox"),
+        ("Dragon CHITUBOX files", "chitubox"),
+    ])
+    def test_slicer(self, name, expected):
+        assert slicer(name) == expected
+
+    def test_none_when_absent(self):
+        assert slicer("Akuma 28mm") is None
+
+
+class TestVersion:
+    @pytest.mark.parametrize("name,expected", [
+        ("Dragon v2", "v2"),
+        ("Dragon V1", "v1"),
+        ("Dragon_v1.1", "v1.1"),
+    ])
+    def test_version(self, name, expected):
+        assert version(name) == expected
+
+    @pytest.mark.parametrize("name", ["Auron Final Fantasy X", "Vader", "Akuma 28mm"])
+    def test_none_when_absent(self, name):
+        # "Final"/"Fixed" word-forms are intentionally not versions (name collisions).
+        assert version(name) is None
+
+
+class TestParsedAttributes:
+    def test_collects_all(self):
+        attrs = parsed_attributes("Ada Wong 1-6 Unsupported Hollow Chitubox v2")
+        assert attrs == {
+            "support_status": "unsupported",
+            "cut_status": "hollow",
+            "slicer": "chitubox",
+            "version": "v2",
+        }
+
+    def test_omits_none(self):
+        assert parsed_attributes("Akuma") == {}
+
+
+# ---------------------------------------------------------------------------
+# display_name — clean, human-readable product name for the UI
+# ---------------------------------------------------------------------------
+
+class TestDisplayName:
+    @pytest.mark.parametrize("folder,expected", [
+        ("AleCask_32mm_UnSupported", "AleCask"),  # mixed-case stylisation preserved
+        ("ada wong 1-6 supported", "Ada Wong"),
+        ("Crimson Wings APC unsupported", "Crimson Wings APC"),
+        ("STL Ada Wong Bust", "Ada Wong"),
+        ("1.JSC Batgirl Regular", "JSC Batgirl Regular"),
+        ("Dragon Hollow v2", "Dragon"),
+    ])
+    def test_clean_name(self, folder, expected):
+        assert display_name(folder) == expected
+
+    def test_preserves_stylised_tokens(self):
+        assert display_name("2B unsupported") == "2B"
+        assert display_name("Ada Wong CA3D", "CA 3D Studios") == "Ada Wong"
+
+    def test_strips_creator_suffix(self):
+        assert display_name("Barbarian Ghamak", "Ghamak") == "Barbarian"
+
+    def test_falls_back_to_raw_when_empty(self):
+        # Pure variant descriptor → nothing identifying → keep the raw folder name.
+        assert display_name("75mm Unsupported") == "75mm Unsupported"
