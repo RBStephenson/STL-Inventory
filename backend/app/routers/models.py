@@ -4,12 +4,12 @@ import shutil
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
-from sqlalchemy import func, exists, select
+from sqlalchemy import func, exists, select, case, and_, cast, String
 from sqlalchemy.dialects.sqlite import insert as _sqlite_insert
 from sqlalchemy.orm import Session, joinedload
 
 from app.database import get_db
-from app.models import Model, Creator, ModelTag, CollectionModel, GroupOverride, ScanRoot, STLFile
+from app.models import Model, Creator, ModelTag, CollectionModel, GroupOverride, ScanRoot, STLFile, VariantGroup
 from app.schemas import (
     ModelList, ModelRead, ModelDetail, CreatorRead,
     ModelUpdate, ThumbnailUpdate, ThumbnailFromUrl, BatchThumbnailFromUrl, FavoriteUpdate, RatingUpdate, QueueReorder, GroupReorder,
@@ -197,35 +197,60 @@ def _rep_order():
     )
 
 
-def _collapse_variants(q):
-    """Collapse multi-variant characters to one representative, entirely in SQL.
+def _group_key_sql():
+    """SQL grouping key (#616): the durable variant_group_id when set, else the
+    legacy (creator_id, character) pair. NULL when the model can't group (no group
+    and no creator/character) — those rows are always kept un-collapsed.
 
-    A model is hidden only when it belongs to a group (same creator_id +
-    character) of size > 1 and is not that group's representative. NULL-character
-    or NULL-creator models never collapse. Done with window functions so the
-    filtered set is never materialized in Python.
+    String-encoded so a single window partition spans both regimes; the "vg:" /
+    "ch:" prefixes keep a group id from ever colliding with a creator id."""
+    vg = Model.variant_group_id
+    return func.coalesce(
+        case((vg.isnot(None), "vg:" + cast(vg, String)), else_=None),
+        case(
+            (and_(Model.creator_id.isnot(None), Model.character.isnot(None)),
+             "ch:" + cast(Model.creator_id, String) + ":" + Model.character),
+            else_=None,
+        ),
+    )
+
+
+def _group_key_py(m) -> str | None:
+    """Python mirror of _group_key_sql for in-memory lookups (must stay in sync)."""
+    if m.variant_group_id is not None:
+        return f"vg:{m.variant_group_id}"
+    if m.creator_id is not None and m.character:
+        return f"ch:{m.creator_id}:{m.character}"
+    return None
+
+
+def _collapse_variants(q):
+    """Collapse a variant group to one representative, entirely in SQL.
+
+    Grouping prefers the durable variant_group_id (#613) and falls back to the
+    legacy (creator_id, character) pair — see _group_key_sql. A model is hidden
+    only when it belongs to a group of size > 1 and is not its representative. The
+    designated rep (variant_groups.rep_model_id) wins; otherwise the heuristic
+    _rep_order decides. Rows that can't group are always kept.
     """
-    sub = q.with_entities(
-        Model.id.label("id"),
-        Model.creator_id.label("cr"),
-        Model.character.label("ch"),
-        func.count().over(
-            partition_by=(Model.creator_id, Model.character)
-        ).label("cnt"),
-        func.row_number().over(
-            partition_by=(Model.creator_id, Model.character),
-            order_by=_rep_order(),
-        ).label("rn"),
-    ).subquery()
-    # Keep group reps (rn == 1) and lone members (cnt == 1). SQL partitions treat
-    # all NULLs as one group, so NULL creator/character rows would collapse into a
-    # single survivor — guard them explicitly: anything that can't group is kept.
-    keep = (
-        select(sub.c.id)
-        .where(
-            (sub.c.cr == None) | (sub.c.ch == None)
-            | (sub.c.cnt == 1) | (sub.c.rn == 1)
+    gkey = _group_key_sql()
+    # is_rep_pref: a model that is its group's designated rep sorts first (0).
+    is_rep_pref = case((Model.id == VariantGroup.rep_model_id, 0), else_=1)
+    sub = (
+        q.outerjoin(VariantGroup, Model.variant_group_id == VariantGroup.id)
+        .with_entities(
+            Model.id.label("id"),
+            gkey.label("gk"),
+            func.count().over(partition_by=gkey).label("cnt"),
+            func.row_number().over(
+                partition_by=gkey,
+                order_by=(is_rep_pref, *_rep_order()),
+            ).label("rn"),
         )
+        .subquery()
+    )
+    keep = select(sub.c.id).where(
+        (sub.c.gk == None) | (sub.c.cnt == 1) | (sub.c.rn == 1)
     )
     return q.filter(Model.id.in_(keep))
 
@@ -235,15 +260,22 @@ def _resolve_group_rep(q, model_id: int) -> int:
 
     Used by neighbors so Prev/Next on a grouped non-rep still pages from the
     representative card. Returns model_id unchanged when it isn't in the filtered
-    set or can't group (NULL creator/character)."""
+    set or can't group."""
     row = q.filter(Model.id == model_id).with_entities(
-        Model.creator_id, Model.character
+        Model.creator_id, Model.character, Model.variant_group_id
     ).first()
-    if row is None or row.creator_id is None or not row.character:
+    if row is None:
+        return model_id
+    gq = q.outerjoin(VariantGroup, Model.variant_group_id == VariantGroup.id)
+    is_rep_pref = case((Model.id == VariantGroup.rep_model_id, 0), else_=1)
+    if row.variant_group_id is not None:
+        gq = gq.filter(Model.variant_group_id == row.variant_group_id)
+    elif row.creator_id is not None and row.character:
+        gq = gq.filter(Model.creator_id == row.creator_id, Model.character == row.character)
+    else:
         return model_id
     rep = (
-        q.filter(Model.creator_id == row.creator_id, Model.character == row.character)
-        .order_by(*_rep_order())
+        gq.order_by(is_rep_pref, *_rep_order())
         .with_entities(Model.id)
         .first()
     )
@@ -300,33 +332,45 @@ def list_models(
     total = q.count()
     items = _apply_sort(q, sort).offset((page - 1) * page_size).limit(page_size).all()
 
-    # Build variant count map for annotating group representatives. Scope the
-    # GROUP BY to the (creator_id, character) pairs actually on this page so the
-    # query never scans the whole table (#393).
-    vc_map: dict[tuple[int, str], int] = {}
+    # Build variant count map for annotating group representatives, keyed by the
+    # group key (vg:<id> or ch:<creator>:<char>). Scoped to the groups actually on
+    # this page so the query never scans the whole table (#393). Two narrow queries
+    # — one per regime — keep the count exact under the dual grouping model.
+    vc_map: dict[str, int] = {}
     if group_variants and items:
-        pairs = {(m.creator_id, m.character) for m in items
-                 if m.creator_id is not None and m.character}
-        if pairs:
-            count_rows = (
+        vg_ids = {m.variant_group_id for m in items if m.variant_group_id is not None}
+        ch_pairs = {(m.creator_id, m.character) for m in items
+                    if m.variant_group_id is None and m.creator_id is not None and m.character}
+        if vg_ids:
+            for gid, cnt in (
+                db.query(Model.variant_group_id, func.count(Model.id))
+                .filter(Model.excluded == False, Model.variant_group_id.in_(vg_ids))
+                .group_by(Model.variant_group_id)
+                .having(func.count(Model.id) > 1)
+            ):
+                vc_map[f"vg:{gid}"] = cnt
+        if ch_pairs:
+            for cr, ch, cnt in (
                 db.query(Model.creator_id, Model.character, func.count(Model.id))
                 .filter(
                     Model.excluded == False,
+                    Model.variant_group_id == None,
                     Model.character != None,
-                    Model.creator_id.in_({p[0] for p in pairs}),
-                    Model.character.in_({p[1] for p in pairs}),
+                    Model.creator_id.in_({p[0] for p in ch_pairs}),
+                    Model.character.in_({p[1] for p in ch_pairs}),
                 )
                 .group_by(Model.creator_id, Model.character)
                 .having(func.count(Model.id) > 1)
-                .all()
-            )
-            vc_map = {(r[0], r[1]): r[2] for r in count_rows if (r[0], r[1]) in pairs}
+            ):
+                if (cr, ch) in ch_pairs:
+                    vc_map[f"ch:{cr}:{ch}"] = cnt
 
     item_reads = []
     for m in items:
         r = ModelRead.model_validate(m)
-        if group_variants and m.character and m.creator_id:
-            vc = vc_map.get((m.creator_id, m.character), 1)
+        if group_variants:
+            key = _group_key_py(m)
+            vc = vc_map.get(key, 1) if key else 1
             if vc > 1:
                 r = r.model_copy(update={"variant_count": vc})
         item_reads.append(r)
@@ -508,30 +552,33 @@ def list_characters(creator_id: int = Query(...), db: Session = Depends(get_db))
 
 @router.get("/variants", response_model=ModelList)
 def list_variants(
-    creator_id: int = Query(...),
-    character: str = Query(...),
+    creator_id: int | None = Query(None),
+    character: str | None = Query(None),
+    group_id: int | None = Query(None),
     db: Session = Depends(get_db),
 ):
-    """Return all variant models for a (creator, character) group."""
-    from sqlalchemy import case as sa_case
-    has_thumb = sa_case(
-        (
-            (Model.thumbnail_path != None) | (Model.thumbnail_url != None),
-            0,
-        ),
+    """Return all variant models for a group.
+
+    Prefer the durable `group_id` (#616); otherwise fall back to the legacy
+    (creator_id, character) pair. The designated rep (variant_groups.rep_model_id)
+    leads, then the heuristic rep order."""
+    has_thumb = case(
+        ((Model.thumbnail_path != None) | (Model.thumbnail_url != None), 0),
         else_=1,
     )
+    q = db.query(Model).filter(Model.excluded == False)
+    if group_id is not None:
+        q = q.filter(Model.variant_group_id == group_id)
+    elif creator_id is not None and character is not None:
+        q = q.filter(Model.creator_id == creator_id, Model.character == character)
+    else:
+        raise HTTPException(status_code=400, detail="Provide group_id or (creator_id and character).")
+
+    q = q.outerjoin(VariantGroup, Model.variant_group_id == VariantGroup.id)
+    is_rep_pref = case((Model.id == VariantGroup.rep_model_id, 0), else_=1)
     items = (
-        db.query(Model)
-        .filter(
-            Model.creator_id == creator_id,
-            Model.character == character,
-            Model.excluded == False,
-        )
-        # Mirrors _rep_order so the group page shows the same order that decides the
-        # card rep: designated rep first (#193), then manual drag order (#399,
-        # NULLs last), then thumbnailed members, then name.
-        .order_by(
+        q.order_by(
+            is_rep_pref,
             Model.is_group_rep.desc(),
             Model.variant_order.is_(None),
             Model.variant_order.asc(),
@@ -1097,6 +1144,11 @@ def _apply_group_override(db: Session, model: Model, character: str | None) -> N
     )
     db.execute(stmt)
     model.character = character
+    # A user character override must win under the group-preferring read path
+    # (#616): clear any auto variant_group_id so grouping falls back to this
+    # character (or ungroups when character is None). P3 introduces proper manual
+    # groups; until then character overrides remain the manual-grouping mechanism.
+    model.variant_group_id = None
     model.updated_at = utcnow()
 
 

@@ -1182,3 +1182,86 @@ class TestParsedAttributeFilters:
 
         resp = client.get("/models")
         assert resp.json()["total"] == 2
+
+
+class TestVariantGroupReadPath:
+    """P2 (#616): grouping read path prefers variant_group_id, falls back to character."""
+
+    def _group(self, db, creator, members, label="G", rep=None, source="auto"):
+        from app.models import VariantGroup
+        g = VariantGroup(creator_id=creator.id, label=label, source=source)
+        db.add(g)
+        db.flush()
+        for m in members:
+            m.variant_group_id = g.id
+        g.rep_model_id = (rep or members[0]).id
+        db.flush()
+        return g
+
+    def test_collapse_by_group_across_different_characters(self, client, db):
+        # Two models with distinct characters but the same variant_group_id collapse
+        # to one card — grouping is now driven by the group, not the character string.
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A", character="Alpha")
+        b = make_model(db, creator, name="B", character="Beta")
+        self._group(db, creator, [a, b], rep=a)
+        commit_all(db)
+
+        data = client.get("/models?group_variants=true").json()
+        assert data["total"] == 1
+        assert data["items"][0]["id"] == a.id
+        assert data["items"][0]["variant_count"] == 2
+
+    def test_null_group_falls_back_to_character(self, client, db):
+        creator = make_creator(db)
+        make_model(db, creator, name="x1", character="Goblin")
+        make_model(db, creator, name="x2", character="Goblin")
+        commit_all(db)
+
+        data = client.get("/models?group_variants=true").json()
+        assert data["total"] == 1
+        assert data["items"][0]["variant_count"] == 2
+
+    def test_rep_model_id_is_the_survivor(self, client, db):
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A", character="Alpha")
+        b = make_model(db, creator, name="B", character="Beta")
+        self._group(db, creator, [a, b], rep=b)  # b designated rep
+        commit_all(db)
+
+        data = client.get("/models?group_variants=true").json()
+        assert data["items"][0]["id"] == b.id
+
+    def test_variants_endpoint_by_group_id(self, client, db):
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A", character="Alpha")
+        b = make_model(db, creator, name="B", character="Beta")
+        g = self._group(db, creator, [a, b])
+        commit_all(db)
+
+        data = client.get(f"/models/variants?group_id={g.id}").json()
+        assert {it["id"] for it in data["items"]} == {a.id, b.id}
+
+    def test_variants_endpoint_still_supports_character(self, client, db):
+        creator = make_creator(db)
+        make_model(db, creator, name="x1", character="Goblin")
+        make_model(db, creator, name="x2", character="Goblin")
+        commit_all(db)
+
+        data = client.get(f"/models/variants?creator_id={creator.id}&character=Goblin").json()
+        assert data["total"] == 2
+
+    def test_character_override_clears_group(self, client, db):
+        # Renaming/ungrouping via set-group must win under the group-preferring read
+        # path: the override clears variant_group_id.
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A", character="Alpha")
+        b = make_model(db, creator, name="B", character="Beta")
+        self._group(db, creator, [a, b])
+        commit_all(db)
+
+        resp = client.post(f"/models/{a.id}/set-group", json={"character": "Renamed"})
+        assert resp.status_code == 200
+        db.refresh(a)
+        assert a.variant_group_id is None
+        assert a.character == "Renamed"
