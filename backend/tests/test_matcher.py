@@ -19,8 +19,9 @@ def _product(title: str) -> StorefrontProduct:
     return StorefrontProduct(title=title, source_url="https://x/p", source_site="gumroad")
 
 
-def _model(id_: int, name: str = "", title: str | None = None, folder: str = "/f") -> dict:
-    return {"id": id_, "name": name, "title": title, "folder_path": folder}
+def _model(id_: int, name: str = "", title: str | None = None, folder: str = "/f",
+           character: str | None = None) -> dict:
+    return {"id": id_, "name": name, "title": title, "character": character, "folder_path": folder}
 
 
 # ---------------------------------------------------------------------------
@@ -131,6 +132,43 @@ class TestMatchProductsToModels:
 
     def test_empty_models_yields_no_candidates(self):
         assert match_products_to_models([_product("Akuma")], []) == []
+
+
+# ---------------------------------------------------------------------------
+# character identity matching (#626)
+# ---------------------------------------------------------------------------
+
+class TestCharacterMatching:
+    def test_character_drives_match_when_name_is_noisy(self):
+        # Raw name is all structural noise; character carries the identity.
+        products = [_product("Ada Wong Resident Evil 1/6 Scale")]
+        models = [_model(1, name="Unsupported_Hollow_v2", character="Ada Wong")]
+        result = match_products_to_models(products, models)
+        assert len(result) == 1
+        assert result[0].score >= 0.30  # would be ~0 without character
+
+    def test_character_full_coverage_adds_bonus(self):
+        products = [_product("Leon Kennedy figure")]
+        with_char = match_products_to_models(products, [_model(1, name="Leon Kennedy", character="Leon Kennedy")])
+        without_char = match_products_to_models(products, [_model(2, name="Leon Kennedy")])
+        assert with_char[0].score > without_char[0].score
+
+    def test_character_picks_the_right_product(self):
+        products = [_product("Generic Bust Pack"), _product("Jill Valentine Statue")]
+        models = [_model(1, name="bust_v1", character="Jill Valentine")]
+        result = match_products_to_models(products, models)
+        assert result[0].product.title == "Jill Valentine Statue"
+
+    def test_no_character_falls_back_to_name(self):
+        products = [_product("Akuma Street Fighter")]
+        result = match_products_to_models([*products], [_model(1, name="Akuma", character=None)])
+        assert len(result) == 1
+        assert result[0].score > 0
+
+    def test_bonus_capped_at_one(self):
+        products = [_product("Ada Wong")]
+        result = match_products_to_models(products, [_model(1, name="Ada Wong", character="Ada Wong")])
+        assert result[0].score <= 1.0
 
 
 # ---------------------------------------------------------------------------

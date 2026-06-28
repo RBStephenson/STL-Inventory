@@ -54,6 +54,12 @@ def _score(local_name: str, product_title: str) -> float:
     return _score_tokens(_tokens(local_name), _tokens(product_title))
 
 
+# Bonus added when the model's `character` (its denoised product identity, e.g.
+# "Ada Wong") is fully contained in the product title — a strong signal the store
+# listing is the same product, even when the raw name is noisy. Capped at 1.0.
+_CHARACTER_BONUS = 0.15
+
+
 def _confidence(score: float) -> str:
     if score >= 0.55:
         return "high"
@@ -81,20 +87,27 @@ def match_products_to_models(
         best_score = 0.0
         best_product: Optional[StorefrontProduct] = None
 
-        # Score against the model name and title (folder name as fallback);
-        # tokenize each once per model rather than once per product comparison.
+        # Score against the model name, title, and character — the denoised
+        # product identity (e.g. "Ada Wong") that store titles key on. Tokenize
+        # each once per model rather than once per product comparison.
+        character = m.get("character") or ""
+        char_tokens = _tokens(character) if character else set()
         name_token_sets = [
             _tokens(name)
             for name in (m.get("name", ""), m.get("title") or "")
             if name
         ]
+        if char_tokens:
+            name_token_sets.append(char_tokens)
 
         for product, p_tokens in product_tokens:
-            for n_tokens in name_token_sets:
-                s = _score_tokens(n_tokens, p_tokens)
-                if s > best_score:
-                    best_score = s
-                    best_product = product
+            s = max((_score_tokens(nt, p_tokens) for nt in name_token_sets), default=0.0)
+            # Strong signal: the whole character identity appears in the title.
+            if char_tokens and char_tokens <= p_tokens:
+                s = min(1.0, s + _CHARACTER_BONUS)
+            if s > best_score:
+                best_score = s
+                best_product = product
 
         if best_product and best_score >= min_score:
             candidates.append(MatchCandidate(

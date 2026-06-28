@@ -133,7 +133,8 @@ async def match_storefront(
         raise HTTPException(status_code=404, detail="No local models found for this creator.")
 
     model_dicts = [
-        {"id": m.id, "name": m.name, "title": m.title, "folder_path": m.folder_path}
+        {"id": m.id, "name": m.name, "title": m.title, "character": m.character,
+         "folder_path": m.folder_path}
         for m in models
     ]
 
