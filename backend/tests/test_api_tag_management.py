@@ -283,10 +283,11 @@ class TestBulkTagModels:
         sync_model_tags(m, db)
         db.commit()
 
-        client.post(
+        r = client.patch(
             "/models/bulk",
             json={"ids": [m.id], "add_tags": ["figure"], "remove_tags": ["bust"]},
         )
+        assert r.status_code == 200
 
         tag_names = {r.tag for r in db.query(ModelTag).filter(ModelTag.model_id == m.id)}
         assert tag_names == {"figure"}
