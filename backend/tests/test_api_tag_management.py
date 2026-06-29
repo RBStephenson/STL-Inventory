@@ -230,3 +230,70 @@ class TestSuppressAutoTags:
         r = client.get(f"/models/{m.id}")
         assert r.status_code == 200
         assert r.json()["removed_auto_tags"] == ["statue"]
+
+
+# ---------------------------------------------------------------------------
+# POST /models/bulk/tags — bulk_tag_models uses bulk_sync_model_tags (#654)
+# ---------------------------------------------------------------------------
+
+class TestBulkTagModels:
+    def test_add_tags_to_multiple_models(self, client, db):
+        creator = make_creator(db)
+        m1 = make_model(db, creator, name="A", tags=["bust"])
+        m2 = make_model(db, creator, name="B", tags=[])
+        for m in (m1, m2):
+            sync_model_tags(m, db)
+        db.commit()
+
+        r = client.patch(
+            "/models/bulk",
+            json={"ids": [m1.id, m2.id], "add_tags": ["figure"], "remove_tags": []},
+        )
+
+        assert r.status_code == 200
+        assert r.json()["updated"] == 2
+        db.expire_all()
+        db.refresh(m1); db.refresh(m2)
+        assert "figure" in m1.tags
+        assert "figure" in m2.tags
+
+    def test_remove_tags_from_multiple_models(self, client, db):
+        creator = make_creator(db)
+        m1 = make_model(db, creator, name="A", tags=["bust", "figure"])
+        m2 = make_model(db, creator, name="B", tags=["figure"])
+        for m in (m1, m2):
+            sync_model_tags(m, db)
+        db.commit()
+
+        r = client.patch(
+            "/models/bulk",
+            json={"ids": [m1.id, m2.id], "add_tags": [], "remove_tags": ["figure"]},
+        )
+
+        assert r.status_code == 200
+        db.expire_all()
+        db.refresh(m1); db.refresh(m2)
+        assert "figure" not in m1.tags
+        assert "figure" not in m2.tags
+        assert "bust" in m1.tags
+
+    def test_model_tags_index_updated(self, client, db):
+        creator = make_creator(db)
+        m = make_model(db, creator, name="A", tags=["bust"])
+        sync_model_tags(m, db)
+        db.commit()
+
+        client.post(
+            "/models/bulk",
+            json={"ids": [m.id], "add_tags": ["figure"], "remove_tags": ["bust"]},
+        )
+
+        tag_names = {r.tag for r in db.query(ModelTag).filter(ModelTag.model_id == m.id)}
+        assert tag_names == {"figure"}
+
+    def test_empty_ids_returns_400(self, client, db):
+        r = client.patch(
+            "/models/bulk",
+            json={"ids": [], "add_tags": ["figure"], "remove_tags": []},
+        )
+        assert r.status_code == 400
