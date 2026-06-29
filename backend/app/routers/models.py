@@ -24,7 +24,7 @@ from app.services.thumbnails import ThumbnailDownloadError, download_thumbnail, 
 from app.services.variant_sync import propagate_source_url
 from app.services.scrapers.base import detect_site
 from urllib.parse import urlparse
-from app.services.tag_sync import sync_model_tags
+from app.services.tag_sync import sync_model_tags, bulk_sync_model_tags
 from app.services import scanner, grouping
 from app.services.scanner import resolve_creator
 from app.config import settings
@@ -631,8 +631,8 @@ def bulk_tag_models(body: BulkTagUpdate, db: Session = Depends(get_db)):
             current = [t for t in current if t not in remove_set]
         model.tags = current
         model.updated_at = utcnow()
-        sync_model_tags(model, db)
 
+    bulk_sync_model_tags(models_to_update, db)
     db.commit()
     return {"ok": True, "updated": len(models_to_update)}
 
