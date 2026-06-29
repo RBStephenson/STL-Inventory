@@ -17,11 +17,11 @@
     "dompurify": "^3.2.4",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "react-router-dom": "^7.18.0",
-    "three": "^0.184.0",
+    "react-router-dom": "^7.18.1",
+    "three": "^0.185.0",
     "@react-three/fiber": "^9.6.1",
     "@react-three/drei": "^10.7.7",
-    "lucide-react": "^1.21.0"
+    "lucide-react": "^1.22.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
@@ -30,7 +30,7 @@
     "@tailwindcss/vite": "^4.3.1",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "@types/three": "^0.184.1",
+    "@types/three": "^0.185.0",
     "@vitejs/plugin-react": "^6.0.2",
     "autoprefixer": "^10.4.20",
     "jsdom": "^29.1.1",
