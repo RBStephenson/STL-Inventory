@@ -2,8 +2,10 @@
 backfill from existing (creator, character) groups."""
 import importlib.util
 from pathlib import Path
+from unittest.mock import patch
 
 from app.models import Creator, Model, VariantGroup
+from app.utils import utcnow
 from tests.conftest import make_creator, make_model
 
 
@@ -119,3 +121,80 @@ class TestBackfill:
 
         labels = {g.label for g in db.query(VariantGroup).all()}
         assert labels == {"Ada", "Leon"}
+
+
+# ---------------------------------------------------------------------------
+# set_grouping_strategy() only regroups creators under the target path (#650)
+# ---------------------------------------------------------------------------
+
+class TestSetGroupingStrategyScope:
+    """POST /grouping-strategy must regroup only creators whose models live
+    under the requested path — not every creator in the library."""
+
+    def _make_model_at(self, db, creator, path):
+        m = Model(
+            name=Path(path).name,
+            folder_path=path,
+            creator_id=creator.id,
+            tags=[],
+            auto_tags=[],
+            created_at=utcnow(),
+            updated_at=utcnow(),
+        )
+        db.add(m)
+        db.flush()
+        return m
+
+    def test_only_affected_creator_regroups(self, client, db):
+        creator_a = make_creator(db, "CreatorA")
+        creator_b = make_creator(db, "CreatorB")
+
+        self._make_model_at(db, creator_a, "/mnt/lib/CreatorA/Product/STL")
+        self._make_model_at(db, creator_b, "/mnt/lib/CreatorB/Other/STL")
+        db.commit()
+
+        regroups: list[int] = []
+
+        import app.services.grouping as grouping_mod
+        real_regroup = grouping_mod.regroup_creator
+
+        def tracking_regroup(db, creator_id):
+            regroups.append(creator_id)
+            real_regroup(db, creator_id)
+
+        with patch.object(grouping_mod, "regroup_creator", tracking_regroup):
+            resp = client.post(
+                "/models/grouping-strategy",
+                json={"path": "/mnt/lib/CreatorA", "strategy": "off"},
+            )
+
+        assert resp.status_code == 200
+        assert regroups == [creator_a.id], (
+            f"Expected only creator_a ({creator_a.id}) to regroup; got {regroups}"
+        )
+
+    def test_unrelated_creator_not_regrouped(self, client, db):
+        creator_a = make_creator(db, "CreatorX")
+        creator_b = make_creator(db, "CreatorY")
+
+        self._make_model_at(db, creator_a, "/lib/CreatorX/Product")
+        self._make_model_at(db, creator_b, "/lib/CreatorY/Product")
+        db.commit()
+
+        regroups: list[int] = []
+
+        import app.services.grouping as grouping_mod
+        real_regroup = grouping_mod.regroup_creator
+
+        def tracking_regroup(db, creator_id):
+            regroups.append(creator_id)
+            real_regroup(db, creator_id)
+
+        with patch.object(grouping_mod, "regroup_creator", tracking_regroup):
+            resp = client.post(
+                "/models/grouping-strategy",
+                json={"path": "/lib/CreatorX", "strategy": "off"},
+            )
+
+        assert resp.status_code == 200
+        assert creator_b.id not in regroups

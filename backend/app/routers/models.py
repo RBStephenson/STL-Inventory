@@ -1356,24 +1356,21 @@ def set_grouping_strategy(body: GroupingStrategyBody, db: Session = Depends(get_
         db.query(GroupingStrategy).filter(GroupingStrategy.path == body.path).delete()
     db.flush()
 
-    # Re-group the creators whose models live under this subtree so the strategy
-    # takes effect now rather than at the next scan.
+    # Re-group only the creators that actually have models under this subtree so
+    # the strategy takes effect now rather than at the next scan.
+    path_prefix = body.path.rstrip("/\\")
     affected = (
         db.query(Model.creator_id)
-        .filter(Model.creator_id != None)
+        .filter(
+            Model.creator_id != None,  # noqa: E711
+            (Model.folder_path == body.path)
+            | Model.folder_path.like(path_prefix + "%"),
+        )
         .distinct()
         .all()
     )
     for (creator_id,) in affected:
-        # Cheap guard: only regroup a creator that actually has a model under path.
-        has = (
-            db.query(Model.id)
-            .filter(Model.creator_id == creator_id)
-            .filter((Model.folder_path == body.path) | (Model.folder_path.like(body.path.rstrip("/\\") + "%")))
-            .first()
-        )
-        if has:
-            grouping.regroup_creator(db, creator_id)
+        grouping.regroup_creator(db, creator_id)
     db.commit()
     return {"ok": True, "path": body.path, "strategy": body.strategy}
 
