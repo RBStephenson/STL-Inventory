@@ -185,7 +185,7 @@ describe("ModelCard inline rename (#191)", () => {
   });
 
   it("renames a whole variant group on double-click + Enter", async () => {
-    renderCard({ variant_count: 3, character: "Akuma" } as any);
+    renderCard({ variant_count: 3, character: "Akuma", title: null } as any);
     fireEvent.doubleClick(screen.getByText("Akuma"));
     const input = screen.getByLabelText("Rename group") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "Oni" } });
