@@ -516,32 +516,6 @@ export default function Library() {
   const dragCount =
     draggingId != null && selection.has(draggingId) && selection.size > 1 ? selection.size : 1;
 
-  // Shared write path: set GroupOverride for a SET of models in one transaction,
-  // surfacing partial success (`missing`) and the scan-in-progress 409 as toasts.
-  // Mirrors VariantGroup.applyGroup. List refresh is the caller's responsibility.
-  const applyGroup = useCallback(
-    async (ids: number[], character: string | null): Promise<boolean> => {
-      try {
-        const res = await api.models.batchSetGroup(ids, character);
-        const moved = res.updated.length;
-        const skipped = res.missing.length;
-        const noun = moved === 1 ? "model" : "models";
-        const where = character === null ? "ungrouped" : `grouped under "${character}"`;
-        toast(
-          skipped > 0
-            ? `${moved} ${noun} ${where}; ${skipped} skipped.`
-            : `${moved} ${noun} ${where}.`,
-          "success",
-        );
-        return true;
-      } catch (err: any) {
-        toast(err?.message || "Couldn't update group — try again.", "error");
-        return false;
-      }
-    },
-    [toast],
-  );
-
   const mergeIntoDurableGroup = useCallback(
     async (ids: number[], groupId: number | null, label: string): Promise<boolean> => {
       try {
@@ -606,18 +580,20 @@ export default function Library() {
         // #136 — defer to a confirm step; the member fetch happens on confirm.
         if (target) setPendingGroupMerge({ source: models.find((m) => m.id === draggedId)!, target });
         return;
-      case "apply":
+      case "apply": {
         // #137 — target already grouped: inherit its name, write immediately.
+        // An ungrouped target (character-only, no variant_group_id) starts a
+        // brand-new durable group and must fold itself in as a member too —
+        // same shape as the #136 group-merge payload, so reuse that helper.
         if (intent.skipped > 0) toast(`${intent.skipped} from another creator skipped.`, "info");
-        if (
-          target?.variant_group_id
-            ? await mergeIntoDurableGroup(intent.sourceIds, target.variant_group_id, intent.character)
-            : await applyGroup(intent.sourceIds, intent.character)
-        ) {
+        if (!target) return;
+        const { ids, groupId, label } = resolveGroupMergePayload(target, intent.sourceIds);
+        if (await mergeIntoDurableGroup(ids, groupId, label)) {
           clearSelection();
           fetchModels();
         }
         return;
+      }
       case "prompt":
         // Target is ungrouped: ask for a name; the target joins the new group too.
         if (intent.skipped > 0) toast(`${intent.skipped} from another creator skipped.`, "info");
@@ -634,7 +610,7 @@ export default function Library() {
     setMerging(true);
     // The ungrouped target joins the group too, so include it with the sources.
     const ids = Array.from(new Set([...pendingMerge.sourceIds, pendingMerge.targetId]));
-    const ok = await applyGroup(ids, name);
+    const ok = await mergeIntoDurableGroup(ids, null, name);
     setMerging(false);
     if (ok) {
       setPendingMerge(null);
