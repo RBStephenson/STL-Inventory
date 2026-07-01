@@ -1314,9 +1314,9 @@ class TestVariantGroupReadPath:
         data = client.get(f"/models/variants?creator_id={creator.id}&character=Goblin").json()
         assert data["total"] == 2
 
-    def test_character_override_clears_group(self, client, db):
+    def test_character_override_clears_auto_group(self, client, db):
         # Renaming/ungrouping via set-group must win under the group-preferring read
-        # path: the override clears variant_group_id.
+        # path: the override clears auto variant_group_id.
         creator = make_creator(db)
         a = make_model(db, creator, name="A", character="Alpha")
         b = make_model(db, creator, name="B", character="Beta")
@@ -1329,11 +1329,122 @@ class TestVariantGroupReadPath:
         assert a.variant_group_id is None
         assert a.character == "Renamed"
 
+    def test_character_override_preserves_manual_group(self, client, db):
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A", character="Alpha")
+        b = make_model(db, creator, name="B", character="Beta")
+        group = self._group(db, creator, [a, b], source="manual")
+        commit_all(db)
+
+        resp = client.post(f"/models/{a.id}/set-group", json={"character": "Renamed"})
+        assert resp.status_code == 200
+        db.refresh(a)
+        assert a.variant_group_id == group.id
+        assert a.character == "Renamed"
+
+
+class TestGroupingKeyGoldens678:
+    """#678 Phase 0 — freeze the read-path grouping-key behavior BEFORE the
+    two-systems unification refactor, so later phases have a regression net.
+
+    These document the current `_group_key_sql` contract across every state a
+    model can be in. When Phase 3 removes the `ch:` fallback, the character-only
+    cases here are expected to change — and that change should be a deliberate,
+    reviewed edit to these goldens, never a silent drift.
+
+    Grouping-key states (see models.py `_group_key_sql`):
+      1. durable auto group     -> vg:<id>   (collapses)
+      2. durable manual group   -> vg:<id>   (collapses)
+      3. user character override -> ch:<creator>:<char>  (collapses, LEGACY)
+      4. scanner-derived character (no override) -> ch: (collapses, LEGACY)
+      5. explicit ungroup / no character -> NULL key (never collapses)
+    """
+
+    def _group(self, db, creator, members, label="G", rep=None, source="auto"):
+        from app.models import VariantGroup
+        g = VariantGroup(creator_id=creator.id, label=label, source=source)
+        db.add(g)
+        db.flush()
+        for m in members:
+            m.variant_group_id = g.id
+        g.rep_model_id = (rep or members[0]).id
+        db.flush()
+        return g
+
+    def test_state1_auto_group_collapses_by_vg(self, client, db):
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A", character="Alpha")
+        b = make_model(db, creator, name="B", character="Beta")
+        self._group(db, creator, [a, b], source="auto")
+        commit_all(db)
+        data = client.get("/models?group_variants=true").json()
+        assert data["total"] == 1
+        assert data["items"][0]["variant_count"] == 2
+
+    def test_state2_manual_group_collapses_by_vg(self, client, db):
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A", character="Alpha")
+        b = make_model(db, creator, name="B", character="Beta")
+        self._group(db, creator, [a, b], source="manual")
+        commit_all(db)
+        data = client.get("/models?group_variants=true").json()
+        assert data["total"] == 1
+        assert data["items"][0]["variant_count"] == 2
+
+    def test_state3_user_character_override_collapses_by_ch(self, client, db):
+        # LEGACY behavior Phase 1 must preserve via migration: a user character
+        # group of models the durable engine would NOT auto-group (distinct names,
+        # no shared hash/filename) still collapses today via the `ch:` fallback.
+        from app.models import GroupOverride
+        creator = make_creator(db)
+        a = make_model(db, creator, name="Totally Distinct One", character="MyGroup")
+        b = make_model(db, creator, name="Totally Distinct Two", character="MyGroup")
+        db.add(GroupOverride(path=a.folder_path, character="MyGroup"))
+        db.add(GroupOverride(path=b.folder_path, character="MyGroup"))
+        commit_all(db)
+        data = client.get("/models?group_variants=true").json()
+        assert data["total"] == 1
+        assert data["items"][0]["variant_count"] == 2
+
+    def test_state4_scanner_derived_character_collapses_by_ch(self, client, db):
+        # No override rows — just a shared character string (as the scanner's name
+        # parser would set). Collapses via `ch:` today.
+        creator = make_creator(db)
+        make_model(db, creator, name="x1", character="Goblin")
+        make_model(db, creator, name="x2", character="Goblin")
+        commit_all(db)
+        data = client.get("/models?group_variants=true").json()
+        assert data["total"] == 1
+        assert data["items"][0]["variant_count"] == 2
+
+    def test_state5_no_character_never_collapses(self, client, db):
+        creator = make_creator(db)
+        make_model(db, creator, name="Solo A", character=None)
+        make_model(db, creator, name="Solo B", character=None)
+        commit_all(db)
+        data = client.get("/models?group_variants=true").json()
+        assert data["total"] == 2
+        for item in data["items"]:
+            assert item["variant_count"] == 1
+
+    def test_vg_wins_over_character_when_both_present(self, client, db):
+        # A model in a durable group whose members carry differing character values
+        # collapses by the group, not the character — vg: takes precedence over ch:.
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A", character="Alpha")
+        b = make_model(db, creator, name="B", character="Beta")
+        self._group(db, creator, [a, b], source="manual")
+        commit_all(db)
+        data = client.get("/models?group_variants=true").json()
+        assert data["total"] == 1
+        assert data["items"][0]["variant_count"] == 2
+
 
 class TestManualGroupEndpoints:
     """P3 (#617): manual merge / split / relabel."""
 
     def test_merge_creates_manual_group(self, client, db):
+        from app.models import GroupOverride
         creator = make_creator(db)
         a = make_model(db, creator, name="A", character="Alpha")
         b = make_model(db, creator, name="B", character="Beta")
@@ -1346,6 +1457,16 @@ class TestManualGroupEndpoints:
         assert g["label"] == "My Group"
         db.refresh(a); db.refresh(b)
         assert a.variant_group_id == g["id"] == b.variant_group_id
+        overrides = {
+            row.path: row.character
+            for row in db.query(GroupOverride).filter(
+                GroupOverride.path.in_([a.folder_path, b.folder_path])
+            )
+        }
+        assert overrides == {
+            a.folder_path: "My Group",
+            b.folder_path: "My Group",
+        }
 
     def test_merge_requires_two_without_group_id(self, client, db):
         creator = make_creator(db)
@@ -1411,6 +1532,27 @@ class TestManualGroupEndpoints:
         assert c.variant_group_id is None
         assert db.get(VariantGroup, gid) is not None  # 2 left → survives
 
+    def test_split_clears_group_override_and_character(self, client, db):
+        """#676: a merge dual-writes GroupOverride + character onto every member.
+        A split member must lose both, or the legacy character grouping key
+        (_group_key_py) still matches it to its ex-groupmates — silently undoing
+        the split."""
+        from app.models import GroupOverride
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A"); b = make_model(db, creator, name="B"); c = make_model(db, creator, name="C")
+        commit_all(db)
+        gid = client.post("/models/groups/merge", json={"model_ids": [a.id, b.id, c.id], "label": "My Group"}).json()["id"]
+
+        resp = client.post(f"/models/groups/{gid}/split", json={"model_ids": [c.id]})
+        assert resp.status_code == 200
+        db.refresh(c)
+        assert c.character is None
+        assert db.query(GroupOverride).filter(GroupOverride.path == c.folder_path).first() is None
+        # Remaining members keep their shared label — only the split model is affected.
+        db.refresh(a)
+        assert a.character == "My Group"
+        assert db.query(GroupOverride).filter(GroupOverride.path == a.folder_path).first() is not None
+
     def test_split_dissolves_group_below_two(self, client, db):
         from app.models import VariantGroup
         creator = make_creator(db)
@@ -1423,6 +1565,22 @@ class TestManualGroupEndpoints:
         assert db.get(VariantGroup, gid) is None
         db.refresh(a)
         assert a.variant_group_id is None
+
+    def test_split_dissolve_clears_override_on_last_member_too(self, client, db):
+        """When a split drops the group below 2 members, _prune_empty_group nulls
+        variant_group_id on whoever is left — their GroupOverride/character must
+        be cleared too, not just the explicitly-split member's."""
+        from app.models import GroupOverride
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A"); b = make_model(db, creator, name="B")
+        commit_all(db)
+        gid = client.post("/models/groups/merge", json={"model_ids": [a.id, b.id], "label": "My Group"}).json()["id"]
+
+        resp = client.post(f"/models/groups/{gid}/split", json={"model_ids": [b.id]})
+        assert resp.status_code == 200
+        db.refresh(a)
+        assert a.character is None
+        assert db.query(GroupOverride).filter(GroupOverride.path == a.folder_path).first() is None
 
     def test_patch_label_and_rep(self, client, db):
         creator = make_creator(db)
