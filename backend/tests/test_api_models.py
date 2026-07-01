@@ -1280,6 +1280,103 @@ class TestVariantGroupReadPath:
         assert a.character == "Renamed"
 
 
+class TestGroupingKeyGoldens678:
+    """#678 Phase 0 — freeze the read-path grouping-key behavior BEFORE the
+    two-systems unification refactor, so later phases have a regression net.
+
+    These document the current `_group_key_sql` contract across every state a
+    model can be in. When Phase 3 removes the `ch:` fallback, the character-only
+    cases here are expected to change — and that change should be a deliberate,
+    reviewed edit to these goldens, never a silent drift.
+
+    Grouping-key states (see models.py `_group_key_sql`):
+      1. durable auto group     -> vg:<id>   (collapses)
+      2. durable manual group   -> vg:<id>   (collapses)
+      3. user character override -> ch:<creator>:<char>  (collapses, LEGACY)
+      4. scanner-derived character (no override) -> ch: (collapses, LEGACY)
+      5. explicit ungroup / no character -> NULL key (never collapses)
+    """
+
+    def _group(self, db, creator, members, label="G", rep=None, source="auto"):
+        from app.models import VariantGroup
+        g = VariantGroup(creator_id=creator.id, label=label, source=source)
+        db.add(g)
+        db.flush()
+        for m in members:
+            m.variant_group_id = g.id
+        g.rep_model_id = (rep or members[0]).id
+        db.flush()
+        return g
+
+    def test_state1_auto_group_collapses_by_vg(self, client, db):
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A", character="Alpha")
+        b = make_model(db, creator, name="B", character="Beta")
+        self._group(db, creator, [a, b], source="auto")
+        commit_all(db)
+        data = client.get("/models?group_variants=true").json()
+        assert data["total"] == 1
+        assert data["items"][0]["variant_count"] == 2
+
+    def test_state2_manual_group_collapses_by_vg(self, client, db):
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A", character="Alpha")
+        b = make_model(db, creator, name="B", character="Beta")
+        self._group(db, creator, [a, b], source="manual")
+        commit_all(db)
+        data = client.get("/models?group_variants=true").json()
+        assert data["total"] == 1
+        assert data["items"][0]["variant_count"] == 2
+
+    def test_state3_user_character_override_collapses_by_ch(self, client, db):
+        # LEGACY behavior Phase 1 must preserve via migration: a user character
+        # group of models the durable engine would NOT auto-group (distinct names,
+        # no shared hash/filename) still collapses today via the `ch:` fallback.
+        from app.models import GroupOverride
+        creator = make_creator(db)
+        a = make_model(db, creator, name="Totally Distinct One", character="MyGroup")
+        b = make_model(db, creator, name="Totally Distinct Two", character="MyGroup")
+        db.add(GroupOverride(path=a.folder_path, character="MyGroup"))
+        db.add(GroupOverride(path=b.folder_path, character="MyGroup"))
+        commit_all(db)
+        data = client.get("/models?group_variants=true").json()
+        assert data["total"] == 1
+        assert data["items"][0]["variant_count"] == 2
+
+    def test_state4_scanner_derived_character_collapses_by_ch(self, client, db):
+        # No override rows — just a shared character string (as the scanner's name
+        # parser would set). Collapses via `ch:` today.
+        creator = make_creator(db)
+        make_model(db, creator, name="x1", character="Goblin")
+        make_model(db, creator, name="x2", character="Goblin")
+        commit_all(db)
+        data = client.get("/models?group_variants=true").json()
+        assert data["total"] == 1
+        assert data["items"][0]["variant_count"] == 2
+
+    def test_state5_no_character_never_collapses(self, client, db):
+        creator = make_creator(db)
+        make_model(db, creator, name="Solo A", character=None)
+        make_model(db, creator, name="Solo B", character=None)
+        commit_all(db)
+        data = client.get("/models?group_variants=true").json()
+        assert data["total"] == 2
+        for item in data["items"]:
+            assert item["variant_count"] == 1
+
+    def test_vg_wins_over_character_when_both_present(self, client, db):
+        # A model in a durable group whose members carry differing character values
+        # collapses by the group, not the character — vg: takes precedence over ch:.
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A", character="Alpha")
+        b = make_model(db, creator, name="B", character="Beta")
+        self._group(db, creator, [a, b], source="manual")
+        commit_all(db)
+        data = client.get("/models?group_variants=true").json()
+        assert data["total"] == 1
+        assert data["items"][0]["variant_count"] == 2
+
+
 class TestManualGroupEndpoints:
     """P3 (#617): manual merge / split / relabel."""
 

@@ -161,6 +161,37 @@ class TestOverrideRespected:
         assert _groups(db, creator) == []
 
 
+class TestOverrideEngineExclusionGolden678:
+    """#678 Phase 0 — freeze the current fork BEFORE unification: the durable
+    engine deliberately EXCLUDES any folder with a GroupOverride row, so a
+    user's character grouping never becomes a durable group today (it lives only
+    in the read-path `ch:` fallback).
+
+    Phase 2 will deliberately change this — a user character override will be fed
+    to the engine as a forced signal so it emits a durable group. When that lands,
+    THIS golden is the one that flips, as a reviewed edit, not silent drift.
+    """
+
+    def test_user_character_override_is_not_auto_grouped_today(self, db):
+        from app.models import GroupOverride
+        creator = make_creator(db)
+        # Two models the engine WOULD group by name key (shared "Goblin")...
+        a = make_model(db, creator, name="Goblin Supported")
+        b = make_model(db, creator, name="Goblin Unsupported")
+        db.flush()
+        # ...but the user has a character override on both, so the engine skips them.
+        db.add(GroupOverride(path=a.folder_path, character="Goblin"))
+        db.add(GroupOverride(path=b.folder_path, character="Goblin"))
+        db.flush()
+
+        _run(db, creator)
+
+        db.refresh(a); db.refresh(b)
+        # Excluded from proposals → no durable group despite the shared name key.
+        assert a.variant_group_id is None and b.variant_group_id is None
+        assert _groups(db, creator) == []
+
+
 class TestSubtreeStrategy:
     def test_off_strategy_prevents_grouping(self, db):
         from app.models import GroupingStrategy
