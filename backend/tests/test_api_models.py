@@ -1134,3 +1134,302 @@ class TestBatchSetGroup:
             json={"model_ids": [m.id], "character": "Goblin"},
         )
         assert resp.status_code == 409
+
+
+class TestParsedAttributeFilters:
+    def _mk(self, db, creator, name, attrs):
+        m = make_model(db, creator, name=name)
+        m.parsed_attributes = attrs
+        return m
+
+    def test_filter_support_status(self, client, db):
+        creator = make_creator(db)
+        self._mk(db, creator, "Unsup", {"support_status": "unsupported"})
+        self._mk(db, creator, "Presup", {"support_status": "pre-supported"})
+        self._mk(db, creator, "Plain", {})
+        commit_all(db)
+
+        resp = client.get("/models?support_status=unsupported")
+        data = resp.json()
+        assert data["total"] == 1
+        assert data["items"][0]["name"] == "Unsup"
+
+    def test_filter_slicer(self, client, db):
+        creator = make_creator(db)
+        self._mk(db, creator, "Lych", {"slicer": "lychee"})
+        self._mk(db, creator, "Chitu", {"slicer": "chitubox"})
+        commit_all(db)
+
+        resp = client.get("/models?slicer=chitubox")
+        data = resp.json()
+        assert data["total"] == 1
+        assert data["items"][0]["name"] == "Chitu"
+
+    def test_parsed_attributes_serialized(self, client, db):
+        creator = make_creator(db)
+        self._mk(db, creator, "M", {"support_status": "unsupported", "slicer": "lychee"})
+        commit_all(db)
+
+        resp = client.get("/models")
+        item = resp.json()["items"][0]
+        assert item["parsed_attributes"] == {"support_status": "unsupported", "slicer": "lychee"}
+
+    def test_no_filter_returns_all(self, client, db):
+        creator = make_creator(db)
+        self._mk(db, creator, "A", {"support_status": "unsupported"})
+        self._mk(db, creator, "B", {})
+        commit_all(db)
+
+        resp = client.get("/models")
+        assert resp.json()["total"] == 2
+
+
+class TestVariantGroupReadPath:
+    """P2 (#616): grouping read path prefers variant_group_id, falls back to character."""
+
+    def _group(self, db, creator, members, label="G", rep=None, source="auto"):
+        from app.models import VariantGroup
+        g = VariantGroup(creator_id=creator.id, label=label, source=source)
+        db.add(g)
+        db.flush()
+        for m in members:
+            m.variant_group_id = g.id
+        g.rep_model_id = (rep or members[0]).id
+        db.flush()
+        return g
+
+    def test_collapse_by_group_across_different_characters(self, client, db):
+        # Two models with distinct characters but the same variant_group_id collapse
+        # to one card — grouping is now driven by the group, not the character string.
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A", character="Alpha")
+        b = make_model(db, creator, name="B", character="Beta")
+        self._group(db, creator, [a, b], rep=a)
+        commit_all(db)
+
+        data = client.get("/models?group_variants=true").json()
+        assert data["total"] == 1
+        assert data["items"][0]["id"] == a.id
+        assert data["items"][0]["variant_count"] == 2
+
+    def test_null_group_falls_back_to_character(self, client, db):
+        creator = make_creator(db)
+        make_model(db, creator, name="x1", character="Goblin")
+        make_model(db, creator, name="x2", character="Goblin")
+        commit_all(db)
+
+        data = client.get("/models?group_variants=true").json()
+        assert data["total"] == 1
+        assert data["items"][0]["variant_count"] == 2
+
+    def test_rep_model_id_is_the_survivor(self, client, db):
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A", character="Alpha")
+        b = make_model(db, creator, name="B", character="Beta")
+        self._group(db, creator, [a, b], rep=b)  # b designated rep
+        commit_all(db)
+
+        data = client.get("/models?group_variants=true").json()
+        assert data["items"][0]["id"] == b.id
+
+    def test_variants_endpoint_by_group_id(self, client, db):
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A", character="Alpha")
+        b = make_model(db, creator, name="B", character="Beta")
+        g = self._group(db, creator, [a, b])
+        commit_all(db)
+
+        data = client.get(f"/models/variants?group_id={g.id}").json()
+        assert {it["id"] for it in data["items"]} == {a.id, b.id}
+
+    def test_variants_endpoint_still_supports_character(self, client, db):
+        creator = make_creator(db)
+        make_model(db, creator, name="x1", character="Goblin")
+        make_model(db, creator, name="x2", character="Goblin")
+        commit_all(db)
+
+        data = client.get(f"/models/variants?creator_id={creator.id}&character=Goblin").json()
+        assert data["total"] == 2
+
+    def test_character_override_clears_group(self, client, db):
+        # Renaming/ungrouping via set-group must win under the group-preferring read
+        # path: the override clears variant_group_id.
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A", character="Alpha")
+        b = make_model(db, creator, name="B", character="Beta")
+        self._group(db, creator, [a, b])
+        commit_all(db)
+
+        resp = client.post(f"/models/{a.id}/set-group", json={"character": "Renamed"})
+        assert resp.status_code == 200
+        db.refresh(a)
+        assert a.variant_group_id is None
+        assert a.character == "Renamed"
+
+
+class TestManualGroupEndpoints:
+    """P3 (#617): manual merge / split / relabel."""
+
+    def test_merge_creates_manual_group(self, client, db):
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A", character="Alpha")
+        b = make_model(db, creator, name="B", character="Beta")
+        commit_all(db)
+
+        resp = client.post("/models/groups/merge", json={"model_ids": [a.id, b.id], "label": "My Group"})
+        assert resp.status_code == 200
+        g = resp.json()
+        assert g["source"] == "manual"
+        assert g["label"] == "My Group"
+        db.refresh(a); db.refresh(b)
+        assert a.variant_group_id == g["id"] == b.variant_group_id
+
+    def test_merge_requires_two_without_group_id(self, client, db):
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A")
+        commit_all(db)
+        resp = client.post("/models/groups/merge", json={"model_ids": [a.id]})
+        assert resp.status_code == 400
+
+    def test_merge_rejects_cross_creator(self, client, db):
+        c1 = make_creator(db, "C1"); c2 = make_creator(db, "C2")
+        a = make_model(db, c1, name="A")
+        b = make_model(db, c2, name="B")
+        commit_all(db)
+        resp = client.post("/models/groups/merge", json={"model_ids": [a.id, b.id]})
+        assert resp.status_code == 400
+
+    def test_merge_prunes_orphaned_auto_group(self, client, db):
+        from app.models import VariantGroup
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A")
+        b = make_model(db, creator, name="B")
+        # a + b are in an auto group of two
+        auto = VariantGroup(creator_id=creator.id, label="Auto", source="auto")
+        db.add(auto); db.flush()
+        a.variant_group_id = auto.id; b.variant_group_id = auto.id
+        c = make_model(db, creator, name="C")
+        commit_all(db)
+
+        # Merge a + c into a new group → auto group drops to 1 member (b) → pruned.
+        resp = client.post("/models/groups/merge", json={"model_ids": [a.id, c.id]})
+        assert resp.status_code == 200
+        assert db.get(VariantGroup, auto.id) is None
+        db.refresh(b)
+        assert b.variant_group_id is None
+
+    def test_merge_locked_from_rescan(self, client, db):
+        from app.services import grouping
+        from app.models import VariantGroup
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A", character="Alpha")
+        b = make_model(db, creator, name="B", character="Beta")
+        commit_all(db)
+        gid = client.post("/models/groups/merge", json={"model_ids": [a.id, b.id]}).json()["id"]
+
+        grouping.regroup_creator(db, creator.id)
+        db.commit()
+
+        grp = db.get(VariantGroup, gid)
+        assert grp is not None and grp.source == "manual"
+        db.refresh(a); db.refresh(b)
+        assert a.variant_group_id == gid == b.variant_group_id
+
+    def test_split_removes_members_and_keeps_group(self, client, db):
+        from app.models import VariantGroup
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A"); b = make_model(db, creator, name="B"); c = make_model(db, creator, name="C")
+        commit_all(db)
+        gid = client.post("/models/groups/merge", json={"model_ids": [a.id, b.id, c.id]}).json()["id"]
+
+        resp = client.post(f"/models/groups/{gid}/split", json={"model_ids": [c.id]})
+        assert resp.status_code == 200
+        db.refresh(c)
+        assert c.variant_group_id is None
+        assert db.get(VariantGroup, gid) is not None  # 2 left → survives
+
+    def test_split_dissolves_group_below_two(self, client, db):
+        from app.models import VariantGroup
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A"); b = make_model(db, creator, name="B")
+        commit_all(db)
+        gid = client.post("/models/groups/merge", json={"model_ids": [a.id, b.id]}).json()["id"]
+
+        resp = client.post(f"/models/groups/{gid}/split", json={"model_ids": [b.id]})
+        assert resp.status_code == 200
+        assert db.get(VariantGroup, gid) is None
+        db.refresh(a)
+        assert a.variant_group_id is None
+
+    def test_patch_label_and_rep(self, client, db):
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A"); b = make_model(db, creator, name="B")
+        commit_all(db)
+        gid = client.post("/models/groups/merge", json={"model_ids": [a.id, b.id]}).json()["id"]
+
+        resp = client.patch(f"/models/groups/{gid}", json={"label": "Renamed", "rep_model_id": b.id})
+        assert resp.status_code == 200
+        g = resp.json()
+        assert g["label"] == "Renamed"
+        assert g["rep_model_id"] == b.id
+
+    def test_patch_rep_must_be_member(self, client, db):
+        creator = make_creator(db)
+        a = make_model(db, creator, name="A"); b = make_model(db, creator, name="B")
+        outsider = make_model(db, creator, name="Z")
+        commit_all(db)
+        gid = client.post("/models/groups/merge", json={"model_ids": [a.id, b.id]}).json()["id"]
+
+        resp = client.patch(f"/models/groups/{gid}", json={"rep_model_id": outsider.id})
+        assert resp.status_code == 400
+
+
+class TestGroupingStrategy:
+    """P4 (#618): per-subtree grouping strategy."""
+
+    def test_set_off_ungroups_subtree(self, client, db):
+        from app.models import VariantGroup, GroupingStrategy
+        creator = make_creator(db)
+        a = make_model(db, creator, name="Goblin Supported", character="Goblin")
+        b = make_model(db, creator, name="Goblin Unsupported", character="Goblin")
+        # Put them in an auto group so we can see "off" tear it down.
+        g = VariantGroup(creator_id=creator.id, label="Goblin", source="auto")
+        db.add(g); db.flush()
+        a.variant_group_id = g.id; b.variant_group_id = g.id
+        commit_all(db)
+        parent = a.folder_path.rsplit("/", 1)[0]
+
+        resp = client.post("/models/grouping-strategy", json={"path": parent, "strategy": "off"})
+        assert resp.status_code == 200
+        assert db.query(GroupingStrategy).filter_by(path=parent).count() == 1
+        db.refresh(a); db.refresh(b)
+        assert a.variant_group_id is None and b.variant_group_id is None
+
+    def test_set_auto_clears_override(self, client, db):
+        from app.models import GroupingStrategy
+        creator = make_creator(db)
+        a = make_model(db, creator, name="X")
+        commit_all(db)
+        parent = a.folder_path.rsplit("/", 1)[0]
+        db.add(GroupingStrategy(path=parent, strategy="off")); commit_all(db)
+
+        resp = client.post("/models/grouping-strategy", json={"path": parent, "strategy": "auto"})
+        assert resp.status_code == 200
+        assert db.query(GroupingStrategy).filter_by(path=parent).count() == 0
+
+    def test_get_effective_strategy_nearest_ancestor(self, client, db):
+        from app.models import GroupingStrategy
+        db.add(GroupingStrategy(path="/lib/Creator", strategy="off"))
+        db.add(GroupingStrategy(path="/lib/Creator/sub", strategy="auto"))
+        commit_all(db)
+
+        r1 = client.get("/models/grouping-strategy", params={"path": "/lib/Creator/sub/Model"}).json()
+        assert r1["strategy"] == "auto"
+        r2 = client.get("/models/grouping-strategy", params={"path": "/lib/Creator/other/Model"}).json()
+        assert r2["strategy"] == "off"
+        r3 = client.get("/models/grouping-strategy", params={"path": "/elsewhere/Model"}).json()
+        assert r3["strategy"] == "auto"
+
+    def test_invalid_strategy_rejected(self, client, db):
+        resp = client.post("/models/grouping-strategy", json={"path": "/x", "strategy": "bogus"})
+        assert resp.status_code == 400

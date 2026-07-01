@@ -33,6 +33,20 @@ class STLFileRead(BaseModel):
         from_attributes = True
 
 
+class VariantGroupRead(BaseModel):
+    """Durable variant group (#613) — surfaced for the explain tooltip + group views."""
+    id: int
+    creator_id: int
+    label: Optional[str] = None
+    rep_model_id: Optional[int] = None
+    source: str = "auto"            # "auto" | "manual"
+    reason: Optional[str] = None
+    confidence: Optional[float] = None
+
+    class Config:
+        from_attributes = True
+
+
 class ModelBase(BaseModel):
     name: str
     folder_path: str
@@ -43,6 +57,8 @@ class ModelRead(ModelBase):
     native_folder_path: Optional[str] = None
     title: Optional[str] = None
     character: Optional[str] = None
+    variant_group_id: Optional[int] = None
+    variant_group: Optional["VariantGroupRead"] = None  # explain: reason/confidence/source
     variant_count: int = 1
     description: Optional[str] = None
     notes: Optional[str] = None
@@ -54,6 +70,7 @@ class ModelRead(ModelBase):
     removed_auto_tags: list = []
     category: Optional[str] = None
     custom_attributes: dict = {}
+    parsed_attributes: dict = {}  # scanner-detected: support_status, cut_status, slicer, version
     needs_review: bool = False
     is_inbox: bool = False
     nsfw: bool = False
@@ -76,6 +93,11 @@ class ModelRead(ModelBase):
     @classmethod
     def _coerce_list(cls, v: object) -> list:
         return v if isinstance(v, list) else []
+
+    @field_validator("parsed_attributes", mode="before")
+    @classmethod
+    def _coerce_dict(cls, v: object) -> dict:
+        return v if isinstance(v, dict) else {}
     rating: Optional[float] = None
     download_count: Optional[int] = None
     creator_id: Optional[int] = None
@@ -273,6 +295,32 @@ class BatchSetGroupBody(BaseModel):
     character: Optional[str] = None  # None = explicitly ungroup all; string = target group name
 
 
+class GroupMergeBody(BaseModel):
+    """Merge models into one manual variant group (#617). Creates the group if
+    group_id is omitted; otherwise extends the existing group."""
+    model_ids: list[int]
+    group_id: Optional[int] = None
+    label: Optional[str] = None
+
+
+class GroupSplitBody(BaseModel):
+    """Remove members from a group (#617). They become ungrouped (variant_group_id
+    = NULL). The remaining group is marked manual so a rescan won't undo the split."""
+    model_ids: list[int]
+
+
+class GroupPatchBody(BaseModel):
+    label: Optional[str] = None
+    rep_model_id: Optional[int] = None
+
+
+class GroupingStrategyBody(BaseModel):
+    """Set a per-subtree grouping strategy (#618). strategy ∈ {auto, off}; "auto"
+    clears any override (restores the default proposal engine for the subtree)."""
+    path: str
+    strategy: str  # "auto" | "off"
+
+
 class InboxScanRequest(BaseModel):
     path: str
 
@@ -282,6 +330,7 @@ class ScanRootCreate(BaseModel):
     layout: str = "{creator}"
     name: Optional[str] = None
     is_writable: bool = False
+    group_by_character: bool = False
 
 
 class ScanRootUpdate(BaseModel):
@@ -289,6 +338,7 @@ class ScanRootUpdate(BaseModel):
     enabled: Optional[bool] = None
     name: Optional[str] = None
     is_writable: Optional[bool] = None
+    group_by_character: Optional[bool] = None
 
 
 class LibraryRead(BaseModel):

@@ -99,7 +99,6 @@ _MODIFIERS: list[tuple[re.Pattern, str]] = [
     (re.compile(r"\bpresupported\b",                re.I), "pre-supported"),
     (re.compile(r"\bpre[-\s]?sup\b",                re.I), "pre-supported"),
     (re.compile(r"\bpresup\b",                      re.I), "pre-supported"),
-    (re.compile(r"\bsupported\b",                   re.I), "pre-supported"),
     (re.compile(r"\buncut\b",                       re.I), "uncut"),
     (re.compile(r"\bcomplete\b",                    re.I), "complete"),
     (re.compile(r"\bcommercial\b",                  re.I), "commercial"),
@@ -234,6 +233,123 @@ def extract_character_name(folder_name: str) -> str:
     return _strip_signal_tokens(folder_name) or folder_name
 
 
+# ---------------------------------------------------------------------------
+# Structured attributes — typed scalar values, not flat tags. Each describes a
+# *variant* dimension of a product (how it was prepared / sliced), surfaced as a
+# filterable attribute rather than buried in the display name. Separators are
+# normalised to spaces first so "_"/"-"-glued tokens still hit the \b anchors.
+# ---------------------------------------------------------------------------
+
+# Order matters: more specific statuses are tested first so "unsupported" and
+# "pre-supported" are never misread as plain "supported".
+_SUPPORT_STATUS_RULES: list[tuple[re.Pattern, str]] = [
+    (re.compile(r"\b(?:un[\s_-]?supported|no[\s_-]?supports?|nosupports?)\b", re.I), "unsupported"),
+    (re.compile(r"\b(?:pre[\s_-]?supported|presupport(?:ed)?|pre[\s_-]?sup|presup)\b", re.I), "pre-supported"),
+    (re.compile(r"\bsupport(?:ed|s)?\b", re.I), "supported"),
+]
+
+_CUT_STATUS_RULES: list[tuple[re.Pattern, str]] = [
+    (re.compile(r"\b(?:full[\s_-]?cut(?:s|ted)?|fullcut(?:ted)?)\b", re.I), "full-cut"),
+    (re.compile(r"\bhollow(?:ed)?\b", re.I), "hollow"),
+    (re.compile(r"\bsolid\b", re.I), "solid"),
+    (re.compile(r"\bsplit\b", re.I), "split"),
+    (re.compile(r"\bmerged?\b", re.I), "merged"),
+]
+
+_SLICER_RULES: list[tuple[re.Pattern, str]] = [
+    (re.compile(r"\blychee\b", re.I), "lychee"),
+    (re.compile(r"\bchitubox\b", re.I), "chitubox"),
+]
+
+# "v2", "v1.1" style version markers. Word forms ("final", "fixed") are
+# deliberately NOT treated as versions — they collide with real names such as
+# "Final Fantasy".
+_VERSION_NUM = re.compile(r"\bv(\d+(?:\.\d+)?)\b", re.I)
+
+
+def _spaced(name: str) -> str:
+    """Normalise underscore/dash separators to spaces for \\b-anchored matching."""
+    return re.sub(r"[_\-]+", " ", name)
+
+
+def _first_match(name: str, rules: list[tuple[re.Pattern, str]]) -> Optional[str]:
+    spaced = _spaced(name)
+    for pattern, value in rules:
+        if pattern.search(spaced):
+            return value
+    return None
+
+
+def support_status(name: str) -> Optional[str]:
+    """"unsupported" | "pre-supported" | "supported" | None."""
+    return _first_match(name, _SUPPORT_STATUS_RULES)
+
+
+def cut_status(name: str) -> Optional[str]:
+    """"full-cut" | "hollow" | "solid" | "split" | "merged" | None."""
+    return _first_match(name, _CUT_STATUS_RULES)
+
+
+def slicer(name: str) -> Optional[str]:
+    """"lychee" | "chitubox" | None."""
+    return _first_match(name, _SLICER_RULES)
+
+
+def version(name: str) -> Optional[str]:
+    """Normalised version marker ("v2", "v1.1") or None."""
+    m = _VERSION_NUM.search(_spaced(name))
+    return f"v{m.group(1)}" if m else None
+
+
+def parsed_attributes(name: str) -> dict[str, str]:
+    """All structured variant attributes detected in a name, omitting None."""
+    detected = {
+        "support_status": support_status(name),
+        "cut_status": cut_status(name),
+        "slicer": slicer(name),
+        "version": version(name),
+    }
+    return {k: v for k, v in detected.items() if v is not None}
+
+
+# ---------------------------------------------------------------------------
+# Display name — a clean, human-readable product name for the UI, derived from
+# the same strip pipeline as the variant-grouping key but title-cased and with
+# version markers removed.
+# ---------------------------------------------------------------------------
+
+def _titlecase_token(token: str) -> str:
+    """Capitalise a token while preserving stylised forms.
+
+    Left untouched: tokens containing a digit ("2B", "CA3D"), already
+    mixed-case tokens ("McGee"), and short all-caps acronyms ("APC", "JSC").
+    Everything else is capitalised ("ada" -> "Ada").
+    """
+    if any(ch.isdigit() for ch in token):
+        return token
+    if token != token.lower() and token != token.upper():
+        return token
+    if token.isupper() and len(token) <= 4:
+        return token
+    return token.capitalize()
+
+
+def display_name(folder_name: str, creator_name: str | None = None) -> str:
+    """Derive a clean, title-cased display name from a raw folder name.
+
+    Reuses character_key (scale/type/modifier/support-format/junk + creator-tag
+    stripping), additionally drops "v2"-style version markers, then title-cases
+    with a guard for stylised tokens. Falls back to the raw folder name when
+    nothing product-identifying remains (a pure variant descriptor).
+    """
+    key = character_key(folder_name, creator_name)
+    key = _VERSION_NUM.sub(" ", key)
+    key = re.sub(r"\s+", " ", key).strip(" -_")
+    if not key:
+        return folder_name
+    return " ".join(_titlecase_token(t) for t in key.split())
+
+
 # Folder names that describe structure or a variant (support status, container,
 # render folder) rather than a character/product. These must never be used as the
 # variant-grouping "character" — otherwise every creator's "Presupport" / "75mm" /
@@ -259,7 +375,7 @@ _STRUCTURAL_EXACT: set[str] = {
 # them in too. Word boundaries keep "unsupported" from matching inside other words.
 _SUPPORT_FORMAT = re.compile(
     r"\b("
-    r"un[\s_-]?supported|presupport(?:ed)?|unsupported|supports?|presup|pre|"
+    r"un[\s_-]?supported|presupport(?:ed)?|unsupported|support(?:ed|s)?|presup|pre|"
     r"no[\s_-]?supports?|nosupports?|"
     r"solid|hollow|"
     r"without|uncut|no[\s_-]?cuts?|full[\s_-]?cut(?:s|ted)?|cut(?:s|ted)?|"

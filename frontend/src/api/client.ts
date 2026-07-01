@@ -78,6 +78,27 @@ export const PRINT_STATUS_LABELS: Record<PrintStatus, string> = {
   printed: "Printed",
 };
 
+/** Scanner-detected structured variant attributes (#608). All optional —
+ *  only present when the folder name carried the signal. */
+export interface ParsedAttributes {
+  support_status?: "unsupported" | "pre-supported" | "supported";
+  cut_status?: "solid" | "hollow" | "split" | "merged" | "full-cut";
+  slicer?: "lychee" | "chitubox";
+  version?: string;
+}
+
+/** Durable variant group (#613). `source` distinguishes scanner-proposed
+ *  ("auto") groups from user-curated ("manual") ones. */
+export interface VariantGroup {
+  id: number;
+  creator_id: number;
+  label: string | null;
+  rep_model_id: number | null;
+  source: "auto" | "manual";
+  reason: string | null;
+  confidence: number | null;
+}
+
 export interface Model {
   id: number;
   name: string;
@@ -85,6 +106,8 @@ export interface Model {
   description: string | null;
   notes: string | null;
   character: string | null;
+  variant_group_id: number | null;
+  variant_group: VariantGroup | null;
   variant_count?: number;
   folder_path: string;
   native_folder_path: string | null;
@@ -95,6 +118,7 @@ export interface Model {
   auto_tags: string[];
   removed_auto_tags: string[];
   category: string | null;
+  parsed_attributes: ParsedAttributes;
   needs_review: boolean;
   is_inbox: boolean;
   nsfw: boolean;
@@ -170,6 +194,7 @@ export interface ScanRoot {
   last_scanned: string | null;
   name: string | null;
   is_writable: boolean;
+  group_by_character: boolean;
 }
 
 export interface Library {
@@ -1042,8 +1067,10 @@ export const api = {
       }),
     characters: (creatorId: number) =>
       request<string[]>(`/models/characters?creator_id=${creatorId}`),
-    variants: (creatorId: number, character: string) =>
-      request<ModelList>(`/models/variants?creator_id=${creatorId}&character=${encodeURIComponent(character)}`),
+    variants: (creatorId: number, character: string, groupId?: number | null) => {
+      const gid = groupId ? `&group_id=${groupId}` : "";
+      return request<ModelList>(`/models/variants?creator_id=${creatorId}&character=${encodeURIComponent(character)}${gid}`);
+    },
     splitPack: (id: number) =>
       request<{ ok: boolean; created: number; message: string }>(`/models/${id}/split`, {
         method: "POST",
@@ -1067,6 +1094,38 @@ export const api = {
           body: JSON.stringify({ model_ids: modelIds, character }),
         },
       ),
+    // Manual variant groups (#617): merge selected models, split members out,
+    // relabel / set rep.
+    mergeGroup: (modelIds: number[], opts: { groupId?: number; label?: string } = {}) =>
+      request<VariantGroup>("/models/groups/merge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model_ids: modelIds, group_id: opts.groupId, label: opts.label }),
+      }),
+    splitGroup: (groupId: number, modelIds: number[]) =>
+      request<{ ok: boolean; removed: number[] }>(`/models/groups/${groupId}/split`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model_ids: modelIds }),
+      }),
+    patchGroup: (groupId: number, body: { label?: string; rep_model_id?: number }) =>
+      request<VariantGroup>(`/models/groups/${groupId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      }),
+    // Per-subtree grouping strategy (#618): "off" stops auto-grouping a folder,
+    // "auto" restores it.
+    getGroupingStrategy: (path: string) =>
+      request<{ path: string; strategy: "auto" | "off" }>(
+        `/models/grouping-strategy?path=${encodeURIComponent(path)}`,
+      ),
+    setGroupingStrategy: (path: string, strategy: "auto" | "off") =>
+      request<{ ok: boolean; path: string; strategy: string }>("/models/grouping-strategy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path, strategy }),
+      }),
     // Persist a manual model order within a variant group (#399). Empty `ids`
     // resets the group to its heuristic order.
     reorderGroup: (creatorId: number, character: string, ids: number[]) =>
@@ -1187,13 +1246,13 @@ export const api = {
       }),
     roots: () => request<ScanRoot[]>("/scan/roots"),
     libraries: () => request<Library[]>("/scan/libraries"),
-    addRoot: (path: string, layout?: string, opts?: { name?: string; is_writable?: boolean }) =>
+    addRoot: (path: string, layout?: string, opts?: { name?: string; is_writable?: boolean; group_by_character?: boolean }) =>
       request<ScanRoot>("/scan/roots", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ path, layout: layout || "{creator}", ...opts }),
       }),
-    updateRoot: (id: number, body: { layout?: string; enabled?: boolean; name?: string; is_writable?: boolean }) =>
+    updateRoot: (id: number, body: { layout?: string; enabled?: boolean; name?: string; is_writable?: boolean; group_by_character?: boolean }) =>
       request<ScanRoot>(`/scan/roots/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },

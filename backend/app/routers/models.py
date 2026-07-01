@@ -4,18 +4,19 @@ import shutil
 from datetime import timedelta
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
-from sqlalchemy import func, exists, select
+from sqlalchemy import func, exists, select, case, and_, cast, String
 from sqlalchemy.dialects.sqlite import insert as _sqlite_insert
 from sqlalchemy.orm import Session, joinedload
 
 from app.database import get_db
-from app.models import Model, Creator, ModelTag, CollectionModel, GroupOverride, ScanRoot, STLFile
+from app.models import Model, Creator, ModelTag, CollectionModel, GroupOverride, ScanRoot, STLFile, VariantGroup, GroupingStrategy
 from app.schemas import (
     ModelList, ModelRead, ModelDetail, CreatorRead,
     ModelUpdate, ThumbnailUpdate, ThumbnailFromUrl, BatchThumbnailFromUrl, FavoriteUpdate, RatingUpdate, QueueReorder, GroupReorder,
     PrintStatusUpdate, ExcludeUpdate, STLFileUpdate, BulkTagUpdate,
     BulkExcludeUpdate, BulkReviewUpdate, BulkEnrichUpdate, SetGroupBody, BatchSetGroupBody,
     BatchSetSourceUrl, GroupRepUpdate, BulkDeleteRequest, BulkDeleteResponse,
+    GroupMergeBody, GroupSplitBody, GroupPatchBody, VariantGroupRead, GroupingStrategyBody,
 )
 
 _log = logging.getLogger(__name__)
@@ -23,8 +24,8 @@ from app.services.thumbnails import ThumbnailDownloadError, download_thumbnail, 
 from app.services.variant_sync import propagate_source_url
 from app.services.scrapers.base import detect_site
 from urllib.parse import urlparse
-from app.services.tag_sync import sync_model_tags
-from app.services import scanner
+from app.services.tag_sync import sync_model_tags, bulk_sync_model_tags
+from app.services import scanner, grouping
 from app.services.scanner import resolve_creator
 from app.config import settings
 from app.utils import utcnow
@@ -51,6 +52,8 @@ def _apply_filters(
     min_rating: int | None = None,
     excluded: bool = False,
     added_within_days: int | None = None,
+    support_status: str | None = None,
+    slicer: str | None = None,
 ):
     """Apply standard Library filters to a Model query. Does not handle sort, page, or character."""
     q = q.filter(Model.excluded == excluded)
@@ -105,6 +108,16 @@ def _apply_filters(
         q = q.filter(Model.user_rating != None, Model.user_rating >= min_rating)
     if added_within_days is not None:
         q = q.filter(Model.created_at >= utcnow() - timedelta(days=added_within_days))
+    # Scanner-detected variant attributes live in the parsed_attributes JSON blob.
+    # json_extract returns the scalar value (or NULL when the key is absent).
+    if support_status:
+        q = q.filter(
+            func.json_extract(Model.parsed_attributes, "$.support_status") == support_status
+        )
+    if slicer:
+        q = q.filter(
+            func.json_extract(Model.parsed_attributes, "$.slicer") == slicer
+        )
     return q
 
 
@@ -185,35 +198,60 @@ def _rep_order():
     )
 
 
-def _collapse_variants(q):
-    """Collapse multi-variant characters to one representative, entirely in SQL.
+def _group_key_sql():
+    """SQL grouping key (#616): the durable variant_group_id when set, else the
+    legacy (creator_id, character) pair. NULL when the model can't group (no group
+    and no creator/character) — those rows are always kept un-collapsed.
 
-    A model is hidden only when it belongs to a group (same creator_id +
-    character) of size > 1 and is not that group's representative. NULL-character
-    or NULL-creator models never collapse. Done with window functions so the
-    filtered set is never materialized in Python.
+    String-encoded so a single window partition spans both regimes; the "vg:" /
+    "ch:" prefixes keep a group id from ever colliding with a creator id."""
+    vg = Model.variant_group_id
+    return func.coalesce(
+        case((vg.isnot(None), "vg:" + cast(vg, String)), else_=None),
+        case(
+            (and_(Model.creator_id.isnot(None), Model.character.isnot(None)),
+             "ch:" + cast(Model.creator_id, String) + ":" + Model.character),
+            else_=None,
+        ),
+    )
+
+
+def _group_key_py(m) -> str | None:
+    """Python mirror of _group_key_sql for in-memory lookups (must stay in sync)."""
+    if m.variant_group_id is not None:
+        return f"vg:{m.variant_group_id}"
+    if m.creator_id is not None and m.character:
+        return f"ch:{m.creator_id}:{m.character}"
+    return None
+
+
+def _collapse_variants(q):
+    """Collapse a variant group to one representative, entirely in SQL.
+
+    Grouping prefers the durable variant_group_id (#613) and falls back to the
+    legacy (creator_id, character) pair — see _group_key_sql. A model is hidden
+    only when it belongs to a group of size > 1 and is not its representative. The
+    designated rep (variant_groups.rep_model_id) wins; otherwise the heuristic
+    _rep_order decides. Rows that can't group are always kept.
     """
-    sub = q.with_entities(
-        Model.id.label("id"),
-        Model.creator_id.label("cr"),
-        Model.character.label("ch"),
-        func.count().over(
-            partition_by=(Model.creator_id, Model.character)
-        ).label("cnt"),
-        func.row_number().over(
-            partition_by=(Model.creator_id, Model.character),
-            order_by=_rep_order(),
-        ).label("rn"),
-    ).subquery()
-    # Keep group reps (rn == 1) and lone members (cnt == 1). SQL partitions treat
-    # all NULLs as one group, so NULL creator/character rows would collapse into a
-    # single survivor — guard them explicitly: anything that can't group is kept.
-    keep = (
-        select(sub.c.id)
-        .where(
-            (sub.c.cr == None) | (sub.c.ch == None)
-            | (sub.c.cnt == 1) | (sub.c.rn == 1)
+    gkey = _group_key_sql()
+    # is_rep_pref: a model that is its group's designated rep sorts first (0).
+    is_rep_pref = case((Model.id == VariantGroup.rep_model_id, 0), else_=1)
+    sub = (
+        q.outerjoin(VariantGroup, Model.variant_group_id == VariantGroup.id)
+        .with_entities(
+            Model.id.label("id"),
+            gkey.label("gk"),
+            func.count().over(partition_by=gkey).label("cnt"),
+            func.row_number().over(
+                partition_by=gkey,
+                order_by=(is_rep_pref, *_rep_order()),
+            ).label("rn"),
         )
+        .subquery()
+    )
+    keep = select(sub.c.id).where(
+        (sub.c.gk == None) | (sub.c.cnt == 1) | (sub.c.rn == 1)
     )
     return q.filter(Model.id.in_(keep))
 
@@ -223,15 +261,22 @@ def _resolve_group_rep(q, model_id: int) -> int:
 
     Used by neighbors so Prev/Next on a grouped non-rep still pages from the
     representative card. Returns model_id unchanged when it isn't in the filtered
-    set or can't group (NULL creator/character)."""
+    set or can't group."""
     row = q.filter(Model.id == model_id).with_entities(
-        Model.creator_id, Model.character
+        Model.creator_id, Model.character, Model.variant_group_id
     ).first()
-    if row is None or row.creator_id is None or not row.character:
+    if row is None:
+        return model_id
+    gq = q.outerjoin(VariantGroup, Model.variant_group_id == VariantGroup.id)
+    is_rep_pref = case((Model.id == VariantGroup.rep_model_id, 0), else_=1)
+    if row.variant_group_id is not None:
+        gq = gq.filter(Model.variant_group_id == row.variant_group_id)
+    elif row.creator_id is not None and row.character:
+        gq = gq.filter(Model.creator_id == row.creator_id, Model.character == row.character)
+    else:
         return model_id
     rep = (
-        q.filter(Model.creator_id == row.creator_id, Model.character == row.character)
-        .order_by(*_rep_order())
+        gq.order_by(is_rep_pref, *_rep_order())
         .with_entities(Model.id)
         .first()
     )
@@ -259,6 +304,8 @@ def list_models(
     min_rating: int | None = Query(None, ge=1, le=5),
     excluded: bool = False,  # default: hide user-excluded models; pass true for the Excluded view
     added_within_days: int | None = Query(None, ge=1, le=365),  # "Recently added" window (#170)
+    support_status: str | None = None,
+    slicer: str | None = None,
     sort: str = Query("name"),  # "name" | "added" | "creator" | "rating" | "queue" | "queued_at" | "printed_at"
     group_variants: bool = Query(True),
     db: Session = Depends(get_db),
@@ -271,6 +318,7 @@ def list_models(
         nsfw=nsfw, is_favorite=is_favorite,
         print_status=print_status, exclude_printed=exclude_printed, min_rating=min_rating,
         excluded=excluded, added_within_days=added_within_days,
+        support_status=support_status, slicer=slicer,
     )
     # character filter is list_models-only (not exposed via Library URL state)
     if character:
@@ -283,35 +331,53 @@ def list_models(
         q = _collapse_variants(q)
 
     total = q.count()
-    items = _apply_sort(q, sort).offset((page - 1) * page_size).limit(page_size).all()
+    items = (
+        _apply_sort(q, sort)
+        .options(joinedload(Model.variant_group))  # explain tooltip without N+1
+        .offset((page - 1) * page_size)
+        .limit(page_size)
+        .all()
+    )
 
-    # Build variant count map for annotating group representatives. Scope the
-    # GROUP BY to the (creator_id, character) pairs actually on this page so the
-    # query never scans the whole table (#393).
-    vc_map: dict[tuple[int, str], int] = {}
+    # Build variant count map for annotating group representatives, keyed by the
+    # group key (vg:<id> or ch:<creator>:<char>). Scoped to the groups actually on
+    # this page so the query never scans the whole table (#393). Two narrow queries
+    # — one per regime — keep the count exact under the dual grouping model.
+    vc_map: dict[str, int] = {}
     if group_variants and items:
-        pairs = {(m.creator_id, m.character) for m in items
-                 if m.creator_id is not None and m.character}
-        if pairs:
-            count_rows = (
+        vg_ids = {m.variant_group_id for m in items if m.variant_group_id is not None}
+        ch_pairs = {(m.creator_id, m.character) for m in items
+                    if m.variant_group_id is None and m.creator_id is not None and m.character}
+        if vg_ids:
+            for gid, cnt in (
+                db.query(Model.variant_group_id, func.count(Model.id))
+                .filter(Model.excluded == False, Model.variant_group_id.in_(vg_ids))
+                .group_by(Model.variant_group_id)
+                .having(func.count(Model.id) > 1)
+            ):
+                vc_map[f"vg:{gid}"] = cnt
+        if ch_pairs:
+            for cr, ch, cnt in (
                 db.query(Model.creator_id, Model.character, func.count(Model.id))
                 .filter(
                     Model.excluded == False,
+                    Model.variant_group_id == None,
                     Model.character != None,
-                    Model.creator_id.in_({p[0] for p in pairs}),
-                    Model.character.in_({p[1] for p in pairs}),
+                    Model.creator_id.in_({p[0] for p in ch_pairs}),
+                    Model.character.in_({p[1] for p in ch_pairs}),
                 )
                 .group_by(Model.creator_id, Model.character)
                 .having(func.count(Model.id) > 1)
-                .all()
-            )
-            vc_map = {(r[0], r[1]): r[2] for r in count_rows if (r[0], r[1]) in pairs}
+            ):
+                if (cr, ch) in ch_pairs:
+                    vc_map[f"ch:{cr}:{ch}"] = cnt
 
     item_reads = []
     for m in items:
         r = ModelRead.model_validate(m)
-        if group_variants and m.character and m.creator_id:
-            vc = vc_map.get((m.creator_id, m.character), 1)
+        if group_variants:
+            key = _group_key_py(m)
+            vc = vc_map.get(key, 1) if key else 1
             if vc > 1:
                 r = r.model_copy(update={"variant_count": vc})
         item_reads.append(r)
@@ -493,30 +559,33 @@ def list_characters(creator_id: int = Query(...), db: Session = Depends(get_db))
 
 @router.get("/variants", response_model=ModelList)
 def list_variants(
-    creator_id: int = Query(...),
-    character: str = Query(...),
+    creator_id: int | None = Query(None),
+    character: str | None = Query(None),
+    group_id: int | None = Query(None),
     db: Session = Depends(get_db),
 ):
-    """Return all variant models for a (creator, character) group."""
-    from sqlalchemy import case as sa_case
-    has_thumb = sa_case(
-        (
-            (Model.thumbnail_path != None) | (Model.thumbnail_url != None),
-            0,
-        ),
+    """Return all variant models for a group.
+
+    Prefer the durable `group_id` (#616); otherwise fall back to the legacy
+    (creator_id, character) pair. The designated rep (variant_groups.rep_model_id)
+    leads, then the heuristic rep order."""
+    has_thumb = case(
+        ((Model.thumbnail_path != None) | (Model.thumbnail_url != None), 0),
         else_=1,
     )
+    q = db.query(Model).filter(Model.excluded == False)
+    if group_id is not None:
+        q = q.filter(Model.variant_group_id == group_id)
+    elif creator_id is not None and character is not None:
+        q = q.filter(Model.creator_id == creator_id, Model.character == character)
+    else:
+        raise HTTPException(status_code=400, detail="Provide group_id or (creator_id and character).")
+
+    q = q.outerjoin(VariantGroup, Model.variant_group_id == VariantGroup.id)
+    is_rep_pref = case((Model.id == VariantGroup.rep_model_id, 0), else_=1)
     items = (
-        db.query(Model)
-        .filter(
-            Model.creator_id == creator_id,
-            Model.character == character,
-            Model.excluded == False,
-        )
-        # Mirrors _rep_order so the group page shows the same order that decides the
-        # card rep: designated rep first (#193), then manual drag order (#399,
-        # NULLs last), then thumbnailed members, then name.
-        .order_by(
+        q.order_by(
+            is_rep_pref,
             Model.is_group_rep.desc(),
             Model.variant_order.is_(None),
             Model.variant_order.asc(),
@@ -567,8 +636,8 @@ def bulk_tag_models(body: BulkTagUpdate, db: Session = Depends(get_db)):
             current = [t for t in current if t not in remove_set]
         model.tags = current
         model.updated_at = utcnow()
-        sync_model_tags(model, db)
 
+    bulk_sync_model_tags(models_to_update, db)
     db.commit()
     return {"ok": True, "updated": len(models_to_update)}
 
@@ -1087,6 +1156,11 @@ def _apply_group_override(db: Session, model: Model, character: str | None) -> N
     )
     db.execute(stmt)
     model.character = character
+    # A user character override must win under the group-preferring read path
+    # (#616): clear any auto variant_group_id so grouping falls back to this
+    # character (or ungroups when character is None). P3 introduces proper manual
+    # groups; until then character overrides remain the manual-grouping mechanism.
+    model.variant_group_id = None
     model.updated_at = utcnow()
 
 
@@ -1139,6 +1213,171 @@ def batch_set_group(body: BatchSetGroupBody, db: Session = Depends(get_db)):
         "updated": [m.id for m in models],
         "missing": [mid for mid in requested if mid not in found],
     }
+
+
+# ---------------------------------------------------------------------------
+# Manual variant groups (#617): user-curated merge / split / relabel. These set
+# source="manual" so the scanner's proposal engine never reassigns the members.
+# ---------------------------------------------------------------------------
+
+def _prune_empty_group(db: Session, group_id: int | None) -> None:
+    """Delete a group that has dropped below 2 members; clear the lone member."""
+    if group_id is None:
+        return
+    remaining = db.query(Model).filter(Model.variant_group_id == group_id).all()
+    if len(remaining) < 2:
+        for m in remaining:
+            m.variant_group_id = None
+        grp = db.get(VariantGroup, group_id)
+        if grp is not None:
+            db.delete(grp)
+
+
+@router.post("/groups/merge", response_model=VariantGroupRead)
+def merge_group(body: GroupMergeBody, db: Session = Depends(get_db)):
+    """Merge models into one manual variant group. Creates the group when
+    group_id is omitted, else extends it. Marks the group manual so a rescan
+    won't undo it. 409 while a scan is running."""
+    if scanner.get_status()["running"]:
+        raise HTTPException(status_code=409, detail="A scan is running — try again after it completes.")
+    ids = list(dict.fromkeys(body.model_ids))
+    if len(ids) < 2 and body.group_id is None:
+        raise HTTPException(status_code=400, detail="Need at least two models to form a group.")
+
+    models = db.query(Model).filter(Model.id.in_(ids)).all()
+    if not models:
+        raise HTTPException(status_code=400, detail="No valid models to merge.")
+    creator_ids = {m.creator_id for m in models}
+    if len(creator_ids) > 1:
+        raise HTTPException(status_code=400, detail="Can't merge models from different creators.")
+    creator_id = next(iter(creator_ids))
+
+    if body.group_id is not None:
+        group = db.get(VariantGroup, body.group_id)
+        if group is None:
+            raise HTTPException(status_code=404, detail="Group not found.")
+        if body.label is not None:
+            group.label = body.label
+    else:
+        label = body.label or models[0].character or models[0].name
+        group = VariantGroup(
+            creator_id=creator_id, label=label, source="manual",
+            reason="manual", confidence=1.0,
+        )
+        db.add(group)
+        db.flush()
+    group.source = "manual"
+
+    orphaned = {m.variant_group_id for m in models if m.variant_group_id not in (None, group.id)}
+    for m in models:
+        m.variant_group_id = group.id
+    if group.rep_model_id is None:
+        group.rep_model_id = next((m.id for m in models if m.is_group_rep), models[0].id)
+    db.flush()
+    for gid in orphaned:
+        _prune_empty_group(db, gid)
+    db.commit()
+    db.refresh(group)
+    return group
+
+
+@router.post("/groups/{group_id}/split", response_model=dict)
+def split_group(group_id: int, body: GroupSplitBody, db: Session = Depends(get_db)):
+    """Remove members from a group (they become ungrouped). The remaining group is
+    marked manual so the split sticks across rescans. Dissolves the group if it
+    drops below two members. 409 while a scan is running."""
+    if scanner.get_status()["running"]:
+        raise HTTPException(status_code=409, detail="A scan is running — try again after it completes.")
+    group = db.get(VariantGroup, group_id)
+    if group is None:
+        raise HTTPException(status_code=404, detail="Group not found.")
+    ids = set(body.model_ids)
+    removed = (
+        db.query(Model)
+        .filter(Model.variant_group_id == group_id, Model.id.in_(ids))
+        .all()
+    )
+    for m in removed:
+        m.variant_group_id = None
+    group.source = "manual"
+    # If the designated rep left, fall back to a remaining member.
+    if group.rep_model_id in ids:
+        rest = db.query(Model).filter(Model.variant_group_id == group_id).first()
+        group.rep_model_id = rest.id if rest else None
+    db.flush()
+    _prune_empty_group(db, group_id)
+    db.commit()
+    return {"ok": True, "removed": [m.id for m in removed]}
+
+
+@router.patch("/groups/{group_id}", response_model=VariantGroupRead)
+def patch_group(group_id: int, body: GroupPatchBody, db: Session = Depends(get_db)):
+    """Relabel a group or set its representative. Marks the group manual."""
+    if scanner.get_status()["running"]:
+        raise HTTPException(status_code=409, detail="A scan is running — try again after it completes.")
+    group = db.get(VariantGroup, group_id)
+    if group is None:
+        raise HTTPException(status_code=404, detail="Group not found.")
+    if body.label is not None:
+        group.label = body.label
+    if body.rep_model_id is not None:
+        rep = db.get(Model, body.rep_model_id)
+        if rep is None or rep.variant_group_id != group_id:
+            raise HTTPException(status_code=400, detail="rep_model_id must be a member of the group.")
+        group.rep_model_id = body.rep_model_id
+    group.source = "manual"
+    db.commit()
+    db.refresh(group)
+    return group
+
+
+@router.get("/grouping-strategy")
+def get_grouping_strategy(path: str = Query(...), db: Session = Depends(get_db)):
+    """Effective grouping strategy for a folder path (nearest ancestor, default auto)."""
+    strategies = [(grouping._norm(p), s) for (p, s) in db.query(GroupingStrategy.path, GroupingStrategy.strategy)]
+    return {"path": path, "strategy": grouping._resolve_strategy(path, strategies)}
+
+
+@router.post("/grouping-strategy")
+def set_grouping_strategy(body: GroupingStrategyBody, db: Session = Depends(get_db)):
+    """Set a per-subtree grouping strategy (#618). "off" leaves the subtree's
+    models ungrouped; "auto" clears the override (restores the proposal engine).
+    Re-runs the engine for affected creators so the change shows immediately.
+    409 while a scan is running."""
+    if scanner.get_status()["running"]:
+        raise HTTPException(status_code=409, detail="A scan is running — try again after it completes.")
+    if body.strategy not in ("auto", "off"):
+        raise HTTPException(status_code=400, detail="strategy must be 'auto' or 'off'.")
+
+    norm = grouping._norm(body.path)
+    if body.strategy == "off":
+        stmt = (
+            _sqlite_insert(GroupingStrategy)
+            .values(path=body.path, strategy="off")
+            .on_conflict_do_update(index_elements=["path"], set_={"strategy": "off"})
+        )
+        db.execute(stmt)
+    else:
+        db.query(GroupingStrategy).filter(GroupingStrategy.path == body.path).delete()
+    db.flush()
+
+    # Re-group only the creators that actually have models under this subtree so
+    # the strategy takes effect now rather than at the next scan.
+    path_prefix = body.path.rstrip("/\\")
+    affected = (
+        db.query(Model.creator_id)
+        .filter(
+            Model.creator_id != None,  # noqa: E711
+            (Model.folder_path == body.path)
+            | Model.folder_path.like(path_prefix + "%"),
+        )
+        .distinct()
+        .all()
+    )
+    for (creator_id,) in affected:
+        grouping.regroup_creator(db, creator_id)
+    db.commit()
+    return {"ok": True, "path": body.path, "strategy": body.strategy}
 
 
 def _host_label(url: str) -> str | None:

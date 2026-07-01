@@ -48,6 +48,28 @@ def sync_model_tags(model: Model, db: Session) -> None:
     _write_model_tags(model, db)
 
 
+def bulk_sync_model_tags(models: list[Model], db: Session) -> None:
+    """Rebuild model_tags rows for multiple models in one delete pass then one
+    insert pass. Use instead of calling sync_model_tags in a loop when updating
+    many models at once."""
+    if not models:
+        return
+    ids = [m.id for m in models]
+    # Load existing rows so the session tracks their deletion properly,
+    # then flush before inserting to avoid unique-constraint collisions.
+    old_rows = db.query(ModelTag).filter(ModelTag.model_id.in_(ids)).all()
+    for row in old_rows:
+        db.delete(row)
+    db.flush()
+    new_rows = [
+        ModelTag(model_id=model.id, tag=tag, is_auto=is_auto)
+        for model in models
+        for tag, is_auto in _tag_map_for(model).items()
+    ]
+    if new_rows:
+        db.add_all(new_rows)
+
+
 def rebuild_all_tags(db: Session) -> int:
     """Full rebuild of model_tags from all models. Returns number of tag rows inserted."""
     logger.info("Rebuilding model_tags index…")

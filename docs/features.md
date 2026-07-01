@@ -79,6 +79,16 @@ Click it to open the group and see each variant individually.
 
 This keeps the grid tidy when a creator ships many cuts/versions of one model.
 
+### Group variants by character folder (opt-in)
+
+If your library is laid out as `{creator}/{character}/…` — every variant of a
+figure living somewhere under one character folder — you can skip the name
+heuristic entirely. Turn on **Group variants by character** for a scan root
+(Settings → Library, next to its layout) and the scanner treats the first folder
+below the creator as the group: *everything* beneath it becomes one variant
+group, regardless of how the sub-folders are named. Off by default; **rescan to
+apply**. Manual group overrides still win.
+
 ### Fixing mis-grouped models
 
 The scanner infers the character group from folder names — it's accurate for
@@ -376,7 +386,15 @@ can:
   Because you usually add models one creator at a time, this is much faster than
   a full library scan. The button is disabled while any scan is running.
 - **Enrich from web** — match a creator's online storefront listings against
-  your local models and bulk-apply metadata (source URLs, thumbnails, IDs).
+  your local models, then fetch each matched product's **full detail** and
+  bulk-apply the complete metadata set: title, description, tags, category,
+  license, thumbnail, source URL, and external ID. One run enriches every
+  matched model — including all variants in a group — so you no longer have to
+  open each model and run *Find on Web* by hand. Expand any match (the chevron)
+  to preview the description, tags, category, and license it would apply before
+  committing. MyMiniFactory and Cults3D use their APIs when configured (see
+  [Settings → AI & Integrations](#settings)); Gumroad is scraped. A product whose detail can't be fetched still receives the
+  shallow fields, so nothing is lost.
 
 ## Paint Shelf (Painting Guides)
 

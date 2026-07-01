@@ -33,7 +33,7 @@ from sqlalchemy import text as _sqltext, func, or_
 
 from app.database import SessionLocal
 from app.models import Creator, Model, STLFile, ScanRoot, ModelTag, CollectionModel, PackOverride, GroupOverride
-from app.services import name_parser, layout
+from app.services import name_parser, layout, grouping
 from app.services.scan_rules import (
     IgnoreMatcher, load_ignore_matcher, load_tag_rules, load_parts_names,
 )
@@ -281,10 +281,10 @@ def _prune_stale_paths(db: Session, available_root_paths: list[str]):
         n = os.path.normcase(os.path.normpath(folder_path))
         return any(n == r or n.startswith(r + os.sep) for r in roots_norm)
 
-    rows = db.query(Model.id, Model.folder_path).all()
+    rows = db.query(Model.id, Model.folder_path).filter(Model.folder_path != None).all()  # noqa: E711
     under = [r for r in rows if _under_online_root(r.folder_path)]
     total = len(under)
-    stale_ids = [r.id for r in under if r.folder_path and not Path(r.folder_path).exists()]
+    stale_ids = [r.id for r in under if not Path(r.folder_path).exists()]
     if not stale_ids:
         return 0
     if _exceeds_prune_cap(len(stale_ids), total, "folder path missing on disk"):
@@ -332,9 +332,13 @@ def _prune_ignored(db: Session, root_paths: list[str]):
                 return False
             current = parent
 
-    rows = db.query(Model.id, Model.folder_path, Model.excluded).all()
-    total = len(rows)
-    ignored_ids = [r.id for r in rows if not r.excluded and _is_ignored(r.folder_path)]
+    total = db.query(Model.id).count()
+    rows = (
+        db.query(Model.id, Model.folder_path)
+        .filter(Model.excluded == False, Model.folder_path != None)  # noqa: E711, E712
+        .all()
+    )
+    ignored_ids = [r.id for r in rows if _is_ignored(r.folder_path)]
     if not ignored_ids:
         return 0
     if _exceeds_prune_cap(len(ignored_ids), total, "matched an ignore pattern"):
@@ -375,13 +379,28 @@ def _prune_stale_models(db: Session, scan_start: datetime, root_paths: list[str]
         n = os.path.normcase(os.path.normpath(folder_path))
         return any(n == r or n.startswith(r + os.sep) for r in roots_norm)
 
-    rows = db.query(Model.id, Model.folder_path, Model.updated_at, Model.excluded).all()
-    under = [r for r in rows if _under_root(r.folder_path)]
-    total = len(under)
-    stale_ids = [
-        r.id for r in under
-        if not r.excluded and r.updated_at is not None and r.updated_at < scan_start
-    ]
+    # Load only non-excluded candidates with a stale timestamp — the common case
+    # (most models visited this scan) fetches nothing. Root membership still
+    # requires Python-side normpath comparison (see docstring re: LIKE metacharacters).
+    all_under_rows = (
+        db.query(Model.id, Model.folder_path)
+        .filter(Model.excluded == False, Model.folder_path != None)  # noqa: E711, E712
+        .all()
+    )
+    under_all = [r for r in all_under_rows if _under_root(r.folder_path)]
+    total = len(under_all)
+
+    stale_rows = (
+        db.query(Model.id, Model.folder_path)
+        .filter(
+            Model.excluded == False,  # noqa: E712
+            Model.folder_path != None,  # noqa: E711
+            Model.updated_at != None,  # noqa: E711
+            Model.updated_at < scan_start,
+        )
+        .all()
+    )
+    stale_ids = [r.id for r in stale_rows if _under_root(r.folder_path)]
     if not stale_ids:
         return 0
     if _exceeds_prune_cap(len(stale_ids), total, "not visited this run"):
@@ -462,13 +481,13 @@ def _creator_dirs_by_name(name: str, db: Session) -> list[tuple[Path, list[str]]
     Used as a fallback when _creator_dirs_for returns nothing (zero indexed
     models yet). Enables per-creator rescan to bootstrap a brand-new creator.
     """
-    results: list[tuple[Path, list[str]]] = []
+    results: list[tuple[Path, list[str], bool]] = []
     for root in db.query(ScanRoot).filter(ScanRoot.enabled == True).all():
         root_path = Path(root.path)
         roles = layout.roles_for(root.layout)
         for creator_dir, layout_tags in layout.iter_creator_dirs(root_path, roles):
             if creator_dir.name.lower() == name.lower() and creator_dir.exists():
-                results.append((creator_dir, layout_tags))
+                results.append((creator_dir, layout_tags, root.group_by_character))
     return results
 
 
@@ -477,14 +496,15 @@ def _creator_dirs_for(creator: Creator, db: Session) -> list[tuple[Path, list[st
     models, honouring each scan root's layout. Returns (creator_dir, layout_tags)
     pairs. A creator normally maps to one folder, but we handle several
     defensively (e.g. the same name under multiple {tag} branches)."""
-    roots = [(Path(r.path), layout.roles_for(r.layout))
+    roots = [(Path(r.path), layout.roles_for(r.layout), r.group_by_character)
              for r in db.query(ScanRoot).filter(ScanRoot.enabled == True).all()]
     boundaries: dict[Path, list[str]] = {}
+    group_flags: dict[Path, bool] = {}
     for (fp,) in db.query(Model.folder_path).filter(Model.creator_id == creator.id):
         if not fp:
             continue
         p = Path(fp)
-        for root, roles in roots:
+        for root, roles, grp in roots:
             try:
                 rel = p.relative_to(root)
             except ValueError:
@@ -493,9 +513,11 @@ def _creator_dirs_for(creator: Creator, db: Session) -> list[tuple[Path, list[st
             if len(rel.parts) > depth:
                 creator_dir = root.joinpath(*rel.parts[:depth + 1])
                 boundaries[creator_dir] = layout.tags_for_path(creator_dir, root, roles)
+                group_flags[creator_dir] = grp
             break
 
-    return [(d, tags) for d, tags in sorted(boundaries.items()) if d.exists()]
+    return [(d, tags, group_flags.get(d, False))
+            for d, tags in sorted(boundaries.items()) if d.exists()]
 
 
 def scan_creator(creator_id: int):
@@ -549,7 +571,7 @@ def scan_creator(creator_id: int):
                 db.query(STLFile).filter(STLFile.model_id.in_(chunk)).delete(synchronize_session=False)
             db.commit()
 
-            for creator_dir, layout_tags in dirs:
+            for creator_dir, layout_tags, grp_by_char in dirs:
                 if _cancel_requested:
                     with _state_lock:
                         _scan_state["message"] = "cancelled"
@@ -566,6 +588,7 @@ def scan_creator(creator_id: int):
                     stl_cache={},
                     last_scanned=None,  # full reindex of this creator
                     layout_tags=layout_tags,
+                    group_by_character=grp_by_char,
                 )
 
             if not _cancel_requested:
@@ -715,6 +738,7 @@ def _scan_root(root: ScanRoot, db: Session):
                 stl_cache={},
                 last_scanned=root_last_scanned,
                 layout_tags=layout_tags,
+                group_by_character=root.group_by_character,
             )
         except Exception:
             logger.exception(f"Error scanning creator: {creator_dir.name}")
@@ -725,6 +749,24 @@ def _scan_root(root: ScanRoot, db: Session):
         futures = [executor.submit(_scan_one, d, tags) for d, tags in creator_entries]
         for future in as_completed(futures):
             future.result()  # propagate any unexpected exception to the outer handler
+
+    # Propose durable variant groups (#615) once per *distinct* creator, AFTER the
+    # parallel walk, on a single session. Running it inside the thread pool (once
+    # per creator-dir) raced across sessions and left orphaned/duplicate groups
+    # (#639). Sequential single-session regrouping is race-free. Manual groups are
+    # preserved; empty auto groups are pruned.
+    group_db = SessionLocal()
+    try:
+        for cid in dict.fromkeys(creator_ids.values()):
+            try:
+                grouping.regroup_creator(group_db, cid)
+            except Exception:
+                logger.exception(f"Error regrouping creator id={cid}")
+                group_db.rollback()
+        grouping.prune_empty_groups(group_db)
+        group_db.commit()
+    finally:
+        group_db.close()
 
 
 def _walk_for_models(
@@ -738,6 +780,7 @@ def _walk_for_models(
     parent_names: list[str] | None = None,
     layout_tags: list[str] | None = None,
     is_inbox: bool = False,
+    group_by_character: bool = False,
 ):
     if not folder.is_dir():
         return
@@ -863,7 +906,13 @@ def _walk_for_models(
             common_label = own_key
 
     for child in sorted(child_dirs):
-        if strategy == "common":
+        if group_by_character:
+            # Folder-driven grouping (opt-in): the first folder below the creator
+            # names the group; every model beneath inherits it, so the whole
+            # character subtree is one variant group. `character` is None only at
+            # the creator boundary, where each child becomes its own group.
+            child_character = character if character is not None else child.name
+        elif strategy == "common":
             child_character = common_label
         elif strategy == "leaf":
             child_character = keys.get(child.name) or own_character
@@ -872,7 +921,8 @@ def _walk_for_models(
         _walk_for_models(child, creator, db, creator_boundary,
                          character=child_character, parent_names=next_parents,
                          stl_cache=stl_cache, last_scanned=last_scanned,
-                         layout_tags=layout_tags, is_inbox=is_inbox)
+                         layout_tags=layout_tags, is_inbox=is_inbox,
+                         group_by_character=group_by_character)
 
 
 def _index_model(
@@ -910,15 +960,46 @@ def _index_model(
             and folder.stat().st_mtime < last_scanned.timestamp()
         )
 
+        # Clean, human-readable display name derived from the raw folder name
+        # (strips scale/support/slicer/version/junk, title-cased). The raw folder
+        # name stays the source of truth on disk; folder_path is unchanged.
+        clean_name = name_parser.display_name(folder.name, creator.name)
+
+        # A structural leaf folder (STL, supported, presupported, renders…) carries
+        # no product identity — naming the model "STL"/"supported" produces junk
+        # cards (#641). Name it after its product instead: the grouping character,
+        # else the nearest non-structural ancestor folder.
+        if name_parser.is_structural_folder(folder.name):
+            product = character
+            if not product:
+                for anc in folder.parents:
+                    if anc == creator_boundary or anc == anc.parent:
+                        break
+                    if not name_parser.is_structural_folder(anc.name):
+                        product = anc.name
+                        break
+            if product:
+                clean_name = name_parser.display_name(product, creator.name) or product
+
         is_new = model is None
         if is_new:
             model = Model(
-                name=folder.name,
+                name=clean_name,
                 folder_path=folder_path,
                 creator_id=creator.id,
             )
             db.add(model)
             db.flush()
+        elif model.name in (folder.name, clean_name):
+            # Name still matches what the scanner would generate (raw or current
+            # derivation) — the user hasn't renamed it, so let parser improvements
+            # refresh it. A user-edited name is left untouched.
+            model.name = clean_name
+
+        # Scanner-owned structured variant attributes (support/cut/slicer/version).
+        # Kept separate from user-set custom_attributes so a rescan never clobbers
+        # user edits. Recomputed every scan so parser improvements propagate.
+        model.parsed_attributes = name_parser.parsed_attributes(folder.name)
 
         # Character grouping — use the user's durable override when present;
         # otherwise always reflect the current walk (including None) so a model

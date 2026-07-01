@@ -10,6 +10,7 @@ vi.mock("../api/client", () => ({
       bulkExclude: vi.fn(async () => ({ ok: true, updated: 2 })),
       bulkReview: vi.fn(async () => ({ ok: true, updated: 2 })),
       bulkEnrich: vi.fn(async () => ({ ok: true, updated: 2 })),
+      mergeGroup: vi.fn(async () => ({ id: 99, source: "manual" })),
     },
     collections: {
       bulkAddModels: vi.fn(async () => ({ ok: true })),
@@ -85,6 +86,20 @@ describe("BulkTagBar bulk actions (#164)", () => {
       expect(hide).toHaveClass(cls);
       expect(addTags).toHaveClass(cls);
     }
+  });
+
+  it("merges selected models into a variant group and clears selection", async () => {
+    const props = baseProps();
+    render(<BulkTagBar {...props} />);
+    fireEvent.click(screen.getByRole("button", { name: /^merge$/i }));
+    await waitFor(() => expect(vi.mocked(api.models.mergeGroup)).toHaveBeenCalledWith([1, 2]));
+    expect(props.onDone).toHaveBeenCalled();
+    expect(props.onClear).toHaveBeenCalled();
+  });
+
+  it("disables Merge with fewer than two selected", () => {
+    render(<BulkTagBar {...baseProps()} selectedIds={[1]} />);
+    expect(screen.getByRole("button", { name: /^merge$/i })).toBeDisabled();
   });
 
   it("adds tags via the bulk endpoint", async () => {

@@ -51,6 +51,20 @@ const TAG_COLORS: Record<string, string> = {
   "figure":        "bg-indigo-900 text-indigo-300",
 };
 
+// Scanner-detected variant attributes (#609). Support status is the most useful
+// at-a-glance signal for printing, so it gets distinct, colour-coded styling.
+const SUPPORT_STATUS_STYLE: Record<string, string> = {
+  "unsupported":   "bg-rose-900 text-rose-300",
+  "pre-supported": "bg-emerald-900 text-emerald-300",
+  "supported":     "bg-emerald-900 text-emerald-300",
+};
+
+const SUPPORT_STATUS_LABEL: Record<string, string> = {
+  "unsupported":   "Unsupported",
+  "pre-supported": "Pre-supported",
+  "supported":     "Supported",
+};
+
 // Memoized: the Library re-renders the whole grid on every selection / keyboard-
 // focus / drag tick. Without memo, all N cards on the page re-render each time
 // (per-keystroke during keyboard nav). Props are stable across those ticks —
@@ -85,6 +99,15 @@ function ModelCard({ model, selected = false, onSelect, backTo, onMutate, exclud
 
   const variantCount = model.variant_count ?? 1;
   const isGroup = variantCount > 1;
+
+  // Explain why this group exists (#617): manual vs the scanner's reason/confidence.
+  const groupExplain = (() => {
+    const g = model.variant_group;
+    if (!g) return `${variantCount} variants`;
+    if (g.source === "manual") return "Grouped manually";
+    const pct = g.confidence != null ? ` (${Math.round(g.confidence * 100)}%)` : "";
+    return g.reason ? `Auto-grouped — ${g.reason}${pct}` : "Auto-grouped";
+  })();
 
   // Keep the optimistic name in sync if the parent reloads with fresh data.
   useEffect(() => { setLocalTitle(model.title ?? ""); }, [model.title]);
@@ -234,12 +257,17 @@ function ModelCard({ model, selected = false, onSelect, backTo, onMutate, exclud
   })();
 
   const displayName = isGroup && localCharacter
-    ? localCharacter
+    ? (localTitle || localCharacter)
     : (localTitle || model.name);
   const removedAuto = new Set(model.removed_auto_tags ?? []);
   const visibleAutoTags = (model.auto_tags ?? []).filter((t) => !removedAuto.has(t));
   const allTagsDisplay = [...visibleAutoTags, ...localTags];
   const uniqueTags = [...new Set(allTagsDisplay)];
+
+  // Scanner-detected variant attributes (#609): support status leads (printing-
+  // relevant), then cut/slicer/version as neutral chips.
+  const attrs = model.parsed_attributes ?? {};
+  const secondaryAttrs = [attrs.cut_status, attrs.slicer, attrs.version].filter(Boolean) as string[];
 
   const handleCardClick = () => {
     sessionStorage.setItem("library_scroll", String(window.scrollY));
@@ -340,7 +368,10 @@ function ModelCard({ model, selected = false, onSelect, backTo, onMutate, exclud
             </span>
           )}
           {isGroup && (
-            <span className="flex items-center gap-1 bg-indigo-600/90 text-white text-xs px-1.5 py-0.5 rounded font-medium">
+            <span
+              title={groupExplain}
+              className="flex items-center gap-1 bg-indigo-600/90 text-white text-xs px-1.5 py-0.5 rounded font-medium"
+            >
               <Layers size={10} />
               {variantCount} variants
             </span>
@@ -438,6 +469,26 @@ function ModelCard({ model, selected = false, onSelect, backTo, onMutate, exclud
           >
             {displayName}
           </p>
+        )}
+
+        {(attrs.support_status || secondaryAttrs.length > 0) && (
+          <div className="flex flex-wrap gap-1">
+            {attrs.support_status && (
+              <span
+                title="Print-support status"
+                className={`text-xs px-1.5 py-0.5 rounded font-medium ${
+                  SUPPORT_STATUS_STYLE[attrs.support_status] ?? "bg-gray-800 text-gray-400"
+                }`}
+              >
+                {SUPPORT_STATUS_LABEL[attrs.support_status] ?? attrs.support_status}
+              </span>
+            )}
+            {secondaryAttrs.map((a) => (
+              <span key={a} className="text-xs px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 capitalize">
+                {a}
+              </span>
+            ))}
+          </div>
         )}
 
         {uniqueTags.length > 0 && (

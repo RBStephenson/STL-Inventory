@@ -32,9 +32,31 @@ class MatchCandidate:
 _STRIP_RE = re.compile(r"[^\w\s]")
 
 
+# Noise terms that pollute store titles (and old local names): support status,
+# print format / slicer, file-format and download cruft. Stripped before
+# tokenizing so they don't dilute the Jaccard union or create spurious overlap.
+# Identity, franchise, type ("bust"/"figure") and scale are deliberately kept.
+_NOISE_RE = re.compile(
+    r"\b("
+    r"un[\s_-]?supported|presupport(?:ed)?|pre[\s_-]?supported|presups?|supports?|supported|"
+    r"lychee|chitubox|hollow|solid|split|merged|cut(?:s|ted)?|"
+    r"stls?|obj|fbx|zip|rar|files?|instant|download(?:s|able)?|nsfw|sfw"
+    r")\b",
+    re.I,
+)
+
+
 def _tokens(text: str) -> set[str]:
     text = _STRIP_RE.sub(" ", text.lower())
     return {t for t in text.split() if len(t) > 1}
+
+
+def _denoise_tokens(text: str) -> set[str]:
+    """Tokenize after stripping noise terms; fall back to plain tokens if the
+    strip would leave nothing (a title that is *only* noise)."""
+    cleaned = _NOISE_RE.sub(" ", text)
+    toks = _tokens(cleaned)
+    return toks if toks else _tokens(text)
 
 
 def _score_tokens(a: set[str], b: set[str]) -> float:
@@ -54,6 +76,26 @@ def _score(local_name: str, product_title: str) -> float:
     return _score_tokens(_tokens(local_name), _tokens(product_title))
 
 
+# Bonus added when the model's `character` (its denoised product identity, e.g.
+# "Ada Wong") is fully contained in the product title — a strong signal the store
+# listing is the same product, even when the raw name is noisy. Capped at 1.0.
+_CHARACTER_BONUS = 0.15
+
+# Scale auto-tags (e.g. "75mm", "1:6"). display_name strips scale from the model
+# name, but store titles carry it ("Akuma 75mm Bust"), so we re-add it as a match
+# signal. Ratio digits ("1","6") are dropped by _tokens' length filter — only mm
+# scales survive here; symmetric ratio normalisation is handled in #629.
+_SCALE_TAG_RE = re.compile(r"^\d{1,4}mm$|^\d{1,2}[:/\-]\d{1,2}$", re.I)
+
+
+def _scale_tokens(auto_tags) -> set[str]:
+    toks: set[str] = set()
+    for t in auto_tags or []:
+        if _SCALE_TAG_RE.match(str(t).strip()):
+            toks |= _tokens(t)
+    return toks
+
+
 def _confidence(score: float) -> str:
     if score >= 0.55:
         return "high"
@@ -62,39 +104,76 @@ def _confidence(score: float) -> str:
     return "low"
 
 
+def _strip_creator(tokens: set[str], creator_tokens: set[str]) -> set[str]:
+    """Drop creator-name tokens from a side — but only when that side contains the
+    creator's *whole* name, so a lone shared word ("Dragon" from creator "Dragon
+    Studios" vs a "Red Dragon" character) is never removed. Falls back to the
+    original set if stripping would empty it. (#630)"""
+    if creator_tokens and creator_tokens <= tokens:
+        stripped = tokens - creator_tokens
+        return stripped or tokens
+    return tokens
+
+
 def match_products_to_models(
     products: list[StorefrontProduct],
     models: list[dict],           # [{"id": int, "name": str, "folder_path": str, ...}]
     min_score: float = 0.20,
+    creator_name: str | None = None,
 ) -> list[MatchCandidate]:
     """
     For each local model, find the best-matching storefront product.
     Returns one candidate per local model (best match only), filtered
     by min_score. Sorted by score descending.
+
+    When creator_name is given, its tokens are removed from both sides before
+    scoring — the creator appears in nearly every product title, so it adds
+    constant overlap that flattens discrimination between products.
     """
     candidates: list[MatchCandidate] = []
+    creator_tokens = _tokens(creator_name) if creator_name else set()
 
-    # Tokenize each product title once up front, not once per local model (#57).
-    product_tokens = [(product, _tokens(product.title)) for product in products]
+    # Tokenize each product title once up front (#57), denoised so support/format/
+    # file cruft in store titles doesn't dilute or fake overlap (#629), and with
+    # the creator name removed so it doesn't inflate every score (#630).
+    product_tokens = [
+        (product, _strip_creator(_denoise_tokens(product.title), creator_tokens))
+        for product in products
+    ]
 
     for m in models:
         best_score = 0.0
         best_product: Optional[StorefrontProduct] = None
 
-        # Score against the model name and title (folder name as fallback);
-        # tokenize each once per model rather than once per product comparison.
+        # Score against the model name, title, and character — the denoised
+        # product identity (e.g. "Ada Wong") that store titles key on. Tokenize
+        # each once per model rather than once per product comparison.
+        character = m.get("character") or ""
+        char_tokens = _tokens(character) if character else set()
+        # Denoise local names too (old/user-edited names may still carry cruft),
+        # so both sides normalise the same way.
         name_token_sets = [
-            _tokens(name)
+            _strip_creator(_denoise_tokens(name), creator_tokens)
             for name in (m.get("name", ""), m.get("title") or "")
             if name
         ]
+        if char_tokens:
+            name_token_sets.append(_strip_creator(char_tokens, creator_tokens))
+
+        # Re-add scale as a match signal by augmenting each name set (never as a
+        # standalone set — scale alone would false-match every same-scale product).
+        scale_tokens = _scale_tokens(m.get("auto_tags"))
+        if scale_tokens and name_token_sets:
+            name_token_sets = [s | scale_tokens for s in name_token_sets]
 
         for product, p_tokens in product_tokens:
-            for n_tokens in name_token_sets:
-                s = _score_tokens(n_tokens, p_tokens)
-                if s > best_score:
-                    best_score = s
-                    best_product = product
+            s = max((_score_tokens(nt, p_tokens) for nt in name_token_sets), default=0.0)
+            # Strong signal: the whole character identity appears in the title.
+            if char_tokens and char_tokens <= p_tokens:
+                s = min(1.0, s + _CHARACTER_BONUS)
+            if s > best_score:
+                best_score = s
+                best_product = product
 
         if best_product and best_score >= min_score:
             candidates.append(MatchCandidate(
