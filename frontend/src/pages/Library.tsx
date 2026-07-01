@@ -18,7 +18,7 @@ import { nextTagParams } from "../utils/tagFilter";
 import { nextSelection } from "../utils/selection";
 import { modelLinkTo } from "../utils/modelLink";
 import { measureGridColumns } from "../utils/libraryKeys";
-import { resolveDragIntent } from "../utils/dragGroup";
+import { resolveDragIntent, resolveGroupMergePayload } from "../utils/dragGroup";
 import { useLibraryKeyboard } from "../hooks/useLibraryKeyboard";
 import ShortcutsOverlay from "../components/ShortcutsOverlay";
 
@@ -655,11 +655,11 @@ export default function Library() {
         source.character || "",
         source.variant_group_id,
       );
-      const name = target.variant_group?.label || target.character || target.title || target.name;
-      const ids = target.variant_group_id
-        ? members.items.map((m) => m.id)
-        : Array.from(new Set([...members.items.map((m) => m.id), target.id]));
-      const ok = await mergeIntoDurableGroup(ids, target.variant_group_id, name);
+      const { ids, groupId, label } = resolveGroupMergePayload(
+        target,
+        members.items.map((m) => m.id),
+      );
+      const ok = await mergeIntoDurableGroup(ids, groupId, label);
       if (ok) {
         setPendingGroupMerge(null);
         clearSelection();

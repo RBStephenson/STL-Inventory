@@ -8,6 +8,8 @@ export interface DragCard {
   character?: string | null;
   title?: string | null;
   name: string;
+  variant_group_id?: number | null;
+  variant_group?: { label: string | null } | null;
 }
 
 /** What a drop should do, resolved from the dragged card, the drop target, and
@@ -67,4 +69,23 @@ export function resolveDragIntent(
     suggestedName: target.title || target.name,
     skipped,
   };
+}
+
+/** Given a resolved group-merge (source group dropped on target) plus the source
+ *  group's full membership, decide the payload for the durable mergeGroup call
+ *  (#677). Pure so it can be tested without a dnd-kit drag.
+ *
+ *  When the target is already a durable group, the target itself is already a
+ *  member (it's the group's representative card) — memberIds alone is the
+ *  full set. When the target is only character-grouped (or ungrouped), it must
+ *  be folded in explicitly so it joins the new durable group. */
+export function resolveGroupMergePayload(
+  target: DragCard,
+  memberIds: number[],
+): { ids: number[]; groupId: number | null; label: string } {
+  const label = target.variant_group?.label || target.character || target.title || target.name;
+  const ids = target.variant_group_id
+    ? memberIds
+    : [...new Set([...memberIds, target.id])];
+  return { ids, groupId: target.variant_group_id ?? null, label };
 }
