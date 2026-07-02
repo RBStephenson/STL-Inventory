@@ -488,6 +488,11 @@ class AppSettingsRead(BaseModel):
     part_categories_enabled: bool = False
     # Show STL files as a full-width horizontal table below the two-column layout.
     horizontal_parts_layout: bool = False
+    # AI naming & organizing — uses an OpenAI-compatible endpoint (e.g. Ollama).
+    # The API key is NOT here; it's encrypted via /settings/ai-organize/key.
+    ai_organize_enabled: bool = False
+    ai_organize_url: str = ""
+    ai_organize_model: str = ""
 
 
 class AppSettingsUpdate(BaseModel):
@@ -513,6 +518,9 @@ class AppSettingsUpdate(BaseModel):
     ai_effort: Optional[str] = Field(None, pattern="^(low|medium|high)$")
     part_categories_enabled: Optional[bool] = None
     horizontal_parts_layout: Optional[bool] = None
+    ai_organize_enabled: Optional[bool] = None
+    ai_organize_url: Optional[str] = Field(None, max_length=500)
+    ai_organize_model: Optional[str] = Field(None, max_length=200)
 
     @field_validator("scan_ignore_patterns", "scan_parts_names")
     @classmethod
@@ -568,6 +576,27 @@ class AiSettingsRead(BaseModel):
 
 class AiKeyUpdate(BaseModel):
     key: str = Field(min_length=1, max_length=400)
+
+
+class AiOrganizeSettingsRead(BaseModel):
+    """Status of AI organize connection. Key is write-only."""
+    key_set: bool
+    key_hint: Optional[str] = None
+    enabled: bool = False
+    url: str = ""
+    model: str = ""
+
+
+class AiOrganizeSuggestion(BaseModel):
+    id: int
+    part_type: Optional[str] = None
+    part_name: Optional[str] = None
+    sup_of_id: Optional[int] = None
+
+
+class AiOrganizeResult(BaseModel):
+    applied: list[AiOrganizeSuggestion]
+    message: str = ""
 
 
 # --- Cults3D settings (#578) ----------------------------------------------

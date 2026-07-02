@@ -16,5 +16,8 @@ export const mkSettings = (over: Partial<AppSettings> = {}): AppSettings => ({
   ai_effort: "low",
   part_categories_enabled: false,
   horizontal_parts_layout: false,
+  ai_organize_enabled: false,
+  ai_organize_url: "",
+  ai_organize_model: "",
   ...over,
 });

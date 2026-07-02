@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Bot, Link2, Boxes } from "lucide-react";
-import { api, AiEffort, AiSettings, CultsSettings, MmfSettings } from "../../api/client";
+import { Bot, Link2, Boxes, Wand2 } from "lucide-react";
+import { api, AiEffort, AiSettings, AiOrganizeSettings, CultsSettings, MmfSettings } from "../../api/client";
 import { useAppSettings } from "../../context/AppSettingsContext";
 import FlashBanner from "./FlashBanner";
 import { useSettingsFlash } from "./useSettingsFlash";
@@ -25,6 +25,11 @@ export default function AiIntegrationsTab() {
   const [mmfKeyDraft, setMmfKeyDraft] = useState("");
   const [editingMmf, setEditingMmf] = useState(false);
 
+  // AI Organizer
+  const [organizeSettings, setOrganizeSettings] = useState<AiOrganizeSettings | null>(null);
+  const [organizeKeyDraft, setOrganizeKeyDraft] = useState("");
+  const [editingOrganizeKey, setEditingOrganizeKey] = useState(false);
+
   useEffect(() => {
     let alive = true;
     api.settings.ai.get()
@@ -35,6 +40,9 @@ export default function AiIntegrationsTab() {
       .catch(() => {});
     api.settings.mmf.get()
       .then((s) => { if (alive) setMmfSettings(s); })
+      .catch(() => {});
+    api.settings.aiOrganize.get()
+      .then((s) => { if (alive) setOrganizeSettings(s); })
       .catch(() => {});
     return () => { alive = false; };
   }, []);
@@ -120,6 +128,28 @@ export default function AiIntegrationsTab() {
       flash("MyMiniFactory key cleared", "ok");
     } catch (e: any) {
       flash(e?.message || "Could not clear the MyMiniFactory key", "err");
+    }
+  };
+
+  const saveOrganizeKey = async () => {
+    const key = organizeKeyDraft.trim();
+    if (!key) return;
+    try {
+      setOrganizeSettings(await api.settings.aiOrganize.setKey(key));
+      setOrganizeKeyDraft("");
+      setEditingOrganizeKey(false);
+      flash("API key saved", "ok");
+    } catch (e: any) {
+      flash(e?.message || "Could not save the organizer API key", "err");
+    }
+  };
+
+  const clearOrganizeKey = async () => {
+    try {
+      setOrganizeSettings(await api.settings.aiOrganize.clearKey());
+      flash("API key cleared", "ok");
+    } catch (e: any) {
+      flash(e?.message || "Could not clear the organizer API key", "err");
     }
   };
 
@@ -216,6 +246,102 @@ export default function AiIntegrationsTab() {
             </select>
           </div>
         </div>
+      </section>
+
+      {/* AI Naming & Organizing */}
+      <section className="mb-10">
+        <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+          <Wand2 size={14} /> AI Naming &amp; Organizing
+        </h2>
+        <p className="text-xs text-gray-600 mb-4">
+          Connect any OpenAI-compatible endpoint (Ollama, OpenAI, etc.) to automatically
+          normalize part names, assign categories, and link presupported files on a per-model basis.
+        </p>
+
+        <label className="flex items-center gap-2 mb-4 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={settings.ai_organize_enabled}
+            onChange={(e) => update({ ai_organize_enabled: e.target.checked }).catch(() =>
+              flash("Could not update setting", "err")
+            )}
+            className="accent-indigo-500 w-4 h-4"
+          />
+          <span className="text-sm text-gray-300">Enable AI naming &amp; organizing</span>
+        </label>
+
+        {settings.ai_organize_enabled && (
+          <div className="flex flex-col gap-4 pl-6 border-l border-gray-800">
+            <div className="flex flex-wrap gap-4">
+              <div className="flex-1 min-w-48">
+                <label className="block text-xs text-gray-400 mb-1">Base URL</label>
+                <input
+                  type="text"
+                  value={settings.ai_organize_url}
+                  onChange={(e) => update({ ai_organize_url: e.target.value }).catch(() =>
+                    flash("Could not update URL", "err")
+                  )}
+                  placeholder="http://localhost:11434"
+                  className="w-full bg-gray-900 border border-gray-800 rounded px-3 py-2 text-sm text-gray-100 focus:border-indigo-600 focus:outline-none"
+                />
+                <p className="text-xs text-gray-600 mt-1">Ollama default: <code className="text-gray-500">http://localhost:11434</code></p>
+              </div>
+              <div className="flex-1 min-w-40">
+                <label className="block text-xs text-gray-400 mb-1">Model</label>
+                <input
+                  type="text"
+                  value={settings.ai_organize_model}
+                  onChange={(e) => update({ ai_organize_model: e.target.value }).catch(() =>
+                    flash("Could not update model", "err")
+                  )}
+                  placeholder="llama3.2"
+                  className="w-full bg-gray-900 border border-gray-800 rounded px-3 py-2 text-sm text-gray-100 focus:border-indigo-600 focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">API key <span className="text-gray-600">(optional — Ollama doesn't require one)</span></label>
+              {organizeSettings?.key_set && !editingOrganizeKey ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-300 bg-gray-900 border border-gray-800 rounded px-3 py-2">
+                    Key set <span className="text-gray-500">••••{organizeSettings.key_hint?.replace(/^…/, "")}</span>
+                  </span>
+                  <button type="button" onClick={() => { setEditingOrganizeKey(true); setOrganizeKeyDraft(""); }}
+                    className="text-sm text-gray-300 hover:text-white border border-gray-700 rounded px-3 py-2">
+                    Replace
+                  </button>
+                  <button type="button" onClick={clearOrganizeKey}
+                    className="text-sm text-rose-300 hover:text-rose-200 border border-gray-700 hover:border-rose-800 rounded px-3 py-2">
+                    Clear
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="password"
+                    aria-label="AI organizer API key"
+                    value={organizeKeyDraft}
+                    onChange={(e) => setOrganizeKeyDraft(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") saveOrganizeKey(); }}
+                    placeholder="sk-… or any string"
+                    className="flex-1 max-w-sm bg-gray-900 border border-gray-800 rounded px-3 py-2 text-sm text-gray-100 focus:border-indigo-600 focus:outline-none"
+                  />
+                  <button type="button" onClick={saveOrganizeKey} disabled={!organizeKeyDraft.trim()}
+                    className="text-sm bg-indigo-600 hover:bg-indigo-500 text-white rounded px-3 py-2 disabled:opacity-50">
+                    Save
+                  </button>
+                  {organizeSettings?.key_set && (
+                    <button type="button" onClick={() => { setEditingOrganizeKey(false); setOrganizeKeyDraft(""); }}
+                      className="text-sm text-gray-400 hover:text-gray-200 px-2 py-2">
+                      Cancel
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </section>
 
       {/* Cults3D */}
