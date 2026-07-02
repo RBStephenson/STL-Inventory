@@ -57,20 +57,6 @@ class PackOverride(Base):
     created_at = Column(DateTime, default=utcnow)
 
 
-class GroupOverride(Base):
-    """A model the user has manually assigned to a specific character group.
-
-    Persisted so the assignment survives rescans. character=None means the model
-    is explicitly ungrouped (removed from any character group). Mirrors PackOverride
-    for the group dimension: the scanner applies this instead of the heuristic."""
-    __tablename__ = "group_overrides"
-
-    id = Column(Integer, primary_key=True)
-    path = Column(String, unique=True, nullable=False)  # model folder_path
-    character = Column(String, nullable=True)           # None = explicitly ungrouped
-    created_at = Column(DateTime, default=utcnow)
-
-
 class GroupingStrategy(Base):
     """Per-subtree variant-grouping strategy (#618). Keyed by a folder path; the
     nearest ancestor of a model's folder wins, defaulting to "auto" when none
@@ -153,6 +139,12 @@ class Model(Base):
     # User-hidden from the viewer. Files on disk are left untouched; the scanner
     # preserves this flag and never resurrects an excluded model on rescan.
     excluded = Column(Boolean, default=False, index=True)
+
+    # Explicit "keep me out of any group" pin (#678 Phase 5), sticky across
+    # rescans — replaces the retired GroupOverride(character=None) row. Set by
+    # the durable-group split/remove path; cleared when the model is explicitly
+    # merged into a group again.
+    no_group = Column(Boolean, nullable=False, default=False, server_default="0")
 
     # User curation — independent flags
     is_favorite = Column(Boolean, default=False, index=True)

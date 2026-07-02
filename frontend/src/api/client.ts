@@ -168,8 +168,6 @@ export interface ModelDetail extends Model {
   stl_files: STLFile[];
   creator: { id: number; name: string; source_url: string | null } | null;
   collection_ids: number[];
-  has_group_override: boolean;
-  group_override: string | null;
 }
 
 export interface ModelList {
@@ -882,7 +880,6 @@ export interface ReorganizeEntry {
   proposed_dir: string;
   eligible: boolean;
   pack_override_paths: string[];
-  group_override_paths: string[];
   collision: boolean;
   collision_kind: ReorganizeCollisionKind;
   collision_with: number[];
@@ -1053,7 +1050,7 @@ export const api = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ids, needs_review }),
       }),
-    bulkEnrich: (ids: number[], fields: { creator_name?: string; character?: string; title?: string; notes?: string; source_url?: string }) =>
+    bulkEnrich: (ids: number[], fields: { creator_name?: string; title?: string; notes?: string; source_url?: string }) =>
       request<{ ok: boolean; updated: number }>("/models/bulk/enrich", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -1075,25 +1072,6 @@ export const api = {
       request<{ ok: boolean; created: number; message: string }>(`/models/${id}/split`, {
         method: "POST",
       }),
-    setGroupOverride: (id: number, character: string | null) =>
-      request<{ ok: boolean; character: string | null }>(`/models/${id}/set-group`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ character }),
-      }),
-    clearGroupOverride: (id: number) =>
-      request<{ ok: boolean; deleted: boolean }>(`/models/${id}/set-group`, {
-        method: "DELETE",
-      }),
-    batchSetGroup: (modelIds: number[], character: string | null) =>
-      request<{ ok: boolean; character: string | null; updated: number[]; missing: number[] }>(
-        `/models/group/batch-set`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ model_ids: modelIds, character }),
-        },
-      ),
     // Manual variant groups (#617): merge selected models, split members out,
     // relabel / set rep.
     mergeGroup: (modelIds: number[], opts: { groupId?: number; label?: string } = {}) =>
