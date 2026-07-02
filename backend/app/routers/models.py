@@ -17,6 +17,7 @@ from app.schemas import (
     BulkExcludeUpdate, BulkReviewUpdate, BulkEnrichUpdate, SetGroupBody, BatchSetGroupBody,
     BatchSetSourceUrl, GroupRepUpdate, BulkDeleteRequest, BulkDeleteResponse,
     GroupMergeBody, GroupSplitBody, GroupPatchBody, VariantGroupRead, GroupingStrategyBody,
+    AiOrganizeResult, AiOrganizeSuggestion,
 )
 
 _log = logging.getLogger(__name__)
@@ -25,7 +26,7 @@ from app.services.variant_sync import propagate_source_url
 from app.services.scrapers.base import detect_site
 from urllib.parse import urlparse
 from app.services.tag_sync import sync_model_tags, bulk_sync_model_tags
-from app.services import scanner, grouping
+from app.services import scanner, grouping, ai_organize
 from app.services.scanner import resolve_creator
 from app.config import settings
 from app.utils import utcnow
@@ -587,6 +588,78 @@ def update_stl_file(file_id: int, body: STLFileUpdate, db: Session = Depends(get
         f.sup_of_id = sup_id
     db.commit()
     return {"ok": True}
+
+
+@router.post("/{model_id}/ai-organize", response_model=AiOrganizeResult)
+def ai_organize_model(model_id: int, db: Session = Depends(get_db)):
+    """Call the configured AI organizer to normalize part names and link sup files."""
+    from app.models import STLFile, AppSetting
+    from app.services import secrets as _secrets
+
+    model = db.query(Model).filter(Model.id == model_id).first()
+    if not model:
+        raise HTTPException(status_code=404, detail="Model not found")
+    if not model.stl_files:
+        raise HTTPException(status_code=400, detail="Model has no STL files to organize")
+
+    # Read organizer config from app_settings
+    enabled_row = db.get(AppSetting, "ai_organize_enabled")
+    if not enabled_row or enabled_row.value != "true":
+        raise HTTPException(status_code=400, detail="AI organizer is not enabled")
+
+    url_row = db.get(AppSetting, "ai_organize_url")
+    model_row = db.get(AppSetting, "ai_organize_model")
+    url = url_row.value if url_row else ""
+    org_model = model_row.value if model_row else ""
+    api_key = _secrets.get_organize_api_key(db) or ""
+
+    file_dicts = [
+        {"id": f.id, "filename": f.filename, "part_type": f.part_type, "part_name": f.part_name}
+        for f in model.stl_files
+    ]
+    by_filename = {f.filename: f.id for f in model.stl_files}
+    by_id = {f.id: f for f in model.stl_files}
+
+    try:
+        suggestions = ai_organize.run(file_dicts, url, org_model, api_key)
+    except ValueError as exc:
+        raise HTTPException(status_code=502, detail=str(exc))
+
+    applied: list[AiOrganizeSuggestion] = []
+    for s in suggestions:
+        file_id = s.get("id")
+        if not isinstance(file_id, int) or file_id not in by_id:
+            continue
+        f = by_id[file_id]
+
+        part_type = s.get("part_type")
+        part_name = s.get("part_name")
+        sup_base_filename = s.get("sup_base_filename")
+
+        if part_type is not None:
+            f.part_type = part_type.strip() or None
+        if part_name is not None:
+            f.part_name = part_name.strip() or None
+
+        resolved_sup_id: int | None = None
+        if sup_base_filename:
+            base_id = by_filename.get(sup_base_filename)
+            if base_id and base_id != file_id:
+                f.sup_of_id = base_id
+                resolved_sup_id = base_id
+
+        applied.append(AiOrganizeSuggestion(
+            id=file_id,
+            part_type=f.part_type,
+            part_name=f.part_name,
+            sup_of_id=resolved_sup_id,
+        ))
+
+    db.commit()
+    return AiOrganizeResult(
+        applied=applied,
+        message=f"Applied suggestions to {len(applied)} file(s).",
+    )
 
 
 @router.patch("/bulk")

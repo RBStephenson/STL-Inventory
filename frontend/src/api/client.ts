@@ -292,6 +292,9 @@ export interface AppSettings {
   ai_effort: AiEffort;
   part_categories_enabled: boolean;
   horizontal_parts_layout: boolean;
+  ai_organize_enabled: boolean;
+  ai_organize_url: string;
+  ai_organize_model: string;
 }
 
 export type AiEffort = "low" | "medium" | "high";
@@ -302,6 +305,27 @@ export interface AiSettings {
   key_hint: string | null;
   model: string;
   effort: AiEffort;
+}
+
+// AI organizer settings — OpenAI-compatible endpoint for part naming.
+export interface AiOrganizeSettings {
+  key_set: boolean;
+  key_hint: string | null;
+  enabled: boolean;
+  url: string;
+  model: string;
+}
+
+export interface AiOrganizeSuggestion {
+  id: number;
+  part_type: string | null;
+  part_name: string | null;
+  sup_of_id: number | null;
+}
+
+export interface AiOrganizeResult {
+  applied: AiOrganizeSuggestion[];
+  message: string;
 }
 
 // Cults3D credential status (#578) — credentials are write-only.
@@ -1140,6 +1164,8 @@ export const api = {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       }),
+    aiOrganize: (modelId: number) =>
+      request<AiOrganizeResult>(`/models/${modelId}/ai-organize`, { method: "POST" }),
     batchThumbnailFromUrl: (modelIds: number[], url: string) =>
       request<{ ok: boolean; downloaded: boolean; detail?: string; updated: number[]; missing: number[] }>(
         `/models/group/thumbnail/from-url`,
@@ -1351,6 +1377,17 @@ export const api = {
         }),
       clearKey: () =>
         request<MmfSettings>("/settings/mmf/key", { method: "DELETE" }),
+    },
+    aiOrganize: {
+      get: () => request<AiOrganizeSettings>("/settings/ai-organize"),
+      setKey: (key: string) =>
+        request<AiOrganizeSettings>("/settings/ai-organize/key", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ key }),
+        }),
+      clearKey: () =>
+        request<AiOrganizeSettings>("/settings/ai-organize/key", { method: "DELETE" }),
     },
   },
   painting: {

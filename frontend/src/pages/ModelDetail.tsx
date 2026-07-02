@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef, lazy, Suspense, Fragment } from "react";
 import { GalleryRotator, GalleryRotatorHandle } from "../components/ModelCard";
 import { useParams, Link, useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, ChevronLeft, ChevronRight, ChevronDown, ExternalLink, Package, Star, Download, Tag, FileBox, Globe, Images, Box, ImagePlus, Pencil, Plus, Wrench, FolderDown, Folder, Copy, Check, Printer, Layers, Split, FolderOpen, X, ZoomIn, Paintbrush, RefreshCw, ImageOff, Bookmark, BookmarkCheck, Link2, Unlink2 } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, ChevronDown, ExternalLink, Package, Star, Download, Tag, FileBox, Globe, Images, Box, ImagePlus, Pencil, Plus, Wrench, FolderDown, Folder, Copy, Check, Printer, Layers, Split, FolderOpen, X, ZoomIn, Paintbrush, RefreshCw, ImageOff, Bookmark, BookmarkCheck, Link2, Unlink2, Wand2 } from "lucide-react";
 import { api, ApiError, Model, ModelDetail as ModelDetailType, Collection } from "../api/client";
 import FindOnWeb from "../components/FindOnWeb";
 const STLViewer = lazy(() => import("../components/STLViewer"));
@@ -310,6 +310,7 @@ export default function ModelDetail() {
   const [linkingBaseId, setLinkingBaseId] = useState<number | null>(null);
   const [showKitBuilder, setShowKitBuilder] = useState(false);
   const [downloadingAll, setDownloadingAll] = useState(false);
+  const [aiOrganizing, setAiOrganizing] = useState(false);
   const [copiedPath, setCopiedPath] = useState(false);
   const [openFolderError, setOpenFolderError] = useState<string | null>(null);
   const [splitting, setSplitting] = useState(false);
@@ -431,6 +432,20 @@ export default function ModelDetail() {
       await api.downloadZip(model.stl_files.map((f) => f.id), `${name} ${date}`);
     } finally {
       setDownloadingAll(false);
+    }
+  };
+
+  const runAiOrganize = async () => {
+    if (!model || aiOrganizing) return;
+    setAiOrganizing(true);
+    try {
+      const result = await api.models.aiOrganize(model.id);
+      toast(result.message || `Applied to ${result.applied.length} file(s).`, "success");
+      load();
+    } catch (e: any) {
+      toast(e?.message || "AI organize failed", "error");
+    } finally {
+      setAiOrganizing(false);
     }
   };
 
@@ -1611,6 +1626,16 @@ export default function ModelDetail() {
               </h3>
               {model.stl_files.length > 0 && (
                 <div className="flex gap-2">
+                  {settings.ai_organize_enabled && (
+                    <button
+                      onClick={runAiOrganize}
+                      disabled={aiOrganizing}
+                      className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-gray-800 hover:bg-violet-950 border border-gray-700 hover:border-violet-600 disabled:opacity-40 text-xs text-gray-400 hover:text-violet-300 transition-colors"
+                    >
+                      <Wand2 size={12} />
+                      {aiOrganizing ? "Organizing…" : "AI Organize"}
+                    </button>
+                  )}
                   <button
                     onClick={downloadAllFiles}
                     disabled={downloadingAll}
@@ -1994,6 +2019,12 @@ export default function ModelDetail() {
                   Files ({model.stl_files.length})
                 </h3>
                 <div className="flex gap-2">
+                  {settings.ai_organize_enabled && (
+                    <button onClick={runAiOrganize} disabled={aiOrganizing} className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-gray-800 hover:bg-violet-950 border border-gray-700 hover:border-violet-600 disabled:opacity-40 text-xs text-gray-400 hover:text-violet-300 transition-colors">
+                      <Wand2 size={12} />
+                      {aiOrganizing ? "Organizing…" : "AI Organize"}
+                    </button>
+                  )}
                   <button onClick={downloadAllFiles} disabled={downloadingAll} className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-gray-500 disabled:opacity-40 text-xs text-gray-400 hover:text-gray-200 transition-colors">
                     <FolderDown size={12} />
                     {downloadingAll ? "Zipping…" : "Download all"}

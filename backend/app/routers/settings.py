@@ -13,6 +13,7 @@ from app.database import get_db
 from app.models import AppSetting
 from app.schemas import (
     AiKeyUpdate,
+    AiOrganizeSettingsRead,
     AiSettingsRead,
     AppSettingsRead,
     AppSettingsUpdate,
@@ -198,3 +199,38 @@ def set_mmf_key(body: AiKeyUpdate, db: Session = Depends(get_db)):
 def clear_mmf_key(db: Session = Depends(get_db)):
     secrets.clear_mmf_api_key(db)
     return _mmf_settings(db)
+
+
+# --- AI Organizer settings ------------------------------------------------
+# OpenAI-compatible endpoint for part naming/normalization. The API key is
+# write-only (same Fernet pattern); url and model are stored in app_settings.
+
+def _organize_settings(db: Session) -> AiOrganizeSettingsRead:
+    hint = secrets.organize_api_key_hint(db)
+    enabled_row = db.get(AppSetting, "ai_organize_enabled")
+    url_row = db.get(AppSetting, "ai_organize_url")
+    model_row = db.get(AppSetting, "ai_organize_model")
+    return AiOrganizeSettingsRead(
+        key_set=hint is not None,
+        key_hint=hint,
+        enabled=enabled_row.value == "true" if enabled_row else False,
+        url=url_row.value if url_row else "",
+        model=model_row.value if model_row else "",
+    )
+
+
+@router.get("/ai-organize", response_model=AiOrganizeSettingsRead)
+def get_organize_settings(db: Session = Depends(get_db)):
+    return _organize_settings(db)
+
+
+@router.put("/ai-organize/key", response_model=AiOrganizeSettingsRead)
+def set_organize_key(body: AiKeyUpdate, db: Session = Depends(get_db)):
+    secrets.set_organize_api_key(db, body.key)
+    return _organize_settings(db)
+
+
+@router.delete("/ai-organize/key", response_model=AiOrganizeSettingsRead)
+def clear_organize_key(db: Session = Depends(get_db)):
+    secrets.clear_organize_api_key(db)
+    return _organize_settings(db)

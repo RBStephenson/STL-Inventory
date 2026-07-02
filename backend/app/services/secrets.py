@@ -232,3 +232,49 @@ def resolve_mmf_api_key(db: Session) -> str | None:
     """The MMF key to use for API calls: DB-stored secret first, then the
     ``MMF_API_KEY`` env/.env fallback. None when neither is set."""
     return get_mmf_api_key(db) or (settings.mmf_api_key or None)
+
+
+# --- AI Organizer API key -------------------------------------------------
+# Optional — Ollama and other local servers don't require a real key, so
+# empty/absent is valid; the caller passes whatever is stored (may be "").
+
+ORGANIZE_API_KEY_ENC = "ai_organize_api_key_enc"
+
+
+def set_organize_api_key(db: Session, raw_key: str) -> None:
+    raw_key = raw_key.strip()
+    if not raw_key:
+        clear_organize_api_key(db)
+        return
+    token = _get_fernet().encrypt(raw_key.encode()).decode()
+    row = db.get(AppSetting, ORGANIZE_API_KEY_ENC)
+    if row is None:
+        db.add(AppSetting(key=ORGANIZE_API_KEY_ENC, value=token))
+    else:
+        row.value = token
+    db.commit()
+
+
+def get_organize_api_key(db: Session) -> str | None:
+    row = db.get(AppSetting, ORGANIZE_API_KEY_ENC)
+    if row is None or not isinstance(row.value, str):
+        return None
+    try:
+        return _get_fernet().decrypt(row.value.encode()).decode()
+    except InvalidToken:
+        return None
+
+
+def clear_organize_api_key(db: Session) -> None:
+    row = db.get(AppSetting, ORGANIZE_API_KEY_ENC)
+    if row is not None:
+        db.delete(row)
+        db.commit()
+
+
+def organize_api_key_hint(db: Session) -> str | None:
+    key = get_organize_api_key(db)
+    if not key:
+        return None
+    tail = key[-4:] if len(key) >= 4 else key
+    return f"…{tail}"
